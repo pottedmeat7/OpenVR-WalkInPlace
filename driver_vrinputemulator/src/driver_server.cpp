@@ -742,7 +742,7 @@ namespace vrinputemulator {
 						double yaw = std::atan2(t3, t4);
 						switch (deviceInfo->deviceClass()) {
 						case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-							LOG(INFO) << "HMD Step: x " << xAcc << " y " << yAcc << " z " << zAcc << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
+							//LOG(INFO) << "HMD Step: x " << xAcc << " y " << yAcc << " z " << zAcc << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
 							if ((std::abs(zAcc) < _hmdThreshold.v[2]) &&
 								(std::abs(xAcc) < _hmdThreshold.v[0]) &&
 								((yAcc > _hmdThreshold.v[1] && (yAcc > xAcc && yAcc > zAcc))
