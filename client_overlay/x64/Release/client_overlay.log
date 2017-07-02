@@ -1,0 +1,13 @@
+﻿  Moc'ing DeviceManipulationTabController.h...
+  Moc'ing overlaycontroller.h...
+  moc_DeviceManipulationTabController.cpp
+  moc_overlaycontroller.cpp
+  DeviceManipulationTabController.cpp
+src\tabcontrollers\DeviceManipulationTabController.cpp(383): warning C4100: 'includesMotionCompensationSettings': unreferenced formal parameter
+  main.cpp
+  overlaycontroller.cpp
+  Generating Code...
+  libvrinputemulator.lib(vrinputemulator.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+  Generating code
+  Finished generating code
+  client_overlay.vcxproj -> C:\Users\leamm\Documents\OpenVR-InputEmulator\client_overlay\bin\win64\OpenVR-InputEmulatorOverlay.exe

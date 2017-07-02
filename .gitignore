@@ -1,0 +1,14 @@
+/third-party/LeapSDK/*
+/third-party/boost_1_63_0/*
+/build/*
+/Release/*
+/Debug/*
+*.cache
+VRInputEmulator.VC.VC.opendb
+*.db
+installer/OpenVR-InputEmulator.exe
+.vs/VRInputEmulator/v14/.suo
+*.obj
+*.pdb
+*.exe
+

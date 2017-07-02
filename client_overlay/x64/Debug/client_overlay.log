@@ -1,0 +1,21 @@
+﻿  Moc'ing DeviceManipulationTabController.h...
+  Moc'ing overlaycontroller.h...
+  moc_DeviceManipulationTabController.cpp
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\debug\../src/tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\debug\../src/tabcontrollers/DeviceManipulationTabController.h(71): warning C4305: 'initializing': truncation from 'double' to 'float'
+  moc_overlaycontroller.cpp
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(71): warning C4305: 'initializing': truncation from 'double' to 'float'
+  DeviceManipulationTabController.cpp
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers\DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers\DeviceManipulationTabController.h(71): warning C4305: 'initializing': truncation from 'double' to 'float'
+src\tabcontrollers\DeviceManipulationTabController.cpp(419): warning C4100: 'includesMotionCompensationSettings': unreferenced formal parameter
+  main.cpp
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(71): warning C4305: 'initializing': truncation from 'double' to 'float'
+  overlaycontroller.cpp
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-inputemulator\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(71): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Generating Code...
+  client_overlay.vcxproj -> C:\Users\leamm\Documents\OpenVR-InputEmulator\client_overlay\bin\win64\OpenVR-InputEmulatorOverlay.exe
+  client_overlay.vcxproj -> bin\win64\OpenVR-InputEmulatorOverlay.pdb (Full PDB)
