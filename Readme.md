@@ -14,7 +14,7 @@ The motivation of this driver is that I want to make myself a tracked gun that i
 There is also a client-side API which other programs can use to communicate with the driver. This API should be powerful enough to also support the development of full-fledged motion-controller drivers.
 
 # Step Detection Motivation
-I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of the Original OpenVR-InputEmulator I linked the functionality to the ability to detect and "emulate" a step. In the long run I hope this functionality to provide a very seemless and pleasant WIP locomotion experience for those interested in trying the walking in place method.
+@pottedmeat - I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of the Original OpenVR-InputEmulator I linked the functionality to the ability to detect and "emulate" a step. In the long run I hope this functionality to provide a very seemless and pleasant WIP locomotion experience for those interested in trying the walking in place method.
 
 
 # Features
