@@ -37,7 +37,7 @@ This is a work-in-progress and may contain bugs.
 
 ## Installer
 
-Download the newest installer from the [release section](https://github.com/matzman666/OpenVR-InputEmulator/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
+Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-InputEmulator/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
 
 ## Command-Line Client
 
@@ -58,6 +58,7 @@ Download the newest command-line client from the [release section](https://githu
   - **Redirect to**: Impersonate another device.
   - **Swap with**: Swap two devices.
   - **Motion Compensation**: Enable motion compensation with the selected device as reference device.
+- **Step Detection**: Enable/Disable Step Detection for system. Modify step speed and sensitivity. 
 - **Device Offsets**: Allows to add translation or rotation offsets to the selected device.
 - **Motion Compensation Settings**: Allows to configure motion compensation mode.
 - **Render Model**: Shows a render model at the device position (experimental).
