@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 	std::ofstream errorLog;
 
 	bool desktopMode = false;
-	bool noSound = false;
+	bool noSound = true;
 	bool noManifest = false;
 
 
@@ -111,8 +111,8 @@ int main(int argc, char *argv[]) {
 	for (int i = 1; i < argc; i++) {
 		if (std::string(argv[i]).compare("-desktop") == 0) {
 			desktopMode = true;
-		} else if (std::string(argv[i]).compare("-nosound") == 0) {
-			noSound = true;
+		} else if (std::string(argv[i]).compare("-nonosound") == 0) {
+			noSound = false;
 		} else if (std::string(argv[i]).compare("-nomanifest") == 0) {
 			noManifest = true;
 		} else if (std::string(argv[i]).compare("-installmanifest") == 0) {
