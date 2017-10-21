@@ -5,12 +5,12 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
-    property double hmdX : 0.1
-    property double hmdY : 0.15
-    property double hmdZ : 0.1
-    property double handX : 0.2
-    property double handY : 0.14
-    property double handZ : 0.2
+    property double hmdX : 0.07
+    property double hmdY : 0.07
+    property double hmdZ : 0.07
+    property double handX : 0.15
+    property double handY : 0.15
+    property double handZ : 0.15
 
     property double thresholdStep: 0.01
 
@@ -262,6 +262,7 @@ GroupBox {
 
             MyText {
                 text: "Step Hand X Velo:"
+                font.strikeout: true
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
@@ -269,6 +270,7 @@ GroupBox {
 
             MyText {
                 text: "Step Hand Y Velo:"
+                font.strikeout: true
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
@@ -276,6 +278,7 @@ GroupBox {
 
             MyText {
                 text: "Step Hand Z Velo:"
+                font.strikeout: true
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12

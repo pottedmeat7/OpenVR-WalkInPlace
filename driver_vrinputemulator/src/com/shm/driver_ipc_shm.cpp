@@ -940,7 +940,7 @@ namespace vrinputemulator {
 										resp.status = ipc::ReplyStatus::UnknownError;
 									}
 									if (resp.status != ipc::ReplyStatus::Ok) {
-										LOG(ERROR) << "Error while updating device pose offset: Error code " << (int)resp.status;
+										LOG(ERROR) << "Error while updating step detect: Error code " << (int)resp.status;
 									}
 									if (resp.messageId != 0) {
 										auto i = _this->_ipcEndpoints.find(message.msg.dm_StepDetectionMode.clientId);
@@ -948,7 +948,7 @@ namespace vrinputemulator {
 											i->second->send(&resp, sizeof(ipc::Reply), 0);
 										}
 										else {
-											LOG(ERROR) << "Error while updating device pose offset: Unknown clientId " << message.msg.dm_StepDetectionMode.clientId;
+											LOG(ERROR) << "Error while updating step detect: Unknown clientId " << message.msg.dm_StepDetectionMode.clientId;
 										}
 									}
 								}

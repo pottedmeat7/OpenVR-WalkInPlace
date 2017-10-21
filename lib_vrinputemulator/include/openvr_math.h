@@ -68,6 +68,8 @@ inline vr::HmdVector3d_t operator-(const vr::HmdVector3d_t& lhs, const double (&
 
 namespace vrmath {
 
+    #define PI 3.14159265
+	
 	inline vr::HmdQuaternion_t quaternionFromRotationAxis(double rot, double ux, double uy, double uz) {
 		auto ha = rot / 2;
 		return{

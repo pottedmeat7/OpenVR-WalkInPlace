@@ -5,13 +5,13 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "StepDetectConf"
 
-    property double stepAccel : 0.02
-    property double stepSpeed : 0.01
-    property double stepIntSec : 2.5
+    property double stepAccel : 0.005
+    property double stepSpeed : 0.008
+    property double stepIntSec : 4.5
 
-    property double stepAccelStep: 0.01
-    property double stepSpeedStep: 0.01
-    property double stepIntSecStep : 0.01
+    property double stepAccelStep: 0.001
+    property double stepSpeedStep: 0.001
+    property double stepIntSecStep : 0.02
 
     property int keyboardUIDBase: 200
 
@@ -22,8 +22,8 @@ GroupBox {
     property var updateValues: function() {}
 
     function updateGUI() {
-        stepAccelInputField.text = stepAccel.toFixed(2)
-        stepSpeedInputField.text = stepSpeed.toFixed(2)
+        stepAccelInputField.text = stepAccel.toFixed(4)
+        stepSpeedInputField.text = stepSpeed.toFixed(4)
         stepIntSecInputField.text = stepIntSec.toFixed(2)
     }
 
@@ -95,8 +95,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = stepAccel - stepAccelStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < 0.001) {
+                        value = 0.001
                     }
                     stepAccel = value
                     setStepAcceleration(value)
@@ -105,7 +105,7 @@ GroupBox {
 
             MyTextField {
                 id: stepAccelInputField
-                text: "0.02"
+                text: "0.003"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -114,8 +114,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < 0.0001) {
+                            val = 0.0001
                         } else if (val > 10.0) {
                             val = 10
                         }
@@ -153,8 +153,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = stepSpeed - stepSpeedStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < 0.0001) {
+                        value = 0.0001
                     }
                     stepSpeed = value
                     setStepSpeed(value)
@@ -163,7 +163,7 @@ GroupBox {
 
             MyTextField {
                 id: stepSpeedInputField
-                text: "0.01"
+                text: "0.003"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -172,8 +172,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < 0.0001) {
+                            val = 0.0001
                         } else if (val > 10.0) {
                             val = 10
                         }

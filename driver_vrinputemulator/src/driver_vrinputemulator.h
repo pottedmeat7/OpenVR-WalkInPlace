@@ -89,6 +89,7 @@ namespace vrinputemulator {
 			vr::DriverPose_t m_lastDriverPose;
 			long long m_lastDriverPoseTime = 0;
 
+			vr::TrackedDevicePose_t pose;
 
 
 		public:
@@ -279,15 +280,15 @@ namespace vrinputemulator {
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
 			double _timeLastStepTaken = 0.0;
-			float _stepAcceleration = 0.05;
-			float _stepSpeed = 0.05;
+			float _stepAcceleration = 0.003;
+			float _stepSpeed = 0.003;
 			double _stepIntegrateSteps = 0.0;
-			double _stepIntegrateStepLimit = 1.5;
+			double _stepIntegrateStepLimit = 3.2;
 			int CServerDriver::_openvrDeviceStepPoseTracker[3]; //HMD and two controllers
 			vr::HmdVector3d_t _stepsTraveledOffset = { 0.0, 0.0, 0.0 };
 			vr::HmdVector3d_t _handsPointDir = { 0.0, 0.0, 0.0 };
-			vr::HmdVector3d_t _hmdThreshold = { 0.07, 0.15, 0.1 };
-			vr::HmdVector3d_t _handThreshold = { 0.25, 0.15, 0.25 };
+			vr::HmdVector3d_t _hmdThreshold = { 0.07, 0.07, 0.07 };
+			vr::HmdVector3d_t _handThreshold = { 0.15, 0.15, 0.15 };
 
 			//// motion compensation related ////
 			bool _motionCompensationEnabled = false;
