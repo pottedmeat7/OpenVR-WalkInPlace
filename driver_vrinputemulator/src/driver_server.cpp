@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "driver_vrinputemulator.h"
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/lexical_cast.hpp>
 #include <ipc_protocol.h>
 #include <openvr_math.h>
 #include <MinHook.h>
@@ -500,7 +501,10 @@ namespace vrinputemulator {
 			_motionCompensationZeroPoseValid = false;
 			_motionCompensationRefPoseValid = false;
 			_motionCompensationEnabled = false;
-			LOG(INFO) << "Enabled step detection ****";
+		}
+
+		void CServerDriver::useEulerForStep(bool enable) {
+			_useIntegrationForStep = enable;
 		}
 
 		void CServerDriver::setStepAcceleration(float value) {
@@ -723,7 +727,7 @@ namespace vrinputemulator {
 						double yAcc = pose.vecVelocity[1];
 						double zAcc = pose.vecVelocity[2];
 
-						double zsqr = poseWorldRot.z * poseWorldRot.z;
+						/*double zsqr = poseWorldRot.z * poseWorldRot.z;
 
 						// roll (x-axis rotation)
 						double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
@@ -740,6 +744,7 @@ namespace vrinputemulator {
 						double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
 						double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
 						double yaw = std::atan2(t3, t4);
+						*/
 						switch (deviceInfo->deviceClass()) {
 						case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 							//LOG(INFO) << "HMD Step: x " << xAcc << " y " << yAcc << " z " << zAcc << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
@@ -763,54 +768,6 @@ namespace vrinputemulator {
 							}
 							break;
 						case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-							/*if (std::abs(_openvrDeviceStepPoseTracker[1]) == 0 ||
-								std::abs(_openvrDeviceStepPoseTracker[2]) == 0) {
-
-								// convert pose from driver space to app space
-								vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
-								auto poseWorldRot = tmpConj * pose.qRotation;
-
-								double zsqr = poseWorldRot.z * poseWorldRot.z;
-
-								// roll (x-axis rotation)
-								double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
-								double t1 = +1.0 - 2.0 * (zsqr + poseWorldRot.x * poseWorldRot.x);
-								double roll = std::atan2(t0, t1);
-
-								// pitch (z-axis rotation)
-								double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z + poseWorldRot.y * poseWorldRot.x);
-								t2 = t2 > 1.0 ? 1.0 : t2;
-								t2 = t2 < -1.0 ? -1.0 : t2;
-								double pitch = std::asin(t2);
-
-								// yaw (y-axis rotation)
-								double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
-								double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
-								double yaw = std::atan2(t3, t4);
-
-								//LOG(INFO) << "roll " << roll << " pitch " << pitch << " yaw " << yaw;
-
-								vr::HmdVector3d_t implicitForward = { 0.0, 0.0, 1.0 };
-
-								vr::HmdQuaternion_t yawQuat = yawQuat = vrmath::quaternionFromRotationAxis(yaw, 0.0, 1.0, 0.0);
-
-								vr::HmdQuaternion_t yawConj = vrmath::quaternionConjugate(yawQuat);
-
-								vr::HmdVector3d_t newPointDir = vrmath::quaternionRotateVector(yawQuat, yawConj, implicitForward);
-								_handsPointDir = _handsPointDir + newPointDir;
-
-								double mag = _handsPointDir.v[0] * _handsPointDir.v[0] + _handsPointDir.v[2] * _handsPointDir.v[2];
-								mag = std::sqrt(mag);
-								_handsPointDir.v[0] = _handsPointDir.v[0] / mag;
-								_handsPointDir.v[2] = _handsPointDir.v[2] / mag;
-
-								if (_openvrDeviceStepPoseTracker[1] == 0) {
-									_openvrDeviceStepPoseTracker[1] = 1;
-								}
-								else {
-									_openvrDeviceStepPoseTracker[2] = 1;
-								}
-							}*/
 							/*//LOG(INFO) << "HAND in applystep " << deviceInfo->openvrId();
 							//LOG(INFO) << "Hand Step: x " << xAcc << " y " << yAcc << " z " << zAcc << " device " << deviceInfo->openvrId();
 							if ((std::abs(zAcc) < _handThreshold.v[2]) &&
@@ -865,25 +822,9 @@ namespace vrinputemulator {
 						}
 						else {
 							switch (deviceInfo->deviceClass()) {
-							case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-								if (_openvrDeviceStepPoseTracker[1] == 0 && _openvrDeviceStepPoseTracker[2] == 0) {
-									if (_openvrDeviceStepPoseTracker[0] != 0) {
-										_openvrDeviceStepPoseTracker[0] = 0;
-										//LOG(INFO) << " HMD Step taken dir: x " << _handsPointDir.v[0] << " z " << _handsPointDir.v[2];
-									}
-									if (_stepIntegrateSteps >= _stepIntegrateStepLimit / 2.0) {
-										_stepSpeed = _stepSpeed + (deltatime * -1 * _stepAcceleration);
-										//_stepSpeed = _stepSpeed + (deltatime * _stepAcceleration);
-									} else {
-										_stepSpeed = _stepSpeed + (deltatime * _stepAcceleration);
-									}
-									_stepsTraveledOffset.v[0] = _stepsTraveledOffset.v[0] + (_handsPointDir.v[0] * _stepSpeed * deltatime);
-									_stepsTraveledOffset.v[2] = _stepsTraveledOffset.v[2] + (_handsPointDir.v[2] * _stepSpeed * deltatime);
-								}
-								break;
 							case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-								if (_openvrDeviceStepPoseTracker[1] != 0 ||
-									_openvrDeviceStepPoseTracker[2] != 0) {
+								if (_openvrDeviceStepPoseTracker[0] != 0 && (_openvrDeviceStepPoseTracker[1] != 0 ||
+									_openvrDeviceStepPoseTracker[2] != 0)) {
 
 									// convert pose from driver space to app space
 									vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
@@ -911,7 +852,7 @@ namespace vrinputemulator {
 
 									vr::HmdVector3d_t implicitForward = { 0.0, 0.0, 1.0 };
 
-									vr::HmdQuaternion_t yawQuat = yawQuat = vrmath::quaternionFromRotationAxis(yaw-(20.0*PI/180.0), 0.0, 1.0, 0.0);
+									vr::HmdQuaternion_t yawQuat = yawQuat = vrmath::quaternionFromRotationAxis(yaw, 0.0, 1.0, 0.0);
 
 									vr::HmdQuaternion_t yawConj = vrmath::quaternionConjugate(yawQuat);
 
@@ -922,22 +863,45 @@ namespace vrinputemulator {
 									mag = std::sqrt(mag);
 									_handsPointDir.v[0] = _handsPointDir.v[0] / mag;
 									_handsPointDir.v[2] = _handsPointDir.v[2] / mag;
-
-									/*if (_openvrDeviceStepPoseTracker[1] != 1) {
-										_openvrDeviceStepPoseTracker[1] = 1;
-									}
-									else {
-										_openvrDeviceStepPoseTracker[2] = 1;
-									}*/
 								}
 								if (_openvrDeviceStepPoseTracker[1] == 0 ) {
 									_openvrDeviceStepPoseTracker[2] = 0;
-									_openvrDeviceStepPoseTracker[1] = 0;
+									_openvrDeviceStepPoseTracker[1] = deviceInfo->openvrId();
+									if (_stepIntegrateSteps >= _stepIntegrateStepLimit * 0.75) {
+										_stepSpeed = _stepSpeed + (deltatime * -1 * _stepAcceleration);
+									}
+									else {
+										_stepSpeed = _stepSpeed + (deltatime * _stepAcceleration);
+									}
+									if (_useIntegrationForStep) {
+										_stepsTraveledOffset.v[0] = _stepsTraveledOffset.v[0] + (_handsPointDir.v[0] * _stepSpeed * deltatime);
+										_stepsTraveledOffset.v[2] = _stepsTraveledOffset.v[2] + (_handsPointDir.v[2] * _stepSpeed * deltatime);
+									}
+									else {
+										std::string cmd = "cmd /c \"C:\\PROGRA~1\\OpenVR-InputEmulator\\send_button_event.bat pressandhold ";
+										cmd += boost::lexical_cast<std::string>(deviceInfo->openvrId());
+										cmd += " 32\"";
+										WinExec(cmd.c_str(), SW_SHOWMINIMIZED);
+									}
 									//LOG(INFO) << " Hand 2 Step taken " << deviceInfo->openvrId();
 								}
 								else {
 									_openvrDeviceStepPoseTracker[1] = 0;
 									//LOG(INFO) << " Hand 1 Step taken " << deviceInfo->openvrId();
+								}
+								break;
+							case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
+								if (_openvrDeviceStepPoseTracker[2] == 0) {
+									if (_openvrDeviceStepPoseTracker[0] != 0) {
+										_openvrDeviceStepPoseTracker[0] = 0;
+										//LOG(INFO) << " HMD Step taken dir: x " << _handsPointDir.v[0] << " z " << _handsPointDir.v[2];
+									}
+									if (!_useIntegrationForStep) {
+										std::string cmd = "cmd /c \"C:\\PROGRA~1\\OpenVR-InputEmulator\\send_button_event.bat unpress ";
+										cmd += boost::lexical_cast<std::string>(deviceInfo->openvrId());
+										cmd += " 32\"";
+										WinExec(cmd.c_str(), SW_SHOWMINIMIZED);
+									}
 								}
 								break;
 							default:
@@ -948,31 +912,11 @@ namespace vrinputemulator {
 					}
 				}
 			}
-			pose.vecWorldFromDriverTranslation[0] = pose.vecWorldFromDriverTranslation[0] + _stepsTraveledOffset.v[0];
-			pose.vecWorldFromDriverTranslation[2] = pose.vecWorldFromDriverTranslation[2] + _stepsTraveledOffset.v[2];
+			if (_useIntegrationForStep) {
+				pose.vecWorldFromDriverTranslation[0] = pose.vecWorldFromDriverTranslation[0] + _stepsTraveledOffset.v[0];
+				pose.vecWorldFromDriverTranslation[2] = pose.vecWorldFromDriverTranslation[2] + _stepsTraveledOffset.v[2];
+			}
 
-			/*
-			// This structure will be used to create the keyboard
-			// input event.
-			INPUT ip;
-
-			// Pause for 5 seconds.
-			Sleep(5000);
-
-			// Set up a generic keyboard event.
-			ip.type = INPUT_KEYBOARD;
-			ip.ki.wScan = 0; // hardware scan code for key
-			ip.ki.time = 0;
-			ip.ki.dwExtraInfo = 0;
-
-			// Press the "A" key
-			ip.ki.wVk = 0x57; // virtual-key code for the "a" key
-			ip.ki.dwFlags = 0; // 0 for key press
-			SendInput(1, &ip, sizeof(INPUT));
-
-			// Release the "A" key
-			ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
-			SendInput(1, &ip, sizeof(INPUT));*/
 			return false;
 		}
 

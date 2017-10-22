@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_inputemulator__DeviceManipulationTabController_t {
-    QByteArrayData data[75];
-    char stringdata0[1471];
+    QByteArrayData data[76];
+    char stringdata0[1487];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -41,69 +41,70 @@ QT_MOC_LITERAL(8, 171, 35), // "motionCompensationVelAccModeC..."
 QT_MOC_LITERAL(9, 207, 4), // "mode"
 QT_MOC_LITERAL(10, 212, 19), // "enableStepDetection"
 QT_MOC_LITERAL(11, 232, 6), // "enable"
-QT_MOC_LITERAL(12, 239, 19), // "setStepAcceleration"
-QT_MOC_LITERAL(13, 259, 5), // "value"
-QT_MOC_LITERAL(14, 265, 12), // "setStepSpeed"
-QT_MOC_LITERAL(15, 278, 13), // "setStepIntSec"
-QT_MOC_LITERAL(16, 292, 15), // "setHMDThreshold"
-QT_MOC_LITERAL(17, 308, 1), // "x"
-QT_MOC_LITERAL(18, 310, 1), // "y"
-QT_MOC_LITERAL(19, 312, 1), // "z"
-QT_MOC_LITERAL(20, 314, 16), // "setHandThreshold"
-QT_MOC_LITERAL(21, 331, 19), // "enableDeviceOffsets"
-QT_MOC_LITERAL(22, 351, 6), // "notify"
-QT_MOC_LITERAL(23, 358, 32), // "setWorldFromDriverRotationOffset"
-QT_MOC_LITERAL(24, 391, 35), // "setWorldFromDriverTranslation..."
-QT_MOC_LITERAL(25, 427, 3), // "yaw"
-QT_MOC_LITERAL(26, 431, 5), // "pitch"
-QT_MOC_LITERAL(27, 437, 4), // "roll"
-QT_MOC_LITERAL(28, 442, 31), // "setDriverFromHeadRotationOffset"
-QT_MOC_LITERAL(29, 474, 34), // "setDriverFromHeadTranslationO..."
-QT_MOC_LITERAL(30, 509, 23), // "setDriverRotationOffset"
-QT_MOC_LITERAL(31, 533, 26), // "setDriverTranslationOffset"
-QT_MOC_LITERAL(32, 560, 13), // "setDeviceMode"
-QT_MOC_LITERAL(33, 574, 11), // "targedIndex"
-QT_MOC_LITERAL(34, 586, 18), // "triggerHapticPulse"
-QT_MOC_LITERAL(35, 605, 20), // "setDeviceRenderModel"
-QT_MOC_LITERAL(36, 626, 11), // "deviceIndex"
-QT_MOC_LITERAL(37, 638, 16), // "renderModelIndex"
-QT_MOC_LITERAL(38, 655, 28), // "addDeviceManipulationProfile"
-QT_MOC_LITERAL(39, 684, 4), // "name"
-QT_MOC_LITERAL(40, 689, 21), // "includesDeviceOffsets"
-QT_MOC_LITERAL(41, 711, 34), // "includesMotionCompensationSet..."
-QT_MOC_LITERAL(42, 746, 30), // "applyDeviceManipulationProfile"
-QT_MOC_LITERAL(43, 777, 31), // "deleteDeviceManipulationProfile"
-QT_MOC_LITERAL(44, 809, 31), // "setMotionCompensationVelAccMode"
-QT_MOC_LITERAL(45, 841, 14), // "getDeviceCount"
-QT_MOC_LITERAL(46, 856, 15), // "getDeviceSerial"
-QT_MOC_LITERAL(47, 872, 11), // "getDeviceId"
-QT_MOC_LITERAL(48, 884, 14), // "getDeviceClass"
-QT_MOC_LITERAL(49, 899, 14), // "getDeviceState"
-QT_MOC_LITERAL(50, 914, 13), // "getDeviceMode"
-QT_MOC_LITERAL(51, 928, 20), // "deviceOffsetsEnabled"
-QT_MOC_LITERAL(52, 949, 19), // "getStepAcceleration"
-QT_MOC_LITERAL(53, 969, 12), // "getStepSpeed"
-QT_MOC_LITERAL(54, 982, 13), // "getStepIntSec"
-QT_MOC_LITERAL(55, 996, 16), // "getHMDXThreshold"
-QT_MOC_LITERAL(56, 1013, 16), // "getHMDYThreshold"
-QT_MOC_LITERAL(57, 1030, 16), // "getHMDZThreshold"
-QT_MOC_LITERAL(58, 1047, 17), // "getHandXThreshold"
-QT_MOC_LITERAL(59, 1065, 17), // "getHandYThreshold"
-QT_MOC_LITERAL(60, 1083, 17), // "getHandZThreshold"
-QT_MOC_LITERAL(61, 1101, 22), // "isStepDetectionEnabled"
-QT_MOC_LITERAL(62, 1124, 32), // "getWorldFromDriverRotationOffset"
-QT_MOC_LITERAL(63, 1157, 4), // "axis"
-QT_MOC_LITERAL(64, 1162, 35), // "getWorldFromDriverTranslation..."
-QT_MOC_LITERAL(65, 1198, 31), // "getDriverFromHeadRotationOffset"
-QT_MOC_LITERAL(66, 1230, 34), // "getDriverFromHeadTranslationO..."
-QT_MOC_LITERAL(67, 1265, 23), // "getDriverRotationOffset"
-QT_MOC_LITERAL(68, 1289, 26), // "getDriverTranslationOffset"
-QT_MOC_LITERAL(69, 1316, 31), // "getMotionCompensationVelAccMode"
-QT_MOC_LITERAL(70, 1348, 33), // "getDeviceManipulationProfileC..."
-QT_MOC_LITERAL(71, 1382, 32), // "getDeviceManipulationProfileName"
-QT_MOC_LITERAL(72, 1415, 19), // "getRenderModelCount"
-QT_MOC_LITERAL(73, 1435, 18), // "getRenderModelName"
-QT_MOC_LITERAL(74, 1454, 16) // "updateDeviceInfo"
+QT_MOC_LITERAL(12, 239, 15), // "useEulerForStep"
+QT_MOC_LITERAL(13, 255, 19), // "setStepAcceleration"
+QT_MOC_LITERAL(14, 275, 5), // "value"
+QT_MOC_LITERAL(15, 281, 12), // "setStepSpeed"
+QT_MOC_LITERAL(16, 294, 13), // "setStepIntSec"
+QT_MOC_LITERAL(17, 308, 15), // "setHMDThreshold"
+QT_MOC_LITERAL(18, 324, 1), // "x"
+QT_MOC_LITERAL(19, 326, 1), // "y"
+QT_MOC_LITERAL(20, 328, 1), // "z"
+QT_MOC_LITERAL(21, 330, 16), // "setHandThreshold"
+QT_MOC_LITERAL(22, 347, 19), // "enableDeviceOffsets"
+QT_MOC_LITERAL(23, 367, 6), // "notify"
+QT_MOC_LITERAL(24, 374, 32), // "setWorldFromDriverRotationOffset"
+QT_MOC_LITERAL(25, 407, 35), // "setWorldFromDriverTranslation..."
+QT_MOC_LITERAL(26, 443, 3), // "yaw"
+QT_MOC_LITERAL(27, 447, 5), // "pitch"
+QT_MOC_LITERAL(28, 453, 4), // "roll"
+QT_MOC_LITERAL(29, 458, 31), // "setDriverFromHeadRotationOffset"
+QT_MOC_LITERAL(30, 490, 34), // "setDriverFromHeadTranslationO..."
+QT_MOC_LITERAL(31, 525, 23), // "setDriverRotationOffset"
+QT_MOC_LITERAL(32, 549, 26), // "setDriverTranslationOffset"
+QT_MOC_LITERAL(33, 576, 13), // "setDeviceMode"
+QT_MOC_LITERAL(34, 590, 11), // "targedIndex"
+QT_MOC_LITERAL(35, 602, 18), // "triggerHapticPulse"
+QT_MOC_LITERAL(36, 621, 20), // "setDeviceRenderModel"
+QT_MOC_LITERAL(37, 642, 11), // "deviceIndex"
+QT_MOC_LITERAL(38, 654, 16), // "renderModelIndex"
+QT_MOC_LITERAL(39, 671, 28), // "addDeviceManipulationProfile"
+QT_MOC_LITERAL(40, 700, 4), // "name"
+QT_MOC_LITERAL(41, 705, 21), // "includesDeviceOffsets"
+QT_MOC_LITERAL(42, 727, 34), // "includesMotionCompensationSet..."
+QT_MOC_LITERAL(43, 762, 30), // "applyDeviceManipulationProfile"
+QT_MOC_LITERAL(44, 793, 31), // "deleteDeviceManipulationProfile"
+QT_MOC_LITERAL(45, 825, 31), // "setMotionCompensationVelAccMode"
+QT_MOC_LITERAL(46, 857, 14), // "getDeviceCount"
+QT_MOC_LITERAL(47, 872, 15), // "getDeviceSerial"
+QT_MOC_LITERAL(48, 888, 11), // "getDeviceId"
+QT_MOC_LITERAL(49, 900, 14), // "getDeviceClass"
+QT_MOC_LITERAL(50, 915, 14), // "getDeviceState"
+QT_MOC_LITERAL(51, 930, 13), // "getDeviceMode"
+QT_MOC_LITERAL(52, 944, 20), // "deviceOffsetsEnabled"
+QT_MOC_LITERAL(53, 965, 19), // "getStepAcceleration"
+QT_MOC_LITERAL(54, 985, 12), // "getStepSpeed"
+QT_MOC_LITERAL(55, 998, 13), // "getStepIntSec"
+QT_MOC_LITERAL(56, 1012, 16), // "getHMDXThreshold"
+QT_MOC_LITERAL(57, 1029, 16), // "getHMDYThreshold"
+QT_MOC_LITERAL(58, 1046, 16), // "getHMDZThreshold"
+QT_MOC_LITERAL(59, 1063, 17), // "getHandXThreshold"
+QT_MOC_LITERAL(60, 1081, 17), // "getHandYThreshold"
+QT_MOC_LITERAL(61, 1099, 17), // "getHandZThreshold"
+QT_MOC_LITERAL(62, 1117, 22), // "isStepDetectionEnabled"
+QT_MOC_LITERAL(63, 1140, 32), // "getWorldFromDriverRotationOffset"
+QT_MOC_LITERAL(64, 1173, 4), // "axis"
+QT_MOC_LITERAL(65, 1178, 35), // "getWorldFromDriverTranslation..."
+QT_MOC_LITERAL(66, 1214, 31), // "getDriverFromHeadRotationOffset"
+QT_MOC_LITERAL(67, 1246, 34), // "getDriverFromHeadTranslationO..."
+QT_MOC_LITERAL(68, 1281, 23), // "getDriverRotationOffset"
+QT_MOC_LITERAL(69, 1305, 26), // "getDriverTranslationOffset"
+QT_MOC_LITERAL(70, 1332, 31), // "getMotionCompensationVelAccMode"
+QT_MOC_LITERAL(71, 1364, 33), // "getDeviceManipulationProfileC..."
+QT_MOC_LITERAL(72, 1398, 32), // "getDeviceManipulationProfileName"
+QT_MOC_LITERAL(73, 1431, 19), // "getRenderModelCount"
+QT_MOC_LITERAL(74, 1451, 18), // "getRenderModelName"
+QT_MOC_LITERAL(75, 1470, 16) // "updateDeviceInfo"
 
     },
     "inputemulator::DeviceManipulationTabController\0"
@@ -113,10 +114,11 @@ QT_MOC_LITERAL(74, 1454, 16) // "updateDeviceInfo"
     "deviceManipulationProfilesChanged\0"
     "motionCompensationVelAccModeChanged\0"
     "mode\0enableStepDetection\0enable\0"
-    "setStepAcceleration\0value\0setStepSpeed\0"
-    "setStepIntSec\0setHMDThreshold\0x\0y\0z\0"
-    "setHandThreshold\0enableDeviceOffsets\0"
-    "notify\0setWorldFromDriverRotationOffset\0"
+    "useEulerForStep\0setStepAcceleration\0"
+    "value\0setStepSpeed\0setStepIntSec\0"
+    "setHMDThreshold\0x\0y\0z\0setHandThreshold\0"
+    "enableDeviceOffsets\0notify\0"
+    "setWorldFromDriverRotationOffset\0"
     "setWorldFromDriverTranslationOffset\0"
     "yaw\0pitch\0roll\0setDriverFromHeadRotationOffset\0"
     "setDriverFromHeadTranslationOffset\0"
@@ -158,7 +160,7 @@ static const uint qt_meta_data_inputemulator__DeviceManipulationTabController[] 
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      63,   14, // methods
+      64,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -166,73 +168,74 @@ static const uint qt_meta_data_inputemulator__DeviceManipulationTabController[] 
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  329,    2, 0x06 /* Public */,
-       4,    1,  332,    2, 0x06 /* Public */,
-       6,    0,  335,    2, 0x06 /* Public */,
-       7,    0,  336,    2, 0x06 /* Public */,
-       8,    1,  337,    2, 0x06 /* Public */,
+       1,    1,  334,    2, 0x06 /* Public */,
+       4,    1,  337,    2, 0x06 /* Public */,
+       6,    0,  340,    2, 0x06 /* Public */,
+       7,    0,  341,    2, 0x06 /* Public */,
+       8,    1,  342,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      10,    1,  340,    2, 0x0a /* Public */,
-      12,    1,  343,    2, 0x0a /* Public */,
-      14,    1,  346,    2, 0x0a /* Public */,
-      15,    1,  349,    2, 0x0a /* Public */,
-      16,    3,  352,    2, 0x0a /* Public */,
-      20,    3,  359,    2, 0x0a /* Public */,
-      21,    3,  366,    2, 0x0a /* Public */,
-      21,    2,  373,    2, 0x2a /* Public | MethodCloned */,
-      23,    5,  378,    2, 0x0a /* Public */,
-      23,    4,  389,    2, 0x2a /* Public | MethodCloned */,
-      24,    5,  398,    2, 0x0a /* Public */,
-      24,    4,  409,    2, 0x2a /* Public | MethodCloned */,
-      28,    5,  418,    2, 0x0a /* Public */,
-      28,    4,  429,    2, 0x2a /* Public | MethodCloned */,
-      29,    5,  438,    2, 0x0a /* Public */,
-      29,    4,  449,    2, 0x2a /* Public | MethodCloned */,
-      30,    5,  458,    2, 0x0a /* Public */,
-      30,    4,  469,    2, 0x2a /* Public | MethodCloned */,
-      31,    5,  478,    2, 0x0a /* Public */,
-      31,    4,  489,    2, 0x2a /* Public | MethodCloned */,
-      32,    4,  498,    2, 0x0a /* Public */,
-      32,    3,  507,    2, 0x2a /* Public | MethodCloned */,
-      34,    1,  514,    2, 0x0a /* Public */,
-      35,    2,  517,    2, 0x0a /* Public */,
-      38,    4,  522,    2, 0x0a /* Public */,
-      42,    2,  531,    2, 0x0a /* Public */,
-      43,    1,  536,    2, 0x0a /* Public */,
-      44,    2,  539,    2, 0x0a /* Public */,
-      44,    1,  544,    2, 0x2a /* Public | MethodCloned */,
+      10,    1,  345,    2, 0x0a /* Public */,
+      12,    1,  348,    2, 0x0a /* Public */,
+      13,    1,  351,    2, 0x0a /* Public */,
+      15,    1,  354,    2, 0x0a /* Public */,
+      16,    1,  357,    2, 0x0a /* Public */,
+      17,    3,  360,    2, 0x0a /* Public */,
+      21,    3,  367,    2, 0x0a /* Public */,
+      22,    3,  374,    2, 0x0a /* Public */,
+      22,    2,  381,    2, 0x2a /* Public | MethodCloned */,
+      24,    5,  386,    2, 0x0a /* Public */,
+      24,    4,  397,    2, 0x2a /* Public | MethodCloned */,
+      25,    5,  406,    2, 0x0a /* Public */,
+      25,    4,  417,    2, 0x2a /* Public | MethodCloned */,
+      29,    5,  426,    2, 0x0a /* Public */,
+      29,    4,  437,    2, 0x2a /* Public | MethodCloned */,
+      30,    5,  446,    2, 0x0a /* Public */,
+      30,    4,  457,    2, 0x2a /* Public | MethodCloned */,
+      31,    5,  466,    2, 0x0a /* Public */,
+      31,    4,  477,    2, 0x2a /* Public | MethodCloned */,
+      32,    5,  486,    2, 0x0a /* Public */,
+      32,    4,  497,    2, 0x2a /* Public | MethodCloned */,
+      33,    4,  506,    2, 0x0a /* Public */,
+      33,    3,  515,    2, 0x2a /* Public | MethodCloned */,
+      35,    1,  522,    2, 0x0a /* Public */,
+      36,    2,  525,    2, 0x0a /* Public */,
+      39,    4,  530,    2, 0x0a /* Public */,
+      43,    2,  539,    2, 0x0a /* Public */,
+      44,    1,  544,    2, 0x0a /* Public */,
+      45,    2,  547,    2, 0x0a /* Public */,
+      45,    1,  552,    2, 0x2a /* Public | MethodCloned */,
 
  // methods: name, argc, parameters, tag, flags
-      45,    0,  547,    2, 0x02 /* Public */,
-      46,    1,  548,    2, 0x02 /* Public */,
-      47,    1,  551,    2, 0x02 /* Public */,
-      48,    1,  554,    2, 0x02 /* Public */,
-      49,    1,  557,    2, 0x02 /* Public */,
-      50,    1,  560,    2, 0x02 /* Public */,
-      51,    1,  563,    2, 0x02 /* Public */,
-      52,    0,  566,    2, 0x02 /* Public */,
-      53,    0,  567,    2, 0x02 /* Public */,
-      54,    0,  568,    2, 0x02 /* Public */,
-      55,    0,  569,    2, 0x02 /* Public */,
-      56,    0,  570,    2, 0x02 /* Public */,
-      57,    0,  571,    2, 0x02 /* Public */,
-      58,    0,  572,    2, 0x02 /* Public */,
-      59,    0,  573,    2, 0x02 /* Public */,
-      60,    0,  574,    2, 0x02 /* Public */,
-      61,    0,  575,    2, 0x02 /* Public */,
-      62,    2,  576,    2, 0x02 /* Public */,
-      64,    2,  581,    2, 0x02 /* Public */,
-      65,    2,  586,    2, 0x02 /* Public */,
-      66,    2,  591,    2, 0x02 /* Public */,
-      67,    2,  596,    2, 0x02 /* Public */,
-      68,    2,  601,    2, 0x02 /* Public */,
-      69,    0,  606,    2, 0x02 /* Public */,
-      70,    0,  607,    2, 0x02 /* Public */,
-      71,    1,  608,    2, 0x02 /* Public */,
-      72,    0,  611,    2, 0x02 /* Public */,
-      73,    1,  612,    2, 0x02 /* Public */,
-      74,    1,  615,    2, 0x02 /* Public */,
+      46,    0,  555,    2, 0x02 /* Public */,
+      47,    1,  556,    2, 0x02 /* Public */,
+      48,    1,  559,    2, 0x02 /* Public */,
+      49,    1,  562,    2, 0x02 /* Public */,
+      50,    1,  565,    2, 0x02 /* Public */,
+      51,    1,  568,    2, 0x02 /* Public */,
+      52,    1,  571,    2, 0x02 /* Public */,
+      53,    0,  574,    2, 0x02 /* Public */,
+      54,    0,  575,    2, 0x02 /* Public */,
+      55,    0,  576,    2, 0x02 /* Public */,
+      56,    0,  577,    2, 0x02 /* Public */,
+      57,    0,  578,    2, 0x02 /* Public */,
+      58,    0,  579,    2, 0x02 /* Public */,
+      59,    0,  580,    2, 0x02 /* Public */,
+      60,    0,  581,    2, 0x02 /* Public */,
+      61,    0,  582,    2, 0x02 /* Public */,
+      62,    0,  583,    2, 0x02 /* Public */,
+      63,    2,  584,    2, 0x02 /* Public */,
+      65,    2,  589,    2, 0x02 /* Public */,
+      66,    2,  594,    2, 0x02 /* Public */,
+      67,    2,  599,    2, 0x02 /* Public */,
+      68,    2,  604,    2, 0x02 /* Public */,
+      69,    2,  609,    2, 0x02 /* Public */,
+      70,    0,  614,    2, 0x02 /* Public */,
+      71,    0,  615,    2, 0x02 /* Public */,
+      72,    1,  616,    2, 0x02 /* Public */,
+      73,    0,  619,    2, 0x02 /* Public */,
+      74,    1,  620,    2, 0x02 /* Public */,
+      75,    1,  623,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::UInt,    3,
@@ -243,33 +246,34 @@ static const uint qt_meta_data_inputemulator__DeviceManipulationTabController[] 
 
  // slots: parameters
     QMetaType::Void, QMetaType::Bool,   11,
-    QMetaType::Void, QMetaType::Double,   13,
-    QMetaType::Void, QMetaType::Double,   13,
-    QMetaType::Void, QMetaType::Double,   13,
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double,   17,   18,   19,
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double,   17,   18,   19,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Bool, QMetaType::Bool,    5,   11,   22,
+    QMetaType::Void, QMetaType::Bool,   11,
+    QMetaType::Void, QMetaType::Double,   14,
+    QMetaType::Void, QMetaType::Double,   14,
+    QMetaType::Void, QMetaType::Double,   14,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double,   18,   19,   20,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double,   18,   19,   20,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Bool, QMetaType::Bool,    5,   11,   23,
     QMetaType::Void, QMetaType::UInt, QMetaType::Bool,    5,   11,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   17,   18,   19,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   17,   18,   19,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   25,   26,   27,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   25,   26,   27,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   17,   18,   19,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   17,   18,   19,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   25,   26,   27,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   25,   26,   27,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   17,   18,   19,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   17,   18,   19,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   25,   26,   27,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   25,   26,   27,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::Bool,    5,    9,   33,   22,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt,    5,    9,   33,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   18,   19,   20,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   18,   19,   20,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   26,   27,   28,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   26,   27,   28,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   18,   19,   20,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   18,   19,   20,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   26,   27,   28,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   26,   27,   28,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   18,   19,   20,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   18,   19,   20,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Bool,    5,   26,   27,   28,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Double, QMetaType::Double, QMetaType::Double,    5,   26,   27,   28,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::Bool,    5,    9,   34,   23,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt,    5,    9,   34,
     QMetaType::Void, QMetaType::UInt,    5,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt,   36,   37,
-    QMetaType::Void, QMetaType::QString, QMetaType::UInt, QMetaType::Bool, QMetaType::Bool,   39,   36,   40,   41,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt,    5,   36,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt,   37,   38,
+    QMetaType::Void, QMetaType::QString, QMetaType::UInt, QMetaType::Bool, QMetaType::Bool,   40,   37,   41,   42,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt,    5,   37,
     QMetaType::Void, QMetaType::UInt,    5,
-    QMetaType::Void, QMetaType::UInt, QMetaType::Bool,    9,   22,
+    QMetaType::Void, QMetaType::UInt, QMetaType::Bool,    9,   23,
     QMetaType::Void, QMetaType::UInt,    9,
 
  // methods: parameters
@@ -290,12 +294,12 @@ static const uint qt_meta_data_inputemulator__DeviceManipulationTabController[] 
     QMetaType::Float,
     QMetaType::Float,
     QMetaType::Bool,
-    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   63,
-    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   63,
-    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   63,
-    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   63,
-    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   63,
-    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   63,
+    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   64,
+    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   64,
+    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   64,
+    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   64,
+    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   64,
+    QMetaType::Double, QMetaType::UInt, QMetaType::UInt,    5,   64,
     QMetaType::UInt,
     QMetaType::UInt,
     QMetaType::QString, QMetaType::UInt,    5,
@@ -318,91 +322,92 @@ void inputemulator::DeviceManipulationTabController::qt_static_metacall(QObject 
         case 3: _t->deviceManipulationProfilesChanged(); break;
         case 4: _t->motionCompensationVelAccModeChanged((*reinterpret_cast< uint(*)>(_a[1]))); break;
         case 5: _t->enableStepDetection((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 6: _t->setStepAcceleration((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 7: _t->setStepSpeed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 8: _t->setStepIntSec((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 9: _t->setHMDThreshold((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3]))); break;
-        case 10: _t->setHandThreshold((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3]))); break;
-        case 11: _t->enableDeviceOffsets((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 12: _t->enableDeviceOffsets((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
-        case 13: _t->setWorldFromDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
-        case 14: _t->setWorldFromDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 15: _t->setWorldFromDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
-        case 16: _t->setWorldFromDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 17: _t->setDriverFromHeadRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
-        case 18: _t->setDriverFromHeadRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 19: _t->setDriverFromHeadTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
-        case 20: _t->setDriverFromHeadTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 21: _t->setDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
-        case 22: _t->setDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 23: _t->setDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
-        case 24: _t->setDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 25: _t->setDeviceMode((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< uint(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
-        case 26: _t->setDeviceMode((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< uint(*)>(_a[3]))); break;
-        case 27: _t->triggerHapticPulse((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 28: _t->setDeviceRenderModel((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2]))); break;
-        case 29: _t->addDeviceManipulationProfile((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
-        case 30: _t->applyDeviceManipulationProfile((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2]))); break;
-        case 31: _t->deleteDeviceManipulationProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 32: _t->setMotionCompensationVelAccMode((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
-        case 33: _t->setMotionCompensationVelAccMode((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 34: { uint _r = _t->getDeviceCount();
+        case 6: _t->useEulerForStep((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 7: _t->setStepAcceleration((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 8: _t->setStepSpeed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 9: _t->setStepIntSec((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 10: _t->setHMDThreshold((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3]))); break;
+        case 11: _t->setHandThreshold((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3]))); break;
+        case 12: _t->enableDeviceOffsets((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 13: _t->enableDeviceOffsets((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
+        case 14: _t->setWorldFromDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 15: _t->setWorldFromDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 16: _t->setWorldFromDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 17: _t->setWorldFromDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 18: _t->setDriverFromHeadRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 19: _t->setDriverFromHeadRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 20: _t->setDriverFromHeadTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 21: _t->setDriverFromHeadTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 22: _t->setDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 23: _t->setDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 24: _t->setDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 25: _t->setDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 26: _t->setDeviceMode((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< uint(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
+        case 27: _t->setDeviceMode((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< uint(*)>(_a[3]))); break;
+        case 28: _t->triggerHapticPulse((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 29: _t->setDeviceRenderModel((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2]))); break;
+        case 30: _t->addDeviceManipulationProfile((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
+        case 31: _t->applyDeviceManipulationProfile((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2]))); break;
+        case 32: _t->deleteDeviceManipulationProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 33: _t->setMotionCompensationVelAccMode((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
+        case 34: _t->setMotionCompensationVelAccMode((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 35: { uint _r = _t->getDeviceCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 35: { QString _r = _t->getDeviceSerial((*reinterpret_cast< uint(*)>(_a[1])));
+        case 36: { QString _r = _t->getDeviceSerial((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 36: { uint _r = _t->getDeviceId((*reinterpret_cast< uint(*)>(_a[1])));
+        case 37: { uint _r = _t->getDeviceId((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 37: { int _r = _t->getDeviceClass((*reinterpret_cast< uint(*)>(_a[1])));
+        case 38: { int _r = _t->getDeviceClass((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 38: { int _r = _t->getDeviceState((*reinterpret_cast< uint(*)>(_a[1])));
+        case 39: { int _r = _t->getDeviceState((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 39: { int _r = _t->getDeviceMode((*reinterpret_cast< uint(*)>(_a[1])));
+        case 40: { int _r = _t->getDeviceMode((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 40: { bool _r = _t->deviceOffsetsEnabled((*reinterpret_cast< uint(*)>(_a[1])));
+        case 41: { bool _r = _t->deviceOffsetsEnabled((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 41: { float _r = _t->getStepAcceleration();
+        case 42: { float _r = _t->getStepAcceleration();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 42: { float _r = _t->getStepSpeed();
+        case 43: { float _r = _t->getStepSpeed();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 43: { float _r = _t->getStepIntSec();
+        case 44: { float _r = _t->getStepIntSec();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 44: { float _r = _t->getHMDXThreshold();
+        case 45: { float _r = _t->getHMDXThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 45: { float _r = _t->getHMDYThreshold();
+        case 46: { float _r = _t->getHMDYThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 46: { float _r = _t->getHMDZThreshold();
+        case 47: { float _r = _t->getHMDZThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 47: { float _r = _t->getHandXThreshold();
+        case 48: { float _r = _t->getHandXThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 48: { float _r = _t->getHandYThreshold();
+        case 49: { float _r = _t->getHandYThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 49: { float _r = _t->getHandZThreshold();
+        case 50: { float _r = _t->getHandZThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 50: { bool _r = _t->isStepDetectionEnabled();
+        case 51: { bool _r = _t->isStepDetectionEnabled();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 51: { double _r = _t->getWorldFromDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
+        case 52: { double _r = _t->getWorldFromDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
-        case 52: { double _r = _t->getWorldFromDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
+        case 53: { double _r = _t->getWorldFromDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
-        case 53: { double _r = _t->getDriverFromHeadRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
+        case 54: { double _r = _t->getDriverFromHeadRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
-        case 54: { double _r = _t->getDriverFromHeadTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
+        case 55: { double _r = _t->getDriverFromHeadTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
-        case 55: { double _r = _t->getDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
+        case 56: { double _r = _t->getDriverRotationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
-        case 56: { double _r = _t->getDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
+        case 57: { double _r = _t->getDriverTranslationOffset((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
-        case 57: { uint _r = _t->getMotionCompensationVelAccMode();
+        case 58: { uint _r = _t->getMotionCompensationVelAccMode();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 58: { uint _r = _t->getDeviceManipulationProfileCount();
+        case 59: { uint _r = _t->getDeviceManipulationProfileCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 59: { QString _r = _t->getDeviceManipulationProfileName((*reinterpret_cast< uint(*)>(_a[1])));
+        case 60: { QString _r = _t->getDeviceManipulationProfileName((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 60: { uint _r = _t->getRenderModelCount();
+        case 61: { uint _r = _t->getRenderModelCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 61: { QString _r = _t->getRenderModelName((*reinterpret_cast< uint(*)>(_a[1])));
+        case 62: { QString _r = _t->getRenderModelName((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 62: { bool _r = _t->updateDeviceInfo((*reinterpret_cast< uint(*)>(_a[1])));
+        case 63: { bool _r = _t->updateDeviceInfo((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
         default: ;
         }
@@ -472,13 +477,13 @@ int inputemulator::DeviceManipulationTabController::qt_metacall(QMetaObject::Cal
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 63)
+        if (_id < 64)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 63;
+        _id -= 64;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 63)
+        if (_id < 64)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 63;
+        _id -= 64;
     }
     return _id;
 }

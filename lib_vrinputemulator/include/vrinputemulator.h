@@ -168,6 +168,7 @@ public:
 	void removeAllDeviceButtonMappings(uint32_t deviceId, bool modal = true);
 
 	void enableStepDetection(bool enable, bool modal = true);
+	void useEulerForStep(bool enable, bool modal = true);
 	void setStepAcceleration(float value, bool modal = true);
 	void setStepSpeed(float value, bool modal = true);
 	void setStepIntSec(float value, bool modal = true);

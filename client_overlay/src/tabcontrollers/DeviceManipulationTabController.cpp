@@ -514,6 +514,15 @@ namespace inputemulator {
 			}
 	}
 
+	void DeviceManipulationTabController::useEulerForStep(bool enable) {
+		try {
+			vrInputEmulator.useEulerForStep(enable);
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting step detection integration: " << e.what();
+		}
+	}
+
 	void DeviceManipulationTabController::setStepAcceleration(double value) {
 		try {
 			vrInputEmulator.setStepAcceleration((float)value);

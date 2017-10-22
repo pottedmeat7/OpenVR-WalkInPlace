@@ -273,6 +273,7 @@ struct Request_DeviceManipulation_StepDetectionMode {
 	uint32_t messageId; // Used to associate with Reply
 	uint32_t deviceId;
 	uint32_t enableStepDetect;
+	uint32_t useEulerForStep;
 	uint32_t stepDetectOperation;
 	vr::HmdVector3d_t hmdThreshold;
 	vr::HmdVector3d_t handThreshold;

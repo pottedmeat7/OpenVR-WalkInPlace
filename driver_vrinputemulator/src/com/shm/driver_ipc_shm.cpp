@@ -934,6 +934,10 @@ namespace vrinputemulator {
 										{
 											serverDriver->setHandThreshold(message.msg.dm_StepDetectionMode.handThreshold);
 										}
+										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 7)
+										{
+											serverDriver->useEulerForStep(message.msg.dm_StepDetectionMode.useEulerForStep==1);
+										}
 										resp.status = ipc::ReplyStatus::Ok;
 									}
 									else {

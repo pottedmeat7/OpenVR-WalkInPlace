@@ -5,9 +5,9 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
-    property double hmdX : 0.07
-    property double hmdY : 0.07
-    property double hmdZ : 0.07
+    property double hmdX : 0.3
+    property double hmdY : 0.4
+    property double hmdZ : 0.3
     property double handX : 0.15
     property double handY : 0.15
     property double handZ : 0.15
@@ -31,6 +31,15 @@ GroupBox {
         handXInputField.text = handX.toFixed(2)
         handYInputField.text = handY.toFixed(2)
         handZInputField.text = handZ.toFixed(2)
+    }
+
+    function initVars(){
+        setHMDX(hmdX)
+        setHMDY(hmdY)
+        setHMDZ(hmdZ)
+        setHandX(handX)
+        setHandY(handY)
+        setHandZ(handZ)
     }
 
     Layout.fillWidth: true
@@ -98,8 +107,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = hmdX - thresholdStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < thresholdStep) {
+                        value = thresholdStep
                     }
                     hmdX = value
                     setHMDX(value)
@@ -117,8 +126,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < thresholdStep) {
+                            val = thresholdStep
                         } else if (val > 3.0) {
                             val = 3.0
                         }
@@ -155,8 +164,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = hmdY - thresholdStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < thresholdStep) {
+                        value = thresholdStep
                     }
                     hmdY = value
                     setHMDY(value)
@@ -174,8 +183,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < thresholdStep) {
+                            val = thresholdStep
                         } else if (val > 3.0) {
                             val = 3.0
                         }
@@ -212,8 +221,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = hmdZ - thresholdStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < thresholdStep) {
+                        value = thresholdStep
                     }
                     hmdZ = value
                     setHMDZ(value)
@@ -231,8 +240,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < thresholdStep) {
+                            val = thresholdStep
                         } else if (val > 3.0) {
                             val = 3.0
                         }
@@ -301,8 +310,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = handX - thresholdStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < thresholdStep) {
+                        value = thresholdStep
                     }
                     handX = value
                     setHandX(value)
@@ -320,8 +329,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < thresholdStep) {
+                            val = thresholdStep
                         } else if (val > 3.0) {
                             val = 3.0
                         }
@@ -358,8 +367,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = handY - thresholdStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < thresholdStep) {
+                        value = thresholdStep
                     }
                     handY = value
                     setHandY(value)
@@ -377,8 +386,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < thresholdStep) {
+                            val = thresholdStep
                         } else if (val > 3.0) {
                             val = 3.0
                         }
@@ -415,8 +424,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = handZ - thresholdStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < thresholdStep) {
+                        value = thresholdStep
                     }
                     handZ = value
                     setHandZ(value)
@@ -434,8 +443,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < thresholdStep) {
+                            val = thresholdStep
                         } else if (val > 3.0) {
                             val = 3.0
                         }

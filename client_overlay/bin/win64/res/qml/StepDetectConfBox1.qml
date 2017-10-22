@@ -5,9 +5,9 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "StepDetectConf"
 
-    property double stepAccel : 0.005
-    property double stepSpeed : 0.008
-    property double stepIntSec : 4.5
+    property double stepAccel : 0.17
+    property double stepSpeed : 0.002
+    property double stepIntSec : 5.3
 
     property double stepAccelStep: 0.001
     property double stepSpeedStep: 0.001
@@ -25,6 +25,12 @@ GroupBox {
         stepAccelInputField.text = stepAccel.toFixed(4)
         stepSpeedInputField.text = stepSpeed.toFixed(4)
         stepIntSecInputField.text = stepIntSec.toFixed(2)
+    }
+
+    function initVars(){
+        setStepAcceleration(stepAccel)
+        setStepSpeed(stepSpeed)
+        setStepIntSec(stepIntSec)
     }
 
     Layout.fillWidth: true
@@ -95,8 +101,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = stepAccel - stepAccelStep
-                    if (value < 0.001) {
-                        value = 0.001
+                    if (value < stepAccelStep) {
+                        value = stepAccelStep
                     }
                     stepAccel = value
                     setStepAcceleration(value)
@@ -105,7 +111,7 @@ GroupBox {
 
             MyTextField {
                 id: stepAccelInputField
-                text: "0.003"
+                text: stepAccel
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -114,8 +120,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.0001) {
-                            val = 0.0001
+                        if (val < stepSpeedStep) {
+                            val = stepSpeedStep
                         } else if (val > 10.0) {
                             val = 10
                         }
@@ -153,8 +159,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = stepSpeed - stepSpeedStep
-                    if (value < 0.0001) {
-                        value = 0.0001
+                    if (value < stepSpeedStep) {
+                        value = stepSpeedStep
                     }
                     stepSpeed = value
                     setStepSpeed(value)
@@ -163,7 +169,7 @@ GroupBox {
 
             MyTextField {
                 id: stepSpeedInputField
-                text: "0.003"
+                text: stepSpeed
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -172,8 +178,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.0001) {
-                            val = 0.0001
+                        if (val < stepSpeedStep) {
+                            val = stepSpeedStep
                         } else if (val > 10.0) {
                             val = 10
                         }
@@ -210,8 +216,8 @@ GroupBox {
                 text: "-"
                 onClicked: {
                     var value = stepIntSec - stepIntSecStep
-                    if (value < 0.01) {
-                        value = 0.01
+                    if (value < stepIntSecStep) {
+                        value = stepIntSecStep
                     }
                     stepIntSec = value
                     setStepIntSec(value)
@@ -220,7 +226,7 @@ GroupBox {
 
             MyTextField {
                 id: stepIntSecInputField
-                text: "0.05"
+                text: stepIntSec
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -229,8 +235,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
+                        if (val < stepIntSecStep) {
+                            val = stepIntSecStep
                         } else if (val > 10.0) {
                             val = 10
                         }

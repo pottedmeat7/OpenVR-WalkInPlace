@@ -10,10 +10,17 @@ MyStackViewPage {
 
     property int deviceIndex: -1
 
+    property double initHMDX = 0.3
+    property double initHMDY = 0.4
+    property double initHMDZ = 0.3
+    property double initHandX = 0.15
+    property double initHandY = 0.15
+    property double initHandZ = 0.15
 
-    function updateInfo() {
-        stepPhysicsBox.updateValues()
-        stepThresholdBox.updateValues()
+
+    function updateInfo() {  
+        stepPhysicsBox.initVars()
+        stepThresholdBox.initVars()
         stepDetectionEnableToggle.checked = DeviceManipulationTabController.isStepDetectionEnabled()
         stepPhysicsBox.updateGUI()
         stepThresholdBox.updateGUI()
@@ -28,6 +35,15 @@ MyStackViewPage {
             Layout.fillWidth: false
             onCheckedChanged: {
                 DeviceManipulationTabController.enableStepDetection(checked)
+            }
+        }
+
+        MyToggleButton2 {
+            id: useEulerForStepToggle
+            text: "Use Integration (no collisions) Vs Teleports (blinks)"
+            Layout.fillWidth: false
+            onCheckedChanged: {
+                DeviceManipulationTabController.useEulerForStep(checked)
             }
         }
 
@@ -140,12 +156,12 @@ MyStackViewPage {
                 Layout.preferredWidth: 200
                 text: "Reset"
                 onClicked: {
-                    stepThresholdBox.setHMDX(0.1)
-                    stepThresholdBox.setHMDY(0.05)
-                    stepThresholdBox.setHMDZ(0.1)
-                    stepThresholdBox.setHandX(0.2)
+                    stepThresholdBox.setHMDX(0.3)
+                    stepThresholdBox.setHMDY(0.4)
+                    stepThresholdBox.setHMDZ(0.3)
+                    stepThresholdBox.setHandX(0.15)
                     stepThresholdBox.setHandY(0.15)
-                    stepThresholdBox.setHandZ(0.2)
+                    stepThresholdBox.setHandZ(0.15)
                     stepThresholdBox.updateGUI()
                 }
             }

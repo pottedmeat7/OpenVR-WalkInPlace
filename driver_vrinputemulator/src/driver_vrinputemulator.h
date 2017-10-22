@@ -248,6 +248,7 @@ namespace vrinputemulator {
 
 			/* Step Detection */
 			void enableStepDetection(bool enable);
+			void useEulerForStep(bool enable);
 			void setStepAcceleration(float value);
 			void setStepSpeed(float value);
 			void setStepIntSec(float value);
@@ -278,12 +279,13 @@ namespace vrinputemulator {
 
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
+			bool _useIntegrationForStep = false;
 			bool _stepPoseDetected = false;
 			double _timeLastStepTaken = 0.0;
-			float _stepAcceleration = 0.003;
+			float _stepAcceleration = 0.01;
 			float _stepSpeed = 0.003;
 			double _stepIntegrateSteps = 0.0;
-			double _stepIntegrateStepLimit = 3.2;
+			double _stepIntegrateStepLimit = 5;
 			int CServerDriver::_openvrDeviceStepPoseTracker[3]; //HMD and two controllers
 			vr::HmdVector3d_t _stepsTraveledOffset = { 0.0, 0.0, 0.0 };
 			vr::HmdVector3d_t _handsPointDir = { 0.0, 0.0, 0.0 };
@@ -488,4 +490,5 @@ namespace vrinputemulator {
 		};
 
 	} // end namespace driver
+
 } // end namespace vrinputemulator

@@ -1002,6 +1002,54 @@ void VRInputEmulator::enableStepDetection(bool enable, bool modal) {
 	}
 }
 
+void VRInputEmulator::useEulerForStep(bool enable, bool modal) {
+	if (_ipcServerQueue) {
+		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		memset(&message.msg, 0, sizeof(message.msg));
+		message.msg.dm_StepDetectionMode.clientId = m_clientId;
+		message.msg.dm_StepDetectionMode.messageId = 0;
+		message.msg.dm_StepDetectionMode.useEulerForStep = enable ? 1 : 2;
+		message.msg.dm_StepDetectionMode.stepDetectOperation = 7;
+		if (modal) {
+			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
+			message.msg.dm_DeviceOffsets.messageId = messageId;
+			std::promise<ipc::Reply> respPromise;
+			auto respFuture = respPromise.get_future();
+			{
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
+			}
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+			auto resp = respFuture.get();
+			{
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				_ipcPromiseMap.erase(messageId);
+			}
+			std::stringstream ss;
+			ss << "Error while enabling step detection: ";
+			if (resp.status == ipc::ReplyStatus::InvalidId) {
+				ss << "Invalid device id";
+				throw vrinputemulator_invalidid(ss.str());
+			}
+			else if (resp.status == ipc::ReplyStatus::NotFound) {
+				ss << "Device not found";
+				throw vrinputemulator_notfound(ss.str());
+			}
+			else if (resp.status != ipc::ReplyStatus::Ok) {
+				ss << "Error code " << (int)resp.status;
+				throw vrinputemulator_exception(ss.str());
+			}
+		}
+		else {
+			message.msg.dm_DeviceOffsets.messageId = 0;
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+		}
+	}
+	else {
+		throw vrinputemulator_connectionerror("No active connection.");
+	}
+}
+
 void VRInputEmulator::setStepAcceleration(float value, bool modal) {
 	if (_ipcServerQueue) {
 		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
@@ -1095,6 +1143,7 @@ void VRInputEmulator::setStepSpeed(float value, bool modal) {
 		throw vrinputemulator_connectionerror("No active connection.");
 	}
 }
+
 void VRInputEmulator::setStepIntSec(float value, bool modal) {
 	if (_ipcServerQueue) {
 		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);

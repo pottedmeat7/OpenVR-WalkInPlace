@@ -123,6 +123,7 @@ public:
 
 public slots:
     void enableStepDetection(bool enable);
+	void useEulerForStep(bool enable);
 	void setStepAcceleration(double value);
 	void setStepSpeed(double value);
 	void setStepIntSec(double value);
