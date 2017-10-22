@@ -10,14 +10,6 @@ MyStackViewPage {
 
     property int deviceIndex: -1
 
-    property double initHMDX = 0.3
-    property double initHMDY = 0.4
-    property double initHMDZ = 0.3
-    property double initHandX = 0.15
-    property double initHandY = 0.15
-    property double initHandZ = 0.15
-
-
     function updateInfo() {  
         stepPhysicsBox.initVars()
         stepThresholdBox.initVars()
