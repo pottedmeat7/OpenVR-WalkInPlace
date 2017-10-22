@@ -711,7 +711,10 @@ namespace vrinputemulator {
 
 		bool CServerDriver::_applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrDeviceManipulationInfo* deviceInfo, vr::HmdQuaternion_t stepUpDir) {
 			if (this->_stepPoseDetectEnabled && pose.poseIsValid) {
-				double deltatime = 1.0 / 40.0;
+				double deltatime = 1.0;
+				if (_useIntegrationForStep) {
+					deltatime = 1.0 / 40.0;
+				}
 				auto now = std::chrono::duration_cast <std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				double tdiff = (double)(now - _timeLastStepTaken);
 				if (tdiff > deltatime) {					
@@ -816,6 +819,12 @@ namespace vrinputemulator {
 							_stepIntegrateSteps = 0.0;
 							_handsPointDir = { 0.0, 0.0, 0.0 };
 							_timeLastStepTaken = now;
+							if (!_useIntegrationForStep) {
+								std::string cmd = "cmd /c \"C:\\PROGRA~1\\OpenVR-InputEmulator\\send_button_event.bat unpress ";
+								cmd += boost::lexical_cast<std::string>(_openvrDeviceStepPoseTracker[1]);
+								cmd += " 32\"";
+								WinExec(cmd.c_str(), SW_SHOWMINIMIZED);
+							}
 							_openvrDeviceStepPoseTracker[0] = 0;
 							_openvrDeviceStepPoseTracker[1] = 0;
 							_openvrDeviceStepPoseTracker[2] = 0;
@@ -898,7 +907,7 @@ namespace vrinputemulator {
 									}
 									if (!_useIntegrationForStep) {
 										std::string cmd = "cmd /c \"C:\\PROGRA~1\\OpenVR-InputEmulator\\send_button_event.bat unpress ";
-										cmd += boost::lexical_cast<std::string>(deviceInfo->openvrId());
+										cmd += boost::lexical_cast<std::string>(_openvrDeviceStepPoseTracker[1]);
 										cmd += " 32\"";
 										WinExec(cmd.c_str(), SW_SHOWMINIMIZED);
 									}

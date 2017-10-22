@@ -30,7 +30,7 @@ MyStackViewPage {
             }
         }
 
-        MyToggleButton2 {
+        MyToggleButton {
             id: useEulerForStepToggle
             text: "Use Integration (no collisions) Vs Teleports (blinks)"
             Layout.fillWidth: false

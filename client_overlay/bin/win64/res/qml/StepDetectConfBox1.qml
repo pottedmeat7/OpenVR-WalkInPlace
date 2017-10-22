@@ -111,7 +111,7 @@ GroupBox {
 
             MyTextField {
                 id: stepAccelInputField
-                text: stepAccel
+                text: "0"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -169,7 +169,7 @@ GroupBox {
 
             MyTextField {
                 id: stepSpeedInputField
-                text: stepSpeed
+                text: ""
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -226,7 +226,7 @@ GroupBox {
 
             MyTextField {
                 id: stepIntSecInputField
-                text: stepIntSec
+                text: ""
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
