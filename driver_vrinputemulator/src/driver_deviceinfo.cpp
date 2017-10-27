@@ -141,7 +141,7 @@ namespace vrinputemulator {
 		}
 
 		void OpenvrDeviceManipulationInfo::handleAxisEvent(vr::IVRServerDriverHost* driver, _DetourTrackedDeviceAxisUpdated_t origFunc, uint32_t& unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState) {
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 			if (m_deviceMode == 1 || (m_deviceMode == 3 && !m_redirectSuspended) || m_deviceMode == 5) {
 				//nop
 			}

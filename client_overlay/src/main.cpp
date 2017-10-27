@@ -183,8 +183,8 @@ int main(int argc, char *argv[]) {
 
 	try {
 		QApplication a(argc, argv);
-		a.setOrganizationName("matzman666");
-		a.setApplicationName("OpenVRInputEmulator");
+		a.setOrganizationName("pottedmeat7");
+		a.setApplicationName("OpenVRWalkInPlace");
 		a.setApplicationDisplayName(inputemulator::OverlayController::applicationName);
 		a.setApplicationVersion(inputemulator::OverlayController::applicationVersionString);
 

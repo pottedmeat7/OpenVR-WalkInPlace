@@ -34,8 +34,8 @@ class OverlayController : public QObject {
 	Q_PROPERTY(bool desktopMode READ isDesktopMode)
 
 public:
-	static constexpr const char* applicationKey = "matzman666.VRInputEmulator";
-	static constexpr const char* applicationName = "VR Input Emulator";
+	static constexpr const char* applicationKey = "pottedmeat7.VRWalkInPlace";
+	static constexpr const char* applicationName = "VR Walk In Place";
 	static constexpr const char* applicationVersionString = "v1.0.4";
 
 private:

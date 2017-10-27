@@ -7,17 +7,17 @@
 ;General
 
 	!define OVERLAY_BASEDIR "..\client_overlay\bin\win64"
-	!define DRIVER_BASEDIR "..\driver_vrinputemulator"
+	!define DRIVER_BASEDIR "..\driver_vrwalkinplace"
 
 	;Name and file
-	Name "OpenVR Input Emulator"
-	OutFile "OpenVR-InputEmulator.exe"
+	Name "OpenVR Walk In Place"
+	OutFile "OpenVR-WalkInPlace.exe"
 	
 	;Default installation folder
-	InstallDir "$PROGRAMFILES64\OpenVR-InputEmulator"
+	InstallDir "$PROGRAMFILES64\OpenVR-WalkInPlace"
 	
 	;Get installation folder from registry if available
-	InstallDirRegKey HKLM "Software\OpenVR-InputEmulator\Overlay" ""
+	InstallDirRegKey HKLM "Software\OpenVR-WalkInPlace\Overlay" ""
 	
 	;Request application privileges for Windows Vista
 	RequestExecutionLevel admin
@@ -62,7 +62,7 @@ FunctionEnd
 Function .onInit
 	StrCpy $upgradeInstallation "false"
  
-	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRInputEmulator" "UninstallString"
+	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "UninstallString"
 	StrCmp $R0 "" done
 	
 	
@@ -75,7 +75,7 @@ Function .onInit
  
 	
 	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-		"OpenVR Input Emulator is already installed. $\n$\nClick `OK` to upgrade the \
+		"OpenVR Walk In Place is already installed. $\n$\nClick `OK` to upgrade the \
 		existing installation or `Cancel` to cancel this upgrade." \
 		IDOK upgrade
 	Abort
@@ -117,34 +117,34 @@ Section "Install" SecInstall
 	ExecWait '"$INSTDIR\vcredist_x64.exe" /install /quiet'
 	
 	Var /GLOBAL vrRuntimePath
-	nsExec::ExecToStack '"$INSTDIR\OpenVR-InputEmulatorOverlay.exe" -openvrpath'
+	nsExec::ExecToStack '"$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" -openvrpath'
 	Pop $0
 	Pop $vrRuntimePath
 	DetailPrint "VR runtime path: $vrRuntimePath"
 
-	SetOutPath "$vrRuntimePath\drivers\00vrinputemulator"
+	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace"
 	File "${DRIVER_BASEDIR}\driver.vrdrivermanifest"
-	SetOutPath "$vrRuntimePath\drivers\00vrinputemulator\resources"
+	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources"
 	File "${DRIVER_BASEDIR}\resources\driver.vrresources"
-	SetOutPath "$vrRuntimePath\drivers\00vrinputemulator\resources\settings"
+	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources\settings"
 	File "${DRIVER_BASEDIR}\resources\settings\default.vrsettings"
-	SetOutPath "$vrRuntimePath\drivers\00vrinputemulator\bin\win64"
-	File "${DRIVER_BASEDIR}\bin\x64\driver_00vrinputemulator.dll"
+	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\bin\win64"
+	File "${DRIVER_BASEDIR}\bin\x64\driver_00vrwalkinplace.dll"
 	
 	; Install the vrmanifest
-	nsExec::ExecToLog '"$INSTDIR\OpenVR-InputEmulatorOverlay.exe" -installmanifest'
+	nsExec::ExecToLog '"$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" -installmanifest'
 	
 	; Post-installation step
-	nsExec::ExecToLog '"$INSTDIR\OpenVR-InputEmulatorOverlay.exe" -postinstallationstep'
+	nsExec::ExecToLog '"$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" -postinstallationstep'
   
 	;Store installation folder
-	WriteRegStr HKLM "Software\OpenVR-InputEmulator\Overlay" "" $INSTDIR
-	WriteRegStr HKLM "Software\OpenVR-InputEmulator\Driver" "" $vrRuntimePath
+	WriteRegStr HKLM "Software\OpenVR-WalkInPlace\Overlay" "" $INSTDIR
+	WriteRegStr HKLM "Software\OpenVR-WalkInPlace\Driver" "" $vrRuntimePath
   
 	;Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRInputEmulator" "DisplayName" "OpenVR Input Emulator"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRInputEmulator" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "DisplayName" "OpenVR Walk In Place"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
 
 SectionEnd
 
@@ -160,28 +160,28 @@ Section "Uninstall"
 		Abort
 
 	; Remove the vrmanifest
-	nsExec::ExecToLog '"$INSTDIR\OpenVR-InputEmulatorOverlay.exe" -removemanifest'
+	nsExec::ExecToLog '"$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" -removemanifest'
 
 	; Delete installed files
 	Var /GLOBAL vrRuntimePath2
-	ReadRegStr $vrRuntimePath2 HKLM "Software\OpenVR-InputEmulator\Driver" ""
+	ReadRegStr $vrRuntimePath2 HKLM "Software\OpenVR-WalkInPlace\Driver" ""
 	DetailPrint "VR runtime path: $vrRuntimePath2"
-	Delete "$vrRuntimePath2\drivers\00vrinputemulator\driver.vrdrivermanifest"
-	Delete "$vrRuntimePath2\drivers\00vrinputemulator\resources\driver.vrresources"
-	Delete "$vrRuntimePath2\drivers\00vrinputemulator\resources\settings\default.vrsettings"
-	Delete "$vrRuntimePath2\drivers\00vrinputemulator\bin\win64\driver_00vrinputemulator.dll"
-	Delete "$vrRuntimePath2\drivers\00vrinputemulator\bin\win64\driver_vrinputemulator.log"
-	RMdir "$vrRuntimePath2\drivers\00vrinputemulator\resources\settings"
-	RMdir "$vrRuntimePath2\drivers\00vrinputemulator\resources\"
-	RMdir "$vrRuntimePath2\drivers\00vrinputemulator\bin\win64\"
-	RMdir "$vrRuntimePath2\drivers\00vrinputemulator\bin\"
-	RMdir "$vrRuntimePath2\drivers\00vrinputemulator\"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\driver.vrdrivermanifest"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\driver.vrresources"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings\default.vrsettings"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_00vrwalkinplace.dll"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\bin\"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\"
 	
 	!include uninstallFiles.list
 
-	DeleteRegKey HKLM "Software\OpenVR-InputEmulator\Overlay"
-	DeleteRegKey HKLM "Software\OpenVR-InputEmulator\Driver"
-	DeleteRegKey HKLM "Software\OpenVR-InputEmulator"
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRInputEmulator"
+	DeleteRegKey HKLM "Software\OpenVR-WalkInPlace\Overlay"
+	DeleteRegKey HKLM "Software\OpenVR-WalkInPlace\Driver"
+	DeleteRegKey HKLM "Software\OpenVR-WalkInPlace"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace"
 SectionEnd
 

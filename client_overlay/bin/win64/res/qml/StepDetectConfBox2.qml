@@ -6,7 +6,7 @@ GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
     property double hmdX : 0.3
-    property double hmdY : 0.4
+    property double hmdY : 0.37
     property double hmdZ : 0.3
     property double handX : 0.15
     property double handY : 0.15

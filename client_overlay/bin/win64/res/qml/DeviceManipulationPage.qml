@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
-import matzman666.inputemulator 1.0
+import pottedmeat7.walkintplace 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 

@@ -7,7 +7,7 @@ GroupBox {
 
     property double stepAccel : 0.17
     property double stepSpeed : 0.002
-    property double stepIntSec : 5.3
+    property double stepIntSec : 0.7
 
     property double stepAccelStep: 0.001
     property double stepSpeedStep: 0.001

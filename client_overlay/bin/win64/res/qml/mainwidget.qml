@@ -62,6 +62,6 @@ Rectangle {
 			}
 		}
 
-        initialItem: devicePage
+        initialItem: stepDetectionPage
     }
 }

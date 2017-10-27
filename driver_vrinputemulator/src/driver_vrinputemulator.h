@@ -282,6 +282,7 @@ namespace vrinputemulator {
 			bool _useIntegrationForStep = false;
 			bool _stepPoseDetected = false;
 			double _timeLastStepTaken = 0.0;
+			double _timeLastTick = 0.0;
 			float _stepAcceleration = 0.01;
 			float _stepSpeed = 0.003;
 			double _stepIntegrateSteps = 0.0;

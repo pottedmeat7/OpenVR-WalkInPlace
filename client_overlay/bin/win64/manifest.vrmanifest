@@ -1,15 +1,15 @@
 {
 	"source" : "builtin",
 	"applications": [{
-		"app_key": "matzman666.VRInputEmulator",
+		"app_key": "pottedmeat7.VRWalkInPlace",
 		"launch_type": "binary",
-		"binary_path_windows": "OpenVR-InputEmulatorOverlay.exe",
+		"binary_path_windows": "OpenVR-WalkInPlaceOverlay.exe",
 		"is_dashboard_overlay": true,
 
 		"strings": {
 			"en_us": {
-				"name": "VR Input Emulator",
-				"description": "OpenVR Input Emulator Overlay"
+				"name": "VR Walk in Place",
+				"description": "OpenVR Walk in Place Overlay"
 			}
 		}
 	}]
