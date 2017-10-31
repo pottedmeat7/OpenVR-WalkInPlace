@@ -44,6 +44,7 @@ Download the newest installer from the [release section](https://github.com/pott
 
 ### WalkInPlace Overlay
 Just enable "Step Detection" in the UI.
+Enable the "analog" locomotion in the games settings this is the input method that uses touching the touch-pad (not clicking)
 Then you simply walk in place to emulate walking in the VR world.
 
 ## Initial Setup
