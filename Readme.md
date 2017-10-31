@@ -34,8 +34,6 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 
 This is a work-in-progress and may have flaws.
 
-# Usage
-
 ## Installer
 
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
