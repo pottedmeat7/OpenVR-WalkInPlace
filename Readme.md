@@ -29,6 +29,8 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 # Upcoming
 
 - Options for emulating other input methods
+- Tracker support (for feet)
+- Running / jogging / walking detection
 
 # Notes:
 
