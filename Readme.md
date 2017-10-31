@@ -19,7 +19,6 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 # Unsupported games
 
 - Games that do not use the touch-pad as movement
-- 
 
 # Features
 
@@ -29,11 +28,11 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 
 # Upcoming
 
-- Support for other games
+- Options for emulating other input methods
 
 # Notes:
 
-This is a work-in-progress and may contain bugs.
+This is a work-in-progress and may have flaws.
 
 # Usage
 
