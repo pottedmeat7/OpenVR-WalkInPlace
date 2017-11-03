@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import matzman666.inputemulator 1.0
+import pottedmeat7.inputemulator 1.0
 
 TextField {
 	property int keyBoardUID: 0

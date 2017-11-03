@@ -4,7 +4,7 @@
 #include <QObject>
 #include <memory>
 #include <openvr.h>
-#include <vrinputemulator.h>
+#include <vrwalkinplace.h>
 
 class QQuickWindow;
 // application namespace
@@ -54,7 +54,7 @@ class DeviceManipulationTabController : public QObject {
 private:
 	OverlayController* parent;
 	QQuickWindow* widget;
-	vrinputemulator::VRInputEmulator vrInputEmulator;
+	vrwalkinplace::VRWalkInPlace vrInputEmulator;
 
 	std::vector<std::shared_ptr<DeviceInfo>> deviceInfos;
 	uint32_t maxValidDeviceId = 0;
@@ -67,8 +67,6 @@ private:
 
 	std::thread identifyThread;
 
-	float stepAcceleration = 0.003;
-	float stepSpeed = 0.003;
 	float stepIntSec = 4.5;
 
 	vr::HmdVector3d_t hmdThreshold = { 0.07, 0.07, 0.07 };
@@ -89,8 +87,6 @@ public:
 	Q_INVOKABLE int getDeviceState(unsigned index);
 	Q_INVOKABLE int getDeviceMode(unsigned index);
 	Q_INVOKABLE bool deviceOffsetsEnabled(unsigned index);
-	Q_INVOKABLE float getStepAcceleration();
-	Q_INVOKABLE float getStepSpeed();
 	Q_INVOKABLE float getStepIntSec();
 	Q_INVOKABLE float getHMDXThreshold();
 	Q_INVOKABLE float getHMDYThreshold();
@@ -123,13 +119,9 @@ public:
 
 public slots:
     void enableStepDetection(bool enable);
-	void useEulerForStep(bool enable);
-	void setStepAcceleration(double value);
-	void setStepSpeed(double value);
 	void setStepIntSec(double value);
 	void setHMDThreshold(double x, double y, double z);
 	void setHandThreshold(double x, double y, double z);
-	void enableDeviceOffsets(unsigned index, bool enable, bool notify = true);
 	void setWorldFromDriverRotationOffset(unsigned index, double x, double y, double z, bool notify = true);
 	void setWorldFromDriverTranslationOffset(unsigned index, double yaw, double pitch, double roll, bool notify = true);
 	void setDriverFromHeadRotationOffset(unsigned index, double x, double y, double z, bool notify = true);

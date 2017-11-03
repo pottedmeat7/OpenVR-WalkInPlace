@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
 			conf.parseFromText(logConfigDefault);
 		}
 		if (!conf.get(el::Level::Global, el::ConfigurationType::Filename)) {
-			logFilePath = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("VRInputEmulator.log");
+			logFilePath = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("VRWalkInPlace.log");
 			conf.set(el::Level::Global, el::ConfigurationType::Filename, QDir::toNativeSeparators(logFilePath).toStdString());
 		}
 		conf.setRemainingToDefault();

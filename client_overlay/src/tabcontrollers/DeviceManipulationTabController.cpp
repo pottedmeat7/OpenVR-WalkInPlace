@@ -46,7 +46,7 @@ namespace inputemulator {
 						}
 
 						try {
-							vrinputemulator::DeviceInfo info2;
+							vrwalkinplace::DeviceInfo info2;
 							vrInputEmulator.getDeviceInfo(info->openvrId, info2);
 							info->deviceMode = info2.deviceMode;
 							info->deviceOffsetsEnabled = info2.offsetsEnabled;
@@ -109,7 +109,7 @@ namespace inputemulator {
 							}
 
 							try {
-								vrinputemulator::DeviceInfo info2;
+								vrwalkinplace::DeviceInfo info2;
 								vrInputEmulator.getDeviceInfo(info->openvrId, info2);
 								info->deviceMode = info2.deviceMode;
 								info->deviceOffsetsEnabled = info2.offsetsEnabled;
@@ -201,14 +201,6 @@ namespace inputemulator {
 			}
 		}
 		return false;
-	}
-
-	float DeviceManipulationTabController::getStepAcceleration() {
-		return stepAcceleration;
-	}
-
-	float DeviceManipulationTabController::getStepSpeed() {
-		return stepSpeed;
 	}
 
 	float DeviceManipulationTabController::getStepIntSec() {
@@ -456,17 +448,6 @@ namespace inputemulator {
 			}
 			auto device = deviceInfos[deviceIndex];
 			auto& profile = deviceManipulationProfiles[index];
-			if (profile.includesDeviceOffsets) {
-				setWorldFromDriverRotationOffset(deviceIndex, profile.worldFromDriverRotationOffset.v[0], profile.worldFromDriverRotationOffset.v[1], profile.worldFromDriverRotationOffset.v[2], false);
-				setWorldFromDriverTranslationOffset(deviceIndex, profile.worldFromDriverTranslationOffset.v[0], profile.worldFromDriverTranslationOffset.v[1], profile.worldFromDriverTranslationOffset.v[2], false);
-				setDriverFromHeadRotationOffset(deviceIndex, profile.driverFromHeadRotationOffset.v[0], profile.driverFromHeadRotationOffset.v[1], profile.driverFromHeadRotationOffset.v[2], false);
-				setDriverFromHeadTranslationOffset(deviceIndex, profile.driverFromHeadTranslationOffset.v[0], profile.driverFromHeadTranslationOffset.v[1], profile.driverFromHeadTranslationOffset.v[2], false);
-				setDriverRotationOffset(deviceIndex, profile.driverRotationOffset.v[0], profile.driverRotationOffset.v[1], profile.driverRotationOffset.v[2], false);
-				setDriverTranslationOffset(deviceIndex, profile.driverTranslationOffset.v[0], profile.driverTranslationOffset.v[1], profile.driverTranslationOffset.v[2], false);
-				enableDeviceOffsets(deviceIndex, profile.deviceOffsetsEnabled, false);
-				updateDeviceInfo(deviceIndex);
-				emit deviceInfoChanged(deviceIndex);
-			}
 		}
 	}
 
@@ -481,14 +462,6 @@ namespace inputemulator {
 	}
 
 	void DeviceManipulationTabController::setMotionCompensationVelAccMode(unsigned mode, bool notify) {
-		if (motionCompensationVelAccMode != mode) {
-			motionCompensationVelAccMode = mode;
-			vrInputEmulator.setMotionVelAccCompensationMode(mode);
-			saveDeviceManipulationSettings();
-			if (notify) {
-				emit motionCompensationVelAccModeChanged(mode);
-			}
-		}
 	}
 
 	unsigned DeviceManipulationTabController::getRenderModelCount() {
@@ -512,35 +485,6 @@ namespace inputemulator {
 			catch (const std::exception& e) {
 				LOG(ERROR) << "Exception caught while setting step detection: " << e.what();
 			}
-	}
-
-	void DeviceManipulationTabController::useEulerForStep(bool enable) {
-		try {
-			vrInputEmulator.useEulerForStep(enable);
-		}
-		catch (const std::exception& e) {
-			LOG(ERROR) << "Exception caught while setting step detection integration: " << e.what();
-		}
-	}
-
-	void DeviceManipulationTabController::setStepAcceleration(double value) {
-		try {
-			vrInputEmulator.setStepAcceleration((float)value);
-			stepAcceleration = (float)value;
-		}
-		catch (const std::exception& e) {
-			LOG(ERROR) << "Exception caught while setting step acceleration: " << e.what();
-		}
-	}
-
-	void DeviceManipulationTabController::setStepSpeed(double value) {
-		try {
-			vrInputEmulator.setStepSpeed((float)value);
-			stepSpeed = (float)value;
-		}
-		catch (const std::exception& e) {
-			LOG(ERROR) << "Exception caught while setting step speed: " << e.what();
-		}
 	}
 
 	void DeviceManipulationTabController::setStepIntSec(double value) {
@@ -572,22 +516,6 @@ namespace inputemulator {
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();
-		}
-	}
-
-	void DeviceManipulationTabController::enableDeviceOffsets(unsigned index, bool enable, bool notify) {
-		if (index < deviceInfos.size()) {
-			try {
-				vrInputEmulator.enableDeviceOffsets(deviceInfos[index]->openvrId, enable);
-				deviceInfos[index]->deviceOffsetsEnabled = enable;
-			}
-			catch (const std::exception& e) {
-				LOG(ERROR) << "Exception caught while setting translation offset: " << e.what();
-			}
-			if (notify) {
-				updateDeviceInfo(index);
-				emit deviceInfoChanged(index);
-			}
 		}
 	}
 
@@ -699,24 +627,12 @@ namespace inputemulator {
 		}
 	}
 
-	// 0 .. normal, 1 .. disable, 2 .. redirect mode, 3 .. swap mode, 4 ... motion compensation, 5 .. step detection
+	// 0 .. normal, 5 .. step detection
 	void DeviceManipulationTabController::setDeviceMode(unsigned index, unsigned mode, unsigned targedIndex, bool notify) {
 		try {
 			switch (mode) {
 			case 0:
 				vrInputEmulator.setDeviceNormalMode(deviceInfos[index]->openvrId);
-				break;
-			case 1:
-				vrInputEmulator.setDeviceFakeDisconnectedMode(deviceInfos[index]->openvrId);
-				break;
-			case 2:
-				vrInputEmulator.setDeviceRedictMode(deviceInfos[index]->openvrId, deviceInfos[targedIndex]->openvrId);
-				break;
-			case 3:
-				vrInputEmulator.setDeviceSwapMode(deviceInfos[index]->openvrId, deviceInfos[targedIndex]->openvrId);
-				break;
-			case 4:
-				vrInputEmulator.setDeviceMotionCompensationMode(deviceInfos[index]->openvrId, motionCompensationVelAccMode);
 				break;
 			case 5:
 				vrInputEmulator.enableStepDetection(true);
@@ -740,7 +656,7 @@ namespace inputemulator {
 		bool retval = false;
 		if (index < deviceInfos.size()) {
 			try {
-				vrinputemulator::DeviceInfo info;
+				vrwalkinplace::DeviceInfo info;
 				vrInputEmulator.getDeviceInfo(deviceInfos[index]->openvrId, info);
 				if (deviceInfos[index]->deviceMode != info.deviceMode) {
 					deviceInfos[index]->deviceMode = info.deviceMode;
@@ -776,7 +692,7 @@ namespace inputemulator {
 			/*if (identifyThread.joinable()) {
 			identifyThread.join();
 			}
-			identifyThread = std::thread([](uint32_t openvrId, vrinputemulator::VRInputEmulator* vrInputEmulator) {
+			identifyThread = std::thread([](uint32_t openvrId, vrwalkinplace::VRWalkInPlace* vrInputEmulator) {
 			for (unsigned i = 0; i < 50; ++i) {
 			vrInputEmulator->triggerHapticPulse(openvrId, 0, 2000, true);
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -16,7 +16,7 @@
   <mp:PhoneIdentity PhoneProductId="0b8e1a77-919f-447e-8d04-2a1a0012c738" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>OpenVR-InputEmulatorOverlay</DisplayName>
+    <DisplayName>OpenVR-WalkInPlaceOverlay</DisplayName>
     <PublisherDisplayName>Default publisher display name</PublisherDisplayName>
     <Logo>assets/logo_store.png</Logo>
   </Properties>
@@ -32,10 +32,10 @@
 
   <Applications>
     <Application Id="App"
-      Executable="OpenVR-InputEmulatorOverlay.exe"
-      EntryPoint="OpenVR-InputEmulatorOverlay.App">
+      Executable="OpenVR-WalkInPlaceOverlay.exe"
+      EntryPoint="OpenVR-WalkInPlaceOverlay.App">
       <uap:VisualElements
-        DisplayName="OpenVR-InputEmulatorOverlay"
+        DisplayName="OpenVR-WalkInPlaceOverlay"
         Description="Default package description"
         BackgroundColor="green"
         Square150x150Logo="assets/logo_150x150.png"

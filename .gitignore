@@ -4,10 +4,10 @@
 /Release/*
 /Debug/*
 *.cache
-VRInputEmulator.VC.VC.opendb
+VRWalkInPlace.VC.VC.opendb
 *.db
 installer/OpenVR-InputEmulator.exe
-.vs/VRInputEmulator/v14/.suo
+.vs/VRWalkInPlace/v14/.suo
 *.obj
 *.pdb
 *.exe

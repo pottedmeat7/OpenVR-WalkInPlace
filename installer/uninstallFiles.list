@@ -4,7 +4,7 @@ Delete $INSTDIR\LICENSE
 Delete $INSTDIR\Uninstall.exe
 Delete $INSTDIR\logging.conf
 Delete $INSTDIR\manifest.vrmanifest
-Delete $INSTDIR\OpenVR-InputEmulatorOverlay.exe
+Delete $INSTDIR\OpenVR-WalkInPlaceOverlay.exe
 Delete $INSTDIR\openvr_api.dll
 Delete $INSTDIR\qt.conf
 Delete $INSTDIR\Qt5Core.dll

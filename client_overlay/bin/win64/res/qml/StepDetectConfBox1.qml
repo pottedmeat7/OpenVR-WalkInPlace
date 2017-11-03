@@ -5,31 +5,21 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "StepDetectConf"
 
-    property double stepAccel : 0.17
-    property double stepSpeed : 0.002
-    property double stepIntSec : 0.7
+    property double stepIntSec : 0.60
 
-    property double stepAccelStep: 0.001
-    property double stepSpeedStep: 0.001
-    property double stepIntSecStep : 0.02
+    property double stepIntSecStep : 0.01
 
     property int keyboardUIDBase: 200
 
-    property var setStepAcceleration: function(acc) {}
-    property var setStepSpeed: function(speed) {}
     property var setStepIntSec: function(sec) {}
 
     property var updateValues: function() {}
 
     function updateGUI() {
-        stepAccelInputField.text = stepAccel.toFixed(4)
-        stepSpeedInputField.text = stepSpeed.toFixed(4)
         stepIntSecInputField.text = stepIntSec.toFixed(2)
     }
 
     function initVars(){
-        setStepAcceleration(stepAccel)
-        setStepSpeed(stepSpeed)
         setStepIntSec(stepIntSec)
     }
 
@@ -61,23 +51,7 @@ GroupBox {
             columns: 3
 
             MyText {
-                text: "Step Acceleration:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-
-            MyText {
-                text: "Step Speed:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-
-            MyText {
-                text: "Integration Seconds:"
+                text: "Step Time (in seconds):"
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
@@ -86,122 +60,6 @@ GroupBox {
 
         GridLayout {
             columns: 12
-
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyPushButton2 {
-                id: accelMinusButton
-                Layout.preferredWidth: 40
-                text: "-"
-                onClicked: {
-                    var value = stepAccel - stepAccelStep
-                    if (value < stepAccelStep) {
-                        value = stepAccelStep
-                    }
-                    stepAccel = value
-                    setStepAcceleration(value)
-                }
-            }
-
-            MyTextField {
-                id: stepAccelInputField
-                text: "0"
-                keyBoardUID: keyboardUIDBase
-                Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < stepSpeedStep) {
-                            val = stepSpeedStep
-                        } else if (val > 10.0) {
-                            val = 10
-                        }
-                        stepAccel = val
-                        setStepAcceleration(val)
-                    } 
-                }
-            }
-
-            MyPushButton2 {
-                id: accelPlusButton
-                Layout.preferredWidth: 40
-                text: "+"
-                onClicked: {
-                    var value = stepAccel + stepAccelStep
-                    if (value > 10.0) {
-                        value = 10.0
-                    }
-                    stepAccel = value
-                    setStepAcceleration(value)
-                }
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-            
-
-            MyPushButton2 {
-                id: speedMinusButton
-                Layout.preferredWidth: 40
-                text: "-"
-                onClicked: {
-                    var value = stepSpeed - stepSpeedStep
-                    if (value < stepSpeedStep) {
-                        value = stepSpeedStep
-                    }
-                    stepSpeed = value
-                    setStepSpeed(value)
-                }
-            }
-
-            MyTextField {
-                id: stepSpeedInputField
-                text: ""
-                keyBoardUID: keyboardUIDBase
-                Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < stepSpeedStep) {
-                            val = stepSpeedStep
-                        } else if (val > 10.0) {
-                            val = 10
-                        }
-                        stepSpeed = value
-                        setStepSpeed(val)
-                    } 
-                }
-            }
-
-            MyPushButton2 {
-                id: speedPlusButton
-                Layout.preferredWidth: 40
-                text: "+"
-                onClicked: {
-                    var value = stepSpeed + stepSpeedStep
-                    if (value > 10.0) {
-                        value = 10.0
-                    }
-                    stepSpeed = value
-                    setStepSpeed(value)
-                }
-            }
             
             MyText {
                 text: " "
@@ -237,8 +95,8 @@ GroupBox {
                     if (!isNaN(val)) {
                         if (val < stepIntSecStep) {
                             val = stepIntSecStep
-                        } else if (val > 10.0) {
-                            val = 10
+                        } else if (val > 2.0) {
+                            val = 2
                         }
                         stepIntSec = value
                         setStepIntSec(val)
@@ -252,8 +110,8 @@ GroupBox {
                 text: "+"
                 onClicked: {
                     var value = stepIntSec + stepIntSecStep
-                    if (value > 10.0) {
-                        value = 10.0
+                    if (value > 2.0) {
+                        value = 2.0
                     }
                     stepIntSec = value
                     setStepIntSec(value)

@@ -9,19 +9,7 @@ Rectangle {
     width: 1200
     height: 800
 
-    property DeviceManipulationPage devicePage: DeviceManipulationPage {
-        stackView: mainView
-    }
-
-    property DeviceOffsetsPage deviceOffsetsPage:  DeviceOffsetsPage {
-        stackView: mainView
-    }
-
     property StepDetectionPage stepDetectionPage:  StepDetectionPage {
-        stackView: mainView
-    }
-
-    property MotionCompensationPage motionCompensationPage:  MotionCompensationPage {
         stackView: mainView
     }
 

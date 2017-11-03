@@ -3,11 +3,17 @@
   moc_DeviceManipulationTabController.cpp
   moc_overlaycontroller.cpp
   DeviceManipulationTabController.cpp
-src\tabcontrollers\DeviceManipulationTabController.cpp(383): warning C4100: 'includesMotionCompensationSettings': unreferenced formal parameter
+src\tabcontrollers\DeviceManipulationTabController.cpp(411): warning C4100: 'includesMotionCompensationSettings': unreferenced formal parameter
+src\tabcontrollers\DeviceManipulationTabController.cpp(450): warning C4189: 'profile': local variable is initialized but not referenced
+src\tabcontrollers\DeviceManipulationTabController.cpp(464): warning C4100: 'notify': unreferenced formal parameter
+src\tabcontrollers\DeviceManipulationTabController.cpp(464): warning C4100: 'mode': unreferenced formal parameter
+src\tabcontrollers\DeviceManipulationTabController.cpp(631): warning C4100: 'targedIndex': unreferenced formal parameter
   main.cpp
   overlaycontroller.cpp
   Generating Code...
-  libvrinputemulator.lib(vrinputemulator.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1189,5): warning MSB8012: TargetPath(C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlace.exe) does not match the Linker's OutputFile property value (C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlaceOverlay.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1191,5): warning MSB8012: TargetName(OpenVR-WalkInPlace) does not match the Linker's OutputFile property value (OpenVR-WalkInPlaceOverlay). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+  libvrwalkinplace.lib(vrwalkinplace.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
   Generating code
   Finished generating code
-  client_overlay.vcxproj -> C:\Users\leamm\Documents\OpenVR-InputEmulator\client_overlay\bin\win64\OpenVR-InputEmulatorOverlay.exe
+  client_overlay.vcxproj -> C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlace.exe

@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
-import matzman666.inputemulator 1.0
+import pottedmeat7.inputemulator 1.0
 
 MyStackViewPage {
     id: stepDetectionPage
@@ -30,43 +30,16 @@ MyStackViewPage {
             }
         }
 
-        MyToggleButton {
-            id: useEulerForStepToggle
-            text: "Use Integration (no collisions) Vs Teleports (blinks)"
-            Layout.fillWidth: false
-            onCheckedChanged: {
-                DeviceManipulationTabController.useEulerForStep(checked)
-            }
-        }
-
         StepDetectConfBox1 {
-            boxTitle: "Step Speed/Accel"
+            boxTitle: "Step Time"
             id: stepPhysicsBox
             keyboardUIDBase: 200
-            setStepAcceleration: function(acc) {
-                DeviceManipulationTabController.setStepAcceleration(acc)
-                updateGUI()
-            }
-            setStepSpeed: function(speed) {
-                DeviceManipulationTabController.setStepSpeed(speed)
-                updateGUI()
-            }
             setStepIntSec: function(sec) {
                 DeviceManipulationTabController.setStepIntSec(sec)
                 updateGUI()
             }                
             updateValues: function() {
                 var hasChanged = false
-                var value = DeviceManipulationTabController.getStepAcceleration()
-                if (stepAccel != value) {
-                    stepAccel = value
-                    hasChanged = true
-                }
-                value = DeviceManipulationTabController.getStepSpeed()
-                if (stepSpeed != value) {
-                    stepSpeed = value
-                    hasChanged = true
-                }
                 value = DeviceManipulationTabController.getStepIntSec()
                 if (stepIntSec != value) {
                     stepIntSec = value
