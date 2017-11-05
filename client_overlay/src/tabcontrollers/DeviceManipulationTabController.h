@@ -70,7 +70,8 @@ private:
 	float stepIntSec = 0.07;
 
 	vr::HmdVector3d_t hmdThreshold = { 0.3, 0.3, 0.3 };
-	vr::HmdVector3d_t handThreshold = { 0.0, 0.0, 0.0 };
+	float handJogThreshold = 0.4;
+	float handRunThreshold = 0.4;
 
 public:
 	~DeviceManipulationTabController();
@@ -88,12 +89,10 @@ public:
 	Q_INVOKABLE int getDeviceMode(unsigned index);
 	Q_INVOKABLE bool deviceOffsetsEnabled(unsigned index);
 	Q_INVOKABLE float getStepIntSec();
-	Q_INVOKABLE float getHMDXThreshold();
+	Q_INVOKABLE float getHMDXZThreshold();
 	Q_INVOKABLE float getHMDYThreshold();
-	Q_INVOKABLE float getHMDZThreshold();
-	Q_INVOKABLE float getHandXThreshold();
-	Q_INVOKABLE float getHandYThreshold();
-	Q_INVOKABLE float getHandZThreshold();
+	Q_INVOKABLE float getHandJogThreshold();
+	Q_INVOKABLE float getHandRunThreshold();
 	Q_INVOKABLE bool isStepDetectionEnabled();
 	Q_INVOKABLE double getWorldFromDriverRotationOffset(unsigned index, unsigned axis);
 	Q_INVOKABLE double getWorldFromDriverTranslationOffset(unsigned index, unsigned axis);
@@ -119,9 +118,10 @@ public:
 
 public slots:
     void enableStepDetection(bool enable);
-	void setStepIntSec(double value);
-	void setHMDThreshold(double x, double y, double z);
-	void setHandThreshold(double x, double y, double z);
+	void setStepIntSec(float value);
+	void setHMDThreshold(float x, float y, float z);
+	void setHandJogThreshold(float jogThreshold);
+	void setHandRunThreshold(float runThreshold);
 	void setWorldFromDriverRotationOffset(unsigned index, double x, double y, double z, bool notify = true);
 	void setWorldFromDriverTranslationOffset(unsigned index, double yaw, double pitch, double roll, bool notify = true);
 	void setDriverFromHeadRotationOffset(unsigned index, double x, double y, double z, bool notify = true);

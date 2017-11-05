@@ -276,7 +276,8 @@ struct Request_DeviceManipulation_StepDetectionMode {
 	uint32_t useEulerForStep;
 	uint32_t stepDetectOperation;
 	vr::HmdVector3d_t hmdThreshold;
-	vr::HmdVector3d_t handThreshold;
+	float handJogThreshold;
+	float handRunThreshold;
 	float stepAcceleration;
 	float stepSpeed;
 	float stepIntSec;

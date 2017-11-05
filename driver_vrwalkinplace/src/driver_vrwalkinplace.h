@@ -88,7 +88,6 @@ namespace vrwalkinplace {
 
 			vr::TrackedDevicePose_t pose;
 
-
 		public:
 			OpenvrDeviceManipulationInfo() {}
 			OpenvrDeviceManipulationInfo(vr::ITrackedDeviceServerDriver* driver, vr::ETrackedDeviceClass eDeviceClass, uint32_t openvrId, vr::IVRServerDriverHost* driverHost)
@@ -227,11 +226,11 @@ namespace vrwalkinplace {
 			void enableStepDetection(bool enable);
 			void setStepIntSec(float value);
 			void setHMDThreshold(vr::HmdVector3d_t value);
-			void setHandThreshold(vr::HmdVector3d_t value);
+			void setHandJogThreshold(float value);
+			void setHandRunThreshold(float value);
 			void setStepPoseDetected(bool enable);
 			bool isStepDetectionEnabled();
 			bool _applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrDeviceManipulationInfo* deviceInfo, vr::HmdQuaternion_t stepUpDir);
-
 
 		private:
 			static CServerDriver* singleton;
@@ -254,7 +253,9 @@ namespace vrwalkinplace {
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
-			int _hasUnTouchedStepAxis = 0;
+			int _hasUnTouchedStepAxis = 0;			
+			float _handJogThreshold = 0.4;
+			float _handRunThreshold = 1.7;
 			double _timeLastStepTaken = 0.0;
 			double _timeLastTick = 0.0;
 			double _stepIntegrateSteps = 0.0;
@@ -264,6 +265,11 @@ namespace vrwalkinplace {
 			vr::HmdVector3d_t _handsPointDir = { 0.0, 0.0, 0.0 };
 			vr::HmdVector3d_t _hmdThreshold = { 0.3, 0.3, 0.3 };
 			vr::HmdVector3d_t _handThreshold = { 0.0, 0.0, 0.0 };
+
+
+			bool isTakingStep(double * vel, vr::HmdVector3d_t threshold);
+			bool isJoggingStep(double * vel);
+			bool isRunningStep(double * vel);
 
 			//// function hooks related ////
 

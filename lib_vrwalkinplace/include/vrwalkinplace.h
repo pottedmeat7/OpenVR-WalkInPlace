@@ -170,7 +170,8 @@ public:
 	void enableStepDetection(bool enable, bool modal = true);
 	void setStepIntSec(float value, bool modal = true);
 	void setHMDThreshold(const vr::HmdVector3d_t& value, bool modal = true);
-	void setHandThreshold(const vr::HmdVector3d_t& value, bool modal = true);
+	void setHandJogThreshold(float value, bool modal = true);
+	void setHandRunThreshold(float value, bool modal = true);
 
 	void setWorldFromDriverRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t& value, bool modal = true);
 	void setWorldFromDriverTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t& value, bool modal = true);

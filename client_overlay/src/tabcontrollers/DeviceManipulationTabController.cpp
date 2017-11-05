@@ -17,8 +17,8 @@ namespace inputemulator {
 
 
 	void DeviceManipulationTabController::initStage1() {
-		reloadDeviceManipulationProfiles();
-		reloadDeviceManipulationSettings();
+		//reloadDeviceManipulationProfiles();
+		//reloadDeviceManipulationSettings();
 	}
 
 
@@ -44,20 +44,7 @@ namespace inputemulator {
 							info->serial = std::string("<unknown serial>");
 							LOG(ERROR) << "Could not get serial of device " << id;
 						}
-
-						try {
-							vrwalkinplace::DeviceInfo info2;
-							vrInputEmulator.getDeviceInfo(info->openvrId, info2);
-							info->deviceMode = info2.deviceMode;
-							info->deviceOffsetsEnabled = info2.offsetsEnabled;
-							if (info->deviceMode == 2 || info->deviceMode == 3) {
-								info->deviceStatus = info2.redirectSuspended ? 1 : 0;
-							}
-						}
-						catch (std::exception& e) {
-							LOG(ERROR) << "Exception caught while getting device info: " << e.what();
-						}
-
+						info->deviceMode = 0;
 						deviceInfos.push_back(info);
 						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 					}
@@ -207,7 +194,7 @@ namespace inputemulator {
 		return stepIntSec;
 	}
 
-	float DeviceManipulationTabController::getHMDXThreshold() {
+	float DeviceManipulationTabController::getHMDXZThreshold() {
 		return hmdThreshold.v[0];
 	}
 
@@ -215,20 +202,12 @@ namespace inputemulator {
 		return hmdThreshold.v[1];
 	}
 
-	float DeviceManipulationTabController::getHMDZThreshold() {
-		return hmdThreshold.v[2];
+	float DeviceManipulationTabController::getHandJogThreshold() {
+		return handJogThreshold;
 	}
 
-	float DeviceManipulationTabController::getHandXThreshold() {
-		return handThreshold.v[0];
-	}
-
-	float DeviceManipulationTabController::getHandYThreshold() {
-		return handThreshold.v[1];
-	}
-
-	float DeviceManipulationTabController::getHandZThreshold() {
-		return handThreshold.v[2];
+	float DeviceManipulationTabController::getHandRunThreshold() {
+		return handRunThreshold;
 	}
 
 	bool DeviceManipulationTabController::deviceOffsetsEnabled(unsigned index) {
@@ -487,19 +466,19 @@ namespace inputemulator {
 			}
 	}
 
-	void DeviceManipulationTabController::setStepIntSec(double value) {
+	void DeviceManipulationTabController::setStepIntSec(float value) {
 		try {
-			vrInputEmulator.setStepIntSec((float)value);
-			stepIntSec = (float)value;
+			vrInputEmulator.setStepIntSec(value);
+			stepIntSec = value;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting step integration second: " << e.what();
 		}
 	}
 
-	void DeviceManipulationTabController::setHMDThreshold(double x, double y, double z) {
+	void DeviceManipulationTabController::setHMDThreshold(float x, float y, float z) {
 		try {
-			vr::HmdVector3d_t value = { (float)x, (float)y, (float)z };
+			vr::HmdVector3d_t value = { x, y, z };
 			vrInputEmulator.setHMDThreshold(value);
 			hmdThreshold = value;
 		}
@@ -508,11 +487,20 @@ namespace inputemulator {
 		}
 	}
 
-	void DeviceManipulationTabController::setHandThreshold(double x, double y, double z) {
+	void DeviceManipulationTabController::setHandJogThreshold(float jogThreshold) {
 		try {
-			vr::HmdVector3d_t value = { (float)x, (float)y, (float)z };
-			vrInputEmulator.setHandThreshold(value);
-			handThreshold = value;
+			vrInputEmulator.setHandJogThreshold(jogThreshold);
+			handJogThreshold = jogThreshold;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();
+		}
+	}
+
+	void DeviceManipulationTabController::setHandRunThreshold(float runThreshold) {
+		try {
+			vrInputEmulator.setHandRunThreshold(runThreshold);
+			handRunThreshold = runThreshold;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();

@@ -29,46 +29,25 @@ MyStackViewPage {
                 DeviceManipulationTabController.enableStepDetection(checked)
             }
         }
-
-        StepDetectConfBox1 {
-            boxTitle: "Step Time"
-            id: stepPhysicsBox
-            keyboardUIDBase: 200
-            setStepIntSec: function(sec) {
-                DeviceManipulationTabController.setStepIntSec(sec)
-                updateGUI()
-            }                
-            updateValues: function() {
-                updateGUI()
-            }
-        }
         
         StepDetectConfBox2 {
             boxTitle: "Step Threshold / Accuracy"
             id: stepThresholdBox
             keyboardUIDBase: 200
-            setHMDX: function(x) {
-                DeviceManipulationTabController.setHMDThreshold(x,hmdY,hmdZ)
+            setHMDXZ: function(xz) {
+                DeviceManipulationTabController.setHMDThreshold(xz,hmdY,xz)
                 updateGUI()    
             }
             setHMDY: function(y) {
-                DeviceManipulationTabController.setHMDThreshold(hmdX,y,hmdZ)
+                DeviceManipulationTabController.setHMDThreshold(hmdXZ,y,hmdXZ)
                 updateGUI()    
             }
-            setHMDZ: function(z) {
-                DeviceManipulationTabController.setHMDThreshold(hmdX,hmdY,z)
+            setHandJog: function(jog) {
+                DeviceManipulationTabController.setHandJogThreshold(jog)
                 updateGUI()    
             }
-            setHandX: function(x) {
-                DeviceManipulationTabController.setHandThreshold(x,handY,handZ)
-                updateGUI()    
-            }
-            setHandY: function(y) {
-                DeviceManipulationTabController.setHandThreshold(handX,y,handZ)
-                updateGUI()    
-            }
-            setHandZ: function(z) {
-                DeviceManipulationTabController.setHandThreshold(handX,handY,z)
+            setHandRun: function(run) {
+                DeviceManipulationTabController.setHandRunThreshold(run)
                 updateGUI()    
             }
             updateValues: function() {

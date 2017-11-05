@@ -655,7 +655,11 @@ namespace vrwalkinplace {
 										}
 										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 6)
 										{
-											serverDriver->setHandThreshold(message.msg.dm_StepDetectionMode.handThreshold);
+											serverDriver->setHandJogThreshold(message.msg.dm_StepDetectionMode.handJogThreshold);
+										}
+										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 7)
+										{
+											serverDriver->setHandRunThreshold(message.msg.dm_StepDetectionMode.handRunThreshold);
 										}
 										resp.status = ipc::ReplyStatus::Ok;
 									}

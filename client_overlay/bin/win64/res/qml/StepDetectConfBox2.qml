@@ -5,41 +5,34 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
-    property double hmdX : 0.3
-    property double hmdY : 0.3
-    property double hmdZ : 0.3
-    property double handX : 0.0
-    property double handY : 0.0
-    property double handZ : 0.0
+    property double hmdXZ : 0.17
+    property double hmdY : 0.19
+    property double handWalk : 0.02
+    property double handJog : 0.4
+    property double handRun : 1.7
 
     property double thresholdStep: 0.01
 
     property int keyboardUIDBase: 200
 
-    property var setHMDX: function(x) {}
+    property var setHMDXZ: function(x) {}
     property var setHMDY: function(y) {}
-    property var setHMDZ: function(z) {}
-    property var setHandX: function(x) {}
-    property var setHandY: function(y) {}
-    property var setHandZ: function(z) {}
+    property var setHandJog: function(x) {}
+    property var setHandRun: function(y) {}
     property var updateValues: function() {}
 
     function updateGUI() {
-        hmdXInputField.text = hmdX.toFixed(2)
+        hmdXZInputFiel.text = hmdXZ.toFixed(2)
         hmdYInputField.text = hmdY.toFixed(2)
-        hmdZInputField.text = hmdZ.toFixed(2)
-        handXInputField.text = handX.toFixed(2)
-        handYInputField.text = handY.toFixed(2)
-        handZInputField.text = handZ.toFixed(2)
+        handJogInputField.text = handJog.toFixed(2)
+        handRunInputField.text = handRun.toFixed(2)
     }
 
     function initVars(){
-        setHMDX(0.3)
-        setHMDY(0.3)
-        setHMDZ(0.3)
-        setHandX(0.0)
-        setHandY(0.0)
-        setHandZ(0.0)
+        setHMDY(0.2)
+        setHMDXZ(0.3)
+        setHandJog(0.0)
+        setHandRun(0.0)
     }
 
     Layout.fillWidth: true
@@ -70,93 +63,30 @@ GroupBox {
             columns: 3
 
             MyText {
-                text: "Step HMD X Velo:"
+                text: "Step HMD Y:"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: "Step HMD XZ:"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
             }
 
-            MyText {
-                text: "Step HMD Y Velo:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: "Step HMD Z Velo:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
         }
 
         GridLayout {
             columns: 12
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyPushButton2 {
-                id: hmdXMinusButton
-                Layout.preferredWidth: 40
-                text: "-"
-                onClicked: {
-                    var value = hmdX - thresholdStep
-                    if (value < thresholdStep) {
-                        value = thresholdStep
-                    }
-                    hmdX = value
-                    setHMDX(value)
-                }
-            }
-
-            MyTextField {
-                id: hmdXInputField
-                text: "0.3"
-                keyBoardUID: keyboardUIDBase
-                Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < thresholdStep) {
-                            val = thresholdStep
-                        } else if (val > 3.0) {
-                            val = 3.0
-                        }
-                        hmdX = val
-                        setHMDX(val)
-                    } 
-                }
-            }
-
-            MyPushButton2 {
-                id: hmdXPlusButton
-                Layout.preferredWidth: 40
-                text: "+"
-                onClicked: {
-                    var value = hmdX + thresholdStep
-                    if (value > 3.0) {
-                        value = 3.0
-                    }
-                    hmdX = value
-                    setHMDX(value)
-                }
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
 
             MyPushButton2 {
                 id: hmdYMinusButton
@@ -174,7 +104,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdYInputField
-                text: "0.3"
+                text: "0.2"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -216,21 +146,21 @@ GroupBox {
             }
 
             MyPushButton2 {
-                id: hmdZMinusButton
+                id: hmdXZMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    var value = hmdZ - thresholdStep
+                    var value = hmdXZ - thresholdStep
                     if (value < thresholdStep) {
                         value = thresholdStep
                     }
-                    hmdZ = value
-                    setHMDZ(value)
+                    hmdXZ = value
+                    setHMDX(value)
                 }
             }
 
             MyTextField {
-                id: hmdZInputField
+                id: hmdXZInputField
                 text: "0.3"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
@@ -245,49 +175,116 @@ GroupBox {
                         } else if (val > 3.0) {
                             val = 3.0
                         }
-                        hmdZ = val
-                        setHMDZ(val)
+                        hmdXZ = val
+                        setHMDX(val)
                     } 
                 }
             }
 
             MyPushButton2 {
-                id: hmdZPlusButton
+                id: hmdXZPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    var value = hmdZ + thresholdStep
+                    var value = hmdXZ + thresholdStep
                     if (value > 3.0) {
                         value = 3.0
                     }
-                    hmdZ = value
-                    setHMDZ(value)
+                    hmdXZ = value
+                    setHMDX(value)
                 }
+            }
+
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+            
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
             }
         }
 
         GridLayout {
-            columns: 3
+            columns: 9
 
             MyText {
-                text: "Step Hand X Velo:"
+                text: "Hand Walk Movement:"
+                Layout.fillWidth: true
                 font.strikeout: true
+                horizontalAlignment: Text.AlignLeft
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
             }
 
             MyText {
-                text: "Step Hand Y Velo:"
-                font.strikeout: true
+                text: " "
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
             }
 
             MyText {
-                text: "Step Hand Z Velo:"
-                font.strikeout: true
+                text: "Hand Jog Movement:"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: "Hand Run Movement:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 12
+            }
+
+            MyText {
+                text: " "
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 12
@@ -297,30 +294,22 @@ GroupBox {
         GridLayout {
             columns: 12
 
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
             MyPushButton2 {
-                id: handXMinusButton
+                id: handWalkMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    var value = handX - thresholdStep
+                    var value = handWalk - thresholdStep
                     if (value < thresholdStep) {
                         value = thresholdStep
                     }
-                    handX = value
-                    setHandX(value)
+                    handWalk = value
                 }
             }
 
             MyTextField {
-                id: handXInputField
-                text: "0.0"
+                id: handWalkInputField
+                text: "0.02"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -334,23 +323,21 @@ GroupBox {
                         } else if (val > 3.0) {
                             val = 3.0
                         }
-                        handX = val
-                        setHandX(val)
+                        handWalk = val
                     } 
                 }
             }
 
             MyPushButton2 {
-                id: handXPlusButton
+                id: handWalkPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    var value = handX + thresholdStep
+                    var value = handJog + thresholdStep
                     if (value > 3.0) {
                         value = 3.0
                     }
-                    handX = value
-                    setHandX(value)
+                    handJog = value
                 }
             }
 
@@ -362,22 +349,22 @@ GroupBox {
             }
 
             MyPushButton2 {
-                id: handYMinusButton
+                id: handJogMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    var value = handY - thresholdStep
+                    var value = handJog - thresholdStep
                     if (value < thresholdStep) {
                         value = thresholdStep
                     }
-                    handY = value
-                    setHandY(value)
+                    handJog = value
+                    setHandJog(value)
                 }
             }
 
             MyTextField {
-                id: handYInputField
-                text: "0.0"
+                id: handJogInputField
+                text: "0.4"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -391,23 +378,23 @@ GroupBox {
                         } else if (val > 3.0) {
                             val = 3.0
                         }
-                        handY = val
-                        setHandY(val)
+                        handJog = val
+                        setHandJog(val)
                     } 
                 }
             }
 
             MyPushButton2 {
-                id: handYPlusButton
+                id: handJogPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    var value = handY + thresholdStep
+                    var value = handJog + thresholdStep
                     if (value > 3.0) {
                         value = 3.0
                     }
-                    handY = value
-                    setHandY(value)
+                    handJog = value
+                    setHandJog(value)
                 }
             }
 
@@ -419,22 +406,22 @@ GroupBox {
             }
 
             MyPushButton2 {
-                id: handZMinusButton
+                id: handRunMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    var value = handZ - thresholdStep
+                    var value = handRun - thresholdStep
                     if (value < thresholdStep) {
                         value = thresholdStep
                     }
-                    handZ = value
-                    setHandZ(value)
+                    handRun = value
+                    setHandRun(value)
                 }
             }
 
             MyTextField {
-                id: handZInputField
-                text: "0.0"
+                id: handRunInputField
+                text: "1.7"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -445,28 +432,29 @@ GroupBox {
                     if (!isNaN(val)) {
                         if (val < thresholdStep) {
                             val = thresholdStep
-                        } else if (val > 3.0) {
-                            val = 3.0
+                        } else if (val > 5.0) {
+                            val = 5.0
                         }
-                        handZ = val
-                        setHandZ(val)
+                        handRun = val
+                        setHandRun(val)
                     } 
                 }
             }
 
             MyPushButton2 {
-                id: handZPlusButton
+                id: handRunPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    var value = handZ + thresholdStep
-                    if (value > 3.0) {
-                        value = 3.0
+                    var value = handRun + thresholdStep
+                    if (value > 5.0) {
+                        value = 5.0
                     }
-                    handZ = value
-                    setHandZ(value)
+                    handRun = value
+                    setHandRun(value)
                 }
             }
+
         }
     }
 }

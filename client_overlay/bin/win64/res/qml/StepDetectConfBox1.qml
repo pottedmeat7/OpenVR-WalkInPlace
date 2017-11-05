@@ -60,15 +60,8 @@ GroupBox {
         }
 
         GridLayout {
-            columns: 12
+            columns: 3
             
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignLeft
-                Layout.rightMargin: 12
-            }
-
             MyPushButton2 {
                 id: intSecMinusButton
                 Layout.preferredWidth: 40

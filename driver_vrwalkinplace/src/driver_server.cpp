@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 
+
 namespace vrwalkinplace {
 	namespace driver {
 
@@ -502,17 +503,18 @@ namespace vrwalkinplace {
 
 		void CServerDriver::setStepIntSec(float value) {
 			_stepIntegrateStepLimit = (double)value;
-			//LOG(INFO) << "set step speed to " << value;
 		}
 
 		void CServerDriver::setHMDThreshold(vr::HmdVector3d_t value) {
 			_hmdThreshold = value;
-			//LOG(INFO) << "set step hmd threshold to ";
 		}
 
-		void CServerDriver::setHandThreshold(vr::HmdVector3d_t value) {
-			_handThreshold = value;
-			//LOG(INFO) << "set step hand threshold to ";
+		void CServerDriver::setHandJogThreshold(float value) {
+			_handJogThreshold = value;
+		}
+
+		void CServerDriver::setHandRunThreshold(float value) {
+			_handJogThreshold = value;
 		}
 
 		void CServerDriver::setStepPoseDetected(bool enable) {
@@ -520,7 +522,7 @@ namespace vrwalkinplace {
 		}
 
 		bool CServerDriver::isStepDetectionEnabled() {
-			return _stepPoseDetectEnabled;
+			return this->_stepPoseDetectEnabled;
 		}
 
 		bool CServerDriver::_applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrDeviceManipulationInfo* deviceInfo, vr::HmdQuaternion_t stepUpDir) {
@@ -536,9 +538,9 @@ namespace vrwalkinplace {
 					double yAcc = poseWorldVelo.v[1];
 					double zAcc = poseWorldVelo.v[2];*/
 					//auto poseWorldRot = pose.qRotation;
-					double xAcc = pose.vecVelocity[0];
-					double yAcc = pose.vecVelocity[1];
-					double zAcc = pose.vecVelocity[2];
+					//double xAcc = pose.vecVelocity[0];
+					//double yAcc = pose.vecVelocity[1];
+					//double zAcc = pose.vecVelocity[2];
 
 					/*double zsqr = poseWorldRot.z * poseWorldRot.z;
 
@@ -560,17 +562,9 @@ namespace vrwalkinplace {
 					*/
 					switch (deviceInfo->deviceClass()) {
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-						//LOG(INFO) << "HMD Step: x " << xAcc << " y " << yAcc << " z " << zAcc << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
-						if ((std::abs(zAcc) < _hmdThreshold.v[2]) &&
-							(std::abs(xAcc) < _hmdThreshold.v[0]) &&
-							((yAcc > _hmdThreshold.v[1] && (yAcc > xAcc && yAcc > zAcc))
-								|| (yAcc < -1 * _hmdThreshold.v[1] && (yAcc < xAcc && yAcc < zAcc)))) {
-							if (yAcc > 0) {
-								_openvrDeviceStepPoseTracker[0] = 2;
-							}
-							else {
-								_openvrDeviceStepPoseTracker[0] = -2;
-							}
+						//LOG(INFO) << "HMD Step: x " << pose.vecVelocity[0] << " y " << pose.vecVelocity[1] << " z " << pose.vecVelocity[2];// << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
+						if ( isTakingStep( pose.vecVelocity, _hmdThreshold) ) {
+							_openvrDeviceStepPoseTracker[0] = -1;
 							_openvrDeviceStepPoseTracker[1] = -1;
 							_openvrDeviceStepPoseTracker[2] = -1;
 						}
@@ -581,36 +575,7 @@ namespace vrwalkinplace {
 						}
 						break;
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-						/*//LOG(INFO) << "HAND in applystep " << deviceInfo->openvrId();
-						//LOG(INFO) << "Hand Step: x " << xAcc << " y " << yAcc << " z " << zAcc << " device " << deviceInfo->openvrId();
-						if ((std::abs(zAcc) < _handThreshold.v[2]) &&
-							(std::abs(xAcc) < _handThreshold.v[0]) &&
-							((yAcc > _handThreshold.v[1] && (yAcc > xAcc && yAcc > zAcc))
-								|| (yAcc < -1 * _handThreshold.v[1] && (yAcc < xAcc && yAcc < zAcc)))) {
-							//_openvrDeviceStepPoseTracker[0] = 2;
-							if (_openvrDeviceStepPoseTracker[1] == 0) {
-								if (yAcc > 0) {
-									_openvrDeviceStepPoseTracker[1] = 2;
-								}
-								else {
-									_openvrDeviceStepPoseTracker[1] = -2;
-								}
-							}
-							else if (_openvrDeviceStepPoseTracker[2] == 0) {
-								//_openvrDeviceStepPoseTracker[1] = 2;
-								if (yAcc > 0) {
-									_openvrDeviceStepPoseTracker[2] = 2;
-								}
-								else {
-									_openvrDeviceStepPoseTracker[2] = -2;
-								}
-							}
-						}
-						else {
-								_openvrDeviceStepPoseTracker[0] = 0;
-								_openvrDeviceStepPoseTracker[1] = 0;
-								_openvrDeviceStepPoseTracker[2] = 0;
-						}*/
+						//LOG(INFO) << "CONTROLLER MAG VEL: " << pose.vecVelocity[0] + pose.vecVelocity[1] + pose.vecVelocity[2];
 						break;
 					default:
 						break;
@@ -639,8 +604,14 @@ namespace vrwalkinplace {
 					vr::VRControllerAxis_t axisState;
 					axisState.x = 0;
 					axisState.y = 0.5;
+					if (isJoggingStep(pose.vecVelocity)) {
+						axisState.y = 1.0;
+					}
 					driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
 					this->_hasUnTouchedStepAxis = 0;
+					if (isRunningStep(pose.vecVelocity)) {
+						driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+					}
 				}
 				else {
 					if (this->_hasUnTouchedStepAxis < 50) {
@@ -655,6 +626,7 @@ namespace vrwalkinplace {
 						else {
 							driverHost = vr::VRServerDriverHost();
 						}
+						driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 						driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
 						driverHost->TrackedDeviceButtonUntouched(deviceId, vr::k_EButton_Axis0, 0);
 						this->_hasUnTouchedStepAxis++;
@@ -670,23 +642,24 @@ namespace vrwalkinplace {
 						_openvrDeviceStepPoseTracker[1] = 0;
 						_openvrDeviceStepPoseTracker[2] = 0;
 					}
-					else if (_openvrDeviceStepPoseTracker[0] != 0
-						|| deviceInfo->deviceClass() == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
+					else {
 						switch (deviceInfo->deviceClass()) {
 						case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-							if (_openvrDeviceStepPoseTracker[1] < 0) {
-								_openvrDeviceStepPoseTracker[1] = deviceInfo->openvrId();
+							if (_openvrDeviceStepPoseTracker[0] != 0) {
+								if (_openvrDeviceStepPoseTracker[1] < 0) {
+									_openvrDeviceStepPoseTracker[1] = deviceInfo->openvrId();
+								}
+								else if (_openvrDeviceStepPoseTracker[2] < 0) {
+									_openvrDeviceStepPoseTracker[2] = deviceInfo->openvrId();
+									_openvrDeviceStepPoseTracker[0] = 0;
+								}
 							}
-							else if (_openvrDeviceStepPoseTracker[2] < 0) {
-								_openvrDeviceStepPoseTracker[2] = deviceInfo->openvrId();
-								_openvrDeviceStepPoseTracker[0] = 0;
+							else if (isJoggingStep(pose.vecVelocity) || isRunningStep(pose.vecVelocity)) {
+								_stepIntegrateSteps = 0;
 							}
 							break;
 						case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-							if ((std::abs(pose.vecVelocity[2]) < _hmdThreshold.v[2]) &&
-								(std::abs(pose.vecVelocity[0]) < _hmdThreshold.v[0]) &&
-								((pose.vecVelocity[1] > _hmdThreshold.v[1] && (pose.vecVelocity[1] > pose.vecVelocity[0] && pose.vecVelocity[1] > pose.vecVelocity[2]))
-									|| (pose.vecVelocity[1] < -1 * _hmdThreshold.v[1] && (pose.vecVelocity[1] < pose.vecVelocity[0] && pose.vecVelocity[1] < pose.vecVelocity[2])))) {
+							if ( isTakingStep(pose.vecVelocity, _hmdThreshold) ) {
 								_stepIntegrateSteps = 0;
 							}
 							break;
@@ -701,6 +674,24 @@ namespace vrwalkinplace {
 			}
 
 			return false;
+		}
+
+		bool CServerDriver::isTakingStep(double * vel, vr::HmdVector3d_t threshold) {
+			return ((std::abs(vel[2]) < threshold.v[2]) &&
+				(std::abs(vel[0]) < threshold.v[0]) &&
+				((vel[1] > threshold.v[1] && (vel[1] > vel[0] && vel[1] > vel[2]))
+					|| (vel[1] < -1 * threshold.v[1] && (vel[1] < vel[0] && vel[1] < vel[2]))));
+		}
+
+		bool CServerDriver::isJoggingStep(double * vel) {
+			float magVel = (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+			return ( magVel > _handJogThreshold);
+		}
+
+
+		bool CServerDriver::isRunningStep(double * vel) {
+			float magVel = (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+			return (magVel > _handRunThreshold);
 		}
 
 	} // end namespace driver

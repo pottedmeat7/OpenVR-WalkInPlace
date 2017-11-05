@@ -37,27 +37,32 @@ namespace vrwalkinplace {
 
 		void OpenvrDeviceManipulationInfo::handleButtonEvent(vr::IVRServerDriverHost* driver, void* origFunc, uint32_t& unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			auto serverDriver = CServerDriver::getInstance();
-			if (serverDriver) {
-				if (!serverDriver->isStepDetectionEnabled() || (eButtonId != vr::k_EButton_A && eventType != ButtonEventType::ButtonTouched && eventType != ButtonEventType::ButtonUntouched)) {
-					vr::EVRButtonId button = eButtonId;
-					getButtonMapping(eButtonId, button);
-					((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
+			if (false) {
+				auto serverDriver = CServerDriver::getInstance();
+				if (serverDriver) {
+					if (!serverDriver->isStepDetectionEnabled()
+						|| (eButtonId != vr::k_EButton_Axis0)) {
+						vr::EVRButtonId button = eButtonId;
+						//getButtonMapping(eButtonId, button);
+						((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
+					}
 				}
 			}
 			else {
 				vr::EVRButtonId button = eButtonId;
-				getButtonMapping(eButtonId, button);
+				//getButtonMapping(eButtonId, button);
 				((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
 			}
 		}
 
 		void OpenvrDeviceManipulationInfo::handleAxisEvent(vr::IVRServerDriverHost* driver, _DetourTrackedDeviceAxisUpdated_t origFunc, uint32_t& unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState) {
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			auto serverDriver = CServerDriver::getInstance();
-			if (serverDriver) {
-				if (!serverDriver->isStepDetectionEnabled() || unWhichAxis != vr::k_EButton_Axis0) {
-					origFunc(driver, unWhichDevice, unWhichAxis, axisState);
+			if (false) {
+				auto serverDriver = CServerDriver::getInstance();
+				if (serverDriver) {
+					if (!serverDriver->isStepDetectionEnabled() || unWhichAxis != vr::k_EButton_Axis0) {
+						origFunc(driver, unWhichDevice, unWhichAxis, axisState);
+					}
 				}
 			}
 			else {
