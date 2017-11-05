@@ -67,10 +67,10 @@ private:
 
 	std::thread identifyThread;
 
-	float stepIntSec = 4.5;
+	float stepIntSec = 0.07;
 
-	vr::HmdVector3d_t hmdThreshold = { 0.07, 0.07, 0.07 };
-	vr::HmdVector3d_t handThreshold = { 0.15, 0.15, 0.15 };
+	vr::HmdVector3d_t hmdThreshold = { 0.3, 0.3, 0.3 };
+	vr::HmdVector3d_t handThreshold = { 0.0, 0.0, 0.0 };
 
 public:
 	~DeviceManipulationTabController();

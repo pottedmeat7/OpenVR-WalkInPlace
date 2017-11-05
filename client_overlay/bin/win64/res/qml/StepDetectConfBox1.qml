@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "StepDetectConf"
 
-    property double stepIntSec : 0.60
+    property double stepIntSec : 0.07
 
     property double stepIntSecStep : 0.01
 
@@ -20,7 +20,7 @@ GroupBox {
     }
 
     function initVars(){
-        setStepIntSec(stepIntSec)
+        setStepIntSec(0.7)
     }
 
     Layout.fillWidth: true
@@ -51,9 +51,10 @@ GroupBox {
             columns: 3
 
             MyText {
-                text: "Step Time (in seconds):"
+                text: "Step Time (in seconds):"                
+                font.strikeout: true
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
+                horizontalAlignment: Text.AlignLeft
                 Layout.rightMargin: 12
             }
         }
@@ -64,7 +65,7 @@ GroupBox {
             MyText {
                 text: " "
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
+                horizontalAlignment: Text.AlignLeft
                 Layout.rightMargin: 12
             }
 

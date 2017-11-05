@@ -28,7 +28,6 @@ namespace vrwalkinplace {
 					else {
 						vr::HmdQuaternion_t stepUpDir = { 1.0, 0.0, 0.0, 0.0 };
 						serverDriver->_applyStepPoseDetect(newPose, this, stepUpDir);
-
 					}
 				}
 			}
@@ -38,7 +37,15 @@ namespace vrwalkinplace {
 
 		void OpenvrDeviceManipulationInfo::handleButtonEvent(vr::IVRServerDriverHost* driver, void* origFunc, uint32_t& unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			if (m_deviceMode != 5 || eButtonId != vr::k_EButton_A) {
+			auto serverDriver = CServerDriver::getInstance();
+			if (serverDriver) {
+				if (!serverDriver->isStepDetectionEnabled() || (eButtonId != vr::k_EButton_A && eventType != ButtonEventType::ButtonTouched && eventType != ButtonEventType::ButtonUntouched)) {
+					vr::EVRButtonId button = eButtonId;
+					getButtonMapping(eButtonId, button);
+					((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
+				}
+			}
+			else {
 				vr::EVRButtonId button = eButtonId;
 				getButtonMapping(eButtonId, button);
 				((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
@@ -47,7 +54,13 @@ namespace vrwalkinplace {
 
 		void OpenvrDeviceManipulationInfo::handleAxisEvent(vr::IVRServerDriverHost* driver, _DetourTrackedDeviceAxisUpdated_t origFunc, uint32_t& unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState) {
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			if (m_deviceMode != 5 || unWhichAxis != vr::k_EButton_Axis0) {
+			auto serverDriver = CServerDriver::getInstance();
+			if (serverDriver) {
+				if (!serverDriver->isStepDetectionEnabled() || unWhichAxis != vr::k_EButton_Axis0) {
+					origFunc(driver, unWhichDevice, unWhichAxis, axisState);
+				}
+			}
+			else {
 				origFunc(driver, unWhichDevice, unWhichAxis, axisState);
 			}
 		}
@@ -99,11 +112,10 @@ namespace vrwalkinplace {
 
 		int OpenvrDeviceManipulationInfo::setStepDetectionMode() {
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			auto res = _disableOldMode(5);
+			auto res = _disableOldMode(6);
 			auto serverDriver = CServerDriver::getInstance();
 			if (res == 0 && serverDriver) {
 				_disconnectedMsgSend = false;
-				serverDriver->enableStepDetection(true);
 				m_deviceMode = 6;
 			}
 			return 0;

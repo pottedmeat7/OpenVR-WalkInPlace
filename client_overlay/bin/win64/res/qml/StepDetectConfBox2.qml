@@ -6,11 +6,11 @@ GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
     property double hmdX : 0.3
-    property double hmdY : 0.37
+    property double hmdY : 0.3
     property double hmdZ : 0.3
-    property double handX : 0.15
-    property double handY : 0.15
-    property double handZ : 0.15
+    property double handX : 0.0
+    property double handY : 0.0
+    property double handZ : 0.0
 
     property double thresholdStep: 0.01
 
@@ -34,12 +34,12 @@ GroupBox {
     }
 
     function initVars(){
-        setHMDX(hmdX)
-        setHMDY(hmdY)
-        setHMDZ(hmdZ)
-        setHandX(handX)
-        setHandY(handY)
-        setHandZ(handZ)
+        setHMDX(0.3)
+        setHMDY(0.3)
+        setHMDZ(0.3)
+        setHandX(0.0)
+        setHandY(0.0)
+        setHandZ(0.0)
     }
 
     Layout.fillWidth: true
@@ -117,7 +117,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdXInputField
-                text: "0.1"
+                text: "0.3"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -174,7 +174,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdYInputField
-                text: "0.15"
+                text: "0.3"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -231,7 +231,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdZInputField
-                text: "0.1"
+                text: "0.3"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -320,7 +320,7 @@ GroupBox {
 
             MyTextField {
                 id: handXInputField
-                text: "0.2"
+                text: "0.0"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -377,7 +377,7 @@ GroupBox {
 
             MyTextField {
                 id: handYInputField
-                text: "0.14"
+                text: "0.0"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -434,7 +434,7 @@ GroupBox {
 
             MyTextField {
                 id: handZInputField
-                text: "0.2"
+                text: "0.0"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10

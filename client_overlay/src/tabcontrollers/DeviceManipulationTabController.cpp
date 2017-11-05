@@ -634,7 +634,7 @@ namespace inputemulator {
 			case 0:
 				vrInputEmulator.setDeviceNormalMode(deviceInfos[index]->openvrId);
 				break;
-			case 5:
+			case 6:
 				vrInputEmulator.enableStepDetection(true);
 				break;
 			default:

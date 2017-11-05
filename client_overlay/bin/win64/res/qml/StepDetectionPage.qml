@@ -39,17 +39,10 @@ MyStackViewPage {
                 updateGUI()
             }                
             updateValues: function() {
-                var hasChanged = false
-                value = DeviceManipulationTabController.getStepIntSec()
-                if (stepIntSec != value) {
-                    stepIntSec = value
-                    hasChanged = true
-                }
-                if (hasChanged) {
-                    updateGUI()
-                }
+                updateGUI()
             }
         }
+        
         StepDetectConfBox2 {
             boxTitle: "Step Threshold / Accuracy"
             id: stepThresholdBox
@@ -79,40 +72,7 @@ MyStackViewPage {
                 updateGUI()    
             }
             updateValues: function() {
-                var hasChanged = false
-                var value = DeviceManipulationTabController.getHMDXThreshold()
-                if (hmdX != value) {
-                    hmdX = value
-                    hasChanged = true
-                }
-                value = DeviceManipulationTabController.getHMDYThreshold()
-                if (hmdY != value) {
-                    hmdY = value
-                    hasChanged = true
-                }
-                value = DeviceManipulationTabController.getHMDZThreshold()
-                if (hmdZ != value) {
-                    hmdZ = value
-                    hasChanged = true
-                }
-                value = DeviceManipulationTabController.getHandXThreshold()
-                if (handX != value) {
-                    handX = value
-                    hasChanged = true
-                }
-                value = DeviceManipulationTabController.getHandYThreshold()
-                if (handY != value) {
-                    handY = value
-                    hasChanged = true
-                }
-                value = DeviceManipulationTabController.getHandZThreshold()
-                if (handZ != value) {
-                    handZ = value
-                    hasChanged = true
-                }
-                if (hasChanged) {
-                    updateGUI()
-                }
+                updateGUI()
             }
         }
 
@@ -121,12 +81,14 @@ MyStackViewPage {
                 Layout.preferredWidth: 200
                 text: "Reset"
                 onClicked: {
+                    stepPhysicsBox.setStepIntSec(0.07)
                     stepThresholdBox.setHMDX(0.3)
-                    stepThresholdBox.setHMDY(0.4)
+                    stepThresholdBox.setHMDY(0.3)
                     stepThresholdBox.setHMDZ(0.3)
-                    stepThresholdBox.setHandX(0.15)
-                    stepThresholdBox.setHandY(0.15)
-                    stepThresholdBox.setHandZ(0.15)
+                    stepThresholdBox.setHandX(0.0)
+                    stepThresholdBox.setHandY(0.0)
+                    stepThresholdBox.setHandZ(0.0)
+                    stepPhysicsBox.updateGUI()
                     stepThresholdBox.updateGUI()
                 }
             }

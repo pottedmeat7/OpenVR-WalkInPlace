@@ -254,15 +254,16 @@ namespace vrwalkinplace {
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
+			int _hasUnTouchedStepAxis = 0;
 			double _timeLastStepTaken = 0.0;
 			double _timeLastTick = 0.0;
 			double _stepIntegrateSteps = 0.0;
-			double _stepIntegrateStepLimit = 5;
+			double _stepIntegrateStepLimit = 0.07;
 			int CServerDriver::_openvrDeviceStepPoseTracker[3]; //HMD and two controllers
 			vr::HmdVector3d_t _stepsTraveledOffset = { 0.0, 0.0, 0.0 };
 			vr::HmdVector3d_t _handsPointDir = { 0.0, 0.0, 0.0 };
-			vr::HmdVector3d_t _hmdThreshold = { 0.07, 0.07, 0.07 };
-			vr::HmdVector3d_t _handThreshold = { 0.15, 0.15, 0.15 };
+			vr::HmdVector3d_t _hmdThreshold = { 0.3, 0.3, 0.3 };
+			vr::HmdVector3d_t _handThreshold = { 0.0, 0.0, 0.0 };
 
 			//// function hooks related ////
 
