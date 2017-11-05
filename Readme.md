@@ -14,6 +14,8 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 
 - Arizona Sunshine
 - Onward
+- Gorn
+- Doom 3 VR
 - Any others that use the touch-pad as movement like an analog stick
 
 # Unsupported games
@@ -24,13 +26,12 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 
 - Change HMD Step Thresholds
 - Change Vive Controller Step Thresholds
-- Change How long a Virtual Step lasts
 
 # Upcoming
 
+- Running / jogging / walking detection
 - Options for emulating other input methods
 - Tracker support (for feet)
-- Running / jogging / walking detection
 
 # Notes:
 
