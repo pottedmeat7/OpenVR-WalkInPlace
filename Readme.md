@@ -16,6 +16,8 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 - Onward
 - Gorn
 - Doom 3 VR
+- Vanishing Realm
+- Gunheart
 - Any others that use the touch-pad as movement like an analog stick
 
 # Unsupported games
