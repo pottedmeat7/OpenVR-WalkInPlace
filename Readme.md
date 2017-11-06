@@ -10,7 +10,7 @@ The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement 
 I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of OpenVR and https://github.com/matzman666/OpenVR-InputEmulator to emulate input and track poses I figured it has the ability to detect and "emulate" a step. In the long run I hope to expand this driver for many games and be able to use WIP locomotion as a standard input method.
 
 
-# Current Games that Work with OpenVR-WalkInPlace
+# Current Games that Work Best with OpenVR-WalkInPlace
 
 - Arizona Sunshine
 - Onward
@@ -18,11 +18,9 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 - Doom 3 VR
 - Vanishing Realm
 - Gunheart
-- Any others that use the touch-pad as movement like an analog stick
+Other games may not have touchpad movement options however this driver will 
+also activate teleport.
 
-# Unsupported games
-
-- Games that do not use the touch-pad as movement
 
 # Features
 
@@ -31,7 +29,9 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 
 # Upcoming
 
-- Running / jogging / walking detection
+- Profiles for different games
+- Fixes for teleport games
+- Fix Running detection
 - Options for emulating other input methods
 - Tracker support (for feet)
 
