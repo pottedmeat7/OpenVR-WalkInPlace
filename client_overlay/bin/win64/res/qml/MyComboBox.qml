@@ -8,7 +8,7 @@ ComboBox {
     hoverEnabled: true
 
     background: Rectangle {
-        color: parent.pressed ? "#406288" : (parent.activeFocus ? "#365473" : "#2c435d")
+        color: parent.pressed ? "#265432" : (parent.activeFocus ? "#265832" : "#265a32")
     }
 
     contentItem: MyText {
@@ -31,7 +31,7 @@ ComboBox {
             color: parent.enabled ? "#ffffff" : "#909090"
         }
         background: Rectangle {
-            color: parent.pressed ? "#406288" : (parent.hovered ? "#365473" : "#2c435d")
+            color: parent.pressed ? "#265432" : (parent.hovered ? "#265832" : "#265a32")
         }
     }
 
@@ -63,12 +63,9 @@ ComboBox {
     }
 
     onActivated: {
-		if (activeFocus) {
-			MyResources.playActivationSound()
-		}
     }
 
     Component.onCompleted: {
-        popup.background.color = "#2c435d"
+        popup.background.color = "#265a32"
     }
 }

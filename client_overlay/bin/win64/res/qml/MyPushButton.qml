@@ -12,7 +12,7 @@ Button {
         color: parent.enabled ? "#ffffff" : "#909090"
 	}
 	background: Rectangle {
-        color: parent.down ? "#406288" : (parent.activeFocus ? "#365473" : "#2c435d")
+        color: parent.down ? "#265832" : (parent.activeFocus ? "#265432" : "#265a32")
     }
 
     onHoveredChanged: {

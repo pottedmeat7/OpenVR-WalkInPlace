@@ -5,8 +5,8 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
-    property double hmdXZ : 0.17
-    property double hmdY : 0.19
+    property double hmdXZ : 0.13
+    property double hmdY : 0.14
     property double handWalk : 0.02
     property double handJog : 0.4
     property double handRun : 1.7
@@ -17,22 +17,24 @@ GroupBox {
 
     property var setHMDXZ: function(x) {}
     property var setHMDY: function(y) {}
-    property var setHandJog: function(x) {}
-    property var setHandRun: function(y) {}
+    property var setHandWalk: function(w) {}
+    property var setHandJog: function(j) {}
+    property var setHandRun: function(r) {}
     property var updateValues: function() {}
 
     function updateGUI() {
-        hmdXZInputFiel.text = hmdXZ.toFixed(2)
+        hmdXZInputField.text = hmdXZ.toFixed(2)
         hmdYInputField.text = hmdY.toFixed(2)
         handJogInputField.text = handJog.toFixed(2)
         handRunInputField.text = handRun.toFixed(2)
     }
 
     function initVars(){
-        setHMDY(0.2)
-        setHMDXZ(0.3)
-        setHandJog(0.0)
-        setHandRun(0.0)
+        setHMDY(hmdY)
+        setHMDXZ(hmdXZ)
+        setHandJog(handJog)
+        setHandRun(handRun)
+        updateGUI()
     }
 
     Layout.fillWidth: true
@@ -49,6 +51,7 @@ GroupBox {
         radius: 8
     }
 
+
     ColumnLayout {
         anchors.fill: parent
 
@@ -60,33 +63,44 @@ GroupBox {
         }
 
         GridLayout {
-            columns: 3
+            columns: 6
 
             MyText {
                 text: "Step HMD Y:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignLeft
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: "Step HMD XZ:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignLeft
-                Layout.rightMargin: 12
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 240
             }
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
+
+            MyText {
+                text: "Step HMD XZ:"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 240
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 100
+            }            
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 240
+            }        
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 100
+            }        
 
         }
 
         GridLayout {
-            columns: 12
+            columns: 8
 
             MyPushButton2 {
                 id: hmdYMinusButton
@@ -104,7 +118,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdYInputField
-                text: "0.2"
+                text: "0.19"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -140,9 +154,7 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
 
             MyPushButton2 {
@@ -155,13 +167,13 @@ GroupBox {
                         value = thresholdStep
                     }
                     hmdXZ = value
-                    setHMDX(value)
+                    setHMDXZ(value)
                 }
             }
 
             MyTextField {
                 id: hmdXZInputField
-                text: "0.3"
+                text: "0.17"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
@@ -176,7 +188,7 @@ GroupBox {
                             val = 3.0
                         }
                         hmdXZ = val
-                        setHMDX(val)
+                        setHMDXZ(val)
                     } 
                 }
             }
@@ -191,103 +203,54 @@ GroupBox {
                         value = 3.0
                     }
                     hmdXZ = value
-                    setHMDX(value)
+                    setHMDXZ(value)
                 }
             }
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-            
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
         }
 
         GridLayout {
-            columns: 9
+            columns: 6
 
             MyText {
                 text: "Hand Walk Movement:"
                 Layout.fillWidth: true
                 font.strikeout: true
-                horizontalAlignment: Text.AlignLeft
-                Layout.rightMargin: 12
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 240
             }
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
 
             MyText {
                 text: "Hand Jog Movement:"
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignLeft
-                Layout.rightMargin: 12
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 240
             }
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
-            }
-
-            MyText {
-                text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
 
             MyText {
                 text: "Hand Run Movement:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 240
             }
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
         }
 
@@ -299,7 +262,7 @@ GroupBox {
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    var value = handWalk - thresholdStep
+                    var value = et - thresholdStep
                     if (value < thresholdStep) {
                         value = thresholdStep
                     }
@@ -337,15 +300,13 @@ GroupBox {
                     if (value > 3.0) {
                         value = 3.0
                     }
-                    handJog = value
+                    handWalk = value                    
                 }
             }
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
 
             MyPushButton2 {
@@ -400,9 +361,7 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 100
             }
 
             MyPushButton2 {
@@ -453,6 +412,11 @@ GroupBox {
                     handRun = value
                     setHandRun(value)
                 }
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 100
             }
 
         }

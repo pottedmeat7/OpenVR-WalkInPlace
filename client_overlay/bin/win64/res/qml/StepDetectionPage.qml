@@ -11,15 +11,19 @@ MyStackViewPage {
     property int deviceIndex: -1
 
     function updateInfo() {  
-        stepPhysicsBox.initVars()
+        stepMovementType.initVars()
         stepThresholdBox.initVars()
         stepDetectionEnableToggle.checked = DeviceManipulationTabController.isStepDetectionEnabled()
-        stepPhysicsBox.updateGUI()
         stepThresholdBox.updateGUI()
     }
 
+    Component.onCompleted: {    
+        updateInfo()
+    }
+    
     content: ColumnLayout {
         spacing: 18
+
 
         MyToggleButton {
             id: stepDetectionEnableToggle
@@ -29,7 +33,20 @@ MyStackViewPage {
                 DeviceManipulationTabController.enableStepDetection(checked)
             }
         }
-        
+
+        StepDetectConfBox3 {
+            boxTitle: "Game Movement Type"
+            id: stepMovementType
+            keyboardUIDBase: 200
+            setGameType: function(type) {
+                DeviceManipulationTabController.setGameStepType(gameType)
+                updateGUI()    
+            }
+            updateValues: function() {
+                updateGUI()
+            }
+        }
+
         StepDetectConfBox2 {
             boxTitle: "Step Threshold / Accuracy"
             id: stepThresholdBox
@@ -40,6 +57,9 @@ MyStackViewPage {
             }
             setHMDY: function(y) {
                 DeviceManipulationTabController.setHMDThreshold(hmdXZ,y,hmdXZ)
+                updateGUI()    
+            }
+            setHandWalk: function(walk) {
                 updateGUI()    
             }
             setHandJog: function(jog) {
@@ -60,14 +80,13 @@ MyStackViewPage {
                 Layout.preferredWidth: 200
                 text: "Reset"
                 onClicked: {
-                    stepPhysicsBox.setStepIntSec(0.07)
-                    stepThresholdBox.setHMDX(0.3)
-                    stepThresholdBox.setHMDY(0.3)
-                    stepThresholdBox.setHMDZ(0.3)
-                    stepThresholdBox.setHandX(0.0)
-                    stepThresholdBox.setHandY(0.0)
-                    stepThresholdBox.setHandZ(0.0)
-                    stepPhysicsBox.updateGUI()
+                    stepMovementType.setGameType(1)
+                    stepThresholdBox.setHMDXZ(0.13)
+                    stepThresholdBox.setHMDY(0.14)
+                    stepThresholdBox.setHandWalk(0.02)
+                    stepThresholdBox.setHandJog(0.40)
+                    stepThresholdBox.setHandRun(1.70)
+                    stepMovementType.updateGUI()
                     stepThresholdBox.updateGUI()
                 }
             }

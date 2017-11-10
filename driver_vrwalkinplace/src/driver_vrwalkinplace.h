@@ -224,6 +224,7 @@ namespace vrwalkinplace {
 
 			/* Step Detection */
 			void enableStepDetection(bool enable);
+			void setGameStepType(int gameType);
 			void setStepIntSec(float value);
 			void setHMDThreshold(vr::HmdVector3d_t value);
 			void setHandJogThreshold(float value);
@@ -253,6 +254,7 @@ namespace vrwalkinplace {
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
+			int _gameStepType = 1;
 			int _hasUnTouchedStepAxis = 0;			
 			float _handJogThreshold = 0.4;
 			float _handRunThreshold = 1.7;
@@ -260,14 +262,16 @@ namespace vrwalkinplace {
 			double _timeLastTick = 0.0;
 			double _stepIntegrateSteps = 0.0;
 			double _stepIntegrateStepLimit = 0.07;
-			int CServerDriver::_openvrDeviceStepPoseTracker[3]; //HMD and two controllers
-			vr::HmdVector3d_t _stepsTraveledOffset = { 0.0, 0.0, 0.0 };
+			int _openvrDeviceStepPoseTracker[3]; //HMD and two controllers
+			vr::HmdVector3d_t _avgStepPos = { 0.0, 0.0, 0.0 };
+			vr::HmdVector3d_t _stdDeviation = { 0.06, 0.04, 0.03 };
 			vr::HmdVector3d_t _handsPointDir = { 0.0, 0.0, 0.0 };
-			vr::HmdVector3d_t _hmdThreshold = { 0.3, 0.3, 0.3 };
+			vr::HmdVector3d_t _hmdThreshold = { 0.13, 0.13, 0.13 };
 			vr::HmdVector3d_t _handThreshold = { 0.0, 0.0, 0.0 };
 
 
 			bool isTakingStep(double * vel, vr::HmdVector3d_t threshold);
+			bool isStepingInPlace(double * pos);
 			bool isJoggingStep(double * vel);
 			bool isRunningStep(double * vel);
 

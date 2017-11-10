@@ -507,6 +507,15 @@ namespace inputemulator {
 		}
 	}
 
+	void DeviceManipulationTabController::setGameStepType(int gameType) {
+		try {
+			vrInputEmulator.setGameStepType(gameType);
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();
+		}
+	}
+
 	void DeviceManipulationTabController::setWorldFromDriverRotationOffset(unsigned index, double yaw, double pitch, double roll, bool notify) {
 		if (index < deviceInfos.size()) {
 			try {

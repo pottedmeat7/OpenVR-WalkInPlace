@@ -69,9 +69,9 @@ private:
 
 	float stepIntSec = 0.07;
 
-	vr::HmdVector3d_t hmdThreshold = { 0.3, 0.3, 0.3 };
-	float handJogThreshold = 0.4;
-	float handRunThreshold = 0.4;
+	vr::HmdVector3d_t hmdThreshold = { 0.13, 0.13, 0.13 };
+	float handJogThreshold = 0.40;
+	float handRunThreshold = 1.70;
 
 public:
 	~DeviceManipulationTabController();
@@ -122,6 +122,7 @@ public slots:
 	void setHMDThreshold(float x, float y, float z);
 	void setHandJogThreshold(float jogThreshold);
 	void setHandRunThreshold(float runThreshold);
+	void setGameStepType(int gameType);
 	void setWorldFromDriverRotationOffset(unsigned index, double x, double y, double z, bool notify = true);
 	void setWorldFromDriverTranslationOffset(unsigned index, double yaw, double pitch, double roll, bool notify = true);
 	void setDriverFromHeadRotationOffset(unsigned index, double x, double y, double z, bool notify = true);

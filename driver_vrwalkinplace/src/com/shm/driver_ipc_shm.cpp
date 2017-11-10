@@ -645,6 +645,10 @@ namespace vrwalkinplace {
 												serverDriver->enableStepDetection(false);
 											}
 										}
+										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 2)
+										{
+											serverDriver->setGameStepType(message.msg.dm_StepDetectionMode.gameStepType);
+										}
 										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 4)
 										{
 											serverDriver->setStepIntSec(message.msg.dm_StepDetectionMode.stepIntSec);

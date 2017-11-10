@@ -16,7 +16,7 @@ src\tabcontrollers\DeviceManipulationTabController.cpp(390): warning C4100: 'inc
 src\tabcontrollers\DeviceManipulationTabController.cpp(429): warning C4189: 'profile': local variable is initialized but not referenced
 src\tabcontrollers\DeviceManipulationTabController.cpp(443): warning C4100: 'notify': unreferenced formal parameter
 src\tabcontrollers\DeviceManipulationTabController.cpp(443): warning C4100: 'mode': unreferenced formal parameter
-src\tabcontrollers\DeviceManipulationTabController.cpp(619): warning C4100: 'targedIndex': unreferenced formal parameter
+src\tabcontrollers\DeviceManipulationTabController.cpp(628): warning C4100: 'targedIndex': unreferenced formal parameter
   main.cpp
 c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(73): warning C4305: 'initializing': truncation from 'double' to 'float'

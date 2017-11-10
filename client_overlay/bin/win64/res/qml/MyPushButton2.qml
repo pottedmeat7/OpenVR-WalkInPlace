@@ -11,7 +11,7 @@ Button {
         color: parent.enabled ? "#ffffff" : "#909090"
     }
     background: Rectangle {
-        color: parent.down ? "#406288" : (parent.activeFocus ? "#365473" : "transparent")
+        color: parent.down ? "#265832" : (parent.activeFocus ? "#265432" : "transparent")
         border.color: parent.enabled ? "#ffffff" : "#909090"
         radius: 8
     }

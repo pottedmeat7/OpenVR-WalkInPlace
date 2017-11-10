@@ -501,6 +501,10 @@ namespace vrwalkinplace {
 			}
 		}
 
+		void CServerDriver::setGameStepType(int gameType) {
+			_gameStepType = gameType;
+		}
+
 		void CServerDriver::setStepIntSec(float value) {
 			_stepIntegrateStepLimit = (double)value;
 		}
@@ -563,7 +567,8 @@ namespace vrwalkinplace {
 					switch (deviceInfo->deviceClass()) {
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 						//LOG(INFO) << "HMD Step: x " << pose.vecVelocity[0] << " y " << pose.vecVelocity[1] << " z " << pose.vecVelocity[2];// << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
-						if ( isTakingStep( pose.vecVelocity, _hmdThreshold) ) {
+						//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
+						if ( isTakingStep( pose.vecVelocity, _hmdThreshold) && isStepingInPlace(pose.vecPosition) ) {
 							_openvrDeviceStepPoseTracker[0] = -1;
 							_openvrDeviceStepPoseTracker[1] = -1;
 							_openvrDeviceStepPoseTracker[2] = -1;
@@ -600,24 +605,29 @@ namespace vrwalkinplace {
 					else {
 						driverHost = vr::VRServerDriverHost();
 					}
-					driverHost->TrackedDeviceButtonTouched(deviceId, vr::k_EButton_Axis0, 0);
-					vr::VRControllerAxis_t axisState;
-					axisState.x = 0;
-					axisState.y = 0.5;
-					if (isJoggingStep(pose.vecVelocity)) {
-						axisState.y = 1.0;
+					if (_gameStepType != 3) {
+						vr::VRControllerAxis_t axisState;
+						axisState.x = 0;
+						axisState.y = 0.5;
+						if (isJoggingStep(pose.vecVelocity)) {
+							axisState.y = 1.0;
+						}
+						driverHost->TrackedDeviceButtonTouched(deviceId, vr::k_EButton_Axis0, 0);
+						driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
+						if (_gameStepType != 2) {
+							if (isRunningStep(pose.vecVelocity)) {
+								driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+							}
+						}
+						this->_hasUnTouchedStepAxis = 0;
 					}
-					driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
-					this->_hasUnTouchedStepAxis = 0;
-					if (isRunningStep(pose.vecVelocity)) {
+					else {
+						driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 						driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 					}
 				}
 				else {
 					if (this->_hasUnTouchedStepAxis < 50) {
-						vr::VRControllerAxis_t axisState;
-						axisState.x = 0;
-						axisState.y = 0;
 						vr::IVRServerDriverHost* driverHost;
 						int deviceId = deviceInfo->openvrId();
 						if (_openvrIdToDeviceInfoMap[deviceId] && _openvrIdToDeviceInfoMap[deviceId]->isValid()) {
@@ -626,9 +636,19 @@ namespace vrwalkinplace {
 						else {
 							driverHost = vr::VRServerDriverHost();
 						}
-						driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
-						driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
-						driverHost->TrackedDeviceButtonUntouched(deviceId, vr::k_EButton_Axis0, 0);
+						if (_gameStepType != 3) {
+							vr::VRControllerAxis_t axisState;
+							axisState.x = 0;
+							axisState.y = 0;
+							if (_gameStepType != 2) {
+								driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+							}
+							driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
+							driverHost->TrackedDeviceButtonUntouched(deviceId, vr::k_EButton_Axis0, 0);
+						}
+						else {
+							driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+						}
 						this->_hasUnTouchedStepAxis++;
 					}
 				}
@@ -659,8 +679,15 @@ namespace vrwalkinplace {
 							}
 							break;
 						case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-							if ( isTakingStep(pose.vecVelocity, _hmdThreshold) ) {
-								_stepIntegrateSteps = 0;
+							if ( isStepingInPlace(pose.vecPosition) ) {
+								if (isTakingStep(pose.vecVelocity, _hmdThreshold)) {
+									_stepIntegrateSteps = 0;
+								}
+							}
+							else {
+								//DEVIATED FROM STEP SPACE - STOP MOVEMENT
+								_stepIntegrateSteps = 999;
+								_openvrDeviceStepPoseTracker[0] = 999;
 							}
 							break;
 						default:
@@ -677,10 +704,36 @@ namespace vrwalkinplace {
 		}
 
 		bool CServerDriver::isTakingStep(double * vel, vr::HmdVector3d_t threshold) {
-			return ((std::abs(vel[2]) < threshold.v[2]) &&
+			bool stepParams = ((std::abs(vel[2]) < threshold.v[2]) &&
 				(std::abs(vel[0]) < threshold.v[0]) &&
 				((vel[1] > threshold.v[1] && (vel[1] > vel[0] && vel[1] > vel[2]))
 					|| (vel[1] < -1 * threshold.v[1] && (vel[1] < vel[0] && vel[1] < vel[2]))));
+			return stepParams;
+		}
+
+		bool CServerDriver::isStepingInPlace(double * pos) {
+			vr::HmdVector3d_t currentDeviation = { 0.0, 0.0, 0.0 };
+			currentDeviation.v[0] = std::abs(pos[0] - _avgStepPos.v[0]);
+			currentDeviation.v[1] = std::abs(pos[1] - _avgStepPos.v[1]);
+			currentDeviation.v[2] = std::abs(pos[2] - _avgStepPos.v[2]);
+			_avgStepPos.v[0] = (_avgStepPos.v[0] + pos[0]) / 2.0;
+			_avgStepPos.v[1] = (_avgStepPos.v[1] + pos[1]) / 2.0;
+			_avgStepPos.v[2] = (_avgStepPos.v[2] + pos[2]) / 2.0;
+			return (
+				(
+					pos[0] < (_avgStepPos.v[0] + _stdDeviation.v[0])
+					&& pos[0] > (_avgStepPos.v[0] - _stdDeviation.v[0])
+					)
+				&&
+				(
+					pos[1] < (_avgStepPos.v[1] + _stdDeviation.v[1])
+					&& pos[1] > (_avgStepPos.v[1] - _stdDeviation.v[1])
+					)
+				&&
+				(
+					pos[2] < (_avgStepPos.v[2] + _stdDeviation.v[2])
+					&& pos[2] > (_avgStepPos.v[2] - _stdDeviation.v[2])
+				));
 		}
 
 		bool CServerDriver::isJoggingStep(double * vel) {

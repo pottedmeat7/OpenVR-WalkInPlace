@@ -281,6 +281,7 @@ struct Request_DeviceManipulation_StepDetectionMode {
 	float stepAcceleration;
 	float stepSpeed;
 	float stepIntSec;
+	int gameStepType;
 };
 
 struct Request_DeviceManipulation_TriggerHapticPulse {
