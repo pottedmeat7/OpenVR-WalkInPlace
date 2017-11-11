@@ -50,9 +50,7 @@ namespace vrwalkinplace {
 		uint32_t deviceId;
 		vr::ETrackedDeviceClass deviceClass;
 		int deviceMode;
-		bool offsetsEnabled;
-		bool buttonMappingEnabled;
-		bool redirectSuspended;
+		bool stepDetectionEnabled;
 	};
 
 } // end namespace vrwalkinplace

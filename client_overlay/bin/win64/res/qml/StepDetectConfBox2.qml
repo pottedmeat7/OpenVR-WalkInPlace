@@ -29,14 +29,6 @@ GroupBox {
         handRunInputField.text = handRun.toFixed(2)
     }
 
-    function initVars(){
-        setHMDY(hmdY)
-        setHMDXZ(hmdXZ)
-        setHandJog(handJog)
-        setHandRun(handRun)
-        updateGUI()
-    }
-
     Layout.fillWidth: true
 
     label: MyText {

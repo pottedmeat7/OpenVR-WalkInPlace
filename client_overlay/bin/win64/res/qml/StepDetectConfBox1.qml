@@ -19,10 +19,6 @@ GroupBox {
         stepIntSecInputField.text = stepIntSec.toFixed(2)
     }
 
-    function initVars(){
-        setStepIntSec(0.7)
-    }
-
     Layout.fillWidth: true
 
     label: MyText {

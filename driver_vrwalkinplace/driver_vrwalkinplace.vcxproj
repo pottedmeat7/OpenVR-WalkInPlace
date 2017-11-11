@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\driver_deviceinfo.cpp" />
-    <ClCompile Include="src\driver_virtualdevices.cpp" />
     <ClCompile Include="src\com\shm\driver_ipc_shm.cpp" />
     <ClCompile Include="src\driver_server.cpp" />
     <ClCompile Include="src\driver_vrwalkinplace.cpp" />
@@ -117,7 +116,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DRIVER_VRINPUTEMULATOR_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DRIVER_VRwalkinplace_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\lib_vrwalkinplace\include;..\openvr\headers;..\third-party\boost_1_63_0;..\third-party\easylogging++;..\third-party\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
@@ -133,7 +132,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;DRIVER_VRINPUTEMULATOR_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;DRIVER_VRwalkinplace_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\lib_vrwalkinplace\include;..\openvr\headers;..\third-party\boost_1_63_0;..\third-party\easylogging++;..\third-party\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
@@ -153,7 +152,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DRIVER_VRINPUTEMULATOR_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DRIVER_VRwalkinplace_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\lib_vrwalkinplace\include;..\openvr\headers;..\third-party\boost_1_63_0;..\third-party\easylogging++;..\third-party\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -172,7 +171,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;DRIVER_VRINPUTEMULATOR_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;DRIVER_VRwalkinplace_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\lib_vrwalkinplace\include;..\openvr\headers;..\third-party\boost_1_63_0;..\third-party\easylogging++;..\third-party\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

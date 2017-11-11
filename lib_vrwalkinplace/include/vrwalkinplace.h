@@ -139,34 +139,6 @@ public:
 
 	void ping(bool modal = true, bool enableReply = false);
 
-	void openvrUpdatePose(uint32_t deviceId, const vr::DriverPose_t& pose);
-	void openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
-	void openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t& axisState);
-	void openvrProximitySensorEvent(uint32_t deviceId, bool sensorTriggered);
-	void openvrVendorSpecificEvent(uint32_t deviceId, vr::EVREventType eventType, const vr::VREvent_Data_t& eventData, double timeOffset = 0.0);
-
-	uint32_t getVirtualDeviceCount();
-	VirtualDeviceInfo getVirtualDeviceInfo(uint32_t virtualDeviceId);
-	vr::DriverPose_t getVirtualDevicePose(uint32_t virtualDeviceId);
-	vr::VRControllerState_t getVirtualControllerState(uint32_t virtualDeviceId);
-	uint32_t addVirtualDevice(VirtualDeviceType deviceType, const std::string& deviceSerial, bool softfail = true);
-	void publishVirtualDevice(uint32_t virtualDeviceId, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, int32_t value, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, uint64_t value, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, float value, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, bool value, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, const std::string& value, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, const char* value, bool modal = true);
-	void setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, const vr::HmdMatrix34_t& value, bool modal = true);
-	void removeVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, bool modal = true);
-	void setVirtualDevicePose(uint32_t virtualDeviceId, const vr::DriverPose_t& pose, bool modal = true);
-	void setVirtualControllerState(uint32_t virtualDeviceId, const vr::VRControllerState_t& state, bool modal = true);
-
-	void enableDeviceButtonMapping(uint32_t deviceId, bool enable, bool modal = true);
-	void addDeviceButtonMapping(uint32_t deviceId, vr::EVRButtonId button, vr::EVRButtonId mapped, bool modal = true);
-	void removeDeviceButtonMapping(uint32_t deviceId, vr::EVRButtonId button, bool modal = true);
-	void removeAllDeviceButtonMappings(uint32_t deviceId, bool modal = true);
-
 	void enableStepDetection(bool enable, bool modal = true);
 	void setStepIntSec(float value, bool modal = true);
 	void setHMDThreshold(const vr::HmdVector3d_t& value, bool modal = true);
@@ -174,17 +146,8 @@ public:
 	void setHandRunThreshold(float value, bool modal = true);
 	void setGameStepType(int gameType, bool modal = true);
 
-	void setWorldFromDriverRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t& value, bool modal = true);
-	void setWorldFromDriverTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t& value, bool modal = true);
-	void setDriverFromHeadRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t& value, bool modal = true);
-	void setDriverFromHeadTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t& value, bool modal = true);
-	void setDriverRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t& value, bool modal = true);
-	void setDriverTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t& value, bool modal = true);
-
 	void getDeviceInfo(uint32_t deviceId, DeviceInfo& info);
 	void setDeviceNormalMode(uint32_t deviceId, bool modal = true);
-
-	void triggerHapticPulse(uint32_t deviceId, uint32_t axisId, uint16_t durationMicroseconds, bool directMode, bool modal = true);
 
 private:
 	std::recursive_mutex _mutex;
@@ -209,8 +172,6 @@ private:
 	std::string _ipcClientQueueName;
 	boost::interprocess::message_queue* _ipcServerQueue = nullptr;
 	boost::interprocess::message_queue* _ipcClientQueue = nullptr;
-
-	void _setVirtualDeviceProperty(uint32_t emulatorDeviceId, vr::ETrackedDeviceProperty deviceProperty, std::function<void(ipc::Request&)>, bool modal);
 };
 
 } // end namespace vrwalkinplace

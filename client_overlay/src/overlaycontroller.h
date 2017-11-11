@@ -22,12 +22,12 @@
 #include <memory>
 #include "logging.h"
 
-#include "tabcontrollers/DeviceManipulationTabController.h"
+#include "tabcontrollers/WalkInPlaceTabController.h"
 
 
 
 // application namespace
-namespace inputemulator {
+namespace walkinplace {
 
 class OverlayController : public QObject {
 	Q_OBJECT
@@ -35,8 +35,8 @@ class OverlayController : public QObject {
 
 public:
 	static constexpr const char* applicationKey = "pottedmeat7.VRWalkInPlace";
-	static constexpr const char* applicationName = "VR Walk In Place";
-	static constexpr const char* applicationVersionString = "v1.0.4";
+	static constexpr const char* applicationName = "OpenVR WIP";
+	static constexpr const char* applicationVersionString = "v2.2";
 
 private:
 	vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -61,7 +61,7 @@ private:
 	QUrl m_runtimePathUrl;
 
 public: // I know it's an ugly hack to make them public to enable external access, but I am too lazy to implement getters.
-	DeviceManipulationTabController deviceManipulationTabController;
+	WalkInPlaceTabController walkInPlaceTabController;
 
 private:
     OverlayController(bool desktopMode, bool noSound) : QObject(), desktopMode(desktopMode), noSound(noSound) {}
@@ -109,7 +109,7 @@ public:
 	}
 
 	static OverlayController* createInstance(bool desktopMode, bool noSound) {
-		singleton.reset(new inputemulator::OverlayController(desktopMode, noSound));
+		singleton.reset(new walkinplace::OverlayController(desktopMode, noSound));
 		return singleton.get();
 	}
 
@@ -118,4 +118,4 @@ public:
 	static void setAppSettings(QSettings* settings) { _appSettings = settings; }
 };
 
-} // namespace inputemulator
+} // namespace walkinplace

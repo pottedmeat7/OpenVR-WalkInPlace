@@ -27,7 +27,6 @@ namespace vrwalkinplace {
 
 
 		typedef vr::EVRInitError(*_DetourTrackedDeviceActivate_t)(vr::ITrackedDeviceServerDriver*, uint32_t);
-		typedef bool(*_DetourTriggerHapticPulse_t)(vr::IVRControllerComponent*, uint32_t, uint16_t);
 		typedef void(*_DetourTrackedDeviceAxisUpdated_t)(vr::IVRServerDriverHost*, uint32_t, uint32_t, const vr::VRControllerAxis_t&);
 		typedef void(*_DetourTrackedDeviceButtonUntouched_t)(vr::IVRServerDriverHost*, uint32_t, vr::EVRButtonId, double);
 		typedef void(*_DetourTrackedDeviceButtonTouched_t)(vr::IVRServerDriverHost*, uint32_t, vr::EVRButtonId, double);
@@ -57,7 +56,7 @@ namespace vrwalkinplace {
 
 
 		// Stores manipulation information about an openvr device
-		class OpenvrDeviceManipulationInfo {
+		class OpenvrWalkInPlaceInfo {
 		private:
 			bool m_isValid = false;
 			std::recursive_mutex _mutex;
@@ -67,20 +66,9 @@ namespace vrwalkinplace {
 			uint32_t m_openvrId = vr::k_unTrackedDeviceIndexInvalid;
 
 			vr::IVRControllerComponent* m_controllerComponent;
-			_DetourTriggerHapticPulse_t m_triggerHapticPulseFunc;
 
-			int m_deviceMode = 0; // 0 .. default, 1 .. disabled, 2 .. redirect source, 3 .. redirect target, 4 .. swap mode, 5 .. motion compensation
+			int m_deviceMode = 0; // 0 .. default, 1 step detection
 			bool _disconnectedMsgSend = false;
-
-			bool m_offsetsEnabled = false;
-			vr::HmdQuaternion_t m_worldFromDriverRotationOffset = { 1.0, 0.0, 0.0, 0.0 };
-			vr::HmdVector3d_t m_worldFromDriverTranslationOffset = { 0.0, 0.0, 0.0 };
-			vr::HmdQuaternion_t m_driverFromHeadRotationOffset = { 1.0, 0.0, 0.0, 0.0 };
-			vr::HmdVector3d_t m_driverFromHeadTranslationOffset = { 0.0, 0.0, 0.0 };
-			vr::HmdVector3d_t m_deviceTranslationOffset = { 0.0, 0.0, 0.0 };
-
-			bool m_enableButtonMapping = false;
-			std::map<vr::EVRButtonId, vr::EVRButtonId> m_buttonMapping;
 
 			bool m_lastDriverPoseValid = false;
 			vr::DriverPose_t m_lastDriverPose;
@@ -89,8 +77,8 @@ namespace vrwalkinplace {
 			vr::TrackedDevicePose_t pose;
 
 		public:
-			OpenvrDeviceManipulationInfo() {}
-			OpenvrDeviceManipulationInfo(vr::ITrackedDeviceServerDriver* driver, vr::ETrackedDeviceClass eDeviceClass, uint32_t openvrId, vr::IVRServerDriverHost* driverHost)
+			OpenvrWalkInPlaceInfo() {}
+			OpenvrWalkInPlaceInfo(vr::ITrackedDeviceServerDriver* driver, vr::ETrackedDeviceClass eDeviceClass, uint32_t openvrId, vr::IVRServerDriverHost* driverHost)
 				: m_isValid(true), m_driver(driver), m_eDeviceClass(eDeviceClass), m_openvrId(openvrId), m_driverHost(driverHost) {}
 
 			bool isValid() const { return m_isValid; }
@@ -101,41 +89,16 @@ namespace vrwalkinplace {
 			void setOpenvrId(uint32_t id) { m_openvrId = id; }
 
 			vr::IVRControllerComponent* controllerComponent() { return m_controllerComponent; }
-			_DetourTriggerHapticPulse_t triggerHapticPulseFunc() { return m_triggerHapticPulseFunc; }
-			void setControllerComponent(vr::IVRControllerComponent* component, _DetourTriggerHapticPulse_t triggerHapticPulse);
 
-			vr::HmdQuaternion_t m_deviceRotationOffset = { 1.0, 0.0, 0.0, 0.0 };
 			int deviceMode() const { return m_deviceMode; }
 			int setDefaultMode();
 			int setStepDetectionMode();
 
 			int _disableOldMode(int newMode);
 
-			const vr::HmdQuaternion_t& worldFromDriverRotationOffset() const { return m_worldFromDriverRotationOffset; }
-			vr::HmdQuaternion_t& worldFromDriverRotationOffset() { return m_worldFromDriverRotationOffset; }
-			const vr::HmdVector3d_t& worldFromDriverTranslationOffset() const { return m_worldFromDriverTranslationOffset; }
-			vr::HmdVector3d_t& worldFromDriverTranslationOffset() { return m_worldFromDriverTranslationOffset; }
-			const vr::HmdQuaternion_t& driverFromHeadRotationOffset() const { return m_driverFromHeadRotationOffset; }
-			vr::HmdQuaternion_t& driverFromHeadRotationOffset() { return m_driverFromHeadRotationOffset; }
-			const vr::HmdVector3d_t& driverFromHeadTranslationOffset() const { return m_driverFromHeadTranslationOffset; }
-			vr::HmdVector3d_t& driverFromHeadTranslationOffset() { return m_driverFromHeadTranslationOffset; }
-			const vr::HmdQuaternion_t& deviceRotationOffset() const { return m_deviceRotationOffset; }
-			vr::HmdQuaternion_t& deviceRotationOffset() { return m_deviceRotationOffset; }
-			const vr::HmdVector3d_t& deviceTranslationOffset() const { return m_deviceTranslationOffset; }
-			vr::HmdVector3d_t& deviceTranslationOffset() { return m_deviceTranslationOffset; }
-
-			bool buttonMappingEnabled() const { return m_enableButtonMapping; }
-			void setButtonMappingEnabled(bool enable) { m_enableButtonMapping = enable; }
-			void addButtonMapping(vr::EVRButtonId button, vr::EVRButtonId mappedButton);
-			bool getButtonMapping(vr::EVRButtonId button, vr::EVRButtonId& mappedButton);
-			void eraseButtonMapping(vr::EVRButtonId button);
-			void eraseAllButtonMappings();
-
 			void handleNewDevicePose(vr::IVRServerDriverHost* driver, _DetourTrackedDevicePoseUpdated_t origFunc, uint32_t& unWhichDevice, const vr::DriverPose_t& newPose);
 			void handleButtonEvent(vr::IVRServerDriverHost* driver, void* origFunc, uint32_t& unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
 			void handleAxisEvent(vr::IVRServerDriverHost* driver, _DetourTrackedDeviceAxisUpdated_t origFunc, uint32_t& unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
-
-			bool triggerHapticPulse(uint32_t unAxisId, uint16_t usPulseDurationMicroseconds, bool directMode = false);
 
 			bool lastDriverPoseValid() { return m_lastDriverPoseValid; }
 			vr::DriverPose_t& lastDriverPose() { return m_lastDriverPose; }
@@ -188,39 +151,7 @@ namespace vrwalkinplace {
 
 			static CServerDriver* getInstance() { return singleton; }
 
-			uint32_t virtualDevices_getDeviceCount();
-
-			CTrackedDeviceDriver* virtualDevices_getDevice(uint32_t unWhichDevice);
-
-			CTrackedDeviceDriver* virtualDevices_findDevice(const std::string& serial);
-
-			/** Adds a new virtual device */
-			int32_t virtualDevices_addDevice(VirtualDeviceType type, const std::string& serial);
-
-			/** Publishes an existing virtual device */
-			int32_t virtualDevices_publishDevice(uint32_t virtualDeviceId, bool notify = true);
-
-
-			void openvr_buttonEvent(uint32_t unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
-
-			void openvr_axisEvent(uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
-
-			void openvr_poseUpdate(uint32_t unWhichDevice, vr::DriverPose_t& newPose, int64_t timestamp);
-
-			void openvr_proximityEvent(uint32_t unWhichDevice, bool bProximitySensorTriggered);
-
-			void openvr_vendorSpecificEvent(uint32_t unWhichDevice, vr::EVREventType eventType, vr::VREvent_Data_t & eventData, double eventTimeOffset);
-
-			OpenvrDeviceManipulationInfo* deviceManipulation_getInfo(uint32_t unWhichDevice);
-
-
-			// internal API
-
-			/** Called by virtual devices when they are activated */
-			void _trackedDeviceActivated(uint32_t deviceId, CTrackedDeviceDriver* device);
-
-			/** Called by virtual devices when they are deactivated */
-			void _trackedDeviceDeactivated(uint32_t deviceId);
+			OpenvrWalkInPlaceInfo* walkInPlace_getInfo(uint32_t unWhichDevice);
 
 			/* Step Detection */
 			void enableStepDetection(bool enable);
@@ -231,16 +162,10 @@ namespace vrwalkinplace {
 			void setHandRunThreshold(float value);
 			void setStepPoseDetected(bool enable);
 			bool isStepDetectionEnabled();
-			bool _applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrDeviceManipulationInfo* deviceInfo, vr::HmdQuaternion_t stepUpDir);
+			bool _applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo);
 
 		private:
 			static CServerDriver* singleton;
-
-			//// virtual devices related ////
-			std::recursive_mutex _virtualDevicesMutex;
-			uint32_t m_virtualDeviceCount = 0;
-			std::shared_ptr<CTrackedDeviceDriver> m_virtualDevices[vr::k_unMaxTrackedDeviceCount];
-			CTrackedDeviceDriver* m_openvrIdToVirtualDeviceMap[vr::k_unMaxTrackedDeviceCount];
 
 			//// ipc shm related ////
 			IpcShmCommunicator shmCommunicator;
@@ -248,8 +173,9 @@ namespace vrwalkinplace {
 
 			//// openvr device manipulation related ////
 			std::recursive_mutex _openvrDevicesMutex;
-			static std::map<vr::ITrackedDeviceServerDriver*, std::shared_ptr<OpenvrDeviceManipulationInfo>> _openvrDeviceInfos;
-			static OpenvrDeviceManipulationInfo* _openvrIdToDeviceInfoMap[vr::k_unMaxTrackedDeviceCount];
+			static std::map<vr::ITrackedDeviceServerDriver*, std::shared_ptr<OpenvrWalkInPlaceInfo>> _openvrDeviceInfos;
+			static OpenvrWalkInPlaceInfo* _openvrIdToDeviceInfoMap[vr::k_unMaxTrackedDeviceCount];
+
 
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
@@ -309,9 +235,6 @@ namespace vrwalkinplace {
 			static vr::EVRInitError _deviceActivateDetourFunc(vr::ITrackedDeviceServerDriver* _this, uint32_t unObjectId);
 			static std::map<vr::ITrackedDeviceServerDriver*, _DetourFuncInfo<_DetourTrackedDeviceActivate_t>*> _deviceActivateDetourMap; // _this => DetourInfo
 
-			static std::vector<_DetourFuncInfo<_DetourTriggerHapticPulse_t>> _deviceTriggerHapticPulseDetours;
-			static bool _deviceTriggerHapticPulseDetourFunc(vr::IVRControllerComponent* _this, uint32_t unAxisId, uint16_t usPulseDurationMicroseconds);
-			static std::map<vr::IVRControllerComponent*, std::shared_ptr<OpenvrDeviceManipulationInfo>> _controllerComponentToDeviceInfos; // ControllerComponent => ManipulationInfo
 		};
 
 
@@ -441,7 +364,6 @@ namespace vrwalkinplace {
 			// from IVRControllerComponent
 
 			virtual vr::VRControllerState_t GetControllerState() override;
-			virtual bool TriggerHapticPulse(uint32_t unAxisId, uint16_t usPulseDurationMicroseconds) override;
 
 			// from self
 

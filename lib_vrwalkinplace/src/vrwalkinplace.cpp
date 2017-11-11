@@ -6,7 +6,7 @@
 #include <config.h>
 
 
-#if VRINPUTEMULATOR_EASYLOGGING == 1
+#if VRwalkinplace_EASYLOGGING == 1
 	#include "logging.h";
 	#define WRITELOG(level, txt) LOG(level) << txt;
 #else
@@ -210,714 +210,9 @@ void VRWalkInPlace::ping(bool modal, bool enableReply) {
 	}
 }
 
-
-void VRWalkInPlace::openvrUpdatePose(uint32_t deviceId, const vr::DriverPose_t & pose) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::OpenVR_PoseUpdate);
-		message.msg.ipc_PoseUpdate.deviceId = deviceId;
-		message.msg.ipc_PoseUpdate.pose = pose;
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-void VRWalkInPlace::openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::OpenVR_ButtonEvent);
-		message.msg.ipc_ButtonEvent.eventCount = 1;
-		message.msg.ipc_ButtonEvent.events[0].eventType = eventType;
-		message.msg.ipc_ButtonEvent.events[0].deviceId = deviceId;
-		message.msg.ipc_ButtonEvent.events[0].buttonId = buttonId;
-		message.msg.ipc_ButtonEvent.events[0].timeOffset = timeOffset;
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-void VRWalkInPlace::openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t & axisState) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::OpenVR_AxisEvent);
-		message.msg.ipc_AxisEvent.eventCount = 1;
-		message.msg.ipc_AxisEvent.events[0].deviceId = deviceId;
-		message.msg.ipc_AxisEvent.events[0].axisId = axisId;
-		message.msg.ipc_AxisEvent.events[0].axisState = axisState;
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-void VRWalkInPlace::openvrProximitySensorEvent(uint32_t deviceId, bool sensorTriggered) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::OpenVR_ProximitySensorEvent);
-		message.msg.ovr_ProximitySensorEvent.deviceId = deviceId;
-		message.msg.ovr_ProximitySensorEvent.sensorTriggered = sensorTriggered;
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-void VRWalkInPlace::openvrVendorSpecificEvent(uint32_t deviceId, vr::EVREventType eventType, const vr::VREvent_Data_t & eventData, double timeOffset) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::OpenVR_VendorSpecificEvent);
-		message.msg.ovr_VendorSpecificEvent.deviceId = deviceId;
-		message.msg.ovr_VendorSpecificEvent.eventType = eventType;
-		message.msg.ovr_VendorSpecificEvent.eventData = eventData;
-		message.msg.ovr_VendorSpecificEvent.timeOffset = timeOffset;
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-uint32_t VRWalkInPlace::getVirtualDeviceCount() {
-	if (_ipcServerQueue) {
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		ipc::Request message(ipc::RequestType::VirtualDevices_GetDeviceCount);
-		message.msg.vd_GenericClientMessage.clientId = m_clientId;
-		message.msg.vd_GenericClientMessage.messageId = messageId;
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		if (resp.status != ipc::ReplyStatus::Ok) {
-			std::stringstream ss;
-			ss << "Error while getting device count: Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-		return resp.msg.vd_GetDeviceCount.deviceCount;
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-VirtualDeviceInfo VRWalkInPlace::getVirtualDeviceInfo(uint32_t virtualDeviceId) {
-	if (_ipcServerQueue) {
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		ipc::Request message(ipc::RequestType::VirtualDevices_GetDeviceInfo);
-		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
-		message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
-		message.msg.vd_GenericDeviceIdMessage.deviceId = virtualDeviceId;
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		std::stringstream ss;
-		ss << "Error while getting device info: ";
-		if (resp.status == ipc::ReplyStatus::InvalidId) {
-			ss << "Invalid device id";
-			throw vrwalkinplace_invalidid(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::NotFound) {
-			ss << "Device not found";
-			throw vrwalkinplace_notfound(ss.str());
-		} else if (resp.status != ipc::ReplyStatus::Ok) {
-			ss << "Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-		VirtualDeviceInfo retval;
-		retval.openvrDeviceId = resp.msg.vd_GetDeviceInfo.openvrDeviceId;
-		retval.virtualDeviceId = resp.msg.vd_GetDeviceInfo.virtualDeviceId;
-		retval.deviceType = resp.msg.vd_GetDeviceInfo.deviceType;
-		retval.deviceSerial = resp.msg.vd_GetDeviceInfo.deviceSerial;
-		return retval;
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-vr::DriverPose_t VRWalkInPlace::getVirtualDevicePose(uint32_t virtualDeviceId) {
-	if (_ipcServerQueue) {
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		ipc::Request message(ipc::RequestType::VirtualDevices_GetDevicePose);
-		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
-		message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
-		message.msg.vd_GenericDeviceIdMessage.deviceId = virtualDeviceId;
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		std::stringstream ss;
-		ss << "Error while getting device info: ";
-		if (resp.status == ipc::ReplyStatus::InvalidId) {
-			ss << "Invalid device id";
-			throw vrwalkinplace_invalidid(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::NotFound) {
-			ss << "Device not found";
-			throw vrwalkinplace_notfound(ss.str());
-		} else if (resp.status != ipc::ReplyStatus::Ok) {
-			ss << "Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-		return resp.msg.vd_GetDevicePose.pose;
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-vr::VRControllerState_t VRWalkInPlace::getVirtualControllerState(uint32_t virtualDeviceId) {
-	if (_ipcServerQueue) {
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		ipc::Request message(ipc::RequestType::VirtualDevices_GetControllerState);
-		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
-		message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
-		message.msg.vd_GenericDeviceIdMessage.deviceId = virtualDeviceId;
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		std::stringstream ss;
-		ss << "Error while getting device info: ";
-		if (resp.status == ipc::ReplyStatus::InvalidId) {
-			ss << "Invalid device id";
-			throw vrwalkinplace_invalidid(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::NotFound) {
-			ss << "Device not found";
-			throw vrwalkinplace_notfound(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::InvalidType) {
-			ss << "Device type does not support this";
-			throw vrwalkinplace_invalidtype(ss.str());
-		} else if (resp.status != ipc::ReplyStatus::Ok) {
-			ss << "Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-		return resp.msg.vd_GetControllerState.controllerState;
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-uint32_t VRWalkInPlace::addVirtualDevice(VirtualDeviceType deviceType, const std::string & deviceSerial, bool softfail) {
-	if (_ipcServerQueue) {
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		ipc::Request message(ipc::RequestType::VirtualDevices_AddDevice);
-		message.msg.vd_AddDevice.clientId = m_clientId;
-		message.msg.vd_AddDevice.messageId = messageId;
-		message.msg.vd_AddDevice.deviceType = deviceType;
-		strncpy_s(message.msg.vd_AddDevice.deviceSerial, deviceSerial.c_str(), 127);
-		message.msg.vd_AddDevice.deviceSerial[127] = '\0';
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		std::stringstream ss;
-		ss << "Error while adding device: ";
-		if (resp.status == ipc::ReplyStatus::TooManyDevices) {
-			ss << "Too many devices";
-			throw vrwalkinplace_toomanydevices(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::AlreadyInUse) {
-			if (!softfail) {
-				ss << "Serial already in use";
-				throw vrwalkinplace_alreadyinuse(ss.str());
-			}
-		} else if (resp.status == ipc::ReplyStatus::InvalidType) {
-			ss << "Device type not supported";
-			throw vrwalkinplace_invalidtype(ss.str());
-		} else if (resp.status != ipc::ReplyStatus::Ok) {
-			ss << "Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-		return resp.msg.vd_AddDevice.virtualDeviceId;
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-
-void VRWalkInPlace::publishVirtualDevice(uint32_t virtualDeviceId, bool modal) {
-	if (_ipcServerQueue) {
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		ipc::Request message(ipc::RequestType::VirtualDevices_PublishDevice);
-		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
-		message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
-		message.msg.vd_GenericDeviceIdMessage.deviceId = virtualDeviceId;
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		std::stringstream ss;
-		ss << "Error while publishing device: ";
-		if (resp.status == ipc::ReplyStatus::InvalidId) {
-			ss << "Invalid device id";
-			throw vrwalkinplace_invalidid(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::NotFound) {
-			ss << "Device not found";
-			throw vrwalkinplace_notfound(ss.str());
-		} else if (resp.status != ipc::ReplyStatus::Ok) {
-			ss << "Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::_setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, std::function<void(ipc::Request&)> dataHandler, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::VirtualDevices_SetDeviceProperty);
-		message.msg.vd_SetDeviceProperty.clientId = m_clientId;
-		message.msg.vd_SetDeviceProperty.virtualDeviceId = virtualDeviceId;
-		message.msg.vd_SetDeviceProperty.deviceProperty = deviceProperty;
-		dataHandler(message);
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.vd_SetDeviceProperty.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while setting device property: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::InvalidType) {
-				ss << "Invalid value type";
-				throw vrwalkinplace_invalidtype(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			message.msg.vd_SetDeviceProperty.messageId = 0;
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, int32_t value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::INT32;
-		msg.msg.vd_SetDeviceProperty.value.int32Value = value;
-	}, modal);
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, uint64_t value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::UINT64;
-		msg.msg.vd_SetDeviceProperty.value.uint64Value = value;
-	}, modal);
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, float value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::FLOAT;
-		msg.msg.vd_SetDeviceProperty.value.floatValue = value;
-	}, modal);
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, bool value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::BOOL;
-		msg.msg.vd_SetDeviceProperty.value.boolValue = value;
-	}, modal);
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, const vr::HmdMatrix34_t& value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::MATRIX34;
-		msg.msg.vd_SetDeviceProperty.value.matrix34Value = value;
-	}, modal);
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, const char* value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::STRING;
-		strncpy_s(msg.msg.vd_SetDeviceProperty.value.stringValue, value, 255);
-		msg.msg.vd_SetDeviceProperty.value.stringValue[255] = '\0';
-	}, modal);
-}
-
-void VRWalkInPlace::setVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, const std::string& value, bool modal) {
-	_setVirtualDeviceProperty(virtualDeviceId, deviceProperty, [value](ipc::Request& msg) {
-		msg.msg.vd_SetDeviceProperty.valueType = DevicePropertyValueType::STRING;
-		strncpy_s(msg.msg.vd_SetDeviceProperty.value.stringValue, value.c_str(), 255);
-		msg.msg.vd_SetDeviceProperty.value.stringValue[255] = '\0';
-	}, modal);
-}
-
-void VRWalkInPlace::removeVirtualDeviceProperty(uint32_t virtualDeviceId, vr::ETrackedDeviceProperty deviceProperty, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::VirtualDevices_RemoveDeviceProperty);
-		message.msg.vd_RemoveDeviceProperty.clientId = m_clientId;
-		message.msg.vd_RemoveDeviceProperty.virtualDeviceId = virtualDeviceId;
-		message.msg.vd_RemoveDeviceProperty.deviceProperty = deviceProperty;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.vd_RemoveDeviceProperty.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while removing device property: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			message.msg.vd_RemoveDeviceProperty.messageId = 0;
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setVirtualDevicePose(uint32_t virtualDeviceId, const vr::DriverPose_t & pose, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::VirtualDevices_SetDevicePose);
-		message.msg.vd_SetDevicePose.clientId = m_clientId;
-		message.msg.vd_SetDevicePose.virtualDeviceId = virtualDeviceId;
-		message.msg.vd_SetDevicePose.pose = pose;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.vd_SetDevicePose.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while setting device pose: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			message.msg.vd_SetDevicePose.messageId = 0;
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setVirtualControllerState(uint32_t virtualDeviceId, const vr::VRControllerState_t & state, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::VirtualDevices_SetControllerState);
-		message.msg.vd_SetControllerState.clientId = m_clientId;
-		message.msg.vd_SetControllerState.virtualDeviceId = virtualDeviceId;
-		message.msg.vd_SetControllerState.controllerState = state;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.vd_SetControllerState.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while setting controller state: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::InvalidType) {
-				ss << "Device type does not support this operation";
-				throw vrwalkinplace_invalidtype(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			message.msg.vd_SetControllerState.messageId = 0;
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::enableDeviceButtonMapping(uint32_t deviceId, bool enable, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_ButtonMapping);
-		message.msg.dm_ButtonMapping.clientId = m_clientId;
-		message.msg.dm_ButtonMapping.messageId = 0;
-		message.msg.dm_ButtonMapping.deviceId = deviceId;
-		message.msg.dm_ButtonMapping.enableMapping = enable ? 1 : 2;
-		message.msg.dm_ButtonMapping.mappingOperation = 0;
-		message.msg.dm_ButtonMapping.mappingCount = 0;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_ButtonMapping.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::addDeviceButtonMapping(uint32_t deviceId, vr::EVRButtonId button, vr::EVRButtonId mapped, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_ButtonMapping);
-		message.msg.dm_ButtonMapping.clientId = m_clientId;
-		message.msg.dm_ButtonMapping.messageId = 0;
-		message.msg.dm_ButtonMapping.deviceId = deviceId;
-		message.msg.dm_ButtonMapping.enableMapping = 0;
-		message.msg.dm_ButtonMapping.mappingOperation = 1;
-		message.msg.dm_ButtonMapping.mappingCount = 1;
-		message.msg.dm_ButtonMapping.buttonMappings[0] = button;
-		message.msg.dm_ButtonMapping.buttonMappings[1] = mapped;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_ButtonMapping.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::removeDeviceButtonMapping(uint32_t deviceId, vr::EVRButtonId button, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_ButtonMapping);
-		message.msg.dm_ButtonMapping.clientId = m_clientId;
-		message.msg.dm_ButtonMapping.messageId = 0;
-		message.msg.dm_ButtonMapping.deviceId = deviceId;
-		message.msg.dm_ButtonMapping.enableMapping = 0;
-		message.msg.dm_ButtonMapping.mappingOperation = 2;
-		message.msg.dm_ButtonMapping.mappingCount = 1;
-		message.msg.dm_ButtonMapping.buttonMappings[0] = button;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_ButtonMapping.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::removeAllDeviceButtonMappings(uint32_t deviceId, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_ButtonMapping);
-		message.msg.dm_ButtonMapping.clientId = m_clientId;
-		message.msg.dm_ButtonMapping.messageId = 0;
-		message.msg.dm_ButtonMapping.deviceId = deviceId;
-		message.msg.dm_ButtonMapping.enableMapping = 0;
-		message.msg.dm_ButtonMapping.mappingOperation = 3;
-		message.msg.dm_ButtonMapping.mappingCount = 0;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_ButtonMapping.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
 void VRWalkInPlace::enableStepDetection(bool enable, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
@@ -925,7 +220,7 @@ void VRWalkInPlace::enableStepDetection(bool enable, bool modal) {
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 1;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -954,7 +249,7 @@ void VRWalkInPlace::enableStepDetection(bool enable, bool modal) {
 			}
 		}
 		else {
-			message.msg.dm_DeviceOffsets.messageId = 0;
+			message.msg.dm_StepDetectionMode.messageId = 0;
 			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
 		}
 	}
@@ -965,7 +260,7 @@ void VRWalkInPlace::enableStepDetection(bool enable, bool modal) {
 
 void VRWalkInPlace::setGameStepType(int gameType, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
@@ -973,7 +268,7 @@ void VRWalkInPlace::setGameStepType(int gameType, bool modal) {
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 2;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -1012,7 +307,7 @@ void VRWalkInPlace::setGameStepType(int gameType, bool modal) {
 
 void VRWalkInPlace::setStepIntSec(float value, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
@@ -1020,7 +315,7 @@ void VRWalkInPlace::setStepIntSec(float value, bool modal) {
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 4;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -1059,7 +354,7 @@ void VRWalkInPlace::setStepIntSec(float value, bool modal) {
 
 void VRWalkInPlace::setHMDThreshold(const vr::HmdVector3d_t & value, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
@@ -1067,7 +362,7 @@ void VRWalkInPlace::setHMDThreshold(const vr::HmdVector3d_t & value, bool modal)
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 5;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -1106,7 +401,7 @@ void VRWalkInPlace::setHMDThreshold(const vr::HmdVector3d_t & value, bool modal)
 
 void VRWalkInPlace::setHandJogThreshold(float value, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
@@ -1114,7 +409,7 @@ void VRWalkInPlace::setHandJogThreshold(float value, bool modal) {
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 6;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -1154,7 +449,7 @@ void VRWalkInPlace::setHandJogThreshold(float value, bool modal) {
 
 void VRWalkInPlace::setHandRunThreshold(float value, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_StepDetectionMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
@@ -1162,7 +457,7 @@ void VRWalkInPlace::setHandRunThreshold(float value, bool modal) {
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 7;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -1199,274 +494,9 @@ void VRWalkInPlace::setHandRunThreshold(float value, bool modal) {
 	}
 }
 
-
-void VRWalkInPlace::setWorldFromDriverRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t & value, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_SetDeviceOffsets);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_DeviceOffsets.clientId = m_clientId;
-		message.msg.dm_DeviceOffsets.messageId = 0;
-		message.msg.dm_DeviceOffsets.deviceId = deviceId;
-		message.msg.dm_DeviceOffsets.worldFromDriverRotationOffsetValid = true;
-		message.msg.dm_DeviceOffsets.worldFromDriverRotationOffset = value;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setWorldFromDriverTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t & value, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_SetDeviceOffsets);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_DeviceOffsets.clientId = m_clientId;
-		message.msg.dm_DeviceOffsets.messageId = 0;
-		message.msg.dm_DeviceOffsets.deviceId = deviceId;
-		message.msg.dm_DeviceOffsets.worldFromDriverTranslationOffsetValid = true;
-		message.msg.dm_DeviceOffsets.worldFromDriverTranslationOffset = value;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setDriverFromHeadRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t & value, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_SetDeviceOffsets);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_DeviceOffsets.clientId = m_clientId;
-		message.msg.dm_DeviceOffsets.messageId = 0;
-		message.msg.dm_DeviceOffsets.deviceId = deviceId;
-		message.msg.dm_DeviceOffsets.driverFromHeadRotationOffsetValid = true;
-		message.msg.dm_DeviceOffsets.driverFromHeadRotationOffset = value;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setDriverFromHeadTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t & value, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_SetDeviceOffsets);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_DeviceOffsets.clientId = m_clientId;
-		message.msg.dm_DeviceOffsets.messageId = 0;
-		message.msg.dm_DeviceOffsets.deviceId = deviceId;
-		message.msg.dm_DeviceOffsets.driverFromHeadTranslationOffsetValid = true;
-		message.msg.dm_DeviceOffsets.driverFromHeadTranslationOffset = value;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setDriverRotationOffset(uint32_t deviceId, const vr::HmdQuaternion_t & value, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_SetDeviceOffsets);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_DeviceOffsets.clientId = m_clientId;
-		message.msg.dm_DeviceOffsets.messageId = 0;
-		message.msg.dm_DeviceOffsets.deviceId = deviceId;
-		message.msg.dm_DeviceOffsets.deviceRotationOffsetValid = true;
-		message.msg.dm_DeviceOffsets.deviceRotationOffset = value;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setDriverTranslationOffset(uint32_t deviceId, const vr::HmdVector3d_t & value, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_SetDeviceOffsets);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_DeviceOffsets.clientId = m_clientId;
-		message.msg.dm_DeviceOffsets.messageId = 0;
-		message.msg.dm_DeviceOffsets.deviceId = deviceId;
-		message.msg.dm_DeviceOffsets.deviceTranslationOffsetValid = true;
-		message.msg.dm_DeviceOffsets.deviceTranslationOffset = value;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
 void VRWalkInPlace::getDeviceInfo(uint32_t deviceId, DeviceInfo & info) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_GetDeviceInfo);
+		ipc::Request message(ipc::RequestType::WalkInPlace_GetDeviceInfo);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
 		message.msg.vd_GenericDeviceIdMessage.deviceId = deviceId;
@@ -1490,9 +520,6 @@ void VRWalkInPlace::getDeviceInfo(uint32_t deviceId, DeviceInfo & info) {
 			info.deviceId = resp.msg.dm_deviceInfo.deviceId;
 			info.deviceClass = resp.msg.dm_deviceInfo.deviceClass;
 			info.deviceMode = resp.msg.dm_deviceInfo.deviceMode;
-			info.offsetsEnabled = resp.msg.dm_deviceInfo.offsetsEnabled;
-			info.buttonMappingEnabled = resp.msg.dm_deviceInfo.buttonMappingEnabled;
-			info.redirectSuspended = resp.msg.dm_deviceInfo.redirectSuspended;
 		} else if (resp.status == ipc::ReplyStatus::InvalidId) {
 			ss << "Invalid device id";
 			throw vrwalkinplace_invalidid(ss.str());
@@ -1510,14 +537,14 @@ void VRWalkInPlace::getDeviceInfo(uint32_t deviceId, DeviceInfo & info) {
 
 void VRWalkInPlace::setDeviceNormalMode(uint32_t deviceId, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_DefaultMode);
+		ipc::Request message(ipc::RequestType::WalkInPlace_DefaultMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
 		message.msg.vd_GenericDeviceIdMessage.messageId = 0;
 		message.msg.vd_GenericDeviceIdMessage.deviceId = deviceId;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_DeviceOffsets.messageId = messageId;
+			message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -1532,51 +559,6 @@ void VRWalkInPlace::setDeviceNormalMode(uint32_t deviceId, bool modal) {
 			}
 			std::stringstream ss;
 			ss << "Error while setting normal mode: ";
-			if (resp.status == ipc::ReplyStatus::InvalidId) {
-				ss << "Invalid device id";
-				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
-				ss << "Device not found";
-				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
-				ss << "Error code " << (int)resp.status;
-				throw vrwalkinplace_exception(ss.str());
-			}
-		} else {
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::triggerHapticPulse(uint32_t deviceId, uint32_t axisId, uint16_t durationMicroseconds, bool directMode, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::DeviceManipulation_TriggerHapticPulse);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.dm_triggerHapticPulse.clientId = m_clientId;
-		message.msg.dm_triggerHapticPulse.messageId = 0;
-		message.msg.dm_triggerHapticPulse.deviceId = deviceId;
-		message.msg.dm_triggerHapticPulse.axisId = axisId;
-		message.msg.dm_triggerHapticPulse.durationMicroseconds = durationMicroseconds;
-		message.msg.dm_triggerHapticPulse.directMode = directMode;
-		if (modal) {
-			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.dm_triggerHapticPulse.messageId = messageId;
-			std::promise<ipc::Reply> respPromise;
-			auto respFuture = respPromise.get_future();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-			}
-			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-			auto resp = respFuture.get();
-			{
-				std::lock_guard<std::recursive_mutex> lock(_mutex);
-				_ipcPromiseMap.erase(messageId);
-			}
-			std::stringstream ss;
-			ss << "Error while enabling device offsets: ";
 			if (resp.status == ipc::ReplyStatus::InvalidId) {
 				ss << "Invalid device id";
 				throw vrwalkinplace_invalidid(ss.str());

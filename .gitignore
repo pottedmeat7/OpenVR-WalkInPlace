@@ -6,7 +6,7 @@
 *.cache
 VRWalkInPlace.VC.VC.opendb
 *.db
-installer/OpenVR-InputEmulator.exe
+installer/OpenVR-WalkInPlace.exe
 .vs/VRWalkInPlace/v14/.suo
 *.obj
 *.pdb

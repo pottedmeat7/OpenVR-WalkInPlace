@@ -18,18 +18,18 @@
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-struct qt_meta_stringdata_inputemulator__OverlayController_t {
+struct qt_meta_stringdata_walkinplace__OverlayController_t {
     QByteArrayData data[14];
     char stringdata0[209];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_inputemulator__OverlayController_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_walkinplace__OverlayController_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_inputemulator__OverlayController_t qt_meta_stringdata_inputemulator__OverlayController = {
+static const qt_meta_stringdata_walkinplace__OverlayController_t qt_meta_stringdata_walkinplace__OverlayController = {
     {
-QT_MOC_LITERAL(0, 0, 32), // "inputemulator::OverlayController"
+QT_MOC_LITERAL(0, 0, 32), // "walkinplace::OverlayController"
 QT_MOC_LITERAL(1, 33, 19), // "keyBoardInputSignal"
 QT_MOC_LITERAL(2, 53, 0), // ""
 QT_MOC_LITERAL(3, 54, 5), // "input"
@@ -45,7 +45,7 @@ QT_MOC_LITERAL(12, 183, 13), // "soundDisabled"
 QT_MOC_LITERAL(13, 197, 11) // "desktopMode"
 
     },
-    "inputemulator::OverlayController\0"
+    "walkinplace::OverlayController\0"
     "keyBoardInputSignal\0\0input\0userValue\0"
     "renderOverlay\0OnRenderRequest\0"
     "OnTimeoutPumpEvents\0showKeyboard\0"
@@ -55,7 +55,7 @@ QT_MOC_LITERAL(13, 197, 11) // "desktopMode"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_inputemulator__OverlayController[] = {
+static const uint qt_meta_data_walkinplace__OverlayController[] = {
 
  // content:
        7,       // revision
@@ -106,7 +106,7 @@ static const uint qt_meta_data_inputemulator__OverlayController[] = {
        0        // eod
 };
 
-void inputemulator::OverlayController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void walkinplace::OverlayController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         OverlayController *_t = static_cast<OverlayController *>(_o);
@@ -153,26 +153,26 @@ void inputemulator::OverlayController::qt_static_metacall(QObject *_o, QMetaObje
 #endif // QT_NO_PROPERTIES
 }
 
-const QMetaObject inputemulator::OverlayController::staticMetaObject = {
-    { &QObject::staticMetaObject, qt_meta_stringdata_inputemulator__OverlayController.data,
-      qt_meta_data_inputemulator__OverlayController,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
+const QMetaObject walkinplace::OverlayController::staticMetaObject = {
+    { &QObject::staticMetaObject, qt_meta_stringdata_walkinplace__OverlayController.data,
+      qt_meta_data_walkinplace__OverlayController,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
-const QMetaObject *inputemulator::OverlayController::metaObject() const
+const QMetaObject *walkinplace::OverlayController::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *inputemulator::OverlayController::qt_metacast(const char *_clname)
+void *walkinplace::OverlayController::qt_metacast(const char *_clname)
 {
     if (!_clname) return Q_NULLPTR;
-    if (!strcmp(_clname, qt_meta_stringdata_inputemulator__OverlayController.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_walkinplace__OverlayController.stringdata0))
         return static_cast<void*>(const_cast< OverlayController*>(this));
     return QObject::qt_metacast(_clname);
 }
 
-int inputemulator::OverlayController::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int walkinplace::OverlayController::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -207,7 +207,7 @@ int inputemulator::OverlayController::qt_metacall(QMetaObject::Call _c, int _id,
 }
 
 // SIGNAL 0
-void inputemulator::OverlayController::keyBoardInputSignal(QString _t1, unsigned long _t2)
+void walkinplace::OverlayController::keyBoardInputSignal(QString _t1, unsigned long _t2)
 {
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);

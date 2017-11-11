@@ -388,8 +388,8 @@ Delete $INSTDIR\qtdata\Universal\ToolButton.qml
 Delete $INSTDIR\qtdata\Universal\ToolTip.qml
 Delete $INSTDIR\qtdata\Universal\Tumbler.qml
 Delete $INSTDIR\res\qml\backarrow.svg
-Delete $INSTDIR\res\qml\DeviceManipulationPage.qml
-Delete $INSTDIR\res\qml\DeviceManipulationPage.qml.N11200
+Delete $INSTDIR\res\qml\WalkInPlacePage.qml
+Delete $INSTDIR\res\qml\WalkInPlacePage.qml.N11200
 Delete $INSTDIR\res\qml\StepDetectionPage.qml
 Delete $INSTDIR\res\qml\DeviceOffsetsPage.qml
 Delete $INSTDIR\res\qml\mainwidget.qml

@@ -16,10 +16,6 @@ GroupBox {
     function updateGUI() {
     }
 
-    function initVars(){
-        setGameType(1)
-    }
-
     Layout.fillWidth: true
 
     label: MyText {

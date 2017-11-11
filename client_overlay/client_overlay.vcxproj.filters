@@ -27,7 +27,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\tabcontrollers\DeviceManipulationTabController.cpp">
+    <ClCompile Include="src\tabcontrollers\WalkInPlaceTabController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
@@ -38,7 +38,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\tabcontrollers\DeviceManipulationTabController.h">
+    <CustomBuild Include="src\tabcontrollers\WalkInPlaceTabController.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <ClInclude Include="src\logging.h">
@@ -49,10 +49,10 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="debug\moc_DeviceManipulationTabController.cpp">
+    <ClCompile Include="debug\moc_WalkInPlaceTabController.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="release\moc_DeviceManipulationTabController.cpp">
+    <ClCompile Include="release\moc_WalkInPlaceTabController.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_overlaycontroller.cpp">
@@ -61,8 +61,5 @@
     <ClCompile Include="release\moc_overlaycontroller.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\win64\res\qml\MotionCompensationPage.qml" />
   </ItemGroup>
 </Project>

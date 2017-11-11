@@ -1,34 +1,47 @@
-﻿  Moc'ing DeviceManipulationTabController.h...
+﻿  Moc'ing WalkInPlaceTabController.h...
   Moc'ing overlaycontroller.h...
-  moc_DeviceManipulationTabController.cpp
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/DeviceManipulationTabController.h(73): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/DeviceManipulationTabController.h(74): warning C4305: 'initializing': truncation from 'double' to 'float'
+  moc_WalkInPlaceTabController.cpp
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(58): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(59): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\release\../src/tabcontrollers/WalkInPlaceTabController.h(61): warning C4305: 'initializing': truncation from 'double' to 'float'
   moc_overlaycontroller.cpp
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(73): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(74): warning C4305: 'initializing': truncation from 'double' to 'float'
-  DeviceManipulationTabController.cpp
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\DeviceManipulationTabController.h(73): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\DeviceManipulationTabController.h(74): warning C4305: 'initializing': truncation from 'double' to 'float'
-src\tabcontrollers\DeviceManipulationTabController.cpp(390): warning C4100: 'includesMotionCompensationSettings': unreferenced formal parameter
-src\tabcontrollers\DeviceManipulationTabController.cpp(429): warning C4189: 'profile': local variable is initialized but not referenced
-src\tabcontrollers\DeviceManipulationTabController.cpp(443): warning C4100: 'notify': unreferenced formal parameter
-src\tabcontrollers\DeviceManipulationTabController.cpp(443): warning C4100: 'mode': unreferenced formal parameter
-src\tabcontrollers\DeviceManipulationTabController.cpp(628): warning C4100: 'targedIndex': unreferenced formal parameter
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(58): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(59): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(61): warning C4305: 'initializing': truncation from 'double' to 'float'
+  WalkInPlaceTabController.cpp
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(58): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(59): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers\WalkInPlaceTabController.h(61): warning C4305: 'initializing': truncation from 'double' to 'float'
   main.cpp
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(73): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(74): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(58): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(59): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(61): warning C4305: 'initializing': truncation from 'double' to 'float'
   overlaycontroller.cpp
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(70): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(73): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/DeviceManipulationTabController.h(74): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(58): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(59): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\leamm\documents\openvr-walkinplace\client_overlay\src\tabcontrollers/WalkInPlaceTabController.h(61): warning C4305: 'initializing': truncation from 'double' to 'float'
   Generating Code...
-C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1189,5): warning MSB8012: TargetPath(C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlace.exe) does not match the Linker's OutputFile property value (C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlaceOverlay.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
-C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1191,5): warning MSB8012: TargetName(OpenVR-WalkInPlace) does not match the Linker's OutputFile property value (OpenVR-WalkInPlaceOverlay). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
   libvrwalkinplace.lib(vrwalkinplace.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
   Generating code
   Finished generating code
-  client_overlay.vcxproj -> C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlace.exe
+  client_overlay.vcxproj -> C:\Users\leamm\Documents\OpenVR-WalkInPlace\client_overlay\bin\win64\OpenVR-WalkInPlaceOverlay.exe

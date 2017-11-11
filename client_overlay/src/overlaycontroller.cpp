@@ -24,7 +24,7 @@
 
 
 // application namespace
-namespace inputemulator {
+namespace walkinplace {
 
 std::unique_ptr<OverlayController> OverlayController::singleton;
 
@@ -104,20 +104,20 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	}
 
 	// Init controllers
-	deviceManipulationTabController.initStage1();
+	walkInPlaceTabController.initStage1();
 
 	// Set qml context
 	qmlEngine->rootContext()->setContextProperty("applicationVersion", getVersionString());
 	qmlEngine->rootContext()->setContextProperty("vrRuntimePath", getVRRuntimePathUrl());
 
 	// Register qml singletons
-	qmlRegisterSingletonType<OverlayController>("pottedmeat7.inputemulator", 1, 0, "OverlayController", [](QQmlEngine*, QJSEngine*) {
+	qmlRegisterSingletonType<OverlayController>("pottedmeat7.walkinplace", 1, 0, "OverlayController", [](QQmlEngine*, QJSEngine*) {
 		QObject* obj = getInstance();
 		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 		return obj;
 	});
-	qmlRegisterSingletonType<DeviceManipulationTabController>("pottedmeat7.inputemulator", 1, 0, "DeviceManipulationTabController", [](QQmlEngine*, QJSEngine*) {
-		QObject* obj = &getInstance()->deviceManipulationTabController;
+	qmlRegisterSingletonType<WalkInPlaceTabController>("pottedmeat7.walkinplace", 1, 0, "WalkInPlaceTabController", [](QQmlEngine*, QJSEngine*) {
+		QObject* obj = &getInstance()->walkInPlaceTabController;
 		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 		return obj;
 	});
@@ -197,7 +197,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 	m_pPumpEventsTimer->setInterval(20);
 	m_pPumpEventsTimer->start();
 
-	deviceManipulationTabController.initStage2(this, m_pWindow.get());
+	walkInPlaceTabController.initStage2(this, m_pWindow.get());
 }
 
 
@@ -326,14 +326,14 @@ void OverlayController::OnTimeoutPumpEvents() {
 			break;
 
 			default:
-				deviceManipulationTabController.handleEvent(vrEvent);
+				walkInPlaceTabController.handleEvent(vrEvent);
 				break;
 		}
 	}
 
 	vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
 	vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
-	deviceManipulationTabController.eventLoopTick(devicePoses);
+	walkInPlaceTabController.eventLoopTick(devicePoses);
 
 	if (m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid) {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayThumbnailHandle, &vrEvent, sizeof(vrEvent))) {
@@ -377,4 +377,4 @@ void OverlayController::showKeyboard(QString existingText, unsigned long userVal
 }
 
 
-} // namespace inputemulator
+} // namespace walkinplace
