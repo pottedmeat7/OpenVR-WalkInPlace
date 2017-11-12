@@ -52,25 +52,25 @@ Just enable "Step Detection" in the UI.
 Enable the "analog" locomotion in the games settings this is the input method that uses touching the touch-pad (not clicking)
 Then you simply walk in place to emulate walking in the VR world.
 
-## Game Type
+### Game Type
 These options are for different combinations of controls some games use the touch-pad for movement and then a click to sprint, some use the click to engage teleport. If you dont want to trigger teleport use the second option.
 
 The third option is for teleport only games, it is not working as desired at the moment.
 
-## HMD Thresholds
+### HMD Thresholds
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
 
 The XZ value is the Side to Side movement to trigger a step, in order to trigger a step the real time HMD values have to be less than the XZ threshold.
 
-## Hand Jog / Run
+### Hand Jog / Run
 These values are for the magnitude of movement (X, Y and Z movement) of the arms. 
 
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
-## Touch Options
+### Touch Options
 These values will be applied to touch-pad locomotion for in order to apply different degrees of movement into the game.
 
-## Profiles
+### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
 
 After re-opening SteamVR you can reload your saved profiles by first clicking "Load Profiles" then selecting the profile you want from the drop down menu, and click "Apply".
