@@ -216,35 +216,50 @@ namespace walkinplace {
 
 
 #define WALKINPLACESETTINGS_GETHMDTHRESHOLDS(name) { \
-	double y = settings->value(#name ## "_y", 0.13).toDouble(); \
-	double xz = settings->value(#name ## "_xz", 0.13).toDouble(); \
+	float y = settings->value(#name ## "_y", 0.13).toFloat(); \
+	float xz = settings->value(#name ## "_xz", 0.13).toFloat(); \
 	entry.name = { xz, y, xz }; \
 }
 
 #define WALKINPLACESETTINGS_GETWALKSWINGVAL(name) { \
-	double walk = settings->value(#name ## "_walk", 0.02).toDouble(); \
+	float walk = settings->value(#name ## "_walk", 0.02).toFloat(); \
 	entry.name = walk; \
 }
 
 #define WALKINPLACESETTINGS_GETJOGSWINGVAL(name) { \
-	double jog = settings->value(#name ## "_jog", 0.4).toDouble(); \
+	float jog = settings->value(#name ## "_jog", 0.4).toFloat(); \
 	entry.name = jog; \
 }
 
 #define WALKINPLACESETTINGS_GETRUNSWINGVAL(name) { \
-	double run = settings->value(#name ## "_run", 1.7).toDouble(); \
+	float run = settings->value(#name ## "_run", 1.7).toFloat(); \
 	entry.name = run; \
 }
 
 #define WALKINPLACESETTINGS_GETGAMETYPE(name) { \
-	double type = settings->value(#name ## "_gametype", 1).toInt(); \
+	int type = settings->value(#name ## "_gametype", 1).toInt(); \
+	entry.name = type; \
+}
+
+#define WALKINPLACESETTINGS_GETWALKTOUCH(name) { \
+	float type = settings->value(#name ## "_walktouch", 0.6).toFloat(); \
+	entry.name = type; \
+}
+
+#define WALKINPLACESETTINGS_GETJOGTOUCH(name) { \
+	float type = settings->value(#name ## "_jogtouch", 0.9).toFloat(); \
+	entry.name = type; \
+}
+
+#define WALKINPLACESETTINGS_GETRUNTOUCH(name) { \
+	float type = settings->value(#name ## "_runtouch", 1.0).toFloat(); \
 	entry.name = type; \
 }
 
 	void WalkInPlaceTabController::reloadWalkInPlaceSettings() {
-		//auto settings = OverlayController::appSettings();
-		//settings->beginGroup("walkInPlaceSettings");
-		//settings->endGroup();
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("walkInPlaceSettings");
+		settings->endGroup();
 	}
 
 	void WalkInPlaceTabController::reloadWalkInPlaceProfiles() {
@@ -263,6 +278,9 @@ namespace walkinplace {
 			WALKINPLACESETTINGS_GETJOGSWINGVAL(handJogThreshold);
 			WALKINPLACESETTINGS_GETRUNSWINGVAL(handRunThreshold);
 			WALKINPLACESETTINGS_GETGAMETYPE(gameType);
+			WALKINPLACESETTINGS_GETWALKTOUCH(walkTouch);
+			WALKINPLACESETTINGS_GETJOGTOUCH(jogTouch);
+			WALKINPLACESETTINGS_GETRUNTOUCH(runTouch);
 		}
 		settings->endArray();
 		settings->endGroup();
@@ -303,6 +321,21 @@ namespace walkinplace {
 	settings->setValue(#name ## "_gametype", type); \
 }
 
+#define WALKINPLACESETTINGS_WRITEWALKTOUCH(name) { \
+    auto& type = p.name; \
+	settings->setValue(#name ## "_walktouch", type); \
+}
+
+#define WALKINPLACESETTINGS_WRITEJOGTOUCH(name) { \
+    auto& type = p.name; \
+	settings->setValue(#name ## "_jogtouch", type); \
+}
+
+#define WALKINPLACESETTINGS_WRITERUNTOUCH(name) { \
+    auto& type = p.name; \
+	settings->setValue(#name ## "_runtouch", type); \
+}
+
 
 	void WalkInPlaceTabController::saveWalkInPlaceProfiles() {
 		auto settings = OverlayController::appSettings();
@@ -318,6 +351,9 @@ namespace walkinplace {
 			WALKINPLACESETTINGS_WRITEJOGSWINGVAL(handJogThreshold);
 			WALKINPLACESETTINGS_WRITERUNSWINGVAL(handRunThreshold);
 			WALKINPLACESETTINGS_WRITEGAMETYPE(gameType);
+			WALKINPLACESETTINGS_WRITEWALKTOUCH(walkTouch);
+			WALKINPLACESETTINGS_WRITEJOGTOUCH(jogTouch);
+			WALKINPLACESETTINGS_WRITERUNTOUCH(runTouch);
 			i++;
 		}
 		settings->endArray();
@@ -357,6 +393,9 @@ namespace walkinplace {
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
 		profile->gameType = gameType;
+		profile->walkTouch = walkTouch;
+		profile->jogTouch = jogTouch;
+		profile->runTouch = runTouch;
 		saveWalkInPlaceProfiles();
 		OverlayController::appSettings()->sync();
 		emit walkInPlaceProfilesChanged();
@@ -365,9 +404,23 @@ namespace walkinplace {
 	void WalkInPlaceTabController::applyWalkInPlaceProfile(unsigned index) {
 		if (index < walkInPlaceProfiles.size()) {
 			auto& profile = walkInPlaceProfiles[index];
+			hmdThreshold.v[0] = profile.hmdThreshold.v[0];
+			hmdThreshold.v[1] = profile.hmdThreshold.v[1];
+			hmdThreshold.v[2] = profile.hmdThreshold.v[2];
+			handJogThreshold = profile.handJogThreshold;
+			handRunThreshold = profile.handRunThreshold;
+			walkTouch = profile.walkTouch;
+			jogTouch = profile.jogTouch;
+			runTouch = profile.runTouch;
+			gameType = profile.gameType;
+			enableStepDetection(profile.stepDetectionEnabled);
 			setHMDThreshold(profile.hmdThreshold.v[0], profile.hmdThreshold.v[1], profile.hmdThreshold.v[2]);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
+			setGameStepType(profile.gameType);
+			setWalkTouch(profile.walkTouch);
+			setJogTouch(profile.jogTouch);
+			setRunTouch(profile.runTouch);
 		}
 	}
 
@@ -438,7 +491,9 @@ namespace walkinplace {
 		try {
 			vr::HmdVector3d_t value = { x, y, z };
 			vrwalkinplace.setHMDThreshold(value);
-			hmdThreshold = value;
+			hmdThreshold.v[0] = x;
+			hmdThreshold.v[1] = y;
+			hmdThreshold.v[2] = z;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hmd threshold: " << e.what();
@@ -474,9 +529,10 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::setGameStepType(int gameType) {
+	void WalkInPlaceTabController::setGameStepType(int type) {
 		try {
-			vrwalkinplace.setGameStepType(gameType);
+			vrwalkinplace.setGameStepType(type);
+			gameType = type;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();

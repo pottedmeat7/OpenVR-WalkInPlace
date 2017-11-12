@@ -17,7 +17,6 @@ GroupBox {
 
     property var setHMDXZ: function(x) {}
     property var setHMDY: function(y) {}
-    property var setHandWalk: function(w) {}
     property var setHandJog: function(j) {}
     property var setHandRun: function(r) {}
     property var updateValues: function() {}
@@ -189,7 +188,7 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 180
+                Layout.preferredWidth: 160
             }
 
             MyPushButton2 {
