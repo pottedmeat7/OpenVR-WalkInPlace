@@ -209,19 +209,6 @@ GroupBox {
             columns: 6
 
             MyText {
-                text: "Hand Walk Movement:"
-                Layout.fillWidth: true
-                font.strikeout: true
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }
-
-            MyText {
                 text: "Hand Jog Movement:"
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
@@ -243,63 +230,21 @@ GroupBox {
             MyText {
                 text: " "
                 Layout.preferredWidth: 100
-            }
-        }
+            }            
 
-        GridLayout {
-            columns: 12
-
-            MyPushButton2 {
-                id: handWalkMinusButton
-                Layout.preferredWidth: 40
-                text: "-"
-                onClicked: {
-                    var value = et - thresholdStep
-                    if (value < thresholdStep) {
-                        value = thresholdStep
-                    }
-                    handWalk = value
-                }
-            }
-
-            MyTextField {
-                id: handWalkInputField
-                text: "0.02"
-                keyBoardUID: keyboardUIDBase
-                Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < thresholdStep) {
-                            val = thresholdStep
-                        } else if (val > 3.0) {
-                            val = 3.0
-                        }
-                        handWalk = val
-                    } 
-                }
-            }
-
-            MyPushButton2 {
-                id: handWalkPlusButton
-                Layout.preferredWidth: 40
-                text: "+"
-                onClicked: {
-                    var value = handJog + thresholdStep
-                    if (value > 3.0) {
-                        value = 3.0
-                    }
-                    handWalk = value                    
-                }
-            }
+            MyText {
+                text: " "
+                Layout.preferredWidth: 240
+            }        
 
             MyText {
                 text: " "
                 Layout.preferredWidth: 100
-            }
+            }    
+        }
+
+        GridLayout {
+            columns: 8
 
             MyPushButton2 {
                 id: handJogMinusButton
@@ -410,7 +355,6 @@ GroupBox {
                 text: " "
                 Layout.preferredWidth: 100
             }
-
         }
     }
 }

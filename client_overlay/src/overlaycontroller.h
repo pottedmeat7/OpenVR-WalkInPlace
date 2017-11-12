@@ -35,7 +35,7 @@ class OverlayController : public QObject {
 
 public:
 	static constexpr const char* applicationKey = "pottedmeat7.VRWalkInPlace";
-	static constexpr const char* applicationName = "OpenVR WIP";
+	static constexpr const char* applicationName = "OpenVR Walk in Place";
 	static constexpr const char* applicationVersionString = "v2.2";
 
 private:

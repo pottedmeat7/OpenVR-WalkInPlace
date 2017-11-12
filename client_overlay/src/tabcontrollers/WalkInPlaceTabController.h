@@ -22,6 +22,9 @@ struct WalkInPlaceProfile {
 	float handWalkThreshold = 0.02;
 	float handJogThreshold = 0.40;
 	float handRunThreshold = 1.70;
+	float walkTouch = 0.6;
+	float jogTouch = 0.9;
+	float runTouch = 1.0;
 	vr::HmdVector3d_t hmdThreshold = { 0.13, 0.13, 0.13 };
 };
 
@@ -59,6 +62,9 @@ private:
 	float handWalkThreshold = 0.02;
 	float handJogThreshold = 0.40;
 	float handRunThreshold = 1.70;
+	float walkTouch = 0.6;
+	float jogTouch = 0.9;
+	float runTouch = 1.0;
 
 public:
 	~WalkInPlaceTabController();
@@ -81,6 +87,9 @@ public:
 	Q_INVOKABLE float getHandWalkThreshold();
 	Q_INVOKABLE float getHandJogThreshold();
 	Q_INVOKABLE float getHandRunThreshold();
+	Q_INVOKABLE float getWalkTouch();
+	Q_INVOKABLE float getJogTouch();
+	Q_INVOKABLE float getRunTouch();
 	Q_INVOKABLE bool isStepDetectionEnabled();
 
 	void reloadWalkInPlaceSettings();
@@ -91,8 +100,6 @@ public:
 	Q_INVOKABLE unsigned getWalkInPlaceProfileCount();
 	Q_INVOKABLE QString getWalkInPlaceProfileName(unsigned index);
 
-	Q_INVOKABLE bool updateDeviceInfo(unsigned index);
-
 public slots:
     void enableStepDetection(bool enable);
 	void setStepIntSec(float value);
@@ -100,6 +107,9 @@ public slots:
 	void setHandWalkThreshold(float walkThreshold);
 	void setHandJogThreshold(float jogThreshold);
 	void setHandRunThreshold(float runThreshold);
+	void setWalkTouch(float value);
+	void setJogTouch(float value);
+	void setRunTouch(float value);
 	void setGameStepType(int gameType);
 
 	void addWalkInPlaceProfile(QString name);

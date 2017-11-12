@@ -144,10 +144,10 @@ public:
 	void setHMDThreshold(const vr::HmdVector3d_t& value, bool modal = true);
 	void setHandJogThreshold(float value, bool modal = true);
 	void setHandRunThreshold(float value, bool modal = true);
+	void setWalkTouch(float value, bool modal = true);
+	void setJogTouch(float value, bool modal = true);
+	void setRunTouch(float value, bool modal = true);
 	void setGameStepType(int gameType, bool modal = true);
-
-	void getDeviceInfo(uint32_t deviceId, DeviceInfo& info);
-	void setDeviceNormalMode(uint32_t deviceId, bool modal = true);
 
 private:
 	std::recursive_mutex _mutex;

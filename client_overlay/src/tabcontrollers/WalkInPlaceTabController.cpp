@@ -63,19 +63,6 @@ namespace walkinplace {
 		if (settingsUpdateCounter >= 50) {
 			settingsUpdateCounter = 0;
 			if (parent->isDashboardVisible() || parent->isDesktopMode()) {
-				unsigned i = 0;
-				for (auto info : deviceInfos) {
-					bool hasDeviceInfoChanged = updateDeviceInfo(i);
-					unsigned status = devicePoses[info->openvrId].bDeviceIsConnected ? 0 : 1;
-					if (info->deviceMode == 0 && info->deviceStatus != status) {
-						info->deviceStatus = status;
-						hasDeviceInfoChanged = true;
-					}
-					if (hasDeviceInfoChanged) {
-						emit deviceInfoChanged(i);
-					}
-					++i;
-				}
 				bool newDeviceAdded = false;
 				for (uint32_t id = maxValidDeviceId + 1; id < vr::k_unMaxTrackedDeviceCount; ++id) {
 					auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(id);
@@ -96,9 +83,10 @@ namespace walkinplace {
 							}
 
 							try {
-								vrwalkinplace::DeviceInfo info2;
-								vrwalkinplace.getDeviceInfo(info->openvrId, info2);
-								info->deviceMode = info2.deviceMode;
+								//vrwalkinplace::DeviceInfo info2;
+								//vrwalkinplace.getDeviceInfo(info->openvrId, info2);
+								//info->deviceMode = info2.deviceMode;
+								info->deviceMode = 0;
 							}
 							catch (std::exception& e) {
 								LOG(ERROR) << "Exception caught while getting device info: " << e.what();
@@ -212,6 +200,18 @@ namespace walkinplace {
 
 	float WalkInPlaceTabController::getHandRunThreshold() {
 		return handRunThreshold;
+	}
+
+	float WalkInPlaceTabController::getWalkTouch() {
+		return walkTouch;
+	}
+
+	float WalkInPlaceTabController::getJogTouch() {
+		return jogTouch;
+	}
+
+	float WalkInPlaceTabController::getRunTouch() {
+		return runTouch;
 	}
 
 
@@ -404,6 +404,36 @@ namespace walkinplace {
 		}
 	}
 
+	void WalkInPlaceTabController::setWalkTouch(float value) {
+		try {
+			vrwalkinplace.setWalkTouch(value);
+			walkTouch = value;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting walk touch: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::setJogTouch(float value) {
+		try {
+			vrwalkinplace.setJogTouch(value);
+			jogTouch = value;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting jog touch: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::setRunTouch(float value) {
+		try {
+			vrwalkinplace.setRunTouch(value);
+			runTouch = value;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting run touch: " << e.what();
+		}
+	}
+
 	void WalkInPlaceTabController::setHMDThreshold(float x, float y, float z) {
 		try {
 			vr::HmdVector3d_t value = { x, y, z };
@@ -451,28 +481,6 @@ namespace walkinplace {
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();
 		}
-	}
-
-	bool WalkInPlaceTabController::updateDeviceInfo(unsigned index) {
-		bool retval = false;
-		if (index < deviceInfos.size()) {
-			try {
-				vrwalkinplace::DeviceInfo info;
-				vrwalkinplace.getDeviceInfo(deviceInfos[index]->openvrId, info);
-				if (deviceInfos[index]->deviceMode != info.deviceMode) {
-					deviceInfos[index]->deviceMode = info.deviceMode;
-					retval = true;
-				}
-				if (deviceInfos[index]->stepDetectionEnabled != info.stepDetectionEnabled) {
-					deviceInfos[index]->stepDetectionEnabled = info.stepDetectionEnabled;
-					retval = true;
-				}
-			}
-			catch (std::exception& e) {
-				LOG(ERROR) << "Exception caught while getting device info: " << e.what();
-			}
-		}
-		return retval;
 	}
 
 } // namespace walkinplace

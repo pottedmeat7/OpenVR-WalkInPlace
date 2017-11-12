@@ -6,7 +6,7 @@
 #include <config.h>
 
 
-#if VRwalkinplace_EASYLOGGING == 1
+#if VRWALKINPLACE_EASYLOGGING == 1
 	#include "logging.h";
 	#define WRITELOG(level, txt) LOG(level) << txt;
 #else
@@ -494,57 +494,17 @@ void VRWalkInPlace::setHandRunThreshold(float value, bool modal) {
 	}
 }
 
-void VRWalkInPlace::getDeviceInfo(uint32_t deviceId, DeviceInfo & info) {
+void VRWalkInPlace::setWalkTouch(float value, bool modal) {
 	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::WalkInPlace_GetDeviceInfo);
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
-		message.msg.vd_GenericDeviceIdMessage.deviceId = deviceId;
-		uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-		message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
-		std::promise<ipc::Reply> respPromise;
-		auto respFuture = respPromise.get_future();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
-		}
-		_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
-		auto resp = respFuture.get();
-		{
-			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_ipcPromiseMap.erase(messageId);
-		}
-		std::stringstream ss;
-		ss << "Error while getting device info: ";
-		if (resp.status == ipc::ReplyStatus::Ok) {
-			info.deviceId = resp.msg.dm_deviceInfo.deviceId;
-			info.deviceClass = resp.msg.dm_deviceInfo.deviceClass;
-			info.deviceMode = resp.msg.dm_deviceInfo.deviceMode;
-		} else if (resp.status == ipc::ReplyStatus::InvalidId) {
-			ss << "Invalid device id";
-			throw vrwalkinplace_invalidid(ss.str());
-		} else if (resp.status == ipc::ReplyStatus::NotFound) {
-			ss << "Device not found";
-			throw vrwalkinplace_notfound(ss.str());
-		} else if (resp.status != ipc::ReplyStatus::Ok) {
-			ss << "Error code " << (int)resp.status;
-			throw vrwalkinplace_exception(ss.str());
-		}
-	} else {
-		throw vrwalkinplace_connectionerror("No active connection.");
-	}
-}
-
-void VRWalkInPlace::setDeviceNormalMode(uint32_t deviceId, bool modal) {
-	if (_ipcServerQueue) {
-		ipc::Request message(ipc::RequestType::WalkInPlace_DefaultMode);
-		memset(&message.msg, 0, sizeof(message.msg));
-		message.msg.vd_GenericDeviceIdMessage.clientId = m_clientId;
-		message.msg.vd_GenericDeviceIdMessage.messageId = 0;
-		message.msg.vd_GenericDeviceIdMessage.deviceId = deviceId;
+		message.msg.dm_StepDetectionMode.clientId = m_clientId;
+		message.msg.dm_StepDetectionMode.messageId = 0;
+		message.msg.dm_StepDetectionMode.walkTouch = value;
+		message.msg.dm_StepDetectionMode.stepDetectOperation = 8;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
-			message.msg.vd_GenericDeviceIdMessage.messageId = messageId;
+			message.msg.dm_StepDetectionMode.messageId = messageId;
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();
 			{
@@ -558,24 +518,121 @@ void VRWalkInPlace::setDeviceNormalMode(uint32_t deviceId, bool modal) {
 				_ipcPromiseMap.erase(messageId);
 			}
 			std::stringstream ss;
-			ss << "Error while setting normal mode: ";
+			ss << "Error while enabling step accleration: ";
 			if (resp.status == ipc::ReplyStatus::InvalidId) {
 				ss << "Invalid device id";
 				throw vrwalkinplace_invalidid(ss.str());
-			} else if (resp.status == ipc::ReplyStatus::NotFound) {
+			}
+			else if (resp.status == ipc::ReplyStatus::NotFound) {
 				ss << "Device not found";
 				throw vrwalkinplace_notfound(ss.str());
-			} else if (resp.status != ipc::ReplyStatus::Ok) {
+			}
+			else if (resp.status != ipc::ReplyStatus::Ok) {
 				ss << "Error code " << (int)resp.status;
 				throw vrwalkinplace_exception(ss.str());
 			}
-		} else {
+		}
+		else {
 			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
 		}
-	} else {
+	}
+	else {
 		throw vrwalkinplace_connectionerror("No active connection.");
 	}
 }
 
+void VRWalkInPlace::setJogTouch(float value, bool modal) {
+	if (_ipcServerQueue) {
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
+		memset(&message.msg, 0, sizeof(message.msg));
+		message.msg.dm_StepDetectionMode.clientId = m_clientId;
+		message.msg.dm_StepDetectionMode.messageId = 0;
+		message.msg.dm_StepDetectionMode.jogTouch = value;
+		message.msg.dm_StepDetectionMode.stepDetectOperation = 9;
+		if (modal) {
+			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
+			message.msg.dm_StepDetectionMode.messageId = messageId;
+			std::promise<ipc::Reply> respPromise;
+			auto respFuture = respPromise.get_future();
+			{
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
+			}
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+			auto resp = respFuture.get();
+			{
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				_ipcPromiseMap.erase(messageId);
+			}
+			std::stringstream ss;
+			ss << "Error while enabling step accleration: ";
+			if (resp.status == ipc::ReplyStatus::InvalidId) {
+				ss << "Invalid device id";
+				throw vrwalkinplace_invalidid(ss.str());
+			}
+			else if (resp.status == ipc::ReplyStatus::NotFound) {
+				ss << "Device not found";
+				throw vrwalkinplace_notfound(ss.str());
+			}
+			else if (resp.status != ipc::ReplyStatus::Ok) {
+				ss << "Error code " << (int)resp.status;
+				throw vrwalkinplace_exception(ss.str());
+			}
+		}
+		else {
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+		}
+	}
+	else {
+		throw vrwalkinplace_connectionerror("No active connection.");
+	}
+}
+
+void VRWalkInPlace::setRunTouch(float value, bool modal) {
+	if (_ipcServerQueue) {
+		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
+		memset(&message.msg, 0, sizeof(message.msg));
+		message.msg.dm_StepDetectionMode.clientId = m_clientId;
+		message.msg.dm_StepDetectionMode.messageId = 0;
+		message.msg.dm_StepDetectionMode.runTouch = value;
+		message.msg.dm_StepDetectionMode.stepDetectOperation = 10;
+		if (modal) {
+			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);
+			message.msg.dm_StepDetectionMode.messageId = messageId;
+			std::promise<ipc::Reply> respPromise;
+			auto respFuture = respPromise.get_future();
+			{
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				_ipcPromiseMap.insert({ messageId, std::move(respPromise) });
+			}
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+			auto resp = respFuture.get();
+			{
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				_ipcPromiseMap.erase(messageId);
+			}
+			std::stringstream ss;
+			ss << "Error while enabling step accleration: ";
+			if (resp.status == ipc::ReplyStatus::InvalidId) {
+				ss << "Invalid device id";
+				throw vrwalkinplace_invalidid(ss.str());
+			}
+			else if (resp.status == ipc::ReplyStatus::NotFound) {
+				ss << "Device not found";
+				throw vrwalkinplace_notfound(ss.str());
+			}
+			else if (resp.status != ipc::ReplyStatus::Ok) {
+				ss << "Error code " << (int)resp.status;
+				throw vrwalkinplace_exception(ss.str());
+			}
+		}
+		else {
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+		}
+	}
+	else {
+		throw vrwalkinplace_connectionerror("No active connection.");
+	}
+}
 
 } // end namespace vrwalkinplace

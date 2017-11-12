@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_walkinplace__WalkInPlaceTabController_t {
-    QByteArrayData data[44];
-    char stringdata0[694];
+    QByteArrayData data[49];
+    char stringdata0[751];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -50,29 +50,34 @@ QT_MOC_LITERAL(17, 225, 19), // "setHandJogThreshold"
 QT_MOC_LITERAL(18, 245, 12), // "jogThreshold"
 QT_MOC_LITERAL(19, 258, 19), // "setHandRunThreshold"
 QT_MOC_LITERAL(20, 278, 12), // "runThreshold"
-QT_MOC_LITERAL(21, 291, 15), // "setGameStepType"
-QT_MOC_LITERAL(22, 307, 8), // "gameType"
-QT_MOC_LITERAL(23, 316, 21), // "addWalkInPlaceProfile"
-QT_MOC_LITERAL(24, 338, 4), // "name"
-QT_MOC_LITERAL(25, 343, 23), // "applyWalkInPlaceProfile"
-QT_MOC_LITERAL(26, 367, 24), // "deleteWalkInPlaceProfile"
-QT_MOC_LITERAL(27, 392, 14), // "getDeviceCount"
-QT_MOC_LITERAL(28, 407, 15), // "getDeviceSerial"
-QT_MOC_LITERAL(29, 423, 11), // "getDeviceId"
-QT_MOC_LITERAL(30, 435, 14), // "getDeviceClass"
-QT_MOC_LITERAL(31, 450, 14), // "getDeviceState"
-QT_MOC_LITERAL(32, 465, 13), // "getDeviceMode"
-QT_MOC_LITERAL(33, 479, 13), // "getStepIntSec"
-QT_MOC_LITERAL(34, 493, 11), // "getGameType"
-QT_MOC_LITERAL(35, 505, 17), // "getHMDXZThreshold"
-QT_MOC_LITERAL(36, 523, 16), // "getHMDYThreshold"
-QT_MOC_LITERAL(37, 540, 20), // "getHandWalkThreshold"
-QT_MOC_LITERAL(38, 561, 19), // "getHandJogThreshold"
-QT_MOC_LITERAL(39, 581, 19), // "getHandRunThreshold"
-QT_MOC_LITERAL(40, 601, 22), // "isStepDetectionEnabled"
-QT_MOC_LITERAL(41, 624, 26), // "getWalkInPlaceProfileCount"
-QT_MOC_LITERAL(42, 651, 25), // "getWalkInPlaceProfileName"
-QT_MOC_LITERAL(43, 677, 16) // "updateDeviceInfo"
+QT_MOC_LITERAL(21, 291, 12), // "setWalkTouch"
+QT_MOC_LITERAL(22, 304, 11), // "setJogTouch"
+QT_MOC_LITERAL(23, 316, 11), // "setRunTouch"
+QT_MOC_LITERAL(24, 328, 15), // "setGameStepType"
+QT_MOC_LITERAL(25, 344, 8), // "gameType"
+QT_MOC_LITERAL(26, 353, 21), // "addWalkInPlaceProfile"
+QT_MOC_LITERAL(27, 375, 4), // "name"
+QT_MOC_LITERAL(28, 380, 23), // "applyWalkInPlaceProfile"
+QT_MOC_LITERAL(29, 404, 24), // "deleteWalkInPlaceProfile"
+QT_MOC_LITERAL(30, 429, 14), // "getDeviceCount"
+QT_MOC_LITERAL(31, 444, 15), // "getDeviceSerial"
+QT_MOC_LITERAL(32, 460, 11), // "getDeviceId"
+QT_MOC_LITERAL(33, 472, 14), // "getDeviceClass"
+QT_MOC_LITERAL(34, 487, 14), // "getDeviceState"
+QT_MOC_LITERAL(35, 502, 13), // "getDeviceMode"
+QT_MOC_LITERAL(36, 516, 13), // "getStepIntSec"
+QT_MOC_LITERAL(37, 530, 11), // "getGameType"
+QT_MOC_LITERAL(38, 542, 17), // "getHMDXZThreshold"
+QT_MOC_LITERAL(39, 560, 16), // "getHMDYThreshold"
+QT_MOC_LITERAL(40, 577, 20), // "getHandWalkThreshold"
+QT_MOC_LITERAL(41, 598, 19), // "getHandJogThreshold"
+QT_MOC_LITERAL(42, 618, 19), // "getHandRunThreshold"
+QT_MOC_LITERAL(43, 638, 12), // "getWalkTouch"
+QT_MOC_LITERAL(44, 651, 11), // "getJogTouch"
+QT_MOC_LITERAL(45, 663, 11), // "getRunTouch"
+QT_MOC_LITERAL(46, 675, 22), // "isStepDetectionEnabled"
+QT_MOC_LITERAL(47, 698, 26), // "getWalkInPlaceProfileCount"
+QT_MOC_LITERAL(48, 725, 25) // "getWalkInPlaceProfileName"
 
     },
     "walkinplace::WalkInPlaceTabController\0"
@@ -84,6 +89,7 @@ QT_MOC_LITERAL(43, 677, 16) // "updateDeviceInfo"
     "setHandWalkThreshold\0walkThreshold\0"
     "setHandJogThreshold\0jogThreshold\0"
     "setHandRunThreshold\0runThreshold\0"
+    "setWalkTouch\0setJogTouch\0setRunTouch\0"
     "setGameStepType\0gameType\0addWalkInPlaceProfile\0"
     "name\0applyWalkInPlaceProfile\0"
     "deleteWalkInPlaceProfile\0getDeviceCount\0"
@@ -92,9 +98,10 @@ QT_MOC_LITERAL(43, 677, 16) // "updateDeviceInfo"
     "getGameType\0getHMDXZThreshold\0"
     "getHMDYThreshold\0getHandWalkThreshold\0"
     "getHandJogThreshold\0getHandRunThreshold\0"
+    "getWalkTouch\0getJogTouch\0getRunTouch\0"
     "isStepDetectionEnabled\0"
     "getWalkInPlaceProfileCount\0"
-    "getWalkInPlaceProfileName\0updateDeviceInfo"
+    "getWalkInPlaceProfileName"
 };
 #undef QT_MOC_LITERAL
 
@@ -104,7 +111,7 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      30,   14, // methods
+      35,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -112,40 +119,45 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  164,    2, 0x06 /* Public */,
-       4,    1,  167,    2, 0x06 /* Public */,
-       6,    0,  170,    2, 0x06 /* Public */,
+       1,    1,  189,    2, 0x06 /* Public */,
+       4,    1,  192,    2, 0x06 /* Public */,
+       6,    0,  195,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       7,    1,  171,    2, 0x0a /* Public */,
-       9,    1,  174,    2, 0x0a /* Public */,
-      11,    3,  177,    2, 0x0a /* Public */,
-      15,    1,  184,    2, 0x0a /* Public */,
-      17,    1,  187,    2, 0x0a /* Public */,
-      19,    1,  190,    2, 0x0a /* Public */,
-      21,    1,  193,    2, 0x0a /* Public */,
-      23,    1,  196,    2, 0x0a /* Public */,
-      25,    1,  199,    2, 0x0a /* Public */,
-      26,    1,  202,    2, 0x0a /* Public */,
+       7,    1,  196,    2, 0x0a /* Public */,
+       9,    1,  199,    2, 0x0a /* Public */,
+      11,    3,  202,    2, 0x0a /* Public */,
+      15,    1,  209,    2, 0x0a /* Public */,
+      17,    1,  212,    2, 0x0a /* Public */,
+      19,    1,  215,    2, 0x0a /* Public */,
+      21,    1,  218,    2, 0x0a /* Public */,
+      22,    1,  221,    2, 0x0a /* Public */,
+      23,    1,  224,    2, 0x0a /* Public */,
+      24,    1,  227,    2, 0x0a /* Public */,
+      26,    1,  230,    2, 0x0a /* Public */,
+      28,    1,  233,    2, 0x0a /* Public */,
+      29,    1,  236,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-      27,    0,  205,    2, 0x02 /* Public */,
-      28,    1,  206,    2, 0x02 /* Public */,
-      29,    1,  209,    2, 0x02 /* Public */,
-      30,    1,  212,    2, 0x02 /* Public */,
-      31,    1,  215,    2, 0x02 /* Public */,
-      32,    1,  218,    2, 0x02 /* Public */,
-      33,    0,  221,    2, 0x02 /* Public */,
-      34,    0,  222,    2, 0x02 /* Public */,
-      35,    0,  223,    2, 0x02 /* Public */,
-      36,    0,  224,    2, 0x02 /* Public */,
-      37,    0,  225,    2, 0x02 /* Public */,
-      38,    0,  226,    2, 0x02 /* Public */,
-      39,    0,  227,    2, 0x02 /* Public */,
-      40,    0,  228,    2, 0x02 /* Public */,
-      41,    0,  229,    2, 0x02 /* Public */,
-      42,    1,  230,    2, 0x02 /* Public */,
-      43,    1,  233,    2, 0x02 /* Public */,
+      30,    0,  239,    2, 0x02 /* Public */,
+      31,    1,  240,    2, 0x02 /* Public */,
+      32,    1,  243,    2, 0x02 /* Public */,
+      33,    1,  246,    2, 0x02 /* Public */,
+      34,    1,  249,    2, 0x02 /* Public */,
+      35,    1,  252,    2, 0x02 /* Public */,
+      36,    0,  255,    2, 0x02 /* Public */,
+      37,    0,  256,    2, 0x02 /* Public */,
+      38,    0,  257,    2, 0x02 /* Public */,
+      39,    0,  258,    2, 0x02 /* Public */,
+      40,    0,  259,    2, 0x02 /* Public */,
+      41,    0,  260,    2, 0x02 /* Public */,
+      42,    0,  261,    2, 0x02 /* Public */,
+      43,    0,  262,    2, 0x02 /* Public */,
+      44,    0,  263,    2, 0x02 /* Public */,
+      45,    0,  264,    2, 0x02 /* Public */,
+      46,    0,  265,    2, 0x02 /* Public */,
+      47,    0,  266,    2, 0x02 /* Public */,
+      48,    1,  267,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::UInt,    3,
@@ -159,8 +171,11 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
     QMetaType::Void, QMetaType::Float,   16,
     QMetaType::Void, QMetaType::Float,   18,
     QMetaType::Void, QMetaType::Float,   20,
-    QMetaType::Void, QMetaType::Int,   22,
-    QMetaType::Void, QMetaType::QString,   24,
+    QMetaType::Void, QMetaType::Float,   10,
+    QMetaType::Void, QMetaType::Float,   10,
+    QMetaType::Void, QMetaType::Float,   10,
+    QMetaType::Void, QMetaType::Int,   25,
+    QMetaType::Void, QMetaType::QString,   27,
     QMetaType::Void, QMetaType::UInt,    5,
     QMetaType::Void, QMetaType::UInt,    5,
 
@@ -178,10 +193,12 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
     QMetaType::Float,
     QMetaType::Float,
     QMetaType::Float,
+    QMetaType::Float,
+    QMetaType::Float,
+    QMetaType::Float,
     QMetaType::Bool,
     QMetaType::UInt,
     QMetaType::QString, QMetaType::UInt,    5,
-    QMetaType::Bool, QMetaType::UInt,    5,
 
        0        // eod
 };
@@ -201,44 +218,51 @@ void walkinplace::WalkInPlaceTabController::qt_static_metacall(QObject *_o, QMet
         case 6: _t->setHandWalkThreshold((*reinterpret_cast< float(*)>(_a[1]))); break;
         case 7: _t->setHandJogThreshold((*reinterpret_cast< float(*)>(_a[1]))); break;
         case 8: _t->setHandRunThreshold((*reinterpret_cast< float(*)>(_a[1]))); break;
-        case 9: _t->setGameStepType((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 10: _t->addWalkInPlaceProfile((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 11: _t->applyWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 12: _t->deleteWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 13: { uint _r = _t->getDeviceCount();
+        case 9: _t->setWalkTouch((*reinterpret_cast< float(*)>(_a[1]))); break;
+        case 10: _t->setJogTouch((*reinterpret_cast< float(*)>(_a[1]))); break;
+        case 11: _t->setRunTouch((*reinterpret_cast< float(*)>(_a[1]))); break;
+        case 12: _t->setGameStepType((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 13: _t->addWalkInPlaceProfile((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 14: _t->applyWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 15: _t->deleteWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 16: { uint _r = _t->getDeviceCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 14: { QString _r = _t->getDeviceSerial((*reinterpret_cast< uint(*)>(_a[1])));
+        case 17: { QString _r = _t->getDeviceSerial((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 15: { uint _r = _t->getDeviceId((*reinterpret_cast< uint(*)>(_a[1])));
+        case 18: { uint _r = _t->getDeviceId((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 16: { int _r = _t->getDeviceClass((*reinterpret_cast< uint(*)>(_a[1])));
+        case 19: { int _r = _t->getDeviceClass((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 17: { int _r = _t->getDeviceState((*reinterpret_cast< uint(*)>(_a[1])));
+        case 20: { int _r = _t->getDeviceState((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 18: { int _r = _t->getDeviceMode((*reinterpret_cast< uint(*)>(_a[1])));
+        case 21: { int _r = _t->getDeviceMode((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 19: { float _r = _t->getStepIntSec();
+        case 22: { float _r = _t->getStepIntSec();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 20: { int _r = _t->getGameType();
+        case 23: { int _r = _t->getGameType();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 21: { float _r = _t->getHMDXZThreshold();
+        case 24: { float _r = _t->getHMDXZThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 22: { float _r = _t->getHMDYThreshold();
+        case 25: { float _r = _t->getHMDYThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 23: { float _r = _t->getHandWalkThreshold();
+        case 26: { float _r = _t->getHandWalkThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 24: { float _r = _t->getHandJogThreshold();
+        case 27: { float _r = _t->getHandJogThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 25: { float _r = _t->getHandRunThreshold();
+        case 28: { float _r = _t->getHandRunThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
-        case 26: { bool _r = _t->isStepDetectionEnabled();
+        case 29: { float _r = _t->getWalkTouch();
+            if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
+        case 30: { float _r = _t->getJogTouch();
+            if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
+        case 31: { float _r = _t->getRunTouch();
+            if (_a[0]) *reinterpret_cast< float*>(_a[0]) = _r; }  break;
+        case 32: { bool _r = _t->isStepDetectionEnabled();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 27: { uint _r = _t->getWalkInPlaceProfileCount();
+        case 33: { uint _r = _t->getWalkInPlaceProfileCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 28: { QString _r = _t->getWalkInPlaceProfileName((*reinterpret_cast< uint(*)>(_a[1])));
+        case 34: { QString _r = _t->getWalkInPlaceProfileName((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 29: { bool _r = _t->updateDeviceInfo((*reinterpret_cast< uint(*)>(_a[1])));
-            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -293,13 +317,13 @@ int walkinplace::WalkInPlaceTabController::qt_metacall(QMetaObject::Call _c, int
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 30)
+        if (_id < 35)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 30;
+        _id -= 35;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 30)
+        if (_id < 35)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 30;
+        _id -= 35;
     }
     return _id;
 }

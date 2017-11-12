@@ -11,4 +11,6 @@ installer/OpenVR-WalkInPlace.exe
 *.obj
 *.pdb
 *.exe
+*.log
+*.tlog
 

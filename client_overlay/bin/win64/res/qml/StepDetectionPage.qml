@@ -16,6 +16,9 @@ MyStackViewPage {
         stepThresholdBox.setHandWalk(WalkInPlaceTabController.getHandWalkThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
+        stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
+        stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
+        stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
         stepThresholdBox.updateGUI()
     }
@@ -128,6 +131,24 @@ MyStackViewPage {
             }
         }
 
+        StepDetectConfBox4 {
+            boxTitle: "Touch Pad Configuration"
+            id: stepControlBox
+            keyboardUIDBase: 200
+            setWalkTouchVal: function(val) {
+                WalkInPlaceTabController.setWalkTouchVal(val)
+                updateGUI()
+            }
+            setJogTouchVal: function(val) {
+                WalkInPlaceTabController.setJogTouchVal(val)
+                updateGUI()
+            }
+            setRunTouchVal: function(val) {
+                WalkInPlaceTabController.setRunTouchVal(val)
+                updateGUI()
+            }
+        }
+
         RowLayout {
             MyPushButton {
                 Layout.preferredWidth: 200
@@ -139,6 +160,10 @@ MyStackViewPage {
                     stepThresholdBox.setHandWalk(0.02)
                     stepThresholdBox.setHandJog(0.40)
                     stepThresholdBox.setHandRun(1.70)
+                    stepControlBox.setWalkTouch(0.6)
+                    stepControlBox.setJogTouch(0.9)
+                    stepControlBox.setRunTouch(1)
+                    stepControlBox.updateGUI()
                     stepMovementType.updateGUI()
                     stepThresholdBox.updateGUI()
                 }

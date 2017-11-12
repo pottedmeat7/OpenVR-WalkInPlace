@@ -113,28 +113,6 @@ namespace vrwalkinplace {
 								}
 								break;
 
-								case ipc::RequestType::WalkInPlace_GetDeviceInfo:
-								{
-									ipc::Reply resp(ipc::ReplyType::GenericReply);
-									resp.messageId = message.msg.vd_GenericDeviceIdMessage.messageId;
-									if (message.msg.vd_GenericDeviceIdMessage.deviceId >= vr::k_unMaxTrackedDeviceCount) {
-										resp.status = ipc::ReplyStatus::InvalidId;
-									}
-									else {
-										OpenvrWalkInPlaceInfo* info = driver->walkInPlace_getInfo(message.msg.vd_GenericDeviceIdMessage.deviceId);
-										if (!info) {
-											resp.status = ipc::ReplyStatus::NotFound;
-										}
-										else {
-											resp.status = ipc::ReplyStatus::Ok;
-											resp.msg.dm_deviceInfo.deviceId = message.msg.vd_GenericDeviceIdMessage.deviceId;
-											resp.msg.dm_deviceInfo.deviceMode = info->deviceMode();
-											resp.msg.dm_deviceInfo.deviceClass = info->deviceClass();
-										}
-									}
-								}
-								break;
-
 								case ipc::RequestType::WalkInPlace_StepDetectionMode:
 								{
 									ipc::Reply resp(ipc::ReplyType::GenericReply);
@@ -167,6 +145,18 @@ namespace vrwalkinplace {
 										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 7)
 										{
 											serverDriver->setHandRunThreshold(message.msg.dm_StepDetectionMode.handRunThreshold);
+										}
+										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 8)
+										{
+											serverDriver->setWalkTouch(message.msg.dm_StepDetectionMode.walkTouch);
+										}
+										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 9)
+										{
+											serverDriver->setJogTouch(message.msg.dm_StepDetectionMode.jogTouch);
+										}
+										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 10)
+										{
+											serverDriver->setRunTouch(message.msg.dm_StepDetectionMode.runTouch);
 										}
 										resp.status = ipc::ReplyStatus::Ok;
 									}

@@ -160,6 +160,9 @@ namespace vrwalkinplace {
 			void setHMDThreshold(vr::HmdVector3d_t value);
 			void setHandJogThreshold(float value);
 			void setHandRunThreshold(float value);
+			void setWalkTouch(float value);
+			void setJogTouch(float value);
+			void setRunTouch(float value);
 			void setStepPoseDetected(bool enable);
 			bool isStepDetectionEnabled();
 			bool _applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo);
@@ -184,6 +187,9 @@ namespace vrwalkinplace {
 			int _hasUnTouchedStepAxis = 0;			
 			float _handJogThreshold = 0.4;
 			float _handRunThreshold = 1.7;
+			float walkTouch = 0.6;
+			float jogTouch = 0.9;
+			float runTouch = 1.0;
 			double _timeLastStepTaken = 0.0;
 			double _timeLastTick = 0.0;
 			double _stepIntegrateSteps = 0.0;

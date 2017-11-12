@@ -281,6 +281,18 @@ namespace vrwalkinplace {
 			_stepIntegrateStepLimit = (double)value;
 		}
 
+		void CServerDriver::setWalkTouch(float value) {
+			walkTouch = value;
+		}
+
+		void CServerDriver::setJogTouch(float value) {
+			jogTouch = value;
+		}
+
+		void CServerDriver::setRunTouch(float value) {
+			runTouch = value;
+		}
+
 		void CServerDriver::setHMDThreshold(vr::HmdVector3d_t value) {
 			_hmdThreshold = value;
 		}
@@ -338,7 +350,7 @@ namespace vrwalkinplace {
 					*/
 					switch (deviceInfo->deviceClass()) {
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-						LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];// << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
+						//LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];// << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
 						//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
 						if ( isTakingStep( pose.vecVelocity, _hmdThreshold) && isStepingInPlace(pose.vecPosition) ) {
 							_openvrDeviceStepPoseTracker[0] = -1;
@@ -380,14 +392,18 @@ namespace vrwalkinplace {
 					if (_gameStepType != 3) {
 						vr::VRControllerAxis_t axisState;
 						axisState.x = 0;
-						axisState.y = 0.5;
-						if (isJoggingStep(pose.vecVelocity)) {
-							axisState.y = 1.0;
+						axisState.y = walkTouch;
+						bool isRunning = isRunningStep(pose.vecVelocity);
+						if (isRunning) {
+							axisState.y = runTouch;
+						}
+						else if (isJoggingStep(pose.vecVelocity)) {
+							axisState.y = jogTouch;
 						}
 						driverHost->TrackedDeviceButtonTouched(deviceId, vr::k_EButton_Axis0, 0);
 						driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
 						if (_gameStepType != 2) {
-							if (isRunningStep(pose.vecVelocity)) {
+							if (isRunning) {
 								driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 							}
 						}
