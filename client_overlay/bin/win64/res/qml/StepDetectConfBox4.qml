@@ -97,11 +97,12 @@ GroupBox {
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    var value = et - thresholdStep
+                    var value = walkTouch - thresholdStep
                     if (value < -1) {
                         value = -1
                     }
                     walkTouch = value
+                    setWalkTouch(value)
                 }
             }
 
@@ -122,6 +123,7 @@ GroupBox {
                             val = 1.0
                         }
                         walkTouch = val
+                        setWalkTouch(value)
                     } 
                 }
             }
@@ -131,11 +133,12 @@ GroupBox {
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    var value = jogTouch + thresholdStep
+                    var value = walkTouch + thresholdStep
                     if (value > 1.0) {
                         value = 1.0
                     }
-                    walkTouch = value                    
+                    walkTouch = value  
+                    setWalkTouch(value)                  
                 }
             }
 

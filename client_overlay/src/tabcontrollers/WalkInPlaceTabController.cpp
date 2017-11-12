@@ -17,8 +17,8 @@ namespace walkinplace {
 
 
 	void WalkInPlaceTabController::initStage1() {
-		//reloadWalkInPlaceProfiles();
-		//reloadWalkInPlaceSettings();
+		reloadWalkInPlaceProfiles();
+		reloadWalkInPlaceSettings();
 	}
 
 

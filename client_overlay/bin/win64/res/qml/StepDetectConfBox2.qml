@@ -55,44 +55,41 @@ GroupBox {
         }
 
         GridLayout {
-            columns: 6
+            columns: 5
 
             MyText {
                 text: "Step HMD Y:"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
+                Layout.preferredWidth: 220
             }
 
             MyText {
                 text: "Step HMD XZ:"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
+                Layout.preferredWidth: 220
             }
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 100
-            }            
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 180
+            }
 
             MyText {
-                text: " "
-                Layout.preferredWidth: 240
-            }        
+                text: "Hand Jog Vel:"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 220
+            }
 
             MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }        
-
+                text: "Hand Run Vel:"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 220
+            }    
         }
 
         GridLayout {
-            columns: 8
+            columns: 14
 
             MyPushButton2 {
                 id: hmdYMinusButton
@@ -113,8 +110,6 @@ GroupBox {
                 text: "0.19"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -144,11 +139,6 @@ GroupBox {
                 }
             }
 
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }
-
             MyPushButton2 {
                 id: hmdXZMinusButton
                 Layout.preferredWidth: 40
@@ -168,8 +158,6 @@ GroupBox {
                 text: "0.17"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -201,50 +189,8 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 100
+                Layout.preferredWidth: 180
             }
-        }
-
-        GridLayout {
-            columns: 6
-
-            MyText {
-                text: "Hand Jog Movement:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }
-
-            MyText {
-                text: "Hand Run Movement:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }            
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 240
-            }        
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }    
-        }
-
-        GridLayout {
-            columns: 8
 
             MyPushButton2 {
                 id: handJogMinusButton
@@ -265,8 +211,6 @@ GroupBox {
                 text: "0.4"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -296,11 +240,6 @@ GroupBox {
                 }
             }
 
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }
-
             MyPushButton2 {
                 id: handRunMinusButton
                 Layout.preferredWidth: 40
@@ -320,8 +259,6 @@ GroupBox {
                 text: "1.7"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -349,11 +286,6 @@ GroupBox {
                     handRun = value
                     setHandRun(value)
                 }
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
             }
         }
     }

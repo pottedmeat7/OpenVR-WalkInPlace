@@ -10,7 +10,6 @@ MyStackViewPage {
     headerShowBackButton: false
 
     function updateInfo() {  
-        stepMovementType.setGameType(WalkInPlaceTabController.getGameType())
         stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
         stepThresholdBox.setHandWalk(WalkInPlaceTabController.getHandWalkThreshold())
@@ -19,8 +18,10 @@ MyStackViewPage {
         stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
         stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
         stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
-        stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
+        stepControlBox.updateGUI()
         stepThresholdBox.updateGUI()
+        gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType()
+        stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
     }
     
 
@@ -80,26 +81,88 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
+        Layout.fillWidth: true
 
-        MyToggleButton {
-            id: stepDetectionEnableToggle
-            text: "Enable Step Detection"
-            Layout.fillWidth: false
-            onCheckedChanged: {
-                WalkInPlaceTabController.enableStepDetection(checked)
-            }
+        label: MyText {
+            leftPadding: 10
+            text: parent.boxTitle
+            bottomPadding: -10
         }
 
-        StepDetectConfBox3 {
-            boxTitle: "Game Movement Type"
-            id: stepMovementType
-            keyboardUIDBase: 200
-            setGameType: function(type) {
-                WalkInPlaceTabController.setGameStepType(gameType)
-                updateGUI()    
+        background: Rectangle {
+            color: "transparent"
+            border.color: "#ffffff"
+            radius: 8
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            Rectangle {
+                color: "#ffffff"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
             }
-            updateValues: function() {
-                updateGUI()
+
+            GridLayout {
+                columns: 5
+
+                MyToggleButton {
+                    id: stepDetectionEnableToggle
+                    text: "Enable WIP"
+                    Layout.fillWidth: false
+                    onCheckedChanged: {
+                        WalkInPlaceTabController.enableStepDetection(checked)
+                    }
+                }
+
+                MyText {
+                    text: " "
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.preferredWidth: 70
+                }
+
+                MyComboBox {
+                    id: gameTypeDialog 
+                    currentIndex: 0
+                    Layout.maximumWidth: 399
+                    Layout.minimumWidth: 299
+                    Layout.preferredWidth: 399
+                    Layout.fillWidth: true
+                    displayText: currentText
+                    model: ["touchpad (click to sprint)", "touchpad no click", "touchpad click only (teleport)"]
+                    onCurrentIndexChanged: {
+                        if (currentIndex >= 0) { 
+                            WalkInPlaceTabController.setGameStepType(gameType)                            
+                        } 
+                    }
+                }
+
+                MyText {
+                    text: " "
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.preferredWidth: 70
+                }
+
+                MyPushButton {
+                    Layout.preferredWidth: 200
+                    text: "Reset"
+                    onClicked: {      
+                        stepMovementType.setGameType(1)
+                        stepThresholdBox.setHMDXZ(0.13)
+                        stepThresholdBox.setHMDY(0.14)
+                        stepThresholdBox.setHandWalk(0.02)
+                        stepThresholdBox.setHandJog(0.40)
+                        stepThresholdBox.setHandRun(1.70)
+                        stepControlBox.setWalkTouch(0.6)
+                        stepControlBox.setJogTouch(0.9)
+                        stepControlBox.setRunTouch(1)
+                        stepControlBox.updateGUI()
+                        stepMovementType.updateGUI()
+                        stepThresholdBox.updateGUI()
+                    }
+                }
             }
         }
 
@@ -135,48 +198,21 @@ MyStackViewPage {
             boxTitle: "Touch Pad Configuration"
             id: stepControlBox
             keyboardUIDBase: 200
-            setWalkTouchVal: function(val) {
-                WalkInPlaceTabController.setWalkTouchVal(val)
+            setWalkTouch: function(val) {
+                WalkInPlaceTabController.setWalkTouch(val)
                 updateGUI()
             }
-            setJogTouchVal: function(val) {
-                WalkInPlaceTabController.setJogTouchVal(val)
+            setJogTouch: function(val) {
+                WalkInPlaceTabController.setJogTouch(val)
                 updateGUI()
             }
-            setRunTouchVal: function(val) {
-                WalkInPlaceTabController.setRunTouchVal(val)
+            setRunTouch: function(val) {
+                WalkInPlaceTabController.setRunTouch(val)
                 updateGUI()
             }
-        }
-
-        RowLayout {
-            MyPushButton {
-                Layout.preferredWidth: 200
-                text: "Reset"
-                onClicked: {
-                    stepMovementType.setGameType(1)
-                    stepThresholdBox.setHMDXZ(0.13)
-                    stepThresholdBox.setHMDY(0.14)
-                    stepThresholdBox.setHandWalk(0.02)
-                    stepThresholdBox.setHandJog(0.40)
-                    stepThresholdBox.setHandRun(1.70)
-                    stepControlBox.setWalkTouch(0.6)
-                    stepControlBox.setJogTouch(0.9)
-                    stepControlBox.setRunTouch(1)
-                    stepControlBox.updateGUI()
-                    stepMovementType.updateGUI()
-                    stepThresholdBox.updateGUI()
-                }
-            }
-        }
-
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
         }
 
         ColumnLayout {
-            Layout.bottomMargin: 6
             spacing: 18
             RowLayout {
                 spacing: 18
@@ -187,9 +223,9 @@ MyStackViewPage {
 
                 MyComboBox {
                     id: walkInPlaceProfileComboBox
-                    Layout.maximumWidth: 799
-                    Layout.minimumWidth: 799
-                    Layout.preferredWidth: 799
+                    Layout.maximumWidth: 400
+                    Layout.minimumWidth: 400
+                    Layout.preferredWidth: 400
                     Layout.fillWidth: true
                     model: [""]
                     onCurrentIndexChanged: {
@@ -206,7 +242,7 @@ MyStackViewPage {
                 MyPushButton {
                     id: walkInPlaceApplyProfileButton
                     enabled: false
-                    Layout.preferredWidth: 200
+                    Layout.preferredWidth: 170
                     text: "Apply"
                     onClicked: {
                         if (walkInPlaceProfileComboBox.currentIndex > 0) {
@@ -214,30 +250,26 @@ MyStackViewPage {
                         }
                     }
                 }
-            }
-            RowLayout {
-                spacing: 18
-                Item {
-                    Layout.fillWidth: true
+
+                MyPushButton {
+                    id: walkInPlaceNewProfileButton
+                    Layout.preferredWidth: 170
+                    text: "New Profile"
+                    onClicked: {
+                        walkInPlaceNewProfileDialog.openPopup()
+                    }
                 }
+
                 MyPushButton {
                     id: walkInPlaceDeleteProfileButton
                     enabled: false
-                    Layout.preferredWidth: 200
+                    Layout.preferredWidth: 170
                     text: "Delete Profile"
                     onClicked: {
                         if (walkInPlaceProfileComboBox.currentIndex > 0) {
                             walkInPlaceDeleteProfileDialog.profileIndex = walkInPlaceProfileComboBox.currentIndex - 1
                             walkInPlaceDeleteProfileDialog.open()
                         }
-                    }
-                }
-                MyPushButton {
-                    id: walkInPlaceNewProfileButton
-                    Layout.preferredWidth: 200
-                    text: "New Profile"
-                    onClicked: {
-                        walkInPlaceNewProfileDialog.openPopup()
                     }
                 }
             }
