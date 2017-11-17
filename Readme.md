@@ -7,7 +7,7 @@ An OpenVR driver that applies virtual movement using a pedometer
 The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement of the HMD and Vive Controllers. It then applies movement into the virtual envrionment.
 
 # Step Detection Motivation
-I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of OpenVR and https://github.com/matzman666/OpenVR-walkinplace to emulate input and track poses I figured it has the ability to detect and "emulate" a step. In the long run I hope to expand this driver for many games and be able to use WIP locomotion as a standard input method.
+I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of OpenVR and https://github.com/matzman666/OpenVR-InputEmulator to emulate input and track poses I figured it has the ability to detect and "emulate" a step. In the long run I hope to expand this driver for many games and be able to use WIP locomotion as a standard input method.
 
 
 # Current Games that Work Best with OpenVR-WalkInPlace
