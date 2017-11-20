@@ -5,8 +5,8 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Step Detect Threshold Conf"
 
-    property double hmdXZ : 0.13
-    property double hmdY : 0.14
+    property double hmdXZ : 0.07
+    property double hmdY : 0.09
     property double handWalk : 0.02
     property double handJog : 0.4
     property double handRun : 1.7
@@ -106,7 +106,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdYInputField
-                text: "0.19"
+                text: "0.09"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 horizontalAlignment: Text.AlignHCenter
@@ -154,7 +154,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdXZInputField
-                text: "0.17"
+                text: "0.07"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
                 horizontalAlignment: Text.AlignHCenter

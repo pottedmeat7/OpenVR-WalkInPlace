@@ -216,8 +216,8 @@ namespace walkinplace {
 
 
 #define WALKINPLACESETTINGS_GETHMDTHRESHOLDS(name) { \
-	float y = settings->value(#name ## "_y", 0.13).toFloat(); \
-	float xz = settings->value(#name ## "_xz", 0.13).toFloat(); \
+	float y = settings->value(#name ## "_y", 0.09).toFloat(); \
+	float xz = settings->value(#name ## "_xz", 0.07).toFloat(); \
 	entry.name = { xz, y, xz }; \
 }
 
@@ -227,7 +227,7 @@ namespace walkinplace {
 }
 
 #define WALKINPLACESETTINGS_GETJOGSWINGVAL(name) { \
-	float jog = settings->value(#name ## "_jog", 0.4).toFloat(); \
+	float jog = settings->value(#name ## "_jog", 0.5).toFloat(); \
 	entry.name = jog; \
 }
 
@@ -247,7 +247,7 @@ namespace walkinplace {
 }
 
 #define WALKINPLACESETTINGS_GETJOGTOUCH(name) { \
-	float type = settings->value(#name ## "_jogtouch", 0.9).toFloat(); \
+	float type = settings->value(#name ## "_jogtouch", 0.77).toFloat(); \
 	entry.name = type; \
 }
 

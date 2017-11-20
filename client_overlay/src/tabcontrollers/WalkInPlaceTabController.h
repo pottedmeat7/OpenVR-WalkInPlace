@@ -20,12 +20,12 @@ struct WalkInPlaceProfile {
 	bool stepDetectionEnabled = false;
 	int gameType = 1;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.40;
+	float handJogThreshold = 0.50;
 	float handRunThreshold = 1.70;
 	float walkTouch = 0.6;
-	float jogTouch = 0.9;
+	float jogTouch = 0.77;
 	float runTouch = 1.0;
-	vr::HmdVector3d_t hmdThreshold = { 0.13, 0.13, 0.13 };
+	vr::HmdVector3d_t hmdThreshold = { 0.07, 0.09, 0.07 };
 };
 
 
@@ -57,13 +57,13 @@ private:
 	std::thread identifyThread;
 
 	int gameType = 1;
-	vr::HmdVector3d_t hmdThreshold = { 0.13, 0.13, 0.13 };
+	vr::HmdVector3d_t hmdThreshold = { 0.07, 0.09, 0.07 };
 	float stepIntSec = 0.07;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.40;
+	float handJogThreshold = 0.50;
 	float handRunThreshold = 1.70;
 	float walkTouch = 0.6;
-	float jogTouch = 0.9;
+	float jogTouch = 0.77;
 	float runTouch = 1.0;
 
 public:

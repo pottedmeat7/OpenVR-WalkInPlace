@@ -6,7 +6,7 @@ import pottedmeat7.walkinplace 1.0
 
 MyStackViewPage {
     id: stepDetectionPage
-    headerText: "OpenVR Walking In Place"    
+    headerText: "OpenVR Walk In Place"
     headerShowBackButton: false
 
     function updateInfo() {  
@@ -132,7 +132,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 399
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad (click to sprint)", "touchpad no click", "touchpad click only (teleport)"]
+                        model: ["touchpad (click to sprint)", "touchpad no click", "touchpad click only (teleport)", "Keyboard (WASD)", "Keyboard (Arrows)"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setGameStepType(currentIndex+1)                            
@@ -150,8 +150,8 @@ MyStackViewPage {
                         Layout.preferredWidth: 200
                         text: "Reset"
                         onClicked: {      
-                            stepThresholdBox.setHMDXZ(0.13)
-                            stepThresholdBox.setHMDY(0.14)
+                            stepThresholdBox.setHMDXZ(0.07)
+                            stepThresholdBox.setHMDY(0.09)
                             stepThresholdBox.setHandWalk(0.02)
                             stepThresholdBox.setHandJog(0.40)
                             stepThresholdBox.setHandRun(1.70)
@@ -307,11 +307,21 @@ MyStackViewPage {
     function reloadWalkInPlaceProfiles() {
         var profiles = [""]
         var profileCount = WalkInPlaceTabController.getWalkInPlaceProfileCount()
+        var defaultFound = -1
         for (var i = 0; i < profileCount; i++) {
-            profiles.push(WalkInPlaceTabController.getWalkInPlaceProfileName(i))
+            var p_name = WalkInPlaceTabController.getWalkInPlaceProfileName(i)
+            if ( p_name == "default" ) {
+                defaultFound = i
+            }
+            profiles.push(p_name)
         }
         walkInPlaceProfileComboBox.model = profiles
         walkInPlaceProfileComboBox.currentIndex = 0
+        if ( defaultFound >= 0 ) {
+            WalkInPlaceTabController.applyWalkInPlaceProfile(defaultFound);
+            walkInPlaceProfileComboBox.currentIndex = defaultFound
+            updateInfo()
+        }
     }
 
 }

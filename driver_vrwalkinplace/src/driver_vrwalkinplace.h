@@ -203,6 +203,7 @@ namespace vrwalkinplace {
 
 
 			bool isTakingStep(double * vel, vr::HmdVector3d_t threshold);
+			bool isShakingHead(double * vel, vr::HmdVector3d_t threshold);
 			bool isStepingInPlace(double * pos);
 			bool isJoggingStep(double * vel);
 			bool isRunningStep(double * vel);

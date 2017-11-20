@@ -119,44 +119,45 @@ namespace vrwalkinplace {
 									resp.messageId = message.msg.dm_StepDetectionMode.messageId;
 									auto serverDriver = CServerDriver::getInstance();
 									if (serverDriver) {
-										if (message.msg.dm_StepDetectionMode.stepDetectOperation == 1) { 	
-											if ( message.msg.dm_StepDetectionMode.enableStepDetect == 1) {
-												serverDriver->enableStepDetection(true);
-											} else {
-												serverDriver->enableStepDetection(false);
+										switch (message.msg.dm_StepDetectionMode.stepDetectOperation) {
+										case 1:
+											if (message.msg.dm_StepDetectionMode.stepDetectOperation == 1) {
+												if (message.msg.dm_StepDetectionMode.enableStepDetect == 1) {
+													serverDriver->enableStepDetection(true);
+												}
+												else {
+													serverDriver->enableStepDetection(false);
+												}
 											}
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 2)
-										{
+											break;
+										case 2:
 											serverDriver->setGameStepType(message.msg.dm_StepDetectionMode.gameStepType);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 4)
-										{
+											break;
+										case 3:
+											break;
+										case 4:
 											serverDriver->setStepIntSec(message.msg.dm_StepDetectionMode.stepIntSec);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 5)
-										{
+											break;
+										case 5:
 											serverDriver->setHMDThreshold(message.msg.dm_StepDetectionMode.hmdThreshold);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 6)
-										{
+											break;
+										case 6:
 											serverDriver->setHandJogThreshold(message.msg.dm_StepDetectionMode.handJogThreshold);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 7)
-										{
+											break;
+										case 7:
 											serverDriver->setHandRunThreshold(message.msg.dm_StepDetectionMode.handRunThreshold);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 8)
-										{
+											break;
+										case 8:
 											serverDriver->setWalkTouch(message.msg.dm_StepDetectionMode.walkTouch);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 9)
-										{
+											break;
+										case 9:
 											serverDriver->setJogTouch(message.msg.dm_StepDetectionMode.jogTouch);
-										}
-										else if (message.msg.dm_StepDetectionMode.stepDetectOperation == 10)
-										{
+											break;
+										case 10:
 											serverDriver->setRunTouch(message.msg.dm_StepDetectionMode.runTouch);
+											break;
+										default:
+											break;
 										}
 										resp.status = ipc::ReplyStatus::Ok;
 									}
