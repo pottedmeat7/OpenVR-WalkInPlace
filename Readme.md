@@ -77,6 +77,8 @@ After re-opening SteamVR you can reload your saved profiles by first clicking "L
 
 If you want to update a profile with new settings you need to select the profile and delete it and re-create a "New Profile".
 
+If you name a profile with the name "default" it will be the initially loaded profile once SteamVR is started.
+
 ## Initial Setup
 ### Boost
 1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.63.0/
