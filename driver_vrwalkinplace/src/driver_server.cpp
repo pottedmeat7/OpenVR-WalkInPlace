@@ -13,6 +13,7 @@
 namespace vrwalkinplace {
 	namespace driver {
 
+# define M_PI           3.14159265358979323846
 
 #define CREATE_MH_HOOK(detourInfo, detourFunc, logName, objPtr, vtableOffset) \
 	detourInfo.targetFunc = (*((void***)objPtr))[vtableOffset]; \
@@ -42,7 +43,11 @@ namespace vrwalkinplace {
 		std::map<vr::ITrackedDeviceServerDriver*, std::shared_ptr<OpenvrWalkInPlaceInfo>> CServerDriver::_openvrDeviceInfos;
 		OpenvrWalkInPlaceInfo* CServerDriver::_openvrIdToDeviceInfoMap[vr::k_unMaxTrackedDeviceCount]; // index == openvrId
 
-		bool g_stepPoseDetectEnabled = false;
+		bool g_stepDetectEnabled = false;
+		bool g_isHoldingAccuracyButton = false;
+		bool g_stepPoseDetected = false;
+		bool g_jogPoseDetected = false;
+		bool g_runPoseDetected = false;
 
 		CServerDriver::_DetourFuncInfo<_DetourTrackedDeviceAdded_t> CServerDriver::_deviceAddedDetour;
 		CServerDriver::_DetourFuncInfo<_DetourTrackedDevicePoseUpdated_t> CServerDriver::_poseUpatedDetour;
@@ -102,11 +107,17 @@ namespace vrwalkinplace {
 
 		void CServerDriver::_buttonPressedDetourFunc(vr::IVRServerDriverHost* _this, uint32_t unWhichDevice, vr::EVRButtonId eButtonId, double eventTimeOffset) {
 			LOG(TRACE) << "Detour::buttonPressedDetourFunc(" << _this << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
-				_openvrIdToDeviceInfoMap[unWhichDevice]->handleButtonEvent(_this, _buttonPressedDetour.origFunc, unWhichDevice, ButtonEventType::ButtonPressed, eButtonId, eventTimeOffset);
+			if (g_stepDetectEnabled && (eButtonId == vr::EVRButtonId::k_EButton_A || eButtonId == vr::EVRButtonId::k_EButton_Axis0) && !g_runPoseDetected) {
+			} else {
+				if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
+					_openvrIdToDeviceInfoMap[unWhichDevice]->handleButtonEvent(_this, _buttonPressedDetour.origFunc, unWhichDevice, ButtonEventType::ButtonPressed, eButtonId, eventTimeOffset);
+				}
+				else {
+					_buttonPressedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
+				}
 			}
-			else {
-				_buttonPressedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
+			if (eButtonId == vr::EVRButtonId::k_EButton_Grip) {
+				g_isHoldingAccuracyButton = true;
 			}
 		}
 
@@ -117,6 +128,9 @@ namespace vrwalkinplace {
 			}
 			else {
 				_buttonUnpressedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
+			}
+			if (eButtonId == vr::EVRButtonId::k_EButton_Grip) {
+				g_isHoldingAccuracyButton = false;
 			}
 		}
 
@@ -142,11 +156,15 @@ namespace vrwalkinplace {
 
 		void CServerDriver::_axisUpdatedDetourFunc(vr::IVRServerDriverHost* _this, uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t & axisState) {
 			LOG(TRACE) << "Detour::axisUpdatedDetourFunc(" << _this << ", " << unWhichDevice << ", " << (int)unWhichAxis << ", <state>)";
-			if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
-				_openvrIdToDeviceInfoMap[unWhichDevice]->handleAxisEvent(_this, _axisUpdatedDetour.origFunc, unWhichDevice, unWhichAxis, axisState);
+			if (g_stepDetectEnabled && unWhichAxis == vr::EVRButtonId::k_EButton_Axis0 && !g_stepPoseDetected) {
 			}
 			else {
-				_axisUpdatedDetour.origFunc(_this, unWhichDevice, unWhichAxis, axisState);
+				if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
+					_openvrIdToDeviceInfoMap[unWhichDevice]->handleAxisEvent(_this, _axisUpdatedDetour.origFunc, unWhichDevice, unWhichAxis, axisState);
+				}
+				else {
+					_axisUpdatedDetour.origFunc(_this, unWhichDevice, unWhichAxis, axisState);
+				}
 			}
 		}
 
@@ -262,7 +280,7 @@ namespace vrwalkinplace {
 
 		void CServerDriver::enableStepDetection(bool enable) {
 			_stepPoseDetectEnabled = enable;
-			g_stepPoseDetectEnabled = enable;
+			g_stepDetectEnabled = enable;
 			for (auto d : _openvrDeviceInfos) {
 				if (enable) {
 					d.second->setStepDetectionMode();
@@ -275,6 +293,9 @@ namespace vrwalkinplace {
 
 		void CServerDriver::setGameStepType(int gameType) {
 			_gameStepType = gameType;
+			if (_gameStepType == 3) {
+				g_runPoseDetected = true;
+			}
 		}
 
 		void CServerDriver::setStepIntSec(float value) {
@@ -297,6 +318,10 @@ namespace vrwalkinplace {
 			_hmdThreshold = value;
 		}
 
+		void CServerDriver::setAccuracyButton(bool enable) {
+			_useAccuracyButton = enable;
+		}
+
 		void CServerDriver::setHandJogThreshold(float value) {
 			_handJogThreshold = value;
 		}
@@ -313,74 +338,177 @@ namespace vrwalkinplace {
 			return this->_stepPoseDetectEnabled;
 		}
 
+		bool CServerDriver::accuracyButtonEnabled() {
+			return this->_useAccuracyButton;
+		}
+
 		bool CServerDriver::_applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo) {
 			if (this->_stepPoseDetectEnabled && pose.poseIsValid) {
-				double deltatime = 1.0 / 40.0;
+				double deltatime = 1.0 / 180.0;
 				auto now = std::chrono::duration_cast <std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				double tdiff = (double)(now - _timeLastStepTaken);
-				if (!this->_stepPoseDetected) {
-					/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
-					auto poseWorldRot = tmpConj * pose.qRotation;
-					auto poseWorldVelo = vrmath::quaternionRotateVector(tmpConj, pose.vecVelocity, false);
-					double xAcc = poseWorldVelo.v[0];
-					double yAcc = poseWorldVelo.v[1];
-					double zAcc = poseWorldVelo.v[2];*/
-					//auto poseWorldRot = pose.qRotation;
-					//double xAcc = pose.vecVelocity[0];
-					//double yAcc = pose.vecVelocity[1];
-					//double zAcc = pose.vecVelocity[2];
+				double tdiff = (double)(now - _timeLastTick);
+				if (true || tdiff >= deltatime) {
+					vr::ETrackedDeviceClass deviceClass = deviceInfo->deviceClass();
+					bool isHMD = deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD;
+					if (!this->_stepPoseDetected) {
+						if (isHMD) {
+							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
+							auto poseWorldRot = tmpConj * pose.qRotation;
 
-					/*double zsqr = poseWorldRot.z * poseWorldRot.z;
+							double zsqr = poseWorldRot.z * poseWorldRot.z;
 
-					// roll (x-axis rotation)
-					double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
-					double t1 = +1.0 - 2.0 * (zsqr + poseWorldRot.x * poseWorldRot.x);
-					double roll = std::atan2(t0, t1);
+							// roll (x-axis rotation)
+							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
+							double t1 = +1.0 - 2.0 * (zsqr + poseWorldRot.x * poseWorldRot.x);
+							double roll = (180*std::atan2(t0, t1))/M_PI;
 
-					// pitch (z-axis rotation)
-					double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z + poseWorldRot.y * poseWorldRot.x);
-					t2 = t2 > 1.0 ? 1.0 : t2;
-					t2 = t2 < -1.0 ? -1.0 : t2;
-					double pitch = std::asin(t2);
+							// pitch (z-axis rotation)
+							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z + poseWorldRot.y * poseWorldRot.x);
+							t2 = t2 > 1.0 ? 1.0 : t2;
+							t2 = t2 < -1.0 ? -1.0 : t2;
+							double pitch = (180*std::asin(t2))/M_PI;
 
-					// yaw (y-axis rotation)
-					double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
-					double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
-					double yaw = std::atan2(t3, t4);
-					*/
-					switch (deviceInfo->deviceClass()) {
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-						//LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];// << " roll " << roll << " yaw " << yaw << " pitch " << pitch;
-						//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
-						if (isTakingStep(pose.vecVelocity, _hmdThreshold)) { //&& isStepingInPlace(pose.vecPosition) ) {
-							_openvrDeviceStepPoseTracker[0] = -1;
+							LOG(INFO) << "HMD Rot: " << roll << "," << pitch;*/
+							//LOG(INFO) << "HMD Step: " << pose.vecAcceleration[0] << "," << pose.vecAcceleration[1] << "," << pose.vecAcceleration[2];
+							//LOG(INFO) << "HMD Rot: " << pose.qRotation.x << "," << pose.qRotation.y << "," << pose.qRotation.z;
+							//LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];
+							//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
+							if (isTakingStep(pose.vecVelocity, _hmdThreshold, 0, 0)) { //&& isStepingInPlace(pose.vecPosition) ) {
+								_openvrDeviceStepPoseTracker[0] = -1;
+								_openvrDeviceStepPoseTracker[1] = -1;
+								_openvrDeviceStepPoseTracker[2] = -1;
+							}
+							else {
+								_openvrDeviceStepPoseTracker[0] = 0;
+								_openvrDeviceStepPoseTracker[1] = 0;
+								_openvrDeviceStepPoseTracker[2] = 0;
+							}
+						}
+						//else if ( deviceInfo->deviceClass() == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+							//LOG(INFO) << "CONTROLLER MAG VEL: " << pose.vecVelocity[0] + pose.vecVelocity[1] + pose.vecVelocity[2];
+						//}
+						if (_openvrDeviceStepPoseTracker[0] != 0) {
+							//&& _openvrDeviceStepPoseTracker[1] != 0 && _openvrDeviceStepPoseTracker[2] != 0 ) {
+							//&& (_openvrDeviceStepPoseTracker[1] != _openvrDeviceStepPoseTracker[2])) {
+							this->setStepPoseDetected(true);
+							g_stepPoseDetected = true;
 							_openvrDeviceStepPoseTracker[1] = -1;
 							_openvrDeviceStepPoseTracker[2] = -1;
 						}
-						else {
+					}
+					if (this->_stepPoseDetected) {
+						if (_openvrDeviceStepPoseTracker[0] == 0) {
+							if ((deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[1]
+								|| deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[2])) {
+								vr::IVRServerDriverHost* driverHost;
+								int deviceId = deviceInfo->openvrId();
+								if (_openvrIdToDeviceInfoMap[deviceId] && _openvrIdToDeviceInfoMap[deviceId]->isValid()) {
+									driverHost = _openvrIdToDeviceInfoMap[deviceId]->driverHost();
+								}
+								else {
+									driverHost = vr::VRServerDriverHost();
+								}
+								if (_gameStepType != 3) {
+									vr::VRControllerAxis_t axisState;
+									axisState.x = 0;
+									axisState.y = walkTouch;
+									bool isRunning = isRunningStep(pose.vecVelocity);
+									g_runPoseDetected = isRunning;
+									if (isRunning) {
+										axisState.y = runTouch;
+									}
+									else if (isJoggingStep(pose.vecVelocity)) {
+										axisState.y = jogTouch;
+										g_jogPoseDetected = true;
+									}
+									driverHost->TrackedDeviceButtonTouched(deviceId, vr::k_EButton_Axis0, 0);
+									driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
+									if (_gameStepType != 2) {
+										if (isRunning) {
+											driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+										}
+									}
+									this->_hasUnTouchedStepAxis = 0;
+								}
+								else {
+									if (_teleportUnpressed) {
+										driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+										_teleportUnpressed = false;
+									}
+									else {
+										driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
+										_teleportUnpressed = true;
+									}
+								}
+							}
+						}
+						if (isHMD) {
+							//if ( isStepingInPlace(pose.vecPosition) ) 
+							//{
+
+							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
+							auto poseWorldRot = tmpConj * pose.qRotation;
+
+							double zsqr = poseWorldRot.z * poseWorldRot.z;
+
+							// roll (x-axis rotation)
+							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
+							double t1 = +1.0 - 2.0 * (zsqr + poseWorldRot.x * poseWorldRot.x);
+							double roll = (180*std::atan2(t0, t1))/M_PI;
+
+							// pitch (z-axis rotation)
+							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z + poseWorldRot.y * poseWorldRot.x);
+							t2 = t2 > 1.0 ? 1.0 : t2;
+							t2 = t2 < -1.0 ? -1.0 : t2;
+							double pitch = (180*std::asin(t2))/M_PI;
+
+							LOG(INFO) << "HMD Rot: " << roll << "," << pitch;*/
+
+							if (isTakingStep(pose.vecVelocity, _hmdThreshold, 0, 0)) {
+								_stepIntegrateSteps = 0;
+							}
+							if (_openvrDeviceStepPoseTracker[0] == 0) {
+								//_stepIntegrateSteps += tdiff;
+							}
+							//}
+							/*else {
+							//DEVIATED FROM STEP SPACE - STOP MOVEMENT
+							_stepIntegrateSteps = 999;
+							_openvrDeviceStepPoseTracker[0] = 999;
+							}*/
+						}
+						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+							if (_openvrDeviceStepPoseTracker[0] != 0) {
+								if (_openvrDeviceStepPoseTracker[1] < 0) {
+									_openvrDeviceStepPoseTracker[1] = deviceInfo->openvrId();
+								}
+								else if (_openvrDeviceStepPoseTracker[2] < 0) {
+									_openvrDeviceStepPoseTracker[2] = deviceInfo->openvrId();
+									_openvrDeviceStepPoseTracker[0] = 0;
+								}
+							}
+							else if (isJoggingStep(pose.vecVelocity) || isRunningStep(pose.vecVelocity)) {
+								_stepIntegrateSteps = 0;
+							}
+						}
+						_stepIntegrateSteps += tdiff;
+						if (_stepIntegrateSteps >= 0.07) { //_stepIntegrateStepLimit) {
+							this->setStepPoseDetected(false);
+							_stepIntegrateSteps = 0.0;
+							_handsPointDir = { 0.0, 0.0, 0.0 };
+							_timeLastStepTaken = now;
 							_openvrDeviceStepPoseTracker[0] = 0;
 							_openvrDeviceStepPoseTracker[1] = 0;
 							_openvrDeviceStepPoseTracker[2] = 0;
+							g_stepPoseDetected = false;
+							g_jogPoseDetected = false;
+							if (_gameStepType != 3) {
+								g_runPoseDetected = false;
+							}
 						}
-						break;
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-						//LOG(INFO) << "CONTROLLER MAG VEL: " << pose.vecVelocity[0] + pose.vecVelocity[1] + pose.vecVelocity[2];
-						break;
-					default:
-						break;
 					}
-					if (_openvrDeviceStepPoseTracker[0] != 0) {
-						//&& _openvrDeviceStepPoseTracker[1] != 0 && _openvrDeviceStepPoseTracker[2] != 0 ) {
-						//&& (_openvrDeviceStepPoseTracker[1] != _openvrDeviceStepPoseTracker[2])) {
-						this->setStepPoseDetected(true);
-						_openvrDeviceStepPoseTracker[1] = -1;
-						_openvrDeviceStepPoseTracker[2] = -1;
-					}
-				}
-				if (this->_stepPoseDetected) {
-					if (_openvrDeviceStepPoseTracker[0] == 0) {
-						if ((deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[1]
-							|| deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[2])) {
+					else {
+						if (this->_hasUnTouchedStepAxis < 50) {
 							vr::IVRServerDriverHost* driverHost;
 							int deviceId = deviceInfo->openvrId();
 							if (_openvrIdToDeviceInfoMap[deviceId] && _openvrIdToDeviceInfoMap[deviceId]->isValid()) {
@@ -392,109 +520,34 @@ namespace vrwalkinplace {
 							if (_gameStepType != 3) {
 								vr::VRControllerAxis_t axisState;
 								axisState.x = 0;
-								axisState.y = walkTouch;
-								bool isRunning = isRunningStep(pose.vecVelocity);
-								if (isRunning) {
-									axisState.y = runTouch;
-								}
-								else if (isJoggingStep(pose.vecVelocity)) {
-									axisState.y = jogTouch;
-								}
-								driverHost->TrackedDeviceButtonTouched(deviceId, vr::k_EButton_Axis0, 0);
-								driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
+								axisState.y = 0;
 								if (_gameStepType != 2) {
-									if (isRunning) {
-										driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
-									}
+									driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 								}
-								this->_hasUnTouchedStepAxis = 0;
+								driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
+								driverHost->TrackedDeviceButtonUntouched(deviceId, vr::k_EButton_Axis0, 0);
 							}
 							else {
 								driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
-								driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 							}
+							this->_hasUnTouchedStepAxis++;
+							_teleportUnpressed = true;
 						}
 					}
-					switch (deviceInfo->deviceClass()) {
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-						if (_openvrDeviceStepPoseTracker[0] != 0) {
-							if (_openvrDeviceStepPoseTracker[1] < 0) {
-								_openvrDeviceStepPoseTracker[1] = deviceInfo->openvrId();
-							}
-							else if (_openvrDeviceStepPoseTracker[2] < 0) {
-								_openvrDeviceStepPoseTracker[2] = deviceInfo->openvrId();
-								_openvrDeviceStepPoseTracker[0] = 0;
-							}
-						}
-						else if (isJoggingStep(pose.vecVelocity) || isRunningStep(pose.vecVelocity)) {
-							_stepIntegrateSteps = 0;
-						}
-						break;
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-						//if ( isStepingInPlace(pose.vecPosition) ) 
-						//{
-						if (isTakingStep(pose.vecVelocity, _hmdThreshold)) {
-							_stepIntegrateSteps = 0;
-						}
-						//}
-						/*else {
-						//DEVIATED FROM STEP SPACE - STOP MOVEMENT
-						_stepIntegrateSteps = 999;
-						_openvrDeviceStepPoseTracker[0] = 999;
-						}*/
-						break;
-					default:
-						break;
-					}
-					double tdiff = (double)(now - _timeLastTick);
-					_stepIntegrateSteps += tdiff;
-					if (_stepIntegrateSteps >= 0.07) { //_stepIntegrateStepLimit) {
-						this->setStepPoseDetected(false);
-						_stepIntegrateSteps = 0.0;
-						_handsPointDir = { 0.0, 0.0, 0.0 };
-						_timeLastStepTaken = now;
-						_openvrDeviceStepPoseTracker[0] = 0;
-						_openvrDeviceStepPoseTracker[1] = 0;
-						_openvrDeviceStepPoseTracker[2] = 0;
-					}
+					_timeLastTick = now;
 				}
-				else {
-					if (this->_hasUnTouchedStepAxis < 50) {
-						vr::IVRServerDriverHost* driverHost;
-						int deviceId = deviceInfo->openvrId();
-						if (_openvrIdToDeviceInfoMap[deviceId] && _openvrIdToDeviceInfoMap[deviceId]->isValid()) {
-							driverHost = _openvrIdToDeviceInfoMap[deviceId]->driverHost();
-						}
-						else {
-							driverHost = vr::VRServerDriverHost();
-						}
-						if (_gameStepType != 3) {
-							vr::VRControllerAxis_t axisState;
-							axisState.x = 0;
-							axisState.y = 0;
-							if (_gameStepType != 2) {
-								driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
-							}
-							driverHost->TrackedDeviceAxisUpdated(deviceId, 0, axisState);
-							driverHost->TrackedDeviceButtonUntouched(deviceId, vr::k_EButton_Axis0, 0);
-						}
-						else {
-							driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
-						}
-						this->_hasUnTouchedStepAxis++;
-					}
-				}
-				_timeLastTick = now;
 			}
 
 			return false;
 		}
 
-		bool CServerDriver::isTakingStep(double * vel, vr::HmdVector3d_t threshold) {
+		bool CServerDriver::isTakingStep(double * vel, vr::HmdVector3d_t threshold, double roll, double pitch) {
 			bool stepParams = ((std::abs(vel[2]) < threshold.v[2]) &&
 				(std::abs(vel[0]) < threshold.v[0]) &&
 				((vel[1] > threshold.v[1] && (vel[1] > vel[0] && vel[1] > vel[2]))
 					|| (vel[1] < -1 * threshold.v[1] && (vel[1] < vel[0] && vel[1] < vel[2]))));
+			//stepParams = stepParams && (roll < 20 && pitch < 20);
+			stepParams = stepParams && (!_useAccuracyButton || g_isHoldingAccuracyButton);
 			return stepParams;
 		}
 

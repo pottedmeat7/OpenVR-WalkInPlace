@@ -19,9 +19,7 @@ namespace vrwalkinplace {
 			vr::DriverPose_t newPose = pose;
 			auto serverDriver = CServerDriver::getInstance();
 			if (serverDriver) {
-				if (serverDriver->isStepDetectionEnabled()) {
-					serverDriver->_applyStepPoseDetect(newPose, this);
-				}
+				serverDriver->_applyStepPoseDetect(newPose, this);
 			}
 			origFunc(driver, unWhichDevice, newPose, sizeof(vr::DriverPose_t));
 		}
@@ -32,18 +30,11 @@ namespace vrwalkinplace {
 			if (false) {
 				auto serverDriver = CServerDriver::getInstance();
 				if (serverDriver) {
-					if (!serverDriver->isStepDetectionEnabled()
-						|| (eButtonId != vr::k_EButton_Axis0)) {
-						vr::EVRButtonId button = eButtonId;
-						//getButtonMapping(eButtonId, button);
-						((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
-					}
+					((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, eButtonId, eventTimeOffset);
 				}
 			}
 			else {
-				vr::EVRButtonId button = eButtonId;
-				//getButtonMapping(eButtonId, button);
-				((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, button, eventTimeOffset);
+				((_DetourTrackedDeviceButtonPressed_t)origFunc)(driver, unWhichDevice, eButtonId, eventTimeOffset);
 			}
 		}
 
@@ -52,9 +43,7 @@ namespace vrwalkinplace {
 			if (false) {
 				auto serverDriver = CServerDriver::getInstance();
 				if (serverDriver) {
-					if (!serverDriver->isStepDetectionEnabled() || unWhichAxis != vr::k_EButton_Axis0) {
-						origFunc(driver, unWhichDevice, unWhichAxis, axisState);
-					}
+					origFunc(driver, unWhichDevice, unWhichAxis, axisState);
 				}
 			}
 			else {

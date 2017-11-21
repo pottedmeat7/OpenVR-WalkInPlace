@@ -142,6 +142,7 @@ public:
 	void enableStepDetection(bool enable, bool modal = true);
 	void setStepIntSec(float value, bool modal = true);
 	void setHMDThreshold(const vr::HmdVector3d_t& value, bool modal = true);
+	void setAccuracyButton(bool enable, bool modal = true);
 	void setHandJogThreshold(float value, bool modal = true);
 	void setHandRunThreshold(float value, bool modal = true);
 	void setWalkTouch(float value, bool modal = true);

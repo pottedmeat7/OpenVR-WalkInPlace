@@ -155,6 +155,7 @@ namespace vrwalkinplace {
 
 			/* Step Detection */
 			void enableStepDetection(bool enable);
+			void setAccuracyButton(bool enable);
 			void setGameStepType(int gameType);
 			void setStepIntSec(float value);
 			void setHMDThreshold(vr::HmdVector3d_t value);
@@ -165,6 +166,7 @@ namespace vrwalkinplace {
 			void setRunTouch(float value);
 			void setStepPoseDetected(bool enable);
 			bool isStepDetectionEnabled();
+			bool accuracyButtonEnabled();
 			bool _applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo);
 
 		private:
@@ -183,7 +185,9 @@ namespace vrwalkinplace {
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
+			bool _useAccuracyButton = false;
 			int _gameStepType = 1;
+			int _teleportUnpressed = true;
 			int _hasUnTouchedStepAxis = 0;			
 			float _handJogThreshold = 0.4;
 			float _handRunThreshold = 1.7;
@@ -193,6 +197,8 @@ namespace vrwalkinplace {
 			double _timeLastStepTaken = 0.0;
 			double _timeLastTick = 0.0;
 			double _stepIntegrateSteps = 0.0;
+			double _jogIntegrateSteps = 0.0;
+			double _runIntegrateSteps = 0.0;
 			double _stepIntegrateStepLimit = 0.07;
 			int _openvrDeviceStepPoseTracker[3]; //HMD and two controllers
 			vr::HmdVector3d_t _avgStepPos = { 0.0, 0.0, 0.0 };
@@ -202,7 +208,7 @@ namespace vrwalkinplace {
 			vr::HmdVector3d_t _handThreshold = { 0.0, 0.0, 0.0 };
 
 
-			bool isTakingStep(double * vel, vr::HmdVector3d_t threshold);
+			bool isTakingStep(double * vel, vr::HmdVector3d_t threshold, double roll, double pitch);
 			bool isShakingHead(double * vel, vr::HmdVector3d_t threshold);
 			bool isStepingInPlace(double * pos);
 			bool isJoggingStep(double * vel);

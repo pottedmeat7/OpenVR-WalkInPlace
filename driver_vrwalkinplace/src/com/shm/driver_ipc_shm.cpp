@@ -156,6 +156,9 @@ namespace vrwalkinplace {
 										case 10:
 											serverDriver->setRunTouch(message.msg.dm_StepDetectionMode.runTouch);
 											break;
+										case 11:
+											serverDriver->setAccuracyButton(message.msg.dm_StepDetectionMode.useAccuracyButton);
+											break;
 										default:
 											break;
 										}

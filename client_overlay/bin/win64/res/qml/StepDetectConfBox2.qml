@@ -7,6 +7,7 @@ GroupBox {
 
     property double hmdXZ : 0.07
     property double hmdY : 0.09
+    property int useAccuracyButton : 0
     property double handWalk : 0.02
     property double handJog : 0.4
     property double handRun : 1.7
@@ -17,6 +18,7 @@ GroupBox {
 
     property var setHMDXZ: function(x) {}
     property var setHMDY: function(y) {}
+    property var setAccuracyButton: function(b) {}
     property var setHandJog: function(j) {}
     property var setHandRun: function(r) {}
     property var updateValues: function() {}
@@ -25,7 +27,8 @@ GroupBox {
         hmdXZInputField.text = hmdXZ.toFixed(2)
         hmdYInputField.text = hmdY.toFixed(2)
         handJogInputField.text = handJog.toFixed(2)
-        handRunInputField.text = handRun.toFixed(2)
+        handRunInputField.text = handRun.toFixed(2)        
+        enableAccuracyButton.checked = useAccuracyButton == 1
     }
 
     Layout.fillWidth: true
@@ -284,6 +287,19 @@ GroupBox {
                     }
                     handRun = value
                     setHandRun(value)
+                }
+            }
+        }
+
+        GridLayout {
+            columns: 14
+
+            MyToggleButton {
+                id: enableAccuracyButton
+                text: "Enable Grip Button for Accuracy?"
+                Layout.fillWidth: false
+                onCheckedChanged: {
+                    setAccuracyButton(checked)
                 }
             }
         }

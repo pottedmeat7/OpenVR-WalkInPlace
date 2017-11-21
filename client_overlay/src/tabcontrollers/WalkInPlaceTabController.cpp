@@ -166,12 +166,11 @@ namespace walkinplace {
 	}
 
 	bool WalkInPlaceTabController::isStepDetectionEnabled() {
-		for (int index = 0; index < deviceInfos.size(); index++) {
-			if (deviceInfos[index]->stepDetectionEnabled) {
-				return true;
-			}
-		}
-		return false;
+		return stepDetectEnabled;
+	}
+
+	bool WalkInPlaceTabController::isAccuracyButtonEnabled() {
+		return useAccuracyButton;
 	}
 
 	float WalkInPlaceTabController::getStepIntSec() {
@@ -273,6 +272,7 @@ namespace walkinplace {
 			auto& entry = walkInPlaceProfiles[i];
 			entry.profileName = settings->value("profileName").toString().toStdString();
 			entry.stepDetectionEnabled = settings->value("stepDetectionEnabled", false).toBool();
+			entry.useAccuracyButton = settings->value("useAccuracyButton", false).toBool();
 			WALKINPLACESETTINGS_GETHMDTHRESHOLDS(hmdThreshold);
 			WALKINPLACESETTINGS_GETWALKSWINGVAL(handWalkThreshold);
 			WALKINPLACESETTINGS_GETJOGSWINGVAL(handJogThreshold);
@@ -346,6 +346,7 @@ namespace walkinplace {
 			settings->setArrayIndex(i);
 			settings->setValue("profileName", QString::fromStdString(p.profileName));
 			settings->setValue("stepDetectionEnabled", p.stepDetectionEnabled);
+			settings->setValue("useAccuracyButton", p.useAccuracyButton);
 			WALKINPLACESETTINGS_WRITEHMDTHRESHOLDS(hmdThreshold);
 			WALKINPLACESETTINGS_WRITEWALKSWINGVAL(handWalkThreshold);
 			WALKINPLACESETTINGS_WRITEJOGSWINGVAL(handJogThreshold);
@@ -390,6 +391,7 @@ namespace walkinplace {
 		profile->profileName = name.toStdString();
 		profile->stepDetectionEnabled = isStepDetectionEnabled();
 		profile->hmdThreshold = hmdThreshold;
+		profile->useAccuracyButton = useAccuracyButton;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
 		profile->gameType = gameType;
@@ -407,6 +409,7 @@ namespace walkinplace {
 			hmdThreshold.v[0] = profile.hmdThreshold.v[0];
 			hmdThreshold.v[1] = profile.hmdThreshold.v[1];
 			hmdThreshold.v[2] = profile.hmdThreshold.v[2];
+			useAccuracyButton = profile.useAccuracyButton;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
 			walkTouch = profile.walkTouch;
@@ -438,9 +441,10 @@ namespace walkinplace {
 	void WalkInPlaceTabController::enableStepDetection(bool enable) {
 		try {
 			vrwalkinplace.enableStepDetection(enable);
-			for (int index = 0; index < deviceInfos.size(); index++) {
-				deviceInfos[index]->stepDetectionEnabled = enable;
-			}
+			//for (int index = 0; index < deviceInfos.size(); index++) {
+			//	deviceInfos[index]->stepDetectionEnabled = enable;
+			//}
+			stepDetectEnabled = enable;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting step detection: " << e.what();
@@ -494,6 +498,16 @@ namespace walkinplace {
 			hmdThreshold.v[0] = x;
 			hmdThreshold.v[1] = y;
 			hmdThreshold.v[2] = z;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting hmd threshold: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::setAccuracyButton(bool enable) {
+		try {
+			vrwalkinplace.setAccuracyButton(enable);
+			useAccuracyButton = enable;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hmd threshold: " << e.what();

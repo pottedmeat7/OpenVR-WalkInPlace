@@ -26,6 +26,7 @@ struct WalkInPlaceProfile {
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
 	vr::HmdVector3d_t hmdThreshold = { 0.07, 0.09, 0.07 };
+	bool useAccuracyButton = false;
 };
 
 
@@ -57,7 +58,9 @@ private:
 	std::thread identifyThread;
 
 	int gameType = 1;
+	bool stepDetectEnabled = false;
 	vr::HmdVector3d_t hmdThreshold = { 0.07, 0.09, 0.07 };
+	bool useAccuracyButton = false;
 	float stepIntSec = 0.07;
 	float handWalkThreshold = 0.02;
 	float handJogThreshold = 0.50;
@@ -65,6 +68,7 @@ private:
 	float walkTouch = 0.6;
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
+	
 
 public:
 	~WalkInPlaceTabController();
@@ -91,6 +95,7 @@ public:
 	Q_INVOKABLE float getJogTouch();
 	Q_INVOKABLE float getRunTouch();
 	Q_INVOKABLE bool isStepDetectionEnabled();
+	Q_INVOKABLE bool isAccuracyButtonEnabled();
 
 	void reloadWalkInPlaceSettings();
 	void reloadWalkInPlaceProfiles();
@@ -104,6 +109,7 @@ public slots:
     void enableStepDetection(bool enable);
 	void setStepIntSec(float value);
 	void setHMDThreshold(float x, float y, float z);
+	void setAccuracyButton(bool enable);
 	void setHandWalkThreshold(float walkThreshold);
 	void setHandJogThreshold(float jogThreshold);
 	void setHandRunThreshold(float runThreshold);

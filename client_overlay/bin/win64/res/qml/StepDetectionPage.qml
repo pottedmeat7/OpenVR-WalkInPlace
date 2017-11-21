@@ -14,6 +14,8 @@ MyStackViewPage {
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
+        var isAccuracyButtonEnabled = WalkInPlaceTabController.isAccuracyButtonEnabled()
+        stepThresholdBox.setAccuracyButton(isAccuracyButtonEnabled)
         stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
         stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
         stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
@@ -22,60 +24,6 @@ MyStackViewPage {
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType() - 1
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
     }
-    
-
-    MyDialogOkCancelPopup {
-        id: walkInPlaceDeleteProfileDialog
-        property int profileIndex: -1
-        dialogTitle: "Delete Profile"
-        dialogText: "Do you really want to delete this profile?"
-        onClosed: {
-            if (okClicked) {
-                WalkInPlaceTabController.deleteWalkInPlaceProfile(profileIndex)
-            }
-        }
-    }
-
-    MyDialogOkCancelPopup {
-        id: walkInPlaceNewProfileDialog
-        dialogTitle: "Create New Profile"
-        dialogWidth: 600
-        dialogHeight: 400
-        dialogContentItem: ColumnLayout {
-            RowLayout {
-                Layout.topMargin: 16
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                MyText {
-                    text: "Name: "
-                }
-                MyTextField {
-                    id: walkInPlaceNewProfileName
-                    color: "#cccccc"
-                    text: ""
-                    Layout.fillWidth: true
-                    font.pointSize: 20
-                    function onInputEvent(input) {
-                        text = input
-                    }
-                }
-            }
-        }
-        onClosed: {
-            if (okClicked) {
-                if (walkInPlaceNewProfileName.text == "") {
-                    walkInPlaceMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
-                } else {
-                    WalkInPlaceTabController.addWalkInPlaceProfile(walkInPlaceNewProfileName.text)
-                }
-            }
-        }
-        function openPopup() {
-            walkInPlaceNewProfileName.text = ""
-            open()
-        }
-    }
-
 
     content: ColumnLayout {
         spacing: 18
@@ -191,6 +139,15 @@ MyStackViewPage {
                 handRun = run
                 updateGUI()    
             }
+            setAccuracyButton: function(checked) {
+                WalkInPlaceTabController.setAccuracyButton(checked)
+                if ( checked ) {
+                    useAccuracyButton = 1
+                } else {
+                    useAccuracyButton = 0                
+                }
+                updateGUI()    
+            }
             updateValues: function() {
                 updateGUI()
             }
@@ -216,6 +173,7 @@ MyStackViewPage {
                 updateGUI()
             }
         }
+
 
         ColumnLayout {
             spacing: 18
@@ -302,6 +260,58 @@ MyStackViewPage {
             }
         }
 
+    }
+
+    MyDialogOkCancelPopup {
+        id: walkInPlaceDeleteProfileDialog
+        property int profileIndex: -1
+        dialogTitle: "Delete Profile"
+        dialogText: "Do you really want to delete this profile?"
+        onClosed: {
+            if (okClicked) {
+                WalkInPlaceTabController.deleteWalkInPlaceProfile(profileIndex)
+            }
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: walkInPlaceNewProfileDialog
+        dialogTitle: "Create New Profile"
+        dialogWidth: 600
+        dialogHeight: 400
+        dialogContentItem: ColumnLayout {
+            RowLayout {
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                MyText {
+                    text: "Name: "
+                }
+                MyTextField {
+                    id: walkInPlaceNewProfileName
+                    color: "#cccccc"
+                    text: ""
+                    Layout.fillWidth: true
+                    font.pointSize: 20
+                    function onInputEvent(input) {
+                        text = input
+                    }
+                }
+            }
+        }
+        onClosed: {
+            if (okClicked) {
+                if (walkInPlaceNewProfileName.text == "") {
+                    walkInPlaceMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
+                } else {
+                    WalkInPlaceTabController.addWalkInPlaceProfile(walkInPlaceNewProfileName.text)
+                }
+            }
+        }
+        function openPopup() {
+            walkInPlaceNewProfileName.text = ""
+            open()
+        }
     }
 
     function reloadWalkInPlaceProfiles() {
