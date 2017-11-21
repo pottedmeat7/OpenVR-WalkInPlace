@@ -67,6 +67,9 @@ These values are for the magnitude of movement (X, Y and Z movement) of the arms
 
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
+### Grip button for Accuracy
+This sets that a step will only be applied if you are pushing a grip button on a controller
+
 ### Touch Options
 These values will be applied to touch-pad locomotion for in order to apply different degrees of movement into the game.
 
