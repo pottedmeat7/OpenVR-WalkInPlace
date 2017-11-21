@@ -6,10 +6,6 @@ An OpenVR driver that applies virtual movement using a pedometer
 
 The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement of the HMD and Vive Controllers. It then applies movement into the virtual envrionment.
 
-
-![Example Screenshot](docs/screenshots/openvr-walkinplaceoverlay.png)
-
-
 # Step Detection Motivation
 I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of OpenVR and https://github.com/matzman666/OpenVR-InputEmulator to emulate input and track poses I figured it has the ability to detect and "emulate" a step. In the long run I hope to expand this driver for many games and be able to use WIP locomotion as a standard input method.
 
@@ -19,9 +15,7 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 - Arizona Sunshine
 - Onward
 - Gorn
-- Doom 3 VR
 - Vanishing Realms
-- Gunheart
 - Fallout VR...?
 
 Other games may not have touchpad movement options however this driver will 
@@ -49,6 +43,8 @@ This is a work-in-progress and may have flaws.
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
 
 # Documentation
+
+![Example Screenshot](docs/screenshots/openvr-walkinplaceoverlay.png)
 
 ### WalkInPlace Overlay
 Just enable "Step Detection" in the UI.
@@ -80,6 +76,8 @@ If you like your current settings for a game and want to save them you can click
 After re-opening SteamVR you can reload your saved profiles by first clicking "Load Profiles" then selecting the profile you want from the drop down menu, and click "Apply".
 
 If you want to update a profile with new settings you need to select the profile and delete it and re-create a "New Profile".
+
+If you name a profile with the name "default" it will be the initially loaded profile once SteamVR is started.
 
 ## Initial Setup
 ### Boost
