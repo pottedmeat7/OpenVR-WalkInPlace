@@ -399,13 +399,13 @@ void VRWalkInPlace::setHMDThreshold(const vr::HmdVector3d_t & value, bool modal)
 	}
 }
 
-void VRWalkInPlace::setAccuracyButton(bool enable, bool modal) {
+void VRWalkInPlace::setAccuracyButton(int buttonId, bool modal) {
 	if (_ipcServerQueue) {
 		ipc::Request message(ipc::RequestType::WalkInPlace_StepDetectionMode);
 		memset(&message.msg, 0, sizeof(message.msg));
 		message.msg.dm_StepDetectionMode.clientId = m_clientId;
 		message.msg.dm_StepDetectionMode.messageId = 0;
-		message.msg.dm_StepDetectionMode.useAccuracyButton = enable;
+		message.msg.dm_StepDetectionMode.useAccuracyButton = buttonId;
 		message.msg.dm_StepDetectionMode.stepDetectOperation = 11;
 		if (modal) {
 			uint32_t messageId = _ipcRandomDist(_ipcRandomDevice);

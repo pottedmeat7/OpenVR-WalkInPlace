@@ -44,10 +44,13 @@ namespace vrwalkinplace {
 		OpenvrWalkInPlaceInfo* CServerDriver::_openvrIdToDeviceInfoMap[vr::k_unMaxTrackedDeviceCount]; // index == openvrId
 
 		bool g_stepDetectEnabled = false;
+		bool g_disableGameLocomotion = false;
 		bool g_isHoldingAccuracyButton = false;
 		bool g_stepPoseDetected = false;
 		bool g_jogPoseDetected = false;
 		bool g_runPoseDetected = false;
+		int g_AccuracyButton = vr::EVRButtonId::k_EButton_Grip;
+		bool g_accuracyButtonWithTouch = false;
 
 		CServerDriver::_DetourFuncInfo<_DetourTrackedDeviceAdded_t> CServerDriver::_deviceAddedDetour;
 		CServerDriver::_DetourFuncInfo<_DetourTrackedDevicePoseUpdated_t> CServerDriver::_poseUpatedDetour;
@@ -107,7 +110,7 @@ namespace vrwalkinplace {
 
 		void CServerDriver::_buttonPressedDetourFunc(vr::IVRServerDriverHost* _this, uint32_t unWhichDevice, vr::EVRButtonId eButtonId, double eventTimeOffset) {
 			LOG(TRACE) << "Detour::buttonPressedDetourFunc(" << _this << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (g_stepDetectEnabled && (eButtonId == vr::EVRButtonId::k_EButton_A || eButtonId == vr::EVRButtonId::k_EButton_Axis0) && !g_runPoseDetected) {
+			if (g_stepDetectEnabled && g_disableGameLocomotion && (eButtonId == vr::EVRButtonId::k_EButton_A || eButtonId == vr::EVRButtonId::k_EButton_Axis0) && !g_runPoseDetected) {
 			} else {
 				if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
 					_openvrIdToDeviceInfoMap[unWhichDevice]->handleButtonEvent(_this, _buttonPressedDetour.origFunc, unWhichDevice, ButtonEventType::ButtonPressed, eButtonId, eventTimeOffset);
@@ -116,7 +119,7 @@ namespace vrwalkinplace {
 					_buttonPressedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
 				}
 			}
-			if (eButtonId == vr::EVRButtonId::k_EButton_Grip) {
+			if (eButtonId == g_AccuracyButton && !g_accuracyButtonWithTouch) {
 				g_isHoldingAccuracyButton = true;
 			}
 		}
@@ -129,18 +132,25 @@ namespace vrwalkinplace {
 			else {
 				_buttonUnpressedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
 			}
-			if (eButtonId == vr::EVRButtonId::k_EButton_Grip) {
+			if (eButtonId == g_AccuracyButton && !g_accuracyButtonWithTouch) {
 				g_isHoldingAccuracyButton = false;
 			}
 		}
 
 		void CServerDriver::_buttonTouchedDetourFunc(vr::IVRServerDriverHost* _this, uint32_t unWhichDevice, vr::EVRButtonId eButtonId, double eventTimeOffset) {
 			LOG(TRACE) << "Detour::buttonTouchedDetourFunc(" << _this << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
-				_openvrIdToDeviceInfoMap[unWhichDevice]->handleButtonEvent(_this, _buttonTouchedDetour.origFunc, unWhichDevice, ButtonEventType::ButtonTouched, eButtonId, eventTimeOffset);
+			if (g_stepDetectEnabled && g_disableGameLocomotion && eButtonId == vr::EVRButtonId::k_EButton_Axis0 && !g_stepPoseDetected) {
 			}
 			else {
-				_buttonTouchedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
+				if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
+					_openvrIdToDeviceInfoMap[unWhichDevice]->handleButtonEvent(_this, _buttonTouchedDetour.origFunc, unWhichDevice, ButtonEventType::ButtonTouched, eButtonId, eventTimeOffset);
+				}
+				else {
+					_buttonTouchedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
+				}
+			}
+			if (eButtonId == g_AccuracyButton && g_accuracyButtonWithTouch) {
+				g_isHoldingAccuracyButton = true;
 			}
 		}
 
@@ -152,11 +162,14 @@ namespace vrwalkinplace {
 			else {
 				_buttonUntouchedDetour.origFunc(_this, unWhichDevice, eButtonId, eventTimeOffset);
 			}
+			if (eButtonId == g_AccuracyButton && g_accuracyButtonWithTouch) {
+				g_isHoldingAccuracyButton = false;
+			}
 		}
 
 		void CServerDriver::_axisUpdatedDetourFunc(vr::IVRServerDriverHost* _this, uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t & axisState) {
 			LOG(TRACE) << "Detour::axisUpdatedDetourFunc(" << _this << ", " << unWhichDevice << ", " << (int)unWhichAxis << ", <state>)";
-			if (g_stepDetectEnabled && unWhichAxis == vr::EVRButtonId::k_EButton_Axis0 && !g_stepPoseDetected) {
+			if (g_stepDetectEnabled && g_disableGameLocomotion && unWhichAxis == vr::EVRButtonId::k_EButton_Axis0 && !g_stepPoseDetected) {
 			}
 			else {
 				if (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid()) {
@@ -318,8 +331,35 @@ namespace vrwalkinplace {
 			_hmdThreshold = value;
 		}
 
-		void CServerDriver::setAccuracyButton(bool enable) {
-			_useAccuracyButton = enable;
+		void CServerDriver::setAccuracyButton(int buttonId) {
+			switch (buttonId) {
+			case 0:
+				g_AccuracyButton = vr::EVRButtonId::k_EButton_Grip;
+				g_accuracyButtonWithTouch = false;
+				break;
+			case 1:
+				g_AccuracyButton = vr::EVRButtonId::k_EButton_Axis0;
+				g_accuracyButtonWithTouch = true;
+				break;
+			case 2:
+				g_AccuracyButton = vr::EVRButtonId::k_EButton_A;
+				g_accuracyButtonWithTouch = false;
+				break;
+			case 3:
+				g_AccuracyButton = vr::EVRButtonId::k_EButton_Axis1;
+				g_accuracyButtonWithTouch = false;
+				break;
+			case 4:
+				g_AccuracyButton = vr::EVRButtonId::k_EButton_ApplicationMenu;
+				g_accuracyButtonWithTouch = false;
+				break;
+			case 5:
+				g_AccuracyButton = -1;
+				break;
+			default:
+				g_AccuracyButton = -1;
+				break;
+			}
 		}
 
 		void CServerDriver::setHandJogThreshold(float value) {
@@ -338,8 +378,27 @@ namespace vrwalkinplace {
 			return this->_stepPoseDetectEnabled;
 		}
 
-		bool CServerDriver::accuracyButtonEnabled() {
-			return this->_useAccuracyButton;
+		int CServerDriver::accuracyButtonEnabled() {
+			switch (g_AccuracyButton) {
+			case vr::EVRButtonId::k_EButton_Grip:
+				return 0;
+				break;
+			case vr::EVRButtonId::k_EButton_Axis0:
+				return 1;
+				break;
+			case vr::EVRButtonId::k_EButton_A:
+				return 2;
+				break;
+			case vr::EVRButtonId::k_EButton_Axis1:
+				return 3;
+				break;
+			case vr::EVRButtonId::k_EButton_ApplicationMenu:
+				return 4;
+				break;
+			default:
+				break;
+			}
+			return 0;
 		}
 
 		bool CServerDriver::_applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo) {
@@ -547,7 +606,7 @@ namespace vrwalkinplace {
 				((vel[1] > threshold.v[1] && (vel[1] > vel[0] && vel[1] > vel[2]))
 					|| (vel[1] < -1 * threshold.v[1] && (vel[1] < vel[0] && vel[1] < vel[2]))));
 			//stepParams = stepParams && (roll < 20 && pitch < 20);
-			stepParams = stepParams && (!_useAccuracyButton || g_isHoldingAccuracyButton);
+			stepParams = stepParams && (g_AccuracyButton < 0 || g_isHoldingAccuracyButton);
 			return stepParams;
 		}
 

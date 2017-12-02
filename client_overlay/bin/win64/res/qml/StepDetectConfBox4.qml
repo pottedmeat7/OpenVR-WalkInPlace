@@ -56,7 +56,7 @@ GroupBox {
                 text: "Walk Touch:"
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
+                Layout.preferredWidth: 220
             }
 
             MyText {
@@ -68,7 +68,7 @@ GroupBox {
                 text: "Jog Touch:"
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
+                Layout.preferredWidth: 220
             }
 
             MyText {
@@ -80,7 +80,7 @@ GroupBox {
                 text: "Run Touch:"
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 240
+                Layout.preferredWidth: 220
             }
 
             MyText {
@@ -111,8 +111,6 @@ GroupBox {
                 text: "0.6"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -166,8 +164,6 @@ GroupBox {
                 text: "0.9"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -221,8 +217,6 @@ GroupBox {
                 text: "1.0"
                 keyBoardUID: keyboardUIDBase
                 Layout.preferredWidth: 140
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)

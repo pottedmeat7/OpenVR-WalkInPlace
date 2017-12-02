@@ -155,7 +155,7 @@ namespace vrwalkinplace {
 
 			/* Step Detection */
 			void enableStepDetection(bool enable);
-			void setAccuracyButton(bool enable);
+			void setAccuracyButton(int buttonId);
 			void setGameStepType(int gameType);
 			void setStepIntSec(float value);
 			void setHMDThreshold(vr::HmdVector3d_t value);
@@ -166,7 +166,7 @@ namespace vrwalkinplace {
 			void setRunTouch(float value);
 			void setStepPoseDetected(bool enable);
 			bool isStepDetectionEnabled();
-			bool accuracyButtonEnabled();
+			int accuracyButtonEnabled();
 			bool _applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo);
 
 		private:
@@ -185,7 +185,7 @@ namespace vrwalkinplace {
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
-			bool _useAccuracyButton = false;
+			int _useAccuracyButton = vr::EVRButtonId::k_EButton_Grip;
 			int _gameStepType = 1;
 			int _teleportUnpressed = true;
 			int _hasUnTouchedStepAxis = 0;			

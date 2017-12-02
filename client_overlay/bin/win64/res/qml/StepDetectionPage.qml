@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 import pottedmeat7.walkinplace 1.0
 
-MyStackViewPage {
+MyMainViewPage {
     id: stepDetectionPage
     headerText: "OpenVR Walk In Place"
     headerShowBackButton: false
@@ -14,8 +14,7 @@ MyStackViewPage {
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
-        var isAccuracyButtonEnabled = WalkInPlaceTabController.isAccuracyButtonEnabled()
-        stepThresholdBox.setAccuracyButton(isAccuracyButtonEnabled)
+        stepThresholdBox.setAccuracyButton(WalkInPlaceTabController.getAccuracyButton())
         stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
         stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
         stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
@@ -93,24 +92,6 @@ MyStackViewPage {
                         horizontalAlignment: Text.AlignHCenter
                         Layout.preferredWidth: 70
                     }
-
-                    MyPushButton {
-                        Layout.preferredWidth: 200
-                        text: "Reset"
-                        onClicked: {      
-                            stepThresholdBox.setHMDXZ(0.07)
-                            stepThresholdBox.setHMDY(0.09)
-                            stepThresholdBox.setHandWalk(0.02)
-                            stepThresholdBox.setHandJog(0.40)
-                            stepThresholdBox.setHandRun(1.70)
-                            stepControlBox.setWalkTouch(0.6)
-                            stepControlBox.setJogTouch(0.9)
-                            stepControlBox.setRunTouch(1)
-                            stepControlBox.updateGUI()
-                            stepThresholdBox.updateGUI()
-                            gameTypeDialog.currentIndex = 0
-                        }
-                    }
                 }
             }
         }
@@ -139,13 +120,9 @@ MyStackViewPage {
                 handRun = run
                 updateGUI()    
             }
-            setAccuracyButton: function(checked) {
-                WalkInPlaceTabController.setAccuracyButton(checked)
-                if ( checked ) {
-                    useAccuracyButton = 1
-                } else {
-                    useAccuracyButton = 0                
-                }
+            setAccuracyButton: function(buttonId) {
+                WalkInPlaceTabController.setAccuracyButton(buttonId)
+                useAccuracyButton = buttonId
                 updateGUI()    
             }
             updateValues: function() {
@@ -174,6 +151,42 @@ MyStackViewPage {
             }
         }
 
+
+        ColumnLayout {
+            spacing: 18
+
+            RowLayout {
+                spacing: 18
+
+                MyPushButton {
+                    id: walkInPlaceLoadProfiles
+                    Layout.preferredWidth: 150
+                    text: "Load Profiles"
+                    onClicked: {
+                        reloadWalkInPlaceProfiles()
+                    }
+                }
+
+                MyPushButton {
+                    Layout.preferredWidth: 100
+                    text: "Reset"
+                    onClicked: {      
+                        stepThresholdBox.setHMDXZ(0.07)
+                        stepThresholdBox.setHMDY(0.09)
+                        stepThresholdBox.setHandWalk(0.02)
+                        stepThresholdBox.setHandJog(0.40)
+                        stepThresholdBox.setHandRun(1.70)
+                        stepThresholdBox.setAccuracyButton(5)
+                        stepControlBox.setWalkTouch(0.6)
+                        stepControlBox.setJogTouch(0.9)
+                        stepControlBox.setRunTouch(1)
+                        stepControlBox.updateGUI()
+                        stepThresholdBox.updateGUI()
+                        gameTypeDialog.currentIndex = 0
+                    }
+                }
+            }
+        }
 
         ColumnLayout {
             spacing: 18
@@ -234,15 +247,6 @@ MyStackViewPage {
                             walkInPlaceDeleteProfileDialog.profileIndex = walkInPlaceProfileComboBox.currentIndex - 1
                             walkInPlaceDeleteProfileDialog.open()
                         }
-                    }
-                }
-
-                MyPushButton {
-                    id: walkInPlaceLoadProfiles
-                    Layout.preferredWidth: 150
-                    text: "Load Profiles"
-                    onClicked: {
-                        reloadWalkInPlaceProfiles()
                     }
                 }
             }

@@ -7,7 +7,7 @@ GroupBox {
 
     property double hmdXZ : 0.07
     property double hmdY : 0.09
-    property int useAccuracyButton : 0
+    property int useAccuracyButton : 5
     property double handWalk : 0.02
     property double handJog : 0.4
     property double handRun : 1.7
@@ -28,7 +28,7 @@ GroupBox {
         hmdYInputField.text = hmdY.toFixed(2)
         handJogInputField.text = handJog.toFixed(2)
         handRunInputField.text = handRun.toFixed(2)        
-        enableAccuracyButton.checked = useAccuracyButton == 1
+        accuracyButtonDialog.currentIndex = useAccuracyButton
     }
 
     Layout.fillWidth: true
@@ -294,12 +294,19 @@ GroupBox {
         GridLayout {
             columns: 14
 
-            MyToggleButton {
-                id: enableAccuracyButton
-                text: "Enable Grip Button for Accuracy?"
-                Layout.fillWidth: false
-                onCheckedChanged: {
-                    setAccuracyButton(checked)
+            MyComboBox {
+                id: accuracyButtonDialog 
+                currentIndex: 0
+                Layout.maximumWidth: 399
+                Layout.minimumWidth: 299
+                Layout.preferredWidth: 399
+                Layout.fillWidth: true
+                displayText: currentText
+                model: ["grip", "touchpad touch", "touchpad click", "trigger", "App Menu", "None"]
+                onCurrentIndexChanged: {
+                    if (currentIndex >= 0) { 
+                        setAccuracyButton(currentIndex) 
+                    } 
                 }
             }
         }

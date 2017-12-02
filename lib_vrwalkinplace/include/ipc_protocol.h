@@ -85,7 +85,6 @@ struct Request_WalkInPlace_StepDetectionMode {
 	uint32_t useEulerForStep;
 	uint32_t stepDetectOperation;
 	vr::HmdVector3d_t hmdThreshold;
-	bool useAccuracyButton;
 	float handJogThreshold;
 	float handRunThreshold;
 	float walkTouch;
@@ -95,6 +94,7 @@ struct Request_WalkInPlace_StepDetectionMode {
 	float stepSpeed;
 	float stepIntSec;
 	int gameStepType;
+	int useAccuracyButton;
 };
 
 
