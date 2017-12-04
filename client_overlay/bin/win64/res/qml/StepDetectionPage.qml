@@ -159,18 +159,10 @@ MyMainViewPage {
                 spacing: 18
 
                 MyPushButton {
-                    id: walkInPlaceLoadProfiles
-                    Layout.preferredWidth: 150
-                    text: "Load Profiles"
-                    onClicked: {
-                        reloadWalkInPlaceProfiles()
-                    }
-                }
-
-                MyPushButton {
                     Layout.preferredWidth: 100
+                    Layout.alignment: AlignHRight
                     text: "Reset"
-                    onClicked: {      
+                    onClicked: { 
                         stepThresholdBox.setHMDXZ(0.07)
                         stepThresholdBox.setHMDY(0.09)
                         stepThresholdBox.setHandWalk(0.02)
@@ -193,8 +185,13 @@ MyMainViewPage {
             RowLayout {
                 spacing: 18
 
-                MyText {
-                    text: "Profile:"
+                MyPushButton {
+                    id: walkInPlaceLoadProfiles
+                    Layout.preferredWidth: 200
+                    text: "Load Profiles"
+                    onClicked: {
+                        reloadWalkInPlaceProfiles()
+                    }
                 }
 
                 MyComboBox {

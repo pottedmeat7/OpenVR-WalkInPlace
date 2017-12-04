@@ -68,6 +68,7 @@ private:
 	float walkTouch = 0.6;
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
+	vr::VROverlayHandle_t overlayHandle;
 	
 
 public:

@@ -54,39 +54,38 @@ GroupBox {
 
             MyText {
                 text: "Walk Touch:"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Jog Touch:"
-                Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
+                Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Run Touch:"
-                Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 230
             }
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 100
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
             }
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 90
+            }
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 90
+            }
+
         }
 
         GridLayout {
@@ -140,11 +139,6 @@ GroupBox {
                 }
             }
 
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }
-
             MyPushButton2 {
                 id: jogTouchMinusButton
                 Layout.preferredWidth: 40
@@ -191,11 +185,6 @@ GroupBox {
                     jogTouch = value
                     setJogTouch(value)
                 }
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
             }
 
             MyPushButton2 {
@@ -248,7 +237,17 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 100
+                Layout.preferredWidth: 160
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 90
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 90
             }
 
         }

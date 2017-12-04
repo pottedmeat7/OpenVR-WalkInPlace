@@ -16,6 +16,7 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 - Onward
 - Gorn
 - Vanishing Realms
+- VR Dungeon Knight
 - Fallout VR...?
 
 Other games may not have touchpad movement options however this driver will 

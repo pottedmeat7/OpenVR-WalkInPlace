@@ -67,7 +67,7 @@ namespace walkinplace {
 				for (uint32_t id = maxValidDeviceId + 1; id < vr::k_unMaxTrackedDeviceCount; ++id) {
 					auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(id);
 					if (deviceClass != vr::TrackedDeviceClass_Invalid) {
-						if (deviceClass == vr::TrackedDeviceClass_Controller || deviceClass == vr::TrackedDeviceClass_GenericTracker) {
+						if (deviceClass == vr::TrackedDeviceClass_HMD || deviceClass == vr::TrackedDeviceClass_Controller || deviceClass == vr::TrackedDeviceClass_GenericTracker) {
 							auto info = std::make_shared<DeviceInfo>();
 							info->openvrId = id;
 							info->deviceClass = deviceClass;

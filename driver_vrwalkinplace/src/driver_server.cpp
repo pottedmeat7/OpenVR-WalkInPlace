@@ -100,7 +100,7 @@ namespace vrwalkinplace {
 			callcount = 0;
 			}
 			}*/
-			if (true || (_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid())) {
+			if ((_openvrIdToDeviceInfoMap[unWhichDevice] && _openvrIdToDeviceInfoMap[unWhichDevice]->isValid())) {
 				_openvrIdToDeviceInfoMap[unWhichDevice]->handleNewDevicePose(_this, _poseUpatedDetour.origFunc, unWhichDevice, newPose);
 			}
 			else {
@@ -403,31 +403,39 @@ namespace vrwalkinplace {
 
 		bool CServerDriver::_applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo) {
 			if (this->_stepPoseDetectEnabled && pose.poseIsValid) {
-				double deltatime = 1.0 / 180.0;
+				double deltatime = 1.0 / 300.0;
 				auto now = std::chrono::duration_cast <std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				double tdiff = (double)(now - _timeLastTick);
-				if (true || tdiff >= deltatime) {
+				if (tdiff >= deltatime) {
 					vr::ETrackedDeviceClass deviceClass = deviceInfo->deviceClass();
 					bool isHMD = deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD;
 					if (!this->_stepPoseDetected) {
 						if (isHMD) {
-							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
+							vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
 							auto poseWorldRot = tmpConj * pose.qRotation;
 
 							double zsqr = poseWorldRot.z * poseWorldRot.z;
 
 							// roll (x-axis rotation)
-							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
-							double t1 = +1.0 - 2.0 * (zsqr + poseWorldRot.x * poseWorldRot.x);
+							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.z * poseWorldRot.y);
+							double t1 = +1.0 - 2.0 * (poseWorldRot.x * poseWorldRot.x + zsqr);
 							double roll = (180*std::atan2(t0, t1))/M_PI;
 
 							// pitch (z-axis rotation)
-							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z + poseWorldRot.y * poseWorldRot.x);
-							t2 = t2 > 1.0 ? 1.0 : t2;
-							t2 = t2 < -1.0 ? -1.0 : t2;
-							double pitch = (180*std::asin(t2))/M_PI;
+							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z - poseWorldRot.y * poseWorldRot.x);
+							double pitch;
+							if (std::abs(t2) >= 1) {
+								pitch = 90;
+							}
+							else {
+								pitch = (180 * std::asin(t2)) / M_PI;
+							}
 
-							LOG(INFO) << "HMD Rot: " << roll << "," << pitch;*/
+							double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
+							double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
+							double yaw = (180 * std::atan2(t3, t4)) / M_PI;
+
+							//LOG(INFO) << "HMD Rot: " << roll << "," << pitch << "," << yaw;
 							//LOG(INFO) << "HMD Step: " << pose.vecAcceleration[0] << "," << pose.vecAcceleration[1] << "," << pose.vecAcceleration[2];
 							//LOG(INFO) << "HMD Rot: " << pose.qRotation.x << "," << pose.qRotation.y << "," << pose.qRotation.z;
 							//LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];

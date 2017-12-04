@@ -61,32 +61,32 @@ GroupBox {
 
             MyText {
                 text: "Step HMD Y:"
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Step HMD XZ:"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 230
             }
 
             MyText {
                 text: " "
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 180
+                Layout.preferredWidth: 160
             }
 
             MyText {
                 text: "Hand Jog Vel:"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Hand Run Vel:"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 230
             }    
         }
 
