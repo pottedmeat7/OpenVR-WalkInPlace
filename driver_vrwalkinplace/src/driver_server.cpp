@@ -406,12 +406,12 @@ namespace vrwalkinplace {
 				double deltatime = 1.0 / 300.0;
 				auto now = std::chrono::duration_cast <std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				double tdiff = (double)(now - _timeLastTick);
-				if (tdiff >= deltatime) {
+				if (true || tdiff >= deltatime) {
 					vr::ETrackedDeviceClass deviceClass = deviceInfo->deviceClass();
 					bool isHMD = deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD;
 					if (!this->_stepPoseDetected) {
 						if (isHMD) {
-							vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
+							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
 							auto poseWorldRot = tmpConj * pose.qRotation;
 
 							double zsqr = poseWorldRot.z * poseWorldRot.z;
@@ -433,7 +433,7 @@ namespace vrwalkinplace {
 
 							double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
 							double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
-							double yaw = (180 * std::atan2(t3, t4)) / M_PI;
+							double yaw = (180 * std::atan2(t3, t4)) / M_PI;*/
 
 							//LOG(INFO) << "HMD Rot: " << roll << "," << pitch << "," << yaw;
 							//LOG(INFO) << "HMD Step: " << pose.vecAcceleration[0] << "," << pose.vecAcceleration[1] << "," << pose.vecAcceleration[2];
@@ -452,7 +452,7 @@ namespace vrwalkinplace {
 							}
 						}
 						//else if ( deviceInfo->deviceClass() == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-							//LOG(INFO) << "CONTROLLER MAG VEL: " << pose.vecVelocity[0] + pose.vecVelocity[1] + pose.vecVelocity[2];
+						//	LOG(INFO) << "CONTROLLER VEL: " << deviceInfo->openvrId << pose.vecVelocity[0] << "," << pose.vecVelocity[1]  << "," << pose.vecVelocity[2];
 						//}
 						if (_openvrDeviceStepPoseTracker[0] != 0) {
 							//&& _openvrDeviceStepPoseTracker[1] != 0 && _openvrDeviceStepPoseTracker[2] != 0 ) {
@@ -475,7 +475,7 @@ namespace vrwalkinplace {
 								else {
 									driverHost = vr::VRServerDriverHost();
 								}
-								if (_gameStepType != 3) {
+								if (_gameStepType == 1 || _gameStepType == 2) {
 									vr::VRControllerAxis_t axisState;
 									axisState.x = 0;
 									axisState.y = walkTouch;
@@ -497,7 +497,7 @@ namespace vrwalkinplace {
 									}
 									this->_hasUnTouchedStepAxis = 0;
 								}
-								else {
+								else if ( _gameStepType == 3 ) {
 									if (_teleportUnpressed) {
 										driverHost->TrackedDeviceButtonPressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 										_teleportUnpressed = false;
@@ -506,6 +506,42 @@ namespace vrwalkinplace {
 										driverHost->TrackedDeviceButtonUnpressed(deviceId, vr::EVRButtonId::k_EButton_Axis0, 0);
 										_teleportUnpressed = true;
 									}
+								}
+								else if (_gameStepType == 4) {
+									INPUT input[2];
+									input[0].type = INPUT_KEYBOARD;
+									input[0].ki.wVk = 0;
+									input[0].ki.wScan = MapVirtualKey(0x57, 0);
+									input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+									input[0].ki.time = 0;
+									input[0].ki.dwExtraInfo = 0;
+									SendInput(1, input, sizeof(INPUT));
+
+									input[0].type = INPUT_KEYBOARD;
+									input[0].ki.wVk = 0;
+									input[0].ki.wScan = MapVirtualKey(0x57, 0);
+									input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+									input[0].ki.time = 0;
+									input[0].ki.dwExtraInfo = 0;
+									SendInput(2, input, sizeof(INPUT));
+								}
+								else if (_gameStepType == 5) {
+									INPUT input[2];
+									input[0].type = INPUT_KEYBOARD;
+									input[0].ki.wVk = 0;
+									input[0].ki.wScan = MapVirtualKey(0x26, 0);
+									input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+									input[0].ki.time = 0;
+									input[0].ki.dwExtraInfo = 0;
+									SendInput(1, input, sizeof(INPUT));
+
+									input[0].type = INPUT_KEYBOARD;
+									input[0].ki.wVk = 0;
+									input[0].ki.wScan = MapVirtualKey(0x26, 0);
+									input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+									input[0].ki.time = 0;
+									input[0].ki.dwExtraInfo = 0;
+									SendInput(2, input, sizeof(INPUT));
 								}
 							}
 						}
@@ -571,6 +607,26 @@ namespace vrwalkinplace {
 							g_jogPoseDetected = false;
 							if (_gameStepType != 3) {
 								g_runPoseDetected = false;
+							}
+							if (_gameStepType == 4) {
+								INPUT input[2];
+								input[0].type = INPUT_KEYBOARD;
+								input[0].ki.wVk = 0;
+								input[0].ki.wScan = MapVirtualKey(0x57, 0);
+								input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+								input[0].ki.time = 0;
+								input[0].ki.dwExtraInfo = 0;
+								SendInput(2, input, sizeof(INPUT));
+							}
+							else if (_gameStepType == 5) {
+								INPUT input[2];
+								input[0].type = INPUT_KEYBOARD;
+								input[0].ki.wVk = 0;
+								input[0].ki.wScan = MapVirtualKey(0x26, 0);
+								input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+								input[0].ki.time = 0;
+								input[0].ki.dwExtraInfo = 0;
+								SendInput(2, input, sizeof(INPUT));
 							}
 						}
 					}

@@ -268,7 +268,7 @@ namespace walkinplace {
 			entry.profileName = settings->value("profileName").toString().toStdString();
 			entry.stepDetectionEnabled = settings->value("stepDetectionEnabled", false).toBool();
 			entry.useAccuracyButton = settings->value("useAccuracyButton", 0).toInt();
-			entry.useAccuracyButton = settings->value("gameType", 0).toInt();
+			entry.gameType = settings->value("gameType", 0).toInt();
 			entry.hmdThreshold.v[0] = settings->value("hmdthreshold_xz", 0.07).toFloat();
 			entry.hmdThreshold.v[1] = settings->value("hmdthreshold_y", 0.09).toFloat();
 			entry.hmdThreshold.v[2] = settings->value("hmdthreshold_xz", 0.07).toFloat();
@@ -339,10 +339,10 @@ namespace walkinplace {
 			settings->setArrayIndex(i);
 			settings->setValue("profileName", QString::fromStdString(p.profileName));
 			settings->setValue("stepDetectionEnabled", p.stepDetectionEnabled);
-			settings->setValue("gameType", gameType);
+			settings->setValue("gameType", p.gameType);
 			settings->setValue("useAccuracyButton", p.useAccuracyButton);
-			settings->setValue("hmdthreshold_xz", hmdThreshold.v[0]);
-			settings->setValue("hmdthreshold_y", hmdThreshold.v[1]);
+			settings->setValue("hmdthreshold_xz", p.hmdThreshold.v[0]);
+			settings->setValue("hmdthreshold_y", p.hmdThreshold.v[1]);
 			//WALKINPLACESETTINGS_WRITEHMDTHRESHOLDS(hmdThreshold);
 			WALKINPLACESETTINGS_WRITEWALKSWINGVAL(handWalkThreshold);
 			WALKINPLACESETTINGS_WRITEJOGSWINGVAL(handJogThreshold);

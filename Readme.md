@@ -12,28 +12,31 @@ I have done work with step detection locomotion with mobile phone VR games. So o
 
 # Current Games that Work Best with OpenVR-WalkInPlace
 
+- Fallout VR
 - Arizona Sunshine
+- DOOM VFR (with Keyboard (WASD))
 - Onward
+- VR Dungeon Knight
 - Gorn
 - Vanishing Realms
-- VR Dungeon Knight
-- Fallout VR...?
 
 Other games may not have touchpad movement options however this driver will 
-also activate teleport.
+also activate teleport if youd like.
 
 
 # Features
 
-- Change HMD Step Thresholds
-- Change Vive Controller Swinging Thresholds
+- Change Step Thresholds for Walk / Jog / Run in Place
+- Possible configuration for "Arm Swinging" Locomotion
+- Change speed of movement applied in game 
 - Profiles for different games
 
 # Upcoming
 
-- Fixes for teleport games
-- Options for emulating other input methods
 - Tracker support (for feet)
+- Options for emulating other input methods
+- Jumping support
+- Fixes for teleport games
 
 # Notes:
 
@@ -82,6 +85,12 @@ After re-opening SteamVR you can reload your saved profiles by first clicking "L
 If you want to update a profile with new settings you need to select the profile and delete it and re-create a "New Profile".
 
 If you name a profile with the name "default" it will be the initially loaded profile once SteamVR is started.
+
+### Arm Swinging 
+To achieve more of an Arm Swinging only method you can set the "Walk Touch" value to 0
+This will disable the walking mode and movement will only be applied if you are jogging / running.
+Your HMD will need to move by the HMD Y value but if set low enough this movement will happen naturally anyway.
+This mode only works with the "touchpad touch" locomotion options. 
 
 ## Initial Setup
 ### Boost

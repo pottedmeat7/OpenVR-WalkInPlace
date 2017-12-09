@@ -160,7 +160,7 @@ MyMainViewPage {
 
                 MyPushButton {
                     Layout.preferredWidth: 100
-                    Layout.alignment: AlignHRight
+                    Layout.alignment: AlignRight
                     text: "Reset"
                     onClicked: { 
                         stepThresholdBox.setHMDXZ(0.07)
