@@ -159,6 +159,12 @@ namespace vrwalkinplace {
 										case 11:
 											serverDriver->setAccuracyButton(message.msg.dm_StepDetectionMode.useAccuracyButton);
 											break;
+										case 12:
+											serverDriver->setHMDPitchDown(message.msg.dm_StepDetectionMode.hmdPitchDown);
+											break;
+										case 13:
+											serverDriver->setHMDPitchUp(message.msg.dm_StepDetectionMode.hmdPitchUp);
+											break;
 										default:
 											break;
 										}

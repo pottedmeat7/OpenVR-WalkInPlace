@@ -9,10 +9,13 @@ GroupBox {
     property double hmdY : 0.09
     property int useAccuracyButton : 5
     property double handWalk : 0.02
-    property double handJog : 0.4
+    property double handJog : 0.35
     property double handRun : 1.7
+    property int hmdPitchDown : 20
+    property int hmdPitchUp : 15
 
-    property double thresholdStep: 0.01
+    property double thresholdStep : 0.01
+    property int pitchStep : 1
 
     property int keyboardUIDBase: 200
 
@@ -21,13 +24,17 @@ GroupBox {
     property var setAccuracyButton: function(b) {}
     property var setHandJog: function(j) {}
     property var setHandRun: function(r) {}
+    property var setHMDPitchDown: function(p) {}
+    property var setHMDPitchUp: function(p) {}
     property var updateValues: function() {}
 
     function updateGUI() {
-        hmdXZInputField.text = hmdXZ.toFixed(2)
         hmdYInputField.text = hmdY.toFixed(2)
+        hmdXZInputField.text = hmdXZ.toFixed(2)
         handJogInputField.text = handJog.toFixed(2)
-        handRunInputField.text = handRun.toFixed(2)        
+        handRunInputField.text = handRun.toFixed(2)    
+        hmdPitchDownInputField.text = hmdPitchDown    
+        hmdPitchUpInputField.text = hmdPitchUp    
         accuracyButtonDialog.currentIndex = useAccuracyButton
     }
 
@@ -292,14 +299,48 @@ GroupBox {
         }
 
         GridLayout {
-            columns: 14
+            columns: 5
+
+            MyText {
+                text: "Button for Accuracy"
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 160
+            }
+
+            MyText {
+                text: "HMD Pitch Down"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }    
+
+            MyText {
+                text: "HMD Pitch Up"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }
+        }
+
+        GridLayout {
+            columns: 8
 
             MyComboBox {
                 id: accuracyButtonDialog 
                 currentIndex: 0
-                Layout.maximumWidth: 399
-                Layout.minimumWidth: 299
-                Layout.preferredWidth: 399
+                Layout.maximumWidth: 360
+                Layout.minimumWidth: 360
+                Layout.preferredWidth: 360
                 Layout.fillWidth: true
                 displayText: currentText
                 model: ["grip", "touchpad touch", "touchpad click", "trigger", "App Menu", "None"]
@@ -307,6 +348,107 @@ GroupBox {
                     if (currentIndex >= 0) { 
                         setAccuracyButton(currentIndex) 
                     } 
+                }
+            }     
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 262
+            }
+
+            MyPushButton2 {
+                id: hmdPitchDownMinusButton
+                Layout.preferredWidth: 40
+                text: "-"
+                onClicked: {
+                    var value = hmdPitchDown - pitchStep
+                    if (value < pitchStep) {
+                        value = pitchStep
+                    }
+                    hmdPitchDown = value
+                    setHMDPitchDown(value)
+                }
+            }
+
+            MyTextField {
+                id: hmdPitchDownInputField
+                text: "20"
+                keyBoardUID: keyboardUIDBase
+                Layout.preferredWidth: 140
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseInt(input)
+                    if (!isNaN(val)) {
+                        if (val < pitchStep) {
+                            val = pitchStep
+                        } else if (val > 200) {
+                            val = 200
+                        }
+                        hmdPitchDown = val
+                        setHMDPitchDown(val)
+                    } 
+                }
+            }
+
+            MyPushButton2 {
+                id: hmdPitchDownPlusButton
+                Layout.preferredWidth: 40
+                text: "+"
+                onClicked: {
+                    var value = hmdPitchDown + pitchStep
+                    if (value > 100) {
+                        value = 100
+                    }
+                    hmdPitchDown = value
+                    setHMDPitchDown(value)
+                }
+            }
+
+            MyPushButton2 {
+                id: hmdPitchUpMinusButton
+                Layout.preferredWidth: 40
+                text: "-"
+                onClicked: {
+                    var value = hmdPitchUp - pitchStep
+                    if (value < pitchStep) {
+                        value = pitchStep
+                    }
+                    hmdPitchUp = value
+                    setHMDPitchUp(value)
+                }
+            }
+
+            MyTextField {
+                id: hmdPitchUpInputField
+                text: "15"
+                keyBoardUID: keyboardUIDBase
+                Layout.preferredWidth: 140
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseInt(input)
+                    if (!isNaN(val)) {
+                        if (val < pitchStep) {
+                            val = pitchStep
+                        } else if (val > 200) {
+                            val = 200
+                        }
+                        hmdPitchUp = val
+                        setHMDPitchUp(val)
+                    } 
+                }
+            }
+
+            MyPushButton2 {
+                id: hmdPitchUpPlusButton
+                Layout.preferredWidth: 40
+                text: "+"
+                onClicked: {
+                    var value = hmdPitchUp + pitchStep
+                    if (value > 100) {
+                        value = 100
+                    }
+                    hmdPitchUp = value
+                    setHMDPitchUp(value)
                 }
             }
         }

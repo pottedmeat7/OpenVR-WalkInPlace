@@ -95,6 +95,8 @@ struct Request_WalkInPlace_StepDetectionMode {
 	float stepIntSec;
 	int gameStepType;
 	int useAccuracyButton;
+	int hmdPitchDown;
+	int hmdPitchUp;
 };
 
 

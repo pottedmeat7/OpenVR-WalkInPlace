@@ -49,7 +49,7 @@ namespace vrwalkinplace {
 		bool g_stepPoseDetected = false;
 		bool g_jogPoseDetected = false;
 		bool g_runPoseDetected = false;
-		int g_AccuracyButton = vr::EVRButtonId::k_EButton_Grip;
+		int g_AccuracyButton = -1;
 		bool g_accuracyButtonWithTouch = false;
 
 		CServerDriver::_DetourFuncInfo<_DetourTrackedDeviceAdded_t> CServerDriver::_deviceAddedDetour;
@@ -327,6 +327,14 @@ namespace vrwalkinplace {
 			runTouch = value;
 		}
 
+		void CServerDriver::setHMDPitchDown(int value) {
+			_maxRollDown = (float)value;
+		}
+
+		void CServerDriver::setHMDPitchUp(int value) {
+			_maxRollUp = (float)value;
+		}
+
 		void CServerDriver::setHMDThreshold(vr::HmdVector3d_t value) {
 			_hmdThreshold = value;
 		}
@@ -403,7 +411,7 @@ namespace vrwalkinplace {
 
 		bool CServerDriver::_applyStepPoseDetect(vr::DriverPose_t& pose, OpenvrWalkInPlaceInfo* deviceInfo) {
 			if (this->_stepPoseDetectEnabled && pose.poseIsValid) {
-				double deltatime = 1.0 / 300.0;
+				double deltatime = 1.0 / 500.0;
 				auto now = std::chrono::duration_cast <std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				double tdiff = (double)(now - _timeLastTick);
 				if (true || tdiff >= deltatime) {
@@ -411,7 +419,7 @@ namespace vrwalkinplace {
 					bool isHMD = deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD;
 					if (!this->_stepPoseDetected) {
 						if (isHMD) {
-							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
+							vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
 							auto poseWorldRot = tmpConj * pose.qRotation;
 
 							double zsqr = poseWorldRot.z * poseWorldRot.z;
@@ -424,28 +432,29 @@ namespace vrwalkinplace {
 							// pitch (z-axis rotation)
 							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z - poseWorldRot.y * poseWorldRot.x);
 							double pitch;
-							if (std::abs(t2) >= 1) {
+							if (std::fabs(t2) >= 1) {
 								pitch = 90;
 							}
 							else {
 								pitch = (180 * std::asin(t2)) / M_PI;
 							}
 
-							double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
-							double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
-							double yaw = (180 * std::atan2(t3, t4)) / M_PI;*/
+							//double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
+							//double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
+							//double yaw = (180 * std::atan2(t3, t4)) / M_PI;
 
-							//LOG(INFO) << "HMD Rot: " << roll << "," << pitch << "," << yaw;
+							//LOG(INFO) << "HMD Rot: " << roll << "," << yaw << "," << pitch;
 							//LOG(INFO) << "HMD Step: " << pose.vecAcceleration[0] << "," << pose.vecAcceleration[1] << "," << pose.vecAcceleration[2];
 							//LOG(INFO) << "HMD Rot: " << pose.qRotation.x << "," << pose.qRotation.y << "," << pose.qRotation.z;
 							//LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];
 							//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
-							if (isTakingStep(pose.vecVelocity, _hmdThreshold, 0, 0)) { //&& isStepingInPlace(pose.vecPosition) ) {
+							if (isTakingStep(pose.vecVelocity, _hmdThreshold, roll, pitch)) { //&& isStepingInPlace(pose.vecPosition) ) {
 								_openvrDeviceStepPoseTracker[0] = -1;
 								_openvrDeviceStepPoseTracker[1] = -1;
 								_openvrDeviceStepPoseTracker[2] = -1;
 							}
 							else {
+								//LOG(INFO) << "HMD Rot: " << roll << "," << pitch;
 								_openvrDeviceStepPoseTracker[0] = 0;
 								_openvrDeviceStepPoseTracker[1] = 0;
 								_openvrDeviceStepPoseTracker[2] = 0;
@@ -549,29 +558,33 @@ namespace vrwalkinplace {
 							//if ( isStepingInPlace(pose.vecPosition) ) 
 							//{
 
-							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
+							vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
 							auto poseWorldRot = tmpConj * pose.qRotation;
 
 							double zsqr = poseWorldRot.z * poseWorldRot.z;
 
 							// roll (x-axis rotation)
-							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.y * poseWorldRot.z);
-							double t1 = +1.0 - 2.0 * (zsqr + poseWorldRot.x * poseWorldRot.x);
-							double roll = (180*std::atan2(t0, t1))/M_PI;
+							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.z * poseWorldRot.y);
+							double t1 = +1.0 - 2.0 * (poseWorldRot.x * poseWorldRot.x + zsqr);
+							double roll = (180 * std::atan2(t0, t1)) / M_PI;
 
 							// pitch (z-axis rotation)
-							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z + poseWorldRot.y * poseWorldRot.x);
-							t2 = t2 > 1.0 ? 1.0 : t2;
-							t2 = t2 < -1.0 ? -1.0 : t2;
-							double pitch = (180*std::asin(t2))/M_PI;
+							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z - poseWorldRot.y * poseWorldRot.x);
+							double pitch;
+							if (std::fabs(t2) >= 1) {
+								pitch = 90;
+							}
+							else {
+								pitch = (180 * std::asin(t2)) / M_PI;
+							}
+							
 
-							LOG(INFO) << "HMD Rot: " << roll << "," << pitch;*/
-
-							if (isTakingStep(pose.vecVelocity, _hmdThreshold, 0, 0)) {
+							if (isTakingStep(pose.vecVelocity, _hmdThreshold, roll, pitch)) {
 								_stepIntegrateSteps = 0;
 							}
-							if (_openvrDeviceStepPoseTracker[0] == 0) {
-								//_stepIntegrateSteps += tdiff;
+							//else 
+							{
+								//LOG(INFO) << "HMD Rot: " << roll << "," << pitch;
 							}
 							//}
 							/*else {
@@ -595,7 +608,7 @@ namespace vrwalkinplace {
 							}
 						}
 						_stepIntegrateSteps += tdiff;
-						if (_stepIntegrateSteps >= 0.07) { //_stepIntegrateStepLimit) {
+						if (_stepIntegrateSteps >= 0.21) { //_stepIntegrateStepLimit) {
 							this->setStepPoseDetected(false);
 							_stepIntegrateSteps = 0.0;
 							_handsPointDir = { 0.0, 0.0, 0.0 };
@@ -669,9 +682,13 @@ namespace vrwalkinplace {
 				(std::abs(vel[0]) < threshold.v[0]) &&
 				((vel[1] > threshold.v[1] && (vel[1] > vel[0] && vel[1] > vel[2]))
 					|| (vel[1] < -1 * threshold.v[1] && (vel[1] < vel[0] && vel[1] < vel[2]))));
-			//stepParams = stepParams && (roll < 20 && pitch < 20);
-			stepParams = stepParams && (g_AccuracyButton < 0 || g_isHoldingAccuracyButton);
+			//stepParams = stepParams && (roll > -107 && roll < -85 && pitch > -20 && pitch < -10 );
+			stepParams = stepParams && ((g_AccuracyButton < 0 && (roll > (_standardRollForward-_maxRollDown) && roll < (_standardRollForward+_maxRollUp) && pitch > -29 && pitch < -5)) || g_isHoldingAccuracyButton);
 			return stepParams;
+		}
+
+		bool CServerDriver::isLookingAhead(double roll, double pitch) {
+			return (g_isHoldingAccuracyButton || (roll >(_standardRollForward - _maxRollDown) && roll < (_standardRollForward + _maxRollUp)));
 		}
 
 		bool CServerDriver::isShakingHead(double * vel, vr::HmdVector3d_t threshold) {
@@ -681,7 +698,7 @@ namespace vrwalkinplace {
 		}
 
 		bool CServerDriver::isStepingInPlace(double * pos) {
-			vr::HmdVector3d_t currentDeviation = { 0.0, 0.0, 0.0 };
+			/*vr::HmdVector3d_t currentDeviation = { 0.0, 0.0, 0.0 };
 			currentDeviation.v[0] = std::abs(pos[0] - _avgStepPos.v[0]);
 			currentDeviation.v[1] = std::abs(pos[1] - _avgStepPos.v[1]);
 			currentDeviation.v[2] = std::abs(pos[2] - _avgStepPos.v[2]);
@@ -702,18 +719,19 @@ namespace vrwalkinplace {
 				(
 					pos[2] < (_avgStepPos.v[2] + _stdDeviation.v[2])
 					&& pos[2] > (_avgStepPos.v[2] - _stdDeviation.v[2])
-					));
+					));*/
+			return false;
 		}
 
 		bool CServerDriver::isJoggingStep(double * vel) {
 			float magVel = (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-			return (magVel > _handJogThreshold);
+			return (magVel > _handJogThreshold) && (g_AccuracyButton < 0 || g_isHoldingAccuracyButton);
 		}
 
 
 		bool CServerDriver::isRunningStep(double * vel) {
 			float magVel = (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-			return (magVel > _handRunThreshold);
+			return (magVel > _handRunThreshold) && (g_AccuracyButton < 0 || g_isHoldingAccuracyButton);
 		}
 
 	} // end namespace driver

@@ -181,12 +181,20 @@ namespace walkinplace {
 		return useAccuracyButton;
 	}
 
+	int WalkInPlaceTabController::getHMDPitchDown() {
+		return hmdPitchDown;
+	}
+
+	int WalkInPlaceTabController::getHMDPitchUp() {
+		return hmdPitchUp;
+	}
+
 	float WalkInPlaceTabController::getHMDXZThreshold() {
-		return hmdThreshold.v[0];
+		return hmdThreshold_xz;
 	}
 
 	float WalkInPlaceTabController::getHMDYThreshold() {
-		return hmdThreshold.v[1];
+		return hmdThreshold_y;
 	}
 
 	float WalkInPlaceTabController::getHandWalkThreshold() {
@@ -213,43 +221,6 @@ namespace walkinplace {
 		return runTouch;
 	}
 
-
-#define WALKINPLACESETTINGS_GETHMDTHRESHOLDS(name) { \
-	float y = settings->value(#name ## "_y", 0.09).toFloat(); \
-	float xz = settings->value(#name ## "_xz", 0.07).toFloat(); \
-	entry.name = { xz, y, xz }; \
-}
-
-#define WALKINPLACESETTINGS_GETWALKSWINGVAL(name) { \
-	float walk = settings->value(#name ## "_walk", 0.02).toFloat(); \
-	entry.name = walk; \
-}
-
-#define WALKINPLACESETTINGS_GETJOGSWINGVAL(name) { \
-	float jog = settings->value(#name ## "_jog", 0.5).toFloat(); \
-	entry.name = jog; \
-}
-
-#define WALKINPLACESETTINGS_GETRUNSWINGVAL(name) { \
-	float run = settings->value(#name ## "_run", 1.7).toFloat(); \
-	entry.name = run; \
-}
-
-#define WALKINPLACESETTINGS_GETWALKTOUCH(name) { \
-	float type = settings->value(#name ## "_walktouch", 0.6).toFloat(); \
-	entry.name = type; \
-}
-
-#define WALKINPLACESETTINGS_GETJOGTOUCH(name) { \
-	float type = settings->value(#name ## "_jogtouch", 0.77).toFloat(); \
-	entry.name = type; \
-}
-
-#define WALKINPLACESETTINGS_GETRUNTOUCH(name) { \
-	float type = settings->value(#name ## "_runtouch", 1.0).toFloat(); \
-	entry.name = type; \
-}
-
 	void WalkInPlaceTabController::reloadWalkInPlaceSettings() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("walkInPlaceSettings");
@@ -267,18 +238,17 @@ namespace walkinplace {
 			auto& entry = walkInPlaceProfiles[i];
 			entry.profileName = settings->value("profileName").toString().toStdString();
 			entry.stepDetectionEnabled = settings->value("stepDetectionEnabled", false).toBool();
-			entry.useAccuracyButton = settings->value("useAccuracyButton", 0).toInt();
 			entry.gameType = settings->value("gameType", 0).toInt();
-			entry.hmdThreshold.v[0] = settings->value("hmdthreshold_xz", 0.07).toFloat();
-			entry.hmdThreshold.v[1] = settings->value("hmdthreshold_y", 0.09).toFloat();
-			entry.hmdThreshold.v[2] = settings->value("hmdthreshold_xz", 0.07).toFloat();
-			//WALKINPLACESETTINGS_GETHMDTHRESHOLDS(hmdThreshold);
-			WALKINPLACESETTINGS_GETWALKSWINGVAL(handWalkThreshold);
-			WALKINPLACESETTINGS_GETJOGSWINGVAL(handJogThreshold);
-			WALKINPLACESETTINGS_GETRUNSWINGVAL(handRunThreshold);
-			WALKINPLACESETTINGS_GETWALKTOUCH(walkTouch);
-			WALKINPLACESETTINGS_GETJOGTOUCH(jogTouch);
-			WALKINPLACESETTINGS_GETRUNTOUCH(runTouch);
+			entry.hmdThreshold_y = settings->value("hmdthreshold_y", 0.1).toFloat();
+			entry.hmdThreshold_xz = settings->value("hmdthreshold_xz", 0.09).toFloat();
+			entry.handJogThreshold = settings->value("handJog", 0.35).toFloat();
+			entry.handRunThreshold = settings->value("handRun", 1.7).toFloat();
+			entry.useAccuracyButton = settings->value("useAccuracyButton", 0).toInt();
+			entry.hmdPitchDown = settings->value("hmdPitchDown", 20).toInt();
+			entry.hmdPitchUp = settings->value("hmdPitchUp", 15).toInt();
+			entry.walkTouch = settings->value("walkTouch", 0.6).toFloat();
+			entry.jogTouch = settings->value("jogTouch", 0.87).toFloat();
+			entry.runTouch = settings->value("runTouch", 1).toFloat();
 		}
 		settings->endArray();
 		settings->endGroup();
@@ -292,44 +262,6 @@ namespace walkinplace {
 	}
 
 
-
-#define WALKINPLACESETTINGS_WRITEHMDTHRESHOLDS(name) { \
-	auto& vec = p.name; \
-	settings->setValue(#name ## "_y", vec.v[1]); \
-	settings->setValue(#name ## "_xz", vec.v[0]); \
-}
-
-#define WALKINPLACESETTINGS_WRITEWALKSWINGVAL(name) { \
-    auto& walk = p.name; \
-	settings->setValue(#name ## "_walk", walk); \
-}
-
-#define WALKINPLACESETTINGS_WRITEJOGSWINGVAL(name) { \
-    auto& jog = p.name; \
-	settings->setValue(#name ## "_jog", jog); \
-}
-
-#define WALKINPLACESETTINGS_WRITERUNSWINGVAL(name) { \
-    auto& run = p.name; \
-	settings->setValue(#name ## "_run", run); \
-}
-
-#define WALKINPLACESETTINGS_WRITEWALKTOUCH(name) { \
-    auto& type = p.name; \
-	settings->setValue(#name ## "_walktouch", type); \
-}
-
-#define WALKINPLACESETTINGS_WRITEJOGTOUCH(name) { \
-    auto& type = p.name; \
-	settings->setValue(#name ## "_jogtouch", type); \
-}
-
-#define WALKINPLACESETTINGS_WRITERUNTOUCH(name) { \
-    auto& type = p.name; \
-	settings->setValue(#name ## "_runtouch", type); \
-}
-
-
 	void WalkInPlaceTabController::saveWalkInPlaceProfiles() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("walkInPlaceSettings");
@@ -340,16 +272,16 @@ namespace walkinplace {
 			settings->setValue("profileName", QString::fromStdString(p.profileName));
 			settings->setValue("stepDetectionEnabled", p.stepDetectionEnabled);
 			settings->setValue("gameType", p.gameType);
+			settings->setValue("hmdthreshold_y", p.hmdThreshold_y);
+			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
+			settings->setValue("handJog", p.handJogThreshold);
+			settings->setValue("handRun", p.handRunThreshold);
 			settings->setValue("useAccuracyButton", p.useAccuracyButton);
-			settings->setValue("hmdthreshold_xz", p.hmdThreshold.v[0]);
-			settings->setValue("hmdthreshold_y", p.hmdThreshold.v[1]);
-			//WALKINPLACESETTINGS_WRITEHMDTHRESHOLDS(hmdThreshold);
-			WALKINPLACESETTINGS_WRITEWALKSWINGVAL(handWalkThreshold);
-			WALKINPLACESETTINGS_WRITEJOGSWINGVAL(handJogThreshold);
-			WALKINPLACESETTINGS_WRITERUNSWINGVAL(handRunThreshold);
-			WALKINPLACESETTINGS_WRITEWALKTOUCH(walkTouch);
-			WALKINPLACESETTINGS_WRITEJOGTOUCH(jogTouch);
-			WALKINPLACESETTINGS_WRITERUNTOUCH(runTouch);
+			settings->setValue("hmdPitchDown", p.hmdPitchDown);
+			settings->setValue("hmdPitchUp", p.hmdPitchUp);
+			settings->setValue("walkTouch", p.walkTouch);
+			settings->setValue("jogTouch", p.jogTouch);
+			settings->setValue("runTouch", p.runTouch);
 			i++;
 		}
 		settings->endArray();
@@ -385,11 +317,14 @@ namespace walkinplace {
 		}
 		profile->profileName = name.toStdString();
 		profile->stepDetectionEnabled = isStepDetectionEnabled();
-		profile->hmdThreshold = hmdThreshold;
-		profile->useAccuracyButton = useAccuracyButton;
+		profile->gameType = gameType;
+		profile->hmdThreshold_y = hmdThreshold_y;
+		profile->hmdThreshold_xz = hmdThreshold_xz;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
-		profile->gameType = gameType;
+		profile->useAccuracyButton = useAccuracyButton;
+		profile->hmdPitchDown = hmdPitchDown;
+		profile->hmdPitchUp = hmdPitchUp;
 		profile->walkTouch = walkTouch;
 		profile->jogTouch = jogTouch;
 		profile->runTouch = runTouch;
@@ -401,21 +336,26 @@ namespace walkinplace {
 	void WalkInPlaceTabController::applyWalkInPlaceProfile(unsigned index) {
 		if (index < walkInPlaceProfiles.size()) {
 			auto& profile = walkInPlaceProfiles[index];
-			hmdThreshold.v[0] = profile.hmdThreshold.v[0];
-			hmdThreshold.v[1] = profile.hmdThreshold.v[1];
-			hmdThreshold.v[2] = profile.hmdThreshold.v[2];
-			useAccuracyButton = profile.useAccuracyButton;
+			gameType = profile.gameType;
+			hmdThreshold_y = profile.hmdThreshold_y;
+			hmdThreshold_xz = profile.hmdThreshold_xz;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
+			useAccuracyButton = profile.useAccuracyButton;
+			hmdPitchDown = profile.hmdPitchDown;
+			hmdPitchUp = profile.hmdPitchUp;
 			walkTouch = profile.walkTouch;
 			jogTouch = profile.jogTouch;
 			runTouch = profile.runTouch;
-			gameType = profile.gameType;
+
 			enableStepDetection(profile.stepDetectionEnabled);
-			setHMDThreshold(profile.hmdThreshold.v[0], profile.hmdThreshold.v[1], profile.hmdThreshold.v[2]);
+			setGameStepType(profile.gameType);
+			setHMDThreshold(profile.hmdThreshold_xz, hmdThreshold_y);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
-			setGameStepType(profile.gameType);
+			setAccuracyButton(profile.useAccuracyButton);
+			setHMDPitchDown(profile.hmdPitchDown);
+			setHMDPitchUp(profile.hmdPitchUp);
 			setWalkTouch(profile.walkTouch);
 			setJogTouch(profile.jogTouch);
 			setRunTouch(profile.runTouch);
@@ -486,16 +426,35 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::setHMDThreshold(float x, float y, float z) {
+	void WalkInPlaceTabController::setHMDThreshold(float xz, float y) {
 		try {
-			vr::HmdVector3d_t value = { x, y, z };
+			vr::HmdVector3d_t value = { xz, y, xz };
 			vrwalkinplace.setHMDThreshold(value);
-			hmdThreshold.v[0] = x;
-			hmdThreshold.v[1] = y;
-			hmdThreshold.v[2] = z;
+			hmdThreshold_y = y;
+			hmdThreshold_xz = xz;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hmd threshold: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::setHMDPitchDown(int value) {
+		try {
+			vrwalkinplace.setHMDPitchDown(value);
+			hmdPitchDown = value;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting hmd pitch: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::setHMDPitchUp(int value) {
+		try {
+			vrwalkinplace.setHMDPitchUp(value);
+			hmdPitchUp = value;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting hmd pitch: " << e.what();
 		}
 	}
 

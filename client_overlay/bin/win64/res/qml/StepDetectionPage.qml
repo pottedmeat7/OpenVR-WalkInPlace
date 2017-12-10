@@ -10,11 +10,13 @@ MyMainViewPage {
     headerShowBackButton: false
 
     function updateInfo() {  
-        stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
+        stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
         stepThresholdBox.setAccuracyButton(WalkInPlaceTabController.getAccuracyButton())
+        stepThresholdBox.setHMDPitchDown(WalkInPlaceTabController.getHMDPitchDown())
+        stepThresholdBox.setHMDPitchUp(WalkInPlaceTabController.getHMDPitchUp())
         stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
         stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
         stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
@@ -125,6 +127,16 @@ MyMainViewPage {
                 useAccuracyButton = buttonId
                 updateGUI()    
             }
+            setHMDPitchDown: function(p) {
+                WalkInPlaceTabController.setHMDPitchDown(p)
+                hmdPitchDown = p
+                updateGUI()  
+            }
+            setHMDPitchUp: function(u) {
+                WalkInPlaceTabController.setHMDPitchUp(u)
+                hmdPitchUp = u
+                updateGUI()  
+            }
             updateValues: function() {
                 updateGUI()
             }
@@ -160,21 +172,21 @@ MyMainViewPage {
 
                 MyPushButton {
                     Layout.preferredWidth: 100
-                    Layout.alignment: AlignRight
                     text: "Reset"
                     onClicked: { 
+                        gameTypeDialog.currentIndex = 0
+                        stepThresholdBox.setHMDY(0.13)
                         stepThresholdBox.setHMDXZ(0.07)
-                        stepThresholdBox.setHMDY(0.09)
-                        stepThresholdBox.setHandWalk(0.02)
                         stepThresholdBox.setHandJog(0.40)
                         stepThresholdBox.setHandRun(1.70)
                         stepThresholdBox.setAccuracyButton(5)
+                        stepThresholdBox.setHMDPitchDown(20)
+                        stepThresholdBox.setHMDPitchUp(15)
                         stepControlBox.setWalkTouch(0.6)
-                        stepControlBox.setJogTouch(0.9)
+                        stepControlBox.setJogTouch(0.87)
                         stepControlBox.setRunTouch(1)
                         stepControlBox.updateGUI()
                         stepThresholdBox.updateGUI()
-                        gameTypeDialog.currentIndex = 0
                     }
                 }
             }
