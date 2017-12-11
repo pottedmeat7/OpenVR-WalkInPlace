@@ -177,6 +177,10 @@ namespace walkinplace {
 		return gameType;
 	}
 
+	int WalkInPlaceTabController::getControlSelect() {
+		return controlSelect;
+	}
+
 	int WalkInPlaceTabController::getAccuracyButton() {
 		return useAccuracyButton;
 	}
@@ -239,6 +243,7 @@ namespace walkinplace {
 			entry.profileName = settings->value("profileName").toString().toStdString();
 			entry.stepDetectionEnabled = settings->value("stepDetectionEnabled", false).toBool();
 			entry.gameType = settings->value("gameType", 0).toInt();
+			entry.controlSelect = settings->value("controlSelect", 2).toInt();
 			entry.hmdThreshold_y = settings->value("hmdthreshold_y", 0.1).toFloat();
 			entry.hmdThreshold_xz = settings->value("hmdthreshold_xz", 0.09).toFloat();
 			entry.handJogThreshold = settings->value("handJog", 0.35).toFloat();
@@ -272,6 +277,7 @@ namespace walkinplace {
 			settings->setValue("profileName", QString::fromStdString(p.profileName));
 			settings->setValue("stepDetectionEnabled", p.stepDetectionEnabled);
 			settings->setValue("gameType", p.gameType);
+			settings->setValue("controlSelect", p.controlSelect);
 			settings->setValue("hmdthreshold_y", p.hmdThreshold_y);
 			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
 			settings->setValue("handJog", p.handJogThreshold);
@@ -318,6 +324,7 @@ namespace walkinplace {
 		profile->profileName = name.toStdString();
 		profile->stepDetectionEnabled = isStepDetectionEnabled();
 		profile->gameType = gameType;
+		profile->controlSelect = controlSelect;
 		profile->hmdThreshold_y = hmdThreshold_y;
 		profile->hmdThreshold_xz = hmdThreshold_xz;
 		profile->handJogThreshold = handJogThreshold;
@@ -337,6 +344,7 @@ namespace walkinplace {
 		if (index < walkInPlaceProfiles.size()) {
 			auto& profile = walkInPlaceProfiles[index];
 			gameType = profile.gameType;
+			controlSelect = profile.controlSelect;
 			hmdThreshold_y = profile.hmdThreshold_y;
 			hmdThreshold_xz = profile.hmdThreshold_xz;
 			handJogThreshold = profile.handJogThreshold;
@@ -350,6 +358,7 @@ namespace walkinplace {
 
 			enableStepDetection(profile.stepDetectionEnabled);
 			setGameStepType(profile.gameType);
+			setControlSelect(profile.controlSelect);
 			setHMDThreshold(profile.hmdThreshold_xz, hmdThreshold_y);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
@@ -501,6 +510,16 @@ namespace walkinplace {
 		try {
 			vrwalkinplace.setGameStepType(type);
 			gameType = type;
+		}
+		catch (const std::exception& e) {
+			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::setControlSelect(int control) {
+		try {
+			vrwalkinplace.setControlSelect(control);
+			controlSelect = control;
 		}
 		catch (const std::exception& e) {
 			LOG(ERROR) << "Exception caught while setting hand threshold: " << e.what();

@@ -311,6 +311,13 @@ namespace vrwalkinplace {
 			}
 		}
 
+		void CServerDriver::setControlSelect(int control) {
+			_controlSelect = control;
+			if (control == 2) {
+				_controlUsedID = -1;
+			}
+		}
+
 		void CServerDriver::setStepIntSec(float value) {
 			_stepIntegrateStepLimit = (double)value;
 		}
@@ -444,11 +451,17 @@ namespace vrwalkinplace {
 							//double yaw = (180 * std::atan2(t3, t4)) / M_PI;
 
 							//LOG(INFO) << "HMD Rot: " << roll << "," << yaw << "," << pitch;
-							//LOG(INFO) << "HMD Step: " << pose.vecAcceleration[0] << "," << pose.vecAcceleration[1] << "," << pose.vecAcceleration[2];
-							//LOG(INFO) << "HMD Rot: " << pose.qRotation.x << "," << pose.qRotation.y << "," << pose.qRotation.z;
-							//LOG(INFO) << "HMD Step: " << pose.vecVelocity[0] << "," << pose.vecVelocity[1] << "," << pose.vecVelocity[2];
+
+
+							vr::HmdVector3d_t poseWorldVel;// = vrmath::quaternionRotateVector(pose.qWorldFromDriverRotation, tmpConj, pose.vecVelocity, true);
+							poseWorldVel.v[0] = pose.vecVelocity[0];
+							poseWorldVel.v[1] = pose.vecVelocity[1];
+							poseWorldVel.v[2] = pose.vecVelocity[2];
+
+							//LOG(INFO) << "HMD Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
 							//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
-							if (isTakingStep(pose.vecVelocity, _hmdThreshold, roll, pitch)) { //&& isStepingInPlace(pose.vecPosition) ) {
+
+							if (isTakingStep(poseWorldVel, _hmdThreshold, roll, pitch)) { //&& isStepingInPlace(pose.vecPosition) ) {
 								_openvrDeviceStepPoseTracker[0] = -1;
 								_openvrDeviceStepPoseTracker[1] = -1;
 								_openvrDeviceStepPoseTracker[2] = -1;
@@ -459,6 +472,10 @@ namespace vrwalkinplace {
 								_openvrDeviceStepPoseTracker[1] = 0;
 								_openvrDeviceStepPoseTracker[2] = 0;
 							}
+						}
+						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller && _controlSelect != 2 && deviceInfo->openvrId() != _controlUsedID ) {
+							_controlUsedID = deviceInfo->openvrId();
+							_controlSelect = 2;
 						}
 						//else if ( deviceInfo->deviceClass() == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
 						//	LOG(INFO) << "CONTROLLER VEL: " << deviceInfo->openvrId << pose.vecVelocity[0] << "," << pose.vecVelocity[1]  << "," << pose.vecVelocity[2];
@@ -474,8 +491,11 @@ namespace vrwalkinplace {
 					}
 					if (this->_stepPoseDetected) {
 						if (_openvrDeviceStepPoseTracker[0] == 0) {
-							if ((deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[1]
-								|| deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[2])) {
+							if ((_controlUsedID >= 0 && deviceInfo->openvrId() == _controlUsedID) || 
+								( _controlUsedID < 0 
+									&& (deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[1]
+										|| deviceInfo->openvrId() == _openvrDeviceStepPoseTracker[2])
+								)) {
 								vr::IVRServerDriverHost* driverHost;
 								int deviceId = deviceInfo->openvrId();
 								if (_openvrIdToDeviceInfoMap[deviceId] && _openvrIdToDeviceInfoMap[deviceId]->isValid()) {
@@ -578,8 +598,14 @@ namespace vrwalkinplace {
 								pitch = (180 * std::asin(t2)) / M_PI;
 							}
 							
+							vr::HmdVector3d_t poseWorldVel;// = vrmath::quaternionRotateVector(pose.qWorldFromDriverRotation, tmpConj, pose.vecVelocity, true);
+							poseWorldVel.v[0] = pose.vecVelocity[0];
+							poseWorldVel.v[1] = pose.vecVelocity[1];
+							poseWorldVel.v[2] = pose.vecVelocity[2];
 
-							if (isTakingStep(pose.vecVelocity, _hmdThreshold, roll, pitch)) {
+							//LOG(INFO) << "HMD In Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
+
+							if (isTakingStep(poseWorldVel, _hmdThreshold, roll, pitch)) {
 								_stepIntegrateSteps = 0;
 							}
 							//else 
@@ -677,11 +703,11 @@ namespace vrwalkinplace {
 			return false;
 		}
 
-		bool CServerDriver::isTakingStep(double * vel, vr::HmdVector3d_t threshold, double roll, double pitch) {
-			bool stepParams = ((std::abs(vel[2]) < threshold.v[2]) &&
-				(std::abs(vel[0]) < threshold.v[0]) &&
-				((vel[1] > threshold.v[1] && (vel[1] > vel[0] && vel[1] > vel[2]))
-					|| (vel[1] < -1 * threshold.v[1] && (vel[1] < vel[0] && vel[1] < vel[2]))));
+		bool CServerDriver::isTakingStep(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch) {
+			bool stepParams = ((std::abs(vel.v[2]) < threshold.v[2]) &&
+				(std::abs(vel.v[0]) < threshold.v[0]) &&
+				((vel.v[1] > threshold.v[1] && (vel.v[1] > vel.v[0] && vel.v[1] > vel.v[2]))
+					|| (vel.v[1] < -1 * threshold.v[1] && (vel.v[1] < vel.v[0] && vel.v[1] < vel.v[2]))));
 			//stepParams = stepParams && (roll > -107 && roll < -85 && pitch > -20 && pitch < -10 );
 			stepParams = stepParams && ((g_AccuracyButton < 0 && (roll > (_standardRollForward-_maxRollDown) && roll < (_standardRollForward+_maxRollUp) && pitch > -29 && pitch < -5)) || g_isHoldingAccuracyButton);
 			return stepParams;

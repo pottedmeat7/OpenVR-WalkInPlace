@@ -97,6 +97,7 @@ struct Request_WalkInPlace_StepDetectionMode {
 	int useAccuracyButton;
 	int hmdPitchDown;
 	int hmdPitchUp;
+	int controlSelect;
 };
 
 

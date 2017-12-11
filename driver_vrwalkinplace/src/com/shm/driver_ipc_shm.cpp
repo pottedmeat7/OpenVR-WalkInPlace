@@ -165,6 +165,9 @@ namespace vrwalkinplace {
 										case 13:
 											serverDriver->setHMDPitchUp(message.msg.dm_StepDetectionMode.hmdPitchUp);
 											break;
+										case 14:
+											serverDriver->setControlSelect(message.msg.dm_StepDetectionMode.controlSelect);
+											break;
 										default:
 											break;
 										}

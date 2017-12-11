@@ -151,6 +151,7 @@ public:
 	void setJogTouch(float value, bool modal = true);
 	void setRunTouch(float value, bool modal = true);
 	void setGameStepType(int gameType, bool modal = true);
+	void setControlSelect(int control, bool modal = true);
 
 private:
 	std::recursive_mutex _mutex;

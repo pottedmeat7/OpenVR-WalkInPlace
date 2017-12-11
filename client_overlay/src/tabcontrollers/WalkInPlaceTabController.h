@@ -19,6 +19,7 @@ struct WalkInPlaceProfile {
 
 	bool stepDetectionEnabled = false;
 	int gameType = 1;
+	int controlSelect = 2;
 	int hmdPitchDown = 20;
 	int hmdPitchUp = 15;
 	float handWalkThreshold = 0.02;
@@ -28,7 +29,7 @@ struct WalkInPlaceProfile {
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
 	float hmdThreshold_y = 0.13;
-	float hmdThreshold_xz = 0.09;
+	float hmdThreshold_xz = 0.27;
 	int useAccuracyButton = 0;
 };
 
@@ -61,9 +62,10 @@ private:
 	std::thread identifyThread;
 
 	int gameType = 1;
+	int controlSelect = 2;
 	bool stepDetectEnabled = false;
 	float hmdThreshold_y = 0.13;
-	float hmdThreshold_xz = 0.07;
+	float hmdThreshold_xz = 0.27;
 	int useAccuracyButton = 5;
 	int hmdPitchDown = 20;
 	int hmdPitchUp = 15;
@@ -93,6 +95,7 @@ public:
 	Q_INVOKABLE int getDeviceMode(unsigned index);
 	Q_INVOKABLE float getStepIntSec();
 	Q_INVOKABLE int getGameType();
+	Q_INVOKABLE int getControlSelect();
 	Q_INVOKABLE int getAccuracyButton();
 	Q_INVOKABLE int getHMDPitchDown();
 	Q_INVOKABLE int getHMDPitchUp();
@@ -128,6 +131,7 @@ public slots:
 	void setJogTouch(float value);
 	void setRunTouch(float value);
 	void setGameStepType(int gameType);
+	void setControlSelect(int control);
 
 	void addWalkInPlaceProfile(QString name);
 	void applyWalkInPlaceProfile(unsigned index);

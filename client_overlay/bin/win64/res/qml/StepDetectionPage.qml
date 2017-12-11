@@ -23,6 +23,7 @@ MyMainViewPage {
         stepControlBox.updateGUI()
         stepThresholdBox.updateGUI()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType() - 1
+        controlSelect.currentIndex = WalkInPlaceTabController.getControlSelect()
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
     }
 
@@ -85,6 +86,23 @@ MyMainViewPage {
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setGameStepType(currentIndex+1)                            
+                            } 
+                        }
+                    }
+
+
+                    MyComboBox {
+                        id: controlSelect 
+                        currentIndex: 0
+                        Layout.maximumWidth: 399
+                        Layout.minimumWidth: 299
+                        Layout.preferredWidth: 399
+                        Layout.fillWidth: true
+                        displayText: currentText
+                        model: ["1st Controller", "2nd Controller", "Both Controllers"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex >= 0) { 
+                                WalkInPlaceTabController.setControlSelect(currentIndex)                        
                             } 
                         }
                     }
@@ -175,8 +193,9 @@ MyMainViewPage {
                     text: "Reset"
                     onClicked: { 
                         gameTypeDialog.currentIndex = 0
+                        controlSelect.currentIndex = 2
                         stepThresholdBox.setHMDY(0.13)
-                        stepThresholdBox.setHMDXZ(0.07)
+                        stepThresholdBox.setHMDXZ(0.27)
                         stepThresholdBox.setHandJog(0.40)
                         stepThresholdBox.setHandRun(1.70)
                         stepThresholdBox.setAccuracyButton(5)

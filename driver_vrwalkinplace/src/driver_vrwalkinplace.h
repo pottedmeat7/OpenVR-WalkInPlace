@@ -157,6 +157,7 @@ namespace vrwalkinplace {
 			void enableStepDetection(bool enable);
 			void setAccuracyButton(int buttonId);
 			void setGameStepType(int gameType);
+			void setControlSelect(int control);
 			void setStepIntSec(float value);
 			void setHMDThreshold(vr::HmdVector3d_t value);
 			void setHandJogThreshold(float value);
@@ -187,8 +188,10 @@ namespace vrwalkinplace {
 			//step detection related
 			bool _stepPoseDetectEnabled = false;
 			bool _stepPoseDetected = false;
-			int _useAccuracyButton = vr::EVRButtonId::k_EButton_Grip;
 			int _gameStepType = 1;
+			int _controlSelect = 2;
+			int _controlUsedID = -1;
+			int _useAccuracyButton = vr::EVRButtonId::k_EButton_Grip;
 			int _teleportUnpressed = true;
 			int _hasUnTouchedStepAxis = 0;			
 			float _handJogThreshold = 0.4;
@@ -216,7 +219,7 @@ namespace vrwalkinplace {
 			vr::HmdVector3d_t _handThreshold = { 0.0, 0.0, 0.0 };
 
 
-			bool isTakingStep(double * vel, vr::HmdVector3d_t threshold, double roll, double pitch);
+			bool isTakingStep(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
 			bool isLookingAhead(double roll, double pitch);
 			bool isShakingHead(double * vel, vr::HmdVector3d_t threshold);
 			bool isStepingInPlace(double * pos);

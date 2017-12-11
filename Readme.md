@@ -6,19 +6,14 @@ An OpenVR driver that applies virtual movement using a pedometer
 
 The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement of the HMD and Vive Controllers. It then applies movement into the virtual envrionment.
 
-# Step Detection Motivation
-I have done work with step detection locomotion with mobile phone VR games. So once I got my vive I was also interested in the options. Once I saw the functionality of OpenVR and https://github.com/matzman666/OpenVR-InputEmulator to emulate input and track poses I figured it has the ability to detect and "emulate" a step. In the long run I hope to expand this driver for many games and be able to use WIP locomotion as a standard input method.
-
-
 # Current Games that Work Best with OpenVR-WalkInPlace
 
 - Fallout VR
 - Arizona Sunshine
-- DOOM VFR (with Keyboard (WASD))
 - Onward
-- VR Dungeon Knight
 - Gorn
-- Vanishing Realms
+- DOOM VFR (with Keyboard (WASD))
+- Any other games with Keyboard or Touchpad locomotion controls
 
 Other games may not have touchpad movement options however this driver will 
 also activate teleport if youd like.
@@ -26,8 +21,8 @@ also activate teleport if youd like.
 
 # Features
 
-- Change Step Thresholds for Walk / Jog / Run in Place
-- Possible configuration for "Arm Swinging" Locomotion
+- Change Step Thresholds for Walk / Jog / Run in Place to fit different games
+- Configuration for "Arm Swinging" Locomotion
 - Change speed of movement applied in game 
 - Profiles for different games
 
@@ -38,15 +33,29 @@ also activate teleport if youd like.
 - Jumping support
 - Fixes for teleport games
 
-# Notes:
-
-This is a work-in-progress and may have flaws.
-
 ## Installer
 
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
 
 # Documentation
+
+## Configuration and Accuracy Setup and Troubleshooting
+
+### Issue: Not taking steps
+Solution 1: I found that when jogging / running there is still quite alot of XZ movement so if your trying to jog / run and its not virtually moving, then try to increase the XZ value which allows for more XZ movement.
+
+Solution 2: Also I found its hard to have the Y value be larger then the threshold as well as the XZ value if you are looking down to far.
+So keeping the pitch of your HMD looking forward is the best way to trigger a "step".
+
+### Issue: Taking Steps when you dont want to
+Solution 1: Disable "Walk Touch" and use the HMD values as well as Hand values for any movement. 
+To do this set the "Walk Touch" value to 0 and lower the "Hand Jog" value (something like 0.25).
+This will create more of a system where you have to move your arms as well as your HMD to take a step. Limiting false steps.
+
+Solution 2: Use one of the Accuracy buttons, you wont move while holding that button.
+
+Solution 3: You can increase the Y value, lower the XZ value (be careful its a delicate balance) It may cause taking a step to be harder.
+Also limiting the HMD pitch can ensure you only takes steps when looking forward.
 
 ![Example Screenshot](docs/screenshots/openvr-walkinplaceoverlay.png)
 
@@ -59,7 +68,11 @@ Then you simply walk in place to emulate walking in the VR world.
 ### Game Type
 These options are for different combinations of controls some games use the touch-pad for movement and then a click to sprint, some use the click to engage teleport. If you dont want to trigger teleport use the second option.
 
-The third option is for teleport only games, it is not working as desired at the moment.
+### Controller selection (which controller is used for virtual input)
+Some games only use one controller for locomotion while the other touchpad is used for different functions.
+This menu allows you to select which controller should be used for virtual input.
+The 1st and 2nd option will just switch between two controllers without identification.
+There is no distinction just switch until its the right one. In some games you can just use the "both" option
 
 ### HMD Thresholds
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
@@ -68,14 +81,21 @@ The XZ value is the Side to Side movement to trigger a step, in order to trigger
 
 ### Hand Jog / Run
 These values are for the magnitude of movement (X, Y and Z movement) of the arms. 
-
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
-### Grip button for Accuracy
-This sets that a step will only be applied if you are pushing a grip button on a controller
+### Button for Accuracy
+These options can be used to disable virtual movement when your not holding the button selected.
+
+### HMD Pitch Degree
+These values are the amount of pitch, in degrees, your HMD can have in order to take a step.
+ie. You have to be looking mostly forward in order to step.
 
 ### Touch Options
-These values will be applied to touch-pad locomotion for in order to apply different degrees of movement into the game.
+These values control the degree of movement applied in game.
+Some games will use the touchpad axis differntly, for slow games sometimes there is only 1 degree of movment.
+Some games use the entire axis from the center, 0, to 1
+
+If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require you HMD and arms to move in order to trigger a step.
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
@@ -89,8 +109,7 @@ If you name a profile with the name "default" it will be the initially loaded pr
 ### Arm Swinging 
 To achieve more of an Arm Swinging only method you can set the "Walk Touch" value to 0
 This will disable the walking mode and movement will only be applied if you are jogging / running.
-Your HMD will need to move by the HMD Y value but if set low enough this movement will happen naturally anyway.
-This mode only works with the "touchpad touch" locomotion options. 
+You then can lower the HMD Y value very low and your HMD will only need to move slightly, but it will natrually move a bit.
 
 ## Initial Setup
 ### Boost
