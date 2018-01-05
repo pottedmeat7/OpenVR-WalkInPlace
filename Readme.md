@@ -8,7 +8,7 @@ The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement 
 
 # Current Games that Work Best with OpenVR-WalkInPlace
 
-- Fallout VR
+- Fallout 4 VR
 - Arizona Sunshine
 - Onward
 - Gorn
@@ -16,8 +16,7 @@ The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement 
 - Any other games with Keyboard or Touchpad locomotion controls
 
 Other games may not have touchpad movement options however this driver will 
-also activate teleport if youd like.
-
+also activate teleport if you'd like.
 
 # Features
 
@@ -29,6 +28,7 @@ also activate teleport if youd like.
 
 # Upcoming
 
+- Optional Beta Algorithm in UI and algorithm improvements
 - Tracker support (for feet)
 - Options for emulating other input methods
 - Jumping support
@@ -46,7 +46,7 @@ Download the newest installer from the [release section](https://github.com/pott
 Solution 1: I found that when jogging / running there is still quite alot of XZ movement so if your trying to jog / run and its not virtually moving, then try to increase the XZ value which allows for more XZ movement.
 
 Solution 2: Also I found its hard to have the Y value be larger then the threshold as well as the XZ value if you are looking down to far.
-So keeping the pitch of your HMD looking forward is the best way to trigger a "step".
+So keeping the pitch of your chin up and HMD looking forward is the best way to trigger a "step".
 
 ### Issue: Taking Steps when you dont want to
 Solution 1: Disable "Walk Touch" and use the HMD values as well as Hand values for any movement. 
