@@ -379,15 +379,15 @@ MyStackViewPage {
                     velZ = velZ < -5 ? -5 : velZ;
                     
                     if ( Math.abs(velX) > hmdPlotMaxPoint ) {
-                        hmdPlotMaxPoint = velX;
+                        hmdPlotMaxPoint = Math.abs(velX);
                         hmdPlotMinPoint = -hmdPlotMaxPoint;
                     }
                     if ( Math.abs(velY) > hmdPlotMaxPoint ) {
-                        hmdPlotMaxPoint = velY;
+                        hmdPlotMaxPoint = Math.abs(velY);
                         hmdPlotMinPoint = -hmdPlotMaxPoint;
                     }
                     if ( Math.abs(velZ) > hmdPlotMaxPoint ) {
-                        hmdPlotMaxPoint = velZ;
+                        hmdPlotMaxPoint = Math.abs(velZ);
                         hmdPlotMinPoint = -hmdPlotMaxPoint;
                     }
 
@@ -415,24 +415,24 @@ MyStackViewPage {
                     velY = parseFloat(velVals[4]).toFixed(4);
                     velZ = parseFloat(velVals[5]).toFixed(4);            
 
-                    velX = velX > 5 ? 5 : velX;
-                    velY = velY > 5 ? 5 : velY;
-                    velZ = velZ > 5 ? 5 : velZ;
+                    velX = velX > 10 ? 10 : velX;
+                    velY = velY > 10 ? 10 : velY;
+                    velZ = velZ > 10 ? 10 : velZ;
 
-                    velX = velX < -5 ? -5 : velX;
-                    velY = velY < -5 ? -5 : velY;
-                    velZ = velZ < -5 ? -5 : velZ;
+                    velX = velX < -10 ? -10 : velX;
+                    velY = velY < -10 ? -10 : velY;
+                    velZ = velZ < -10 ? -10 : velZ;
                     
                     if ( Math.abs(velX) > contPlotMaxPoint ) {
-                        contPlotMaxPoint = velX;
+                        contPlotMaxPoint = Math.abs(velX);
                         contPlotMinPoint = -contPlotMaxPoint;
                     }
                     if ( Math.abs(velY) > contPlotMaxPoint ) {
-                        contPlotMaxPoint = velY;
+                        contPlotMaxPoint = Math.abs(velY);
                         contPlotMinPoint = -contPlotMaxPoint;
                     }
                     if ( Math.abs(velZ) > contPlotMaxPoint ) {
-                        contPlotMaxPoint = velZ;
+                        contPlotMaxPoint = Math.abs(velZ);
                         contPlotMinPoint = -contPlotMaxPoint;
                     }
 
@@ -460,24 +460,24 @@ MyStackViewPage {
                     velY = parseFloat(velVals[7]).toFixed(4);
                     velZ = parseFloat(velVals[8]).toFixed(4);            
 
-                    velX = velX > 5 ? 5 : velX;
-                    velY = velY > 5 ? 5 : velY;
-                    velZ = velZ > 5 ? 5 : velZ;
+                    velX = velX > 10 ? 10 : velX;
+                    velY = velY > 10 ? 10 : velY;
+                    velZ = velZ > 10 ? 10 : velZ;
 
-                    velX = velX < -5 ? -5 : velX;
-                    velY = velY < -5 ? -5 : velY;
-                    velZ = velZ < -5 ? -5 : velZ;
+                    velX = velX < -10 ? -10 : velX;
+                    velY = velY < -10 ? -10 : velY;
+                    velZ = velZ < -10 ? -10 : velZ;
                     
                     if ( Math.abs(velX) > contPlotMaxPoint ) {
-                        contPlotMaxPoint = velX;
+                        contPlotMaxPoint = Math.abs(velX);
                         contPlotMinPoint = -contPlotMaxPoint;
                     }
                     if ( Math.abs(velY) > contPlotMaxPoint ) {
-                        contPlotMaxPoint = velY;
+                        contPlotMaxPoint = Math.abs(velY);
                         contPlotMinPoint = -contPlotMaxPoint;
                     }
                     if ( Math.abs(velZ) > contPlotMaxPoint ) {
-                        contPlotMaxPoint = velZ;
+                        contPlotMaxPoint = Math.abs(velZ);
                         contPlotMinPoint = -contPlotMaxPoint;
                     }
 

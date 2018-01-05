@@ -409,7 +409,7 @@ namespace vrwalkinplace {
 		}
 
 		void CServerDriver::setHandRunThreshold(float value) {
-			_handJogThreshold = value;
+			_handRunThreshold = value;
 		}
 
 		void CServerDriver::setStepPoseDetected(bool enable) {
@@ -459,6 +459,8 @@ namespace vrwalkinplace {
 					bool isHMD = deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD;
 					if (!this->_stepPoseDetected) {
 						if (isHMD) {
+
+							//LOG(INFO) << "Detecting step";
 							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
 							auto poseWorldRot = tmpConj * pose.qRotation;
 
@@ -556,6 +558,7 @@ namespace vrwalkinplace {
 								&& (deviceInfo->openvrId() == _controllerDeviceIds[0]
 									|| deviceInfo->openvrId() == _controllerDeviceIds[1])
 								)) {
+							//LOG(INFO) << "Applying Virtual movement";
 							vr::IVRServerDriverHost* driverHost;
 							int deviceId = deviceInfo->openvrId();
 							if (_openvrIdToDeviceInfoMap[deviceId] && _openvrIdToDeviceInfoMap[deviceId]->isValid()) {
@@ -568,12 +571,12 @@ namespace vrwalkinplace {
 								vr::VRControllerAxis_t axisState;
 								axisState.x = 0;
 								axisState.y = walkTouch;
-								bool isRunning = isRunningStep(pose.vecVelocity);
+								bool isRunning = g_runPoseDetected || isRunningStep(pose.vecVelocity);
 								g_runPoseDetected = isRunning;
 								if (isRunning) {
 									axisState.y = runTouch;
 								}
-								else if (isJoggingStep(pose.vecVelocity)) {
+								else if (g_jogPoseDetected || isJoggingStep(pose.vecVelocity)) {
 									axisState.y = jogTouch;
 									g_jogPoseDetected = true;
 								}
@@ -682,7 +685,7 @@ namespace vrwalkinplace {
 								_timeLastStepPeak = now;
 							}
 						}
-						if (_stepIntegrateSteps >= 750) { //_stepIntegrateStepLimit) {
+						if (_stepIntegrateSteps >= 700) { //_stepIntegrateStepLimit) {
 							this->setStepPoseDetected(false);
 							_stepIntegrateSteps = 0.0;
 							_openvrDeviceStepPoseTracker[0] = 0;
@@ -805,7 +808,7 @@ namespace vrwalkinplace {
 		}
 
 		bool CServerDriver::isJoggingStep(double * vel) {
-			float magVel = (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+			float magVel = std::abs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
 			return (std::abs(vel[1]) > std::abs(vel[0]) && std::abs(vel[1]) > std::abs(vel[2]))
 				&& (magVel > _handJogThreshold) 
 				&& (g_AccuracyButton < 0 
@@ -814,7 +817,7 @@ namespace vrwalkinplace {
 		}
 
 		bool CServerDriver::isRunningStep(double * vel) {
-			float magVel = (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+			float magVel = std::abs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
 			return (std::abs(vel[1]) > std::abs(vel[0]) && std::abs(vel[1]) > std::abs(vel[2]))
 				&& (magVel > _handRunThreshold) && (g_AccuracyButton < 0
 					|| ((g_isHoldingAccuracyButton && !flipButtonUse)
