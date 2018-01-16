@@ -43,10 +43,10 @@ Download the newest installer from the [release section](https://github.com/pott
 ## Configuration Examples
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
-*This is settings, which allows for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding (see arm-swingin config below). You can use "Button for movement" options if you prefer.*
+*These are settings which allow for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding (see arm-swinging config below). You can use "Button for movement" options if you prefer.*
 
 ![Example Screenshot](docs/screenshots/walkinplace_armswing.png)
-*This type of "arm-swing" settings works well in FO4VR but only allows you to move at two speeds (jog/run, the actual speed of jog can be lowered if you want it to feel slower)*
+*These are settings for an "arm-swinging" configuration which works well in FO4VR but only allows you to move at two speeds (jog/run, the actual speed of jog can be lowered if you want it to feel slower)*
 
 ### WalkInPlace Overlay
 Just "Enable WIP" in the UI.
@@ -68,8 +68,8 @@ The Y value is the Up and Down movement of your head to trigger a step, in order
 
 The XZ value is the Side to Side movement that will disable triggering a step (if over the threshold), in order to trigger a step the HMD values have to be less than the XZ threshold.
 
-### Hand Jog / Run
-These values are for the magnitude of movement (X, Y and Z movement) of the arms. 
+### Hand Jog Y / Run Y
+These values are for the controller Up and Down movement of the arms. 
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
 ### Button for Movement

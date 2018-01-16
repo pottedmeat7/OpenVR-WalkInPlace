@@ -97,7 +97,7 @@ private:
 
 	int _openvrDeviceStepPoseTracker[3]; //HMD and two controllers
 	int _controllerDeviceIds[2];
-	int _controlSelect = 2;
+	int _controlSelect = 1;
 	int _controlUsedID = -1;
 	double _timeLastTick = 0.0;
 	double _timeLastStepPeak = 0.0;
@@ -112,6 +112,8 @@ private:
 	bool g_stepDetectEnabled = false;
 	bool g_disableGameLocomotion = false;
 	bool g_isHoldingAccuracyButton = false;
+	bool g_isHoldingAccuracyButton1 = false;
+	bool g_isHoldingAccuracyButton2 = false;
 	bool g_useButtonAsToggle = false;
 	bool g_buttonToggled = true;
 	bool g_stepPoseDetected = false;
@@ -188,7 +190,7 @@ public slots:
 	bool isJoggingStep(float * vel);
 	bool isRunningStep(float * vel);
 
-	void updateAccuracyButtonState(uint32_t deviceId);
+	void updateAccuracyButtonState(uint32_t deviceId, bool firstController);
 
 	void addWalkInPlaceProfile(QString name);
 	void applyWalkInPlaceProfile(unsigned index);
