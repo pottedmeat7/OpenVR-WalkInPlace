@@ -1,6 +1,5 @@
 #include "driver_ipc_shm.h"
-#include "../../stdafx.h"
-#include "../../driver_vrwalkinplace.h"
+#include "../../driver/ServerDriver.h"
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <ipc_protocol.h>
 #include <openvr_math.h>
@@ -9,7 +8,7 @@ namespace vrwalkinplace {
 	namespace driver {
 
 
-		void IpcShmCommunicator::init(CServerDriver* driver) {
+		void IpcShmCommunicator::init(ServerDriver* driver) {
 			_driver = driver;
 			_ipcThreadStopFlag = false;
 			_ipcThread = std::thread(_ipcThreadFunc, this, driver);
@@ -22,7 +21,7 @@ namespace vrwalkinplace {
 			}
 		}
 
-		void IpcShmCommunicator::_ipcThreadFunc(IpcShmCommunicator* _this, CServerDriver * driver) {
+		void IpcShmCommunicator::_ipcThreadFunc(IpcShmCommunicator* _this, ServerDriver * driver) {
 			_this->_ipcThreadRunning = true;
 			LOG(DEBUG) << "CServerDriver::_ipcThreadFunc: thread started";
 			try {
@@ -55,10 +54,15 @@ namespace vrwalkinplace {
 										reply.msg.ipc_ClientConnect.ipcProcotolVersion = IPC_PROTOCOL_VERSION;
 										if (message.msg.ipc_ClientConnect.ipcProcotolVersion == IPC_PROTOCOL_VERSION) {
 											auto clientId = _this->_ipcClientIdNext++;
+											if (_this->_ipcClientIdNext > 100) {
+												_this->_ipcClientIdNext = 1;
+												clientId = 1;
+												_this->_ipcEndpoints.clear();
+											}
 											_this->_ipcEndpoints.insert({ clientId, queue });
 											reply.msg.ipc_ClientConnect.clientId = clientId;
 											reply.status = ipc::ReplyStatus::Ok;
-											LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											//LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
 										}
 										else {
 											reply.msg.ipc_ClientConnect.clientId = 0;
@@ -83,7 +87,7 @@ namespace vrwalkinplace {
 										reply.status = ipc::ReplyStatus::Ok;
 										auto msgQueue = i->second;
 										_this->_ipcEndpoints.erase(i);
-										LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
+										//LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
 										if (reply.messageId != 0) {
 											msgQueue->send(&reply, sizeof(ipc::Reply), 0);
 										}
@@ -112,95 +116,30 @@ namespace vrwalkinplace {
 									}
 								}
 								break;
-								case ipc::RequestType::WalkInPlace_StepDetect:
+
+								case ipc::RequestType::OpenVR_ButtonEvent:
 								{
-									ipc::Reply resp(ipc::ReplyType::WalkInPlace_StepDetect);
-									resp.messageId = message.msg.dm_StepDetectionMode.messageId;
-									auto serverDriver = CServerDriver::getInstance();
-									if (serverDriver) {
-										bool val = serverDriver->getStepDetected();
-										resp.msg.dm_stepDetect.stepDetected = val;
-										resp.status = ipc::ReplyStatus::Ok;
+									if (vr::VRServerDriverHost()) {
+										unsigned iterCount = min(message.msg.ipc_ButtonEvent.eventCount, REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT);
+										for (unsigned i = 0; i < iterCount; ++i) {
+											auto& e = message.msg.ipc_ButtonEvent.events[i];
+											try {
+												driver->openvr_buttonEvent(e.deviceId, e.eventType, e.buttonId, e.timeOffset);
+											}
+											catch (std::exception& e) {
+												LOG(ERROR) << "Error in ipc thread: " << e.what();
+											}
+										}
 									}
-									else {
-										resp.status = ipc::ReplyStatus::NotFound;
-									}
-									_this->sendReply(message.msg.dm_StepDetect.clientId, resp);
 								}
 								break;
-								case ipc::RequestType::WalkInPlace_StepDetectionMode:
+
+								case ipc::RequestType::OpenVR_AxisEvent:
 								{
-									ipc::Reply resp(ipc::ReplyType::GenericReply);
-									resp.messageId = message.msg.dm_StepDetectionMode.messageId;
-									auto serverDriver = CServerDriver::getInstance();
-									if (serverDriver) {
-										switch (message.msg.dm_StepDetectionMode.stepDetectOperation) {
-										case 1:
-											if (message.msg.dm_StepDetectionMode.stepDetectOperation == 1) {
-												if (message.msg.dm_StepDetectionMode.enableStepDetect == 1) {
-													serverDriver->enableStepDetection(true);
-												}
-												else {
-													serverDriver->enableStepDetection(false);
-												}
-											}
-											break;
-										case 2:
-											serverDriver->setGameStepType(message.msg.dm_StepDetectionMode.gameStepType);
-											break;
-										case 3:
-											break;
-										case 4:
-											serverDriver->setStepIntSec(message.msg.dm_StepDetectionMode.stepIntSec);
-											break;
-										case 5:
-											serverDriver->setHMDThreshold(message.msg.dm_StepDetectionMode.hmdThreshold);
-											break;
-										case 6:
-											serverDriver->setHandJogThreshold(message.msg.dm_StepDetectionMode.handJogThreshold);
-											break;
-										case 7:
-											serverDriver->setHandRunThreshold(message.msg.dm_StepDetectionMode.handRunThreshold);
-											break;
-										case 8:
-											serverDriver->setWalkTouch(message.msg.dm_StepDetectionMode.walkTouch);
-											break;
-										case 9:
-											serverDriver->setJogTouch(message.msg.dm_StepDetectionMode.jogTouch);
-											break;
-										case 10:
-											serverDriver->setRunTouch(message.msg.dm_StepDetectionMode.runTouch);
-											break;
-										case 11:
-											serverDriver->setAccuracyButton(message.msg.dm_StepDetectionMode.useAccuracyButton);
-											break;
-										case 12:
-											serverDriver->setAccuracyButtonAsToggle(message.msg.dm_StepDetectionMode.useButtonAsToggle);
-											break;
-										case 13:
-											serverDriver->setAccuracyButtonFlip(message.msg.dm_StepDetectionMode.flipButtonUse);
-											break;
-										case 14:
-											serverDriver->setControlSelect(message.msg.dm_StepDetectionMode.controlSelect);
-											break;
-										default:
-											break;
-										}
-										resp.status = ipc::ReplyStatus::Ok;
-									}
-									else {
-										resp.status = ipc::ReplyStatus::UnknownError;
-									}
-									if (resp.status != ipc::ReplyStatus::Ok) {
-										LOG(ERROR) << "Error while updating step detect: Error code " << (int)resp.status;
-									}
-									if (resp.messageId != 0) {
-										auto i = _this->_ipcEndpoints.find(message.msg.dm_StepDetectionMode.clientId);
-										if (i != _this->_ipcEndpoints.end()) {
-											i->second->send(&resp, sizeof(ipc::Reply), 0);
-										}
-										else {
-											LOG(ERROR) << "Error while updating step detect: Unknown clientId " << message.msg.dm_StepDetectionMode.clientId;
+									if (vr::VRServerDriverHost()) {
+										for (unsigned i = 0; i < message.msg.ipc_AxisEvent.eventCount; ++i) {
+											auto& e = message.msg.ipc_AxisEvent.events[i];
+											driver->openvr_axisEvent(e.deviceId, e.axisId, e.axisState);
 										}
 									}
 								}

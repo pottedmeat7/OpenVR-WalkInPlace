@@ -16,21 +16,21 @@ namespace ipc { struct Reply; }
 namespace driver {
 
 // forward declarations
-class CServerDriver;
+class ServerDriver;
 
 
 class IpcShmCommunicator {
 public:
-	void init(CServerDriver* driver);
+	void init(ServerDriver* driver);
 	void shutdown();
 
 private:
-	static void _ipcThreadFunc(IpcShmCommunicator* _this, CServerDriver* driver);
+	static void _ipcThreadFunc(IpcShmCommunicator* _this, ServerDriver* driver);
 
 	void sendReply(uint32_t clientId, const ipc::Reply& reply);
 
 	std::mutex _sendMutex;
-	CServerDriver* _driver = nullptr;
+	ServerDriver* _driver = nullptr;
 	std::thread _ipcThread;
 	volatile bool _ipcThreadRunning = false;
 	volatile bool _ipcThreadStopFlag = false;

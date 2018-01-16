@@ -15,6 +15,7 @@ MyMainViewPage {
         stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
+        stepThresholdBox.setStepTime(WalkInPlaceTabController.getStepTime())
         stepThresholdBox.setAccuracyButton(WalkInPlaceTabController.getAccuracyButton())
         stepThresholdBox.setAccuracyButtonAsToggle(WalkInPlaceTabController.getAccuracyButtonIsToggle())
         stepThresholdBox.setAccuracyButtonFlip(WalkInPlaceTabController.getAccuracyButtonFlip())
@@ -37,7 +38,7 @@ MyMainViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Game Step Conf"
+                text: "Game Config"
                 bottomPadding: -10
             }
 
@@ -72,7 +73,7 @@ MyMainViewPage {
                     MyText {
                         text: " "
                         horizontalAlignment: Text.AlignHCenter
-                        Layout.preferredWidth: 70
+                        Layout.preferredWidth: 50
                     }
 
                     MyComboBox {
@@ -108,10 +109,14 @@ MyMainViewPage {
                         }
                     }
 
-                    MyText {
-                        text: " "
-                        horizontalAlignment: Text.AlignHCenter
-                        Layout.preferredWidth: 70
+
+                    MyToggleButton {
+                        id: enableBeta
+                        text: "Beta Detection?"
+                        Layout.fillWidth: false
+                        onCheckedChanged: {
+                            WalkInPlaceTabController.enableBeta(checked)
+                        }
                     }
                 }
             }
@@ -140,6 +145,11 @@ MyMainViewPage {
                 WalkInPlaceTabController.setHandRunThreshold(run)
                 handRun = run
                 updateGUI()    
+            }
+            setStepTime: function(t) {
+                WalkInPlaceTabController.setStepTime(t)
+                stepTime = t
+                updateGUI()                 
             }
             setAccuracyButton: function(buttonId) {
                 WalkInPlaceTabController.setAccuracyButton(buttonId)

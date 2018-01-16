@@ -139,20 +139,9 @@ public:
 
 	void ping(bool modal = true, bool enableReply = false);
 
-	void enableStepDetection(bool enable, bool modal = true);
-	void setStepIntSec(float value, bool modal = true);
-	void setHMDThreshold(const vr::HmdVector3d_t& value, bool modal = true);
-	void setAccuracyButton(int buttonId, bool modal = true);
-	void setAccuracyButtonAsToggle(bool val, bool modal = true);
-	void setAccuracyButtonFlip(bool val, bool modal = true);
-	void setHandJogThreshold(float value, bool modal = true);
-	void setHandRunThreshold(float value, bool modal = true);
-	void setWalkTouch(float value, bool modal = true);
-	void setJogTouch(float value, bool modal = true);
-	void setRunTouch(float value, bool modal = true);
-	void setGameStepType(int gameType, bool modal = true);
-	void setControlSelect(int control, bool modal = true);
-	bool getStepDetected();
+	void openvrDeviceAdded(uint32_t deviceId);
+	void openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
+	void openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t& axisState);
 
 private:
 	std::recursive_mutex _mutex;

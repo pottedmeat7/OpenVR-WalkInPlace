@@ -25,13 +25,14 @@ struct WalkInPlaceProfile {
 	int flipButtonUse = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
+	double stepTime = 0.7;
 	float handWalkThreshold = 0.02;
 	float handJogThreshold = 0.50;
 	float handRunThreshold = 1.70;
 	float walkTouch = 0.6;
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
-	float hmdThreshold_y = 0.3;
+	float hmdThreshold_y = 0.27;
 	float hmdThreshold_xz = 0.27;
 	int useAccuracyButton = 0;
 };
@@ -75,14 +76,13 @@ private:
 	int gameType = 1;
 	int controlSelect = 2;
 	bool stepDetectEnabled = false;
-	float hmdThreshold_y = 0.3;
-	float hmdThreshold_xz = 0.27;
+	bool betaEnabled = false;
+	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.27, 0.27 };
 	int useAccuracyButton = 5;
 	bool useButtonAsToggle = false;
 	bool flipButtonUse = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
-	float stepIntSec = 0.07;
 	float handWalkThreshold = 0.02;
 	float handJogThreshold = 0.50;
 	float handRunThreshold = 1.70;
@@ -91,6 +91,34 @@ private:
 	float runTouch = 1.0;
 	vr::VROverlayHandle_t overlayHandle;
 	int showingStepGraph = 101;
+
+	int _teleportUnpressed = true;
+	int _hasUnTouchedStepAxis = 0;
+
+	int _openvrDeviceStepPoseTracker[3]; //HMD and two controllers
+	int _controllerDeviceIds[2];
+	int _controlSelect = 2;
+	int _controlUsedID = -1;
+	double _timeLastTick = 0.0;
+	double _timeLastStepPeak = 0.0;
+	int stepPeaksToStart = 2;
+	double _stepFrequencyMin = 250;
+	bool _stepPoseDetected = false;
+	double _stepIntegrateSteps = 0.0;
+	double _jogIntegrateSteps = 0.0;
+	double _runIntegrateSteps = 0.0;
+	double _stepIntegrateStepLimit = 0.7 * 1000;
+
+	bool g_stepDetectEnabled = false;
+	bool g_disableGameLocomotion = false;
+	bool g_isHoldingAccuracyButton = false;
+	bool g_useButtonAsToggle = false;
+	bool g_buttonToggled = true;
+	bool g_stepPoseDetected = false;
+	bool g_jogPoseDetected = false;
+	bool g_runPoseDetected = false;
+	int g_AccuracyButton = -1;
+	bool g_accuracyButtonWithTouch = false;
 	
 
 public:
@@ -107,7 +135,7 @@ public:
 	Q_INVOKABLE int getDeviceClass(unsigned index);
 	Q_INVOKABLE int getDeviceState(unsigned index);
 	Q_INVOKABLE int getDeviceMode(unsigned index);
-	Q_INVOKABLE float getStepIntSec();
+	Q_INVOKABLE double getStepTime();
 	Q_INVOKABLE int getGameType();
 	Q_INVOKABLE int getControlSelect();
 	Q_INVOKABLE int getAccuracyButton();
@@ -138,13 +166,12 @@ public:
 
 public slots:
     void enableStepDetection(bool enable);
-	void setStepIntSec(float value);
+	void enableBeta(bool enable);
+	void setStepTime(double value);
 	void setHMDThreshold(float xz, float y);
 	void setAccuracyButton(int buttonId);
 	void setAccuracyButtonAsToggle(bool val);
 	void setAccuracyButtonFlip(bool val);
-	void setHMDPitchDown(int value);
-	void setHMDPitchUp(int value);
 	void setHandWalkThreshold(float walkThreshold);
 	void setHandJogThreshold(float jogThreshold);
 	void setHandRunThreshold(float runThreshold);
@@ -153,6 +180,15 @@ public slots:
 	void setRunTouch(float value);
 	void setGameStepType(int gameType);
 	void setControlSelect(int control);
+	void applyStepPoseDetect();
+
+	bool isTakingStep(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
+	bool isShakingHead(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
+	bool isStepingInPlace(float * pos);
+	bool isJoggingStep(float * vel);
+	bool isRunningStep(float * vel);
+
+	void updateAccuracyButtonState(uint32_t deviceId);
 
 	void addWalkInPlaceProfile(QString name);
 	void applyWalkInPlaceProfile(unsigned index);

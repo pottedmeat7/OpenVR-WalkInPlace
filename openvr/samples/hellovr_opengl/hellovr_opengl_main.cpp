@@ -539,8 +539,11 @@ void CMainApplication::Shutdown()
 	
 	if( m_pContext )
 	{
-		glDebugMessageControl( GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_FALSE );
-		glDebugMessageCallback(nullptr, nullptr);
+		if( m_bDebugOpenGL )
+		{
+			glDebugMessageControl( GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_FALSE );
+			glDebugMessageCallback(nullptr, nullptr);
+		}
 		glDeleteBuffers(1, &m_glSceneVertBuffer);
 
 		if ( m_unSceneProgramID )
@@ -1121,8 +1124,8 @@ void CMainApplication::AddCubeToScene( Matrix4 mat, std::vector<float> &vertdata
 //-----------------------------------------------------------------------------
 void CMainApplication::RenderControllerAxes()
 {
-	// don't draw controllers if somebody else has input focus
-	if( m_pHMD->IsInputFocusCapturedByAnotherProcess() )
+	// Don't attempt to update controllers if input is not available
+	if( !m_pHMD->IsInputAvailable() )
 		return;
 
 	std::vector<float> vertdataarray;
@@ -1407,9 +1410,9 @@ void CMainApplication::RenderScene( vr::Hmd_Eye nEye )
 		glBindVertexArray( 0 );
 	}
 
-	bool bIsInputCapturedByAnotherProcess = m_pHMD->IsInputFocusCapturedByAnotherProcess();
+	bool bIsInputAvailable = m_pHMD->IsInputAvailable();
 
-	if( !bIsInputCapturedByAnotherProcess )
+	if( bIsInputAvailable )
 	{
 		// draw the controller axis lines
 		glUseProgram( m_unControllerTransformProgramID );
@@ -1431,7 +1434,7 @@ void CMainApplication::RenderScene( vr::Hmd_Eye nEye )
 		if( !pose.bPoseIsValid )
 			continue;
 
-		if( bIsInputCapturedByAnotherProcess && m_pHMD->GetTrackedDeviceClass( unTrackedDevice ) == vr::TrackedDeviceClass_Controller )
+		if( !bIsInputAvailable && m_pHMD->GetTrackedDeviceClass( unTrackedDevice ) == vr::TrackedDeviceClass_Controller )
 			continue;
 
 		const Matrix4 & matDeviceToTracking = m_rmat4DevicePose[ unTrackedDevice ];

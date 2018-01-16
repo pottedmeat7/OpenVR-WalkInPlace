@@ -40,25 +40,13 @@ Download the newest installer from the [release section](https://github.com/pott
 
 # Documentation
 
-## Configuration and Accuracy Setup and Troubleshooting
+## Configuration Examples
 
-### Issue: Not taking steps
-Solution 1: I found that when jogging / running there is still quite alot of XZ movement so if your trying to jog / run and its not virtually moving, then try to increase the XZ value which allows for more XZ movement.
+![Example Screenshot](docs/screenshots/walkinplace_default.png)
+*This is settings, which allows for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding (see arm-swingin config below). You can use "Button for movement" options if you prefer.*
 
-Solution 2: Also I found its hard to have the Y value be larger then the threshold as well as the XZ value if you are looking down to far.
-So keeping the pitch of your chin up and HMD looking forward is the best way to trigger a "step".
-
-### Issue: Taking Steps when you dont want to
-Solution 1: Disable "Walk Touch" and use the HMD values as well as Hand values for any movement. 
-To do this set the "Walk Touch" value to 0 and lower the "Hand Jog" value (something like 0.25).
-This will create more of a system where you have to move your arms as well as your HMD to take a step. Limiting false steps.
-
-Solution 2: Use one of the Accuracy buttons, you wont move while holding that button.
-
-Solution 3: You can increase the Y value, lower the XZ value (be careful its a delicate balance) It may cause taking a step to be harder.
-
-![Example Screenshot](docs/screenshots/openvr-walkinplaceoverlay.png)
-*This screenshot shows the settings I use for Fallout 4 VR*
+![Example Screenshot](docs/screenshots/walkinplace_armswing.png)
+*This type of "arm-swing" settings works well in FO4VR but only allows you to move at two speeds (jog/run, the actual speed of jog can be lowered if you want it to feel slower)*
 
 ### WalkInPlace Overlay
 Just "Enable WIP" in the UI.
@@ -78,7 +66,7 @@ There is no distinction just switch until its the right one. In some games you c
 ### HMD Thresholds
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
 
-The XZ value is the Side to Side movement to trigger a step, in order to trigger a step the real time HMD values have to be less than the XZ threshold.
+The XZ value is the Side to Side movement that will disable triggering a step (if over the threshold), in order to trigger a step the HMD values have to be less than the XZ threshold.
 
 ### Hand Jog / Run
 These values are for the magnitude of movement (X, Y and Z movement) of the arms. 
@@ -92,6 +80,9 @@ This will change the default behavior for the "Button for Movement" so that you 
 
 ### Flip Button Use
 This will change the "Button for Movement" behavior instead of allowing virtual movement when the button is held, it will only allow virtual movement when the button is not held and visa versa.
+
+### Step Time
+This is how long each "step" lasts. If 1 step is detected it will last this amount of time in seconds. As you repeat steps this time is reset for every step detected. 
 
 ### Touch Options
 These values control the degree of movement applied in game.
@@ -107,12 +98,7 @@ After re-opening SteamVR you can reload your saved profiles by first clicking "L
 
 If you want to update a profile with new settings you need to select the profile and delete it and re-create a "New Profile".
 
-If you name a profile with the name "default" it will be the initially loaded profile once SteamVR is started.
-
-### Arm Swinging 
-To achieve more of an Arm Swinging only method you can set the "Walk Touch" value to 0
-This will disable the walking mode and movement will only be applied if you are jogging / running.
-You then can lower the HMD Y value very low and your HMD will only need to move slightly, but it will natrually move a bit.
+If you name a profile with the name "default" it will be the initially loaded profile once you "load profiles".
 
 ## Initial Setup
 ### Boost

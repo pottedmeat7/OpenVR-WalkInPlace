@@ -3,18 +3,20 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 GroupBox {
-    property string boxTitle: "Step Detect Threshold Conf"
+    property string boxTitle: "Threshold, Accuracy, Time Config"
 
-    property double hmdXZ : 0.07
-    property double hmdY : 0.09
+    property double hmdXZ : 0.27
+    property double hmdY : 0.27
     property int useAccuracyButton : 5
     property bool useButtonAsToggle : false
     property bool flipButtonUse : false
     property double handWalk : 0.02
     property double handJog : 0.35
     property double handRun : 1.7
+    property double stepTime : 0.7
 
     property double thresholdStep : 0.01
+    property double thresholdStepTime : 0.05
     property int pitchStep : 1
 
     property int keyboardUIDBase: 100
@@ -26,6 +28,7 @@ GroupBox {
     property var setAccuracyButtonFlip : function(v) {}
     property var setHandJog: function(j) {}
     property var setHandRun: function(r) {}
+    property var setStepTime: function(t) {}
     property var updateValues: function() {}
 
     function updateGUI() {
@@ -36,6 +39,7 @@ GroupBox {
         accuracyButtonDialog.currentIndex = useAccuracyButton
         useButtonAsToggleCheck.checked = useButtonAsToggle
         flipButtonUseCheck.checked = flipButtonUse
+        stepTimeInputField.text = stepTime.toFixed(2)
     }
 
     Layout.fillWidth: true
@@ -85,13 +89,13 @@ GroupBox {
             }
 
             MyText {
-                text: "Hand Jog Vel:"
+                text: "Hand Jog Y:"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Hand Run Vel:"
+                text: "Hand Run Y:"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }    
@@ -164,7 +168,7 @@ GroupBox {
 
             MyTextField {
                 id: hmdXZInputField
-                text: "0.07"
+                text: "0.27"
                 keyBoardUID: 102
                 Layout.preferredWidth: 140
                 horizontalAlignment: Text.AlignHCenter
@@ -310,27 +314,27 @@ GroupBox {
             MyText {
                 text: " "
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 130
+                Layout.preferredWidth: 135
             }
 
             MyText {
                 text: "Button as Toggle?"
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
-                Layout.preferredWidth: 160
+                Layout.preferredWidth: 170
             }    
 
             MyText {
                 text: "Flip Button Use?"
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
-                Layout.preferredWidth: 160
+                Layout.preferredWidth: 300
             }
 
             MyText {
-                text: " "
+                text: "Step Time (seconds)"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 330
+                Layout.preferredWidth: 180
             }
         }
 
@@ -364,7 +368,7 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 110
+                Layout.preferredWidth: 125
             }
 
             MyToggleButton {
@@ -378,22 +382,56 @@ GroupBox {
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 130
+                Layout.preferredWidth: 275
             }
 
-            MyText {
-                text: " "
+
+            MyPushButton2 {
+                id: stepTimeMinusButton
+                Layout.preferredWidth: 40
+                text: "-"
+                onClicked: {
+                    var value = stepTime - thresholdStepTime
+                    if (value < thresholdStepTime) {
+                        value = thresholdStepTime
+                    }
+                    stepTime = value
+                    setStepTime(value)
+                }
+            }
+
+            MyTextField {
+                id: stepTimeInputField
+                text: "0.7"
+                keyBoardUID: 105
                 Layout.preferredWidth: 140
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < thresholdStepTime) {
+                            val = thresholdStepTime
+                        } else if (val > 5.0) {
+                            val = 5.0
+                        }
+                        stepTime = val
+                        setStepTime(val)
+                    } 
+                }
             }
 
-            MyText {
-                text: " "
-                Layout.preferredWidth: 140
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 190
+            MyPushButton2 {
+                id: stepTimePlusButton
+                Layout.preferredWidth: 40
+                text: "+"
+                onClicked: {
+                    var value = stepTime + thresholdStepTime
+                    if (value > 5.0) {
+                        value = 5.0
+                    }
+                    stepTime = value
+                    setStepTime(value)
+                }
             }
         }
     }

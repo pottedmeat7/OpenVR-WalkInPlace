@@ -18,6 +18,10 @@ enum class RequestType : uint32_t {
 	IPC_ClientDisconnect,
 	IPC_Ping,
 
+	OpenVR_ButtonEvent,
+	OpenVR_AxisEvent,
+	OpenVR_DeviceAdded,
+
 	WalkInPlace_GetDeviceInfo,
 	WalkInPlace_DefaultMode,
 	WalkInPlace_StepDetectionMode,
@@ -72,6 +76,34 @@ struct Request_IPC_Ping {
 };
 
 
+#define REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT 12
+
+struct Request_OpenVR_ButtonEvent {
+	unsigned eventCount;
+	struct {
+		ButtonEventType eventType;
+		uint32_t deviceId;
+		vr::EVRButtonId buttonId;
+		double timeOffset;
+	} events[REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT];
+};
+
+
+#define REQUEST_OPENVR_AXISEVENT_MAXCOUNT 12
+
+struct Request_OpenVR_AxisEvent {
+	unsigned eventCount;
+	struct {
+		uint32_t deviceId;
+		uint32_t axisId;
+		vr::VRControllerAxis_t axisState;
+	} events[REQUEST_OPENVR_AXISEVENT_MAXCOUNT];
+};
+
+struct Request_OpenVR_DeviceAdded {
+	uint32_t deviceId;
+};
+
 struct Request_OpenVR_VendorSpecificEvent {
 	uint32_t deviceId;
 	vr::EVREventType eventType;
@@ -125,6 +157,9 @@ struct Request {
 		Request_IPC_ClientConnect ipc_ClientConnect;
 		Request_IPC_ClientDisconnect ipc_ClientDisconnect;
 		Request_IPC_Ping ipc_Ping;
+		Request_OpenVR_ButtonEvent ipc_ButtonEvent;
+		Request_OpenVR_AxisEvent ipc_AxisEvent;
+		Request_OpenVR_DeviceAdded ipc_DeviceAdded;
 		Request_WalkInPlace_StepDetectionMode dm_StepDetectionMode;
 		Request_WalkInPlace_StepDetect dm_StepDetect;
 	} msg;

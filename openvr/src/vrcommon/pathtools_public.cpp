@@ -464,10 +464,11 @@ bool Path_IsDirectory( const std::string & sPath )
 bool Path_IsAppBundle( const std::string & sPath )
 {
 #if defined(OSX)
-	NSBundle *bundle = [ NSBundle bundleWithPath: [ NSString stringWithUTF8String:sPath.c_str() ] ];
-	bool bisAppBundle = ( nullptr != bundle );
-	[ bundle release ];
-	return bisAppBundle;
+	@autoreleasepool {
+		NSBundle *bundle = [ NSBundle bundleWithPath: [ NSString stringWithUTF8String:sPath.c_str() ] ];
+		bool bisAppBundle = ( nullptr != bundle );
+		return bisAppBundle;
+	}
 #else
 	return false;
 #endif
@@ -655,7 +656,7 @@ bool Path_WriteBinaryFile(const std::string &strFilename, unsigned char *pData, 
 		fclose(f);
 	}
 
-	return written = nSize ? true : false;
+	return written == nSize ? true : false;
 }
 
 std::string Path_ReadTextFile( const std::string &strFilename )

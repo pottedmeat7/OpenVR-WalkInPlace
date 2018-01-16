@@ -33,8 +33,8 @@ MyStackViewPage {
     property real hmdPlotMaxPoint : 0.6
     property real hmdPlotMinPoint : -0.6
 
-    property real contPlotMaxPoint : 0.6
-    property real contPlotMinPoint : -0.6
+    property real contPlotMaxPoint : 1.0
+    property real contPlotMinPoint : -1.0
 
     property real tdiff : 0
 
@@ -77,11 +77,11 @@ MyStackViewPage {
             Canvas {
                 id: hmdCanvas
                 width: 1200
-                height: 400
+                height: 300
                 antialiasing: true
 
                 property int rectWidth: 1100
-                property int rectHeight: 400
+                property int rectHeight: 300
                 property int topX : 50
                 property int topY : 0
                 property color strokeStyle:  "#cccccc"
@@ -195,11 +195,11 @@ MyStackViewPage {
             Canvas {
                 id: contCanvas
                 width: 1200
-                height: 400
+                height: 300
                 antialiasing: true
 
                 property int rectWidth: 1100
-                property int rectHeight: 400
+                property int rectHeight: 300
                 property int topX : 50
                 property int topY : 0
                 property color strokeStyle:  "#cccccc"
@@ -208,7 +208,7 @@ MyStackViewPage {
                 property bool fill: true
                 property bool stroke: true
                 property real alpha: 1.0
-                property real resolution: 0.1
+                property real resolution: 0.25
                 property int seconds : 10
                 property int sections : 10
                 property int period : (rectWidth/(seconds*sections)) // width at 10 mHz for 10 seconds
