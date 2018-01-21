@@ -59,6 +59,9 @@ namespace vrwalkinplace {
 												clientId = 1;
 												_this->_ipcEndpoints.clear();
 											}
+											if (clientId == 7) {
+												LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											}
 											_this->_ipcEndpoints.insert({ clientId, queue });
 											reply.msg.ipc_ClientConnect.clientId = clientId;
 											reply.status = ipc::ReplyStatus::Ok;
@@ -119,28 +122,28 @@ namespace vrwalkinplace {
 
 								case ipc::RequestType::OpenVR_ButtonEvent:
 								{
-									if (vr::VRServerDriverHost()) {
-										unsigned iterCount = min(message.msg.ipc_ButtonEvent.eventCount, REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT);
-										for (unsigned i = 0; i < iterCount; ++i) {
-											auto& e = message.msg.ipc_ButtonEvent.events[i];
-											try {
-												driver->openvr_buttonEvent(e.deviceId, e.eventType, e.buttonId, e.timeOffset);
-											}
-											catch (std::exception& e) {
-												LOG(ERROR) << "Error in ipc thread: " << e.what();
-											}
+									try {
+										if (vr::VRServerDriverHost()) {
+											auto& e = message.msg.ipc_ButtonEvent;
+											driver->openvr_buttonEvent(e.deviceId, e.eventType, e.buttonId, e.timeOffset);
 										}
+									}
+									catch (std::exception& e) {
+										LOG(ERROR) << "Error in button event ipc thread: " << e.what();
 									}
 								}
 								break;
 
 								case ipc::RequestType::OpenVR_AxisEvent:
 								{
-									if (vr::VRServerDriverHost()) {
-										for (unsigned i = 0; i < message.msg.ipc_AxisEvent.eventCount; ++i) {
-											auto& e = message.msg.ipc_AxisEvent.events[i];
+									try {
+										if (vr::VRServerDriverHost()) {
+											auto& e = message.msg.ipc_AxisEvent;
 											driver->openvr_axisEvent(e.deviceId, e.axisId, e.axisState);
 										}
+									}
+									catch (std::exception& e) {
+										LOG(ERROR) << "Error in axis event ipc thread: " << e.what();
 									}
 								}
 								break;

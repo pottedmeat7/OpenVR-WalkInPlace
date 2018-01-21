@@ -79,25 +79,19 @@ struct Request_IPC_Ping {
 #define REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT 12
 
 struct Request_OpenVR_ButtonEvent {
-	unsigned eventCount;
-	struct {
 		ButtonEventType eventType;
 		uint32_t deviceId;
 		vr::EVRButtonId buttonId;
 		double timeOffset;
-	} events[REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT];
 };
 
 
 #define REQUEST_OPENVR_AXISEVENT_MAXCOUNT 12
 
 struct Request_OpenVR_AxisEvent {
-	unsigned eventCount;
-	struct {
 		uint32_t deviceId;
 		uint32_t axisId;
 		vr::VRControllerAxis_t axisState;
-	} events[REQUEST_OPENVR_AXISEVENT_MAXCOUNT];
 };
 
 struct Request_OpenVR_DeviceAdded {

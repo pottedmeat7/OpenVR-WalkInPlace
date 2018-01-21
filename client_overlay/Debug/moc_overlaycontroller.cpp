@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'overlaycontroller.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.9.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.7.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,14 +12,12 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'overlaycontroller.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.9.0. It"
+#error "This file was generated using the moc from 5.7.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-QT_WARNING_PUSH
-QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_walkinplace__OverlayController_t {
     QByteArrayData data[14];
     char stringdata0[207];
@@ -122,11 +120,11 @@ void walkinplace::OverlayController::qt_static_metacall(QObject *_o, QMetaObject
         case 5: _t->showKeyboard((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< ulong(*)>(_a[2]))); break;
         case 6: _t->showKeyboard((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 7: { QString _r = _t->getVersionString();
-            if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
+            if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
         case 8: { QUrl _r = _t->getVRRuntimePathUrl();
-            if (_a[0]) *reinterpret_cast< QUrl*>(_a[0]) = std::move(_r); }  break;
+            if (_a[0]) *reinterpret_cast< QUrl*>(_a[0]) = _r; }  break;
         case 9: { bool _r = _t->soundDisabled();
-            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -157,7 +155,7 @@ void walkinplace::OverlayController::qt_static_metacall(QObject *_o, QMetaObject
 
 const QMetaObject walkinplace::OverlayController::staticMetaObject = {
     { &QObject::staticMetaObject, qt_meta_stringdata_walkinplace__OverlayController.data,
-      qt_meta_data_walkinplace__OverlayController,  qt_static_metacall, nullptr, nullptr}
+      qt_meta_data_walkinplace__OverlayController,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -168,7 +166,7 @@ const QMetaObject *walkinplace::OverlayController::metaObject() const
 
 void *walkinplace::OverlayController::qt_metacast(const char *_clname)
 {
-    if (!_clname) return nullptr;
+    if (!_clname) return Q_NULLPTR;
     if (!strcmp(_clname, qt_meta_stringdata_walkinplace__OverlayController.stringdata0))
         return static_cast<void*>(const_cast< OverlayController*>(this));
     return QObject::qt_metacast(_clname);
@@ -211,8 +209,7 @@ int walkinplace::OverlayController::qt_metacall(QMetaObject::Call _c, int _id, v
 // SIGNAL 0
 void walkinplace::OverlayController::keyBoardInputSignal(QString _t1, unsigned long _t2)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
-QT_WARNING_POP
 QT_END_MOC_NAMESPACE

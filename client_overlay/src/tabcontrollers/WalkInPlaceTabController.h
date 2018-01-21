@@ -89,19 +89,24 @@ private:
 	float walkTouch = 0.6;
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
+	float minTouch = 0.45;
 	vr::VROverlayHandle_t overlayHandle;
 	int showingStepGraph = 101;
 
 	int _teleportUnpressed = true;
-	int _hasUnTouchedStepAxis = 0;
-
-	int _openvrDeviceStepPoseTracker[3]; //HMD and two controllers
+	int _hasUnTouchedStepAxis = 50;
+	
+	int peaksCount = 0;
+	float hmdLastYVel = 0;
+	float cont1LastYVel = 0;
+	float cont2LastYVel = 0;
 	int _controllerDeviceIds[2];
 	int _controlSelect = 1;
 	int _controlUsedID = -1;
 	double _timeLastTick = 0.0;
 	double _timeLastStepPeak = 0.0;
-	int stepPeaksToStart = 2;
+	int stepPeaksToStart = 3;
+	float stepPeaksFullSpeed = 13.0;
 	double _stepFrequencyMin = 250;
 	bool _stepPoseDetected = false;
 	double _stepIntegrateSteps = 0.0;
