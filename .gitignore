@@ -3,7 +3,7 @@
 /Release/*
 /Debug/*
 /.vs/*
-/openvr
+/openvr/*
 /client_overlay/bin/win64/Material
 /client_overlay/bin/win64/QtGraphicalEffects
 /client_overlay/bin/win64/QtQuick.2
