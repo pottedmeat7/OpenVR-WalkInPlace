@@ -890,14 +890,14 @@ namespace walkinplace {
 							axisStateChange = axisStateChange || (!g_jogPoseDetected);
 							g_jogPoseDetected = true;
 						}
-						if (betaEnabled) {
+						/*if (betaEnabled) {
 							if (!isRunning && !isJogging && isWalking) {
 								axisState.y = axisState.y * (((float)peaksCount) / stepPeaksFullSpeed);
 								if (axisState.y < minTouch) {
 									axisState.y = minTouch;
 								}
 							}
-						}
+						}*/
 						if (axisStateChange) {
 							try {
 								vrwalkinplace::VRWalkInPlace vrwalkinplace;
