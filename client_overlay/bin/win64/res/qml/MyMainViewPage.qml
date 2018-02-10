@@ -5,8 +5,8 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 Rectangle {
     color: "#234f36"
-    width: 1200
-    height: 800
+    width: 1300
+    height: 1000
 
     property string name : "default"
 
@@ -21,14 +21,14 @@ Rectangle {
             MyText {
                 id: headerTitle
                 text: headerText
-                font.pointSize: 30
+                font.pointSize: 24
             }
         }
 
         Rectangle {
             color: "#cccccc"
             height: 1
-            Layout.topMargin: 10
+            Layout.topMargin: 6
             Layout.fillWidth: true
         }
     }
@@ -48,12 +48,12 @@ Rectangle {
     Component.onCompleted: {
         header.parent = mainLayout
         header.Layout.leftMargin = 40
-        header.Layout.topMargin = 30
+        header.Layout.topMargin = 17
         header.Layout.rightMargin = 40
         content.parent = mainLayout
         content.Layout.fillHeight = true
         content.Layout.fillWidth = true
-        content.Layout.topMargin = 10
+        content.Layout.topMargin = 7
         content.Layout.leftMargin = 40
         content.Layout.rightMargin = 40
         content.Layout.bottomMargin = 40

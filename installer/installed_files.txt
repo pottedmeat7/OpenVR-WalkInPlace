@@ -1,0 +1,9 @@
+Delete $INSTDIR\error.log
+Delete $INSTDIR\installed_files.txt
+Delete $INSTDIR\installer.nsi
+Delete $INSTDIR\installer_standalone.nsi
+Delete $INSTDIR\listUninstallFiles.sh
+Delete $INSTDIR\OpenVR-WalkInPlace-OVRIE-driver.exe
+Delete $INSTDIR\OpenVR-WalkInPlace.exe
+Delete $INSTDIR\uninstallFiles.list
+RMdir $INSTDIR

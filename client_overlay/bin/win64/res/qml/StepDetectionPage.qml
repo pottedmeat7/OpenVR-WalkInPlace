@@ -15,6 +15,8 @@ MyMainViewPage {
         stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
+        stepThresholdBox.setTrackerY(WalkInPlaceTabController.getTrackerYThreshold())
+        stepThresholdBox.setTrackerXZ(WalkInPlaceTabController.getTrackerXZThreshold())
         stepThresholdBox.setStepTime(WalkInPlaceTabController.getStepTime())
         stepThresholdBox.setAccuracyButton(WalkInPlaceTabController.getAccuracyButton())
         stepThresholdBox.setAccuracyButtonAsToggle(WalkInPlaceTabController.getAccuracyButtonIsToggle())
@@ -31,16 +33,11 @@ MyMainViewPage {
 
     content: ColumnLayout {
         spacing: 18
+        anchors.fill: parent
 
         GroupBox {
 
             Layout.fillWidth: true
-
-            label: MyText {
-                leftPadding: 10
-                text: "Game Config"
-                bottomPadding: -10
-            }
 
             background: Rectangle {
                 color: "transparent"
@@ -50,13 +47,6 @@ MyMainViewPage {
 
             ColumnLayout {
                 anchors.fill: parent
-
-                Rectangle {
-                    color: "#ffffff"
-                    height: 1
-                    Layout.fillWidth: true
-                    Layout.bottomMargin: 5
-                }
 
                 GridLayout {
                     columns: 5
@@ -123,7 +113,6 @@ MyMainViewPage {
         }
 
         StepDetectConfBox2 {
-            boxTitle: "Step Threshold / Accuracy"
             id: stepThresholdBox
             keyboardUIDBase: 100
             setHMDXZ: function(xz) {
@@ -134,6 +123,20 @@ MyMainViewPage {
             setHMDY: function(y) {
                 WalkInPlaceTabController.setHMDThreshold(hmdXZ,y,hmdXZ)
                 hmdY = y
+                updateGUI()    
+            }
+            setUseTrackers: function(val) {
+                WalkInPlaceTabController.setUseTrackers(val)
+                updateGUI()    
+            }
+            setTrackerXZ: function(xz) {
+                trackerXZ = xz
+                WalkInPlaceTabController.setTrackerThreshold(xz,trackerY,xz)
+                updateGUI()    
+            }
+            setTrackerY: function(y) {
+                trackerY = y
+                WalkInPlaceTabController.setTrackerThreshold(trackerXZ,y,trackerXZ)
                 updateGUI()    
             }
             setHandJog: function(jog) {
@@ -189,45 +192,6 @@ MyMainViewPage {
                 WalkInPlaceTabController.setRunTouch(val)
                 runTouch = val
                 updateGUI()
-            }
-        }
-
-
-        ColumnLayout {
-            spacing: 18
-
-            RowLayout {
-                spacing: 18
-
-                MyPushButton {
-                    Layout.preferredWidth: 100
-                    text: "Reset"
-                    onClicked: { 
-                        gameTypeDialog.currentIndex = 0
-                        controlSelect.currentIndex = 2
-                        stepThresholdBox.setHMDY(0.13)
-                        stepThresholdBox.setHMDXZ(0.27)
-                        stepThresholdBox.setHandJog(0.40)
-                        stepThresholdBox.setHandRun(1.70)
-                        stepThresholdBox.setAccuracyButton(5)
-                        stepThresholdBox.useButtonAsToggle.checked = false
-                        stepThresholdBox.flipButtonUse.checked = false
-                        stepControlBox.setWalkTouch(0.6)
-                        stepControlBox.setJogTouch(0.87)
-                        stepControlBox.setRunTouch(1)
-                        stepControlBox.updateGUI()
-                        stepThresholdBox.updateGUI()
-                    }
-                }
-
-                MyPushButton {
-                    text: "Show Step Graph"
-                    onClicked: {
-                        WalkInPlaceTabController.setupStepGraph()
-                        var res = mainView.push(stepDetectGraphPage)
-                        mainView.startTimer()
-                    }
-                }
             }
         }
 
@@ -295,6 +259,44 @@ MyMainViewPage {
                             walkInPlaceDeleteProfileDialog.profileIndex = walkInPlaceProfileComboBox.currentIndex - 1
                             walkInPlaceDeleteProfileDialog.open()
                         }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            spacing: 18
+
+            RowLayout {
+                spacing: 18
+
+                MyPushButton {
+                    Layout.preferredWidth: 100
+                    text: "Reset"
+                    onClicked: { 
+                        gameTypeDialog.currentIndex = 0
+                        controlSelect.currentIndex = 2
+                        stepThresholdBox.setHMDY(0.13)
+                        stepThresholdBox.setHMDXZ(0.27)
+                        stepThresholdBox.setHandJog(0.40)
+                        stepThresholdBox.setHandRun(1.70)
+                        stepThresholdBox.setAccuracyButton(5)
+                        stepThresholdBox.useButtonAsToggle.checked = false
+                        stepThresholdBox.flipButtonUse.checked = false
+                        stepControlBox.setWalkTouch(0.6)
+                        stepControlBox.setJogTouch(0.87)
+                        stepControlBox.setRunTouch(1)
+                        stepControlBox.updateGUI()
+                        stepThresholdBox.updateGUI()
+                    }
+                }
+
+                MyPushButton {
+                    text: "Show Step Graph"
+                    onClicked: {
+                        WalkInPlaceTabController.setupStepGraph()
+                        var res = mainView.push(stepDetectGraphPage)
+                        mainView.startTimer()
                     }
                 }
             }

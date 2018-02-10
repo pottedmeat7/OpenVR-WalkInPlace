@@ -68,7 +68,8 @@ MyStackViewPage {
     content: Item {
         id:container
         width: 1200
-        height: 900
+        height: 1000
+        anchors.fill: parent
 
         Column {
             spacing: 6

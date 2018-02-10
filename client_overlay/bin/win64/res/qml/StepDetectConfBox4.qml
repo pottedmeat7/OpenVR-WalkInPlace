@@ -26,12 +26,6 @@ GroupBox {
 
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: parent.boxTitle
-        bottomPadding: -10
-    }
-
     background: Rectangle {
         color: "transparent"
         border.color: "#ffffff"
@@ -41,13 +35,6 @@ GroupBox {
 
     ColumnLayout {
         anchors.fill: parent
-
-        Rectangle {
-            color: "#ffffff"
-            height: 1
-            width: 1100
-            Layout.bottomMargin: 5
-        }
 
         GridLayout {
             columns: 6

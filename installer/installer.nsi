@@ -62,6 +62,12 @@ FunctionEnd
 Function .onInit
 	StrCpy $upgradeInstallation "false"
  
+	; If OVRIE is not installed then cannot continue
+	IfFileExists $INSTDIR\..\OpenVR-InputEmulator\OpenVR-InputEmulatorOverlay.exe 0 +5
+	MessageBox MB_OK|MB_ICONEXCLAMATION \
+		"OpenVR-InputEmulator is installed.$\nPlease use the OpenVR-WalkInPlace-OVRIE.exe installer instead.$\nOr You can continue with both."
+	Abort 
+
 	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "UninstallString"
 	StrCmp $R0 "" done
 	

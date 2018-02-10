@@ -212,6 +212,18 @@ namespace walkinplace {
 		return _hmdThreshold.v[1];
 	}
 
+	float WalkInPlaceTabController::getTrackerXZThreshold() {
+		return _trackerThreshold.v[0];
+	}
+
+	float WalkInPlaceTabController::getTrackerYThreshold() {
+		return _trackerThreshold.v[1];
+	}
+
+	bool WalkInPlaceTabController::getUseTrackers(){
+		return useTrackers;
+	}
+
 	float WalkInPlaceTabController::getHandWalkThreshold() {
 		return handWalkThreshold;
 	}
@@ -337,6 +349,9 @@ namespace walkinplace {
 			entry.controlSelect = settings->value("controlSelect", 2).toInt();
 			entry.hmdThreshold_y = settings->value("hmdthreshold_y", 0.27).toFloat();
 			entry.hmdThreshold_xz = settings->value("hmdthreshold_xz", 0.27).toFloat();
+			entry.trackerThreshold_y = settings->value("trackerthreshold_y", 0.27).toFloat();
+			entry.trackerThreshold_xz = settings->value("trackerthreshold_xz", 0.27).toFloat();
+			entry.useTrackers = settings->value("useTrackers", false).toBool();
 			entry.handJogThreshold = settings->value("handJog", 0.35).toFloat();
 			entry.handRunThreshold = settings->value("handRun", 1.7).toFloat();
 			entry.stepTime = settings->value("stepTime", 0.7).toDouble();
@@ -374,6 +389,9 @@ namespace walkinplace {
 			settings->setValue("controlSelect", p.controlSelect);
 			settings->setValue("hmdthreshold_y", p.hmdThreshold_y);
 			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
+			settings->setValue("trackerthreshold_y", p.trackerThreshold_y);
+			settings->setValue("trackerthreshold_xz", p.trackerThreshold_xz);
+			settings->setValue("useTrackers", p.useTrackers);
 			settings->setValue("handJog", p.handJogThreshold);
 			settings->setValue("handRun", p.handRunThreshold);
 			settings->setValue("stepTime", p.stepTime);
@@ -424,6 +442,9 @@ namespace walkinplace {
 		profile->controlSelect = controlSelect;
 		profile->hmdThreshold_y = _hmdThreshold.v[1];
 		profile->hmdThreshold_xz = _hmdThreshold.v[0];
+		profile->trackerThreshold_y = _trackerThreshold.v[1];
+		profile->trackerThreshold_xz = _trackerThreshold.v[0];
+		profile->useTrackers = useTrackers;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
 		profile->stepTime = (_stepIntegrateStepLimit / 1000);
@@ -448,6 +469,10 @@ namespace walkinplace {
 			_hmdThreshold.v[0] = profile.hmdThreshold_xz;
 			_hmdThreshold.v[1] = profile.hmdThreshold_y;
 			_hmdThreshold.v[2] = profile.hmdThreshold_xz;
+			_trackerThreshold.v[0] = profile.trackerThreshold_xz;
+			_trackerThreshold.v[1] = profile.trackerThreshold_y;
+			_trackerThreshold.v[2] = profile.trackerThreshold_xz;
+			useTrackers = profile.useTrackers;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
 			_stepIntegrateStepLimit = profile.stepTime * 1000;
@@ -464,6 +489,8 @@ namespace walkinplace {
 			setGameStepType(profile.gameType);
 			setControlSelect(profile.controlSelect);
 			setHMDThreshold(profile.hmdThreshold_xz, profile.hmdThreshold_y);
+			setTrackerThreshold(profile.trackerThreshold_xz, profile.trackerThreshold_y);
+			setUseTrackers(profile.useTrackers);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
 			setStepTime(profile.stepTime);
@@ -518,6 +545,16 @@ namespace walkinplace {
 		_hmdThreshold.v[0] = xz;
 		_hmdThreshold.v[1] = y;
 		_hmdThreshold.v[2] = xz;
+	}
+
+	void WalkInPlaceTabController::setTrackerThreshold(float xz, float y) {
+		_trackerThreshold.v[0] = xz;
+		_trackerThreshold.v[1] = y;
+		_trackerThreshold.v[2] = xz;
+	}
+
+	void WalkInPlaceTabController::setUseTrackers(bool value) {
+		useTrackers = value;
 	}
 
 	void WalkInPlaceTabController::setAccuracyButton(int buttonId) {

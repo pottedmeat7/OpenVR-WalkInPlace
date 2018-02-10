@@ -22,6 +22,7 @@ struct WalkInPlaceProfile {
 	int gameType = 1;
 	int controlSelect = 2;
 	bool useButtonAsToggle = false;
+	bool useTrackers = false;
 	int flipButtonUse = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
@@ -34,6 +35,8 @@ struct WalkInPlaceProfile {
 	float runTouch = 1.0;
 	float hmdThreshold_y = 0.27;
 	float hmdThreshold_xz = 0.27;
+	float tracker_xz = 0.27;
+	float tracker_y = 0.27;
 	int useAccuracyButton = 0;
 };
 
@@ -61,6 +64,7 @@ private:
 
 	vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
 	vr::HmdVector2_t hmdVel;
+	vr::HmdVector2_t trackerVel;
 	vr::HmdVector2_t cont1Vel;
 	vr::HmdVector2_t cont2Vel;
 
@@ -78,9 +82,11 @@ private:
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
 	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.27, 0.27 };
+	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.27, 0.27 };
 	int useAccuracyButton = 5;
 	bool useButtonAsToggle = false;
 	bool flipButtonUse = false;
+	bool useTrackers = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
 	float handWalkThreshold = 0.02;
@@ -97,6 +103,7 @@ private:
 	int _hasUnTouchedStepAxis = 50;
 	
 	int peaksCount = 0;
+	float trackerLastYVel = 0;
 	float hmdLastYVel = 0;
 	float cont1LastYVel = 0;
 	float cont2LastYVel = 0;
@@ -150,6 +157,9 @@ public:
 	Q_INVOKABLE int getHMDPitchUp();
 	Q_INVOKABLE float getHMDXZThreshold();
 	Q_INVOKABLE float getHMDYThreshold();
+	Q_INVOKABLE bool getUseTrackers();
+	Q_INVOKABLE float getTrackerXZThreshold();
+	Q_INVOKABLE float getTrackerYThreshold();
 	Q_INVOKABLE float getHandWalkThreshold();
 	Q_INVOKABLE float getHandJogThreshold();
 	Q_INVOKABLE float getHandRunThreshold();
@@ -176,6 +186,8 @@ public slots:
 	void enableBeta(bool enable);
 	void setStepTime(double value);
 	void setHMDThreshold(float xz, float y);
+	void setUseTrackers(bool val);
+	void setTrackerThreshold(float xz, float y);
 	void setAccuracyButton(int buttonId);
 	void setAccuracyButtonAsToggle(bool val);
 	void setAccuracyButtonFlip(bool val);

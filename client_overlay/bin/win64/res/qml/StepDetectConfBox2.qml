@@ -7,6 +7,8 @@ GroupBox {
 
     property double hmdXZ : 0.27
     property double hmdY : 0.27
+    property double trackerY : 0.3
+    property double trackerXZ : 0.3
     property int useAccuracyButton : 5
     property bool useButtonAsToggle : false
     property bool flipButtonUse : false
@@ -23,6 +25,9 @@ GroupBox {
 
     property var setHMDXZ: function(x) {}
     property var setHMDY: function(y) {}
+    property var setUseTrackers: function(val) {}
+    property var setTrackerXZ: function(x) {}
+    property var setTrackerY: function(y) {}
     property var setAccuracyButton: function(b) {}
     property var setAccuracyButtonAsToggle : function(v) {}
     property var setAccuracyButtonFlip : function(v) {}
@@ -34,6 +39,8 @@ GroupBox {
     function updateGUI() {
         hmdYInputField.text = hmdY.toFixed(2)
         hmdXZInputField.text = hmdXZ.toFixed(2)
+        trackerYInputField.text = trackerY.toFixed(2)
+        trackerXZInputField.text = trackerXZ.toFixed(2)
         handJogInputField.text = handJog.toFixed(2)
         handRunInputField.text = handRun.toFixed(2)  
         accuracyButtonDialog.currentIndex = useAccuracyButton
@@ -44,28 +51,14 @@ GroupBox {
 
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: parent.boxTitle
-        bottomPadding: -10
-    }
-
     background: Rectangle {
         color: "transparent"
         border.color: "#ffffff"
         radius: 8
     }
 
-
     ColumnLayout {
         anchors.fill: parent
-
-        Rectangle {
-            color: "#ffffff"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
 
         GridLayout {
             columns: 5
@@ -299,6 +292,159 @@ GroupBox {
                     handRun = value
                     setHandRun(value)
                 }
+            }
+        }
+
+        GridLayout {
+            columns: 5
+
+            MyText {
+                text: "Tracker Y:"
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: "Tracker XZ:"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 160
+            }
+
+            MyText {
+                text: ""
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: ""
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }    
+        }
+
+        GridLayout {
+            columns: 9
+
+            MyPushButton2 {
+                id: trackerYMinusButton
+                Layout.preferredWidth: 40
+                text: "-"
+                onClicked: {
+                    var value = trackerY - thresholdStep
+                    if (value < thresholdStep) {
+                        value = thresholdStep
+                    }
+                    trackerY = value
+                    setTrackerY(value)
+                }
+            }
+
+            MyTextField {
+                id: trackerYInputField
+                text: "0.09"
+                keyBoardUID: 101
+                Layout.preferredWidth: 140
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < thresholdStep) {
+                            val = thresholdStep
+                        } else if (val > 3.0) {
+                            val = 3.0
+                        }
+                        trackerY = val
+                        setTrackerY(val)
+                    } 
+                }
+            }
+
+            MyPushButton2 {
+                id: trackerYPlusButton
+                Layout.preferredWidth: 40
+                text: "+"
+                onClicked: {
+                    var value = trackerY + thresholdStep
+                    if (value > 3.0) {
+                        value = 3.0
+                    }
+                    trackerY = value
+                    setTrackerY(value)
+                }
+            }
+
+            MyPushButton2 {
+                id: trackerXZMinusButton
+                Layout.preferredWidth: 40
+                text: "-"
+                onClicked: {
+                    var value = trackerXZ - thresholdStep
+                    if (value < thresholdStep) {
+                        value = thresholdStep
+                    }
+                    trackerXZ = value
+                    setTrackerXZ(value)
+                }
+            }
+
+            MyTextField {
+                id: trackerXZInputField
+                text: "0.27"
+                keyBoardUID: 102
+                Layout.preferredWidth: 140
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < thresholdStep) {
+                            val = thresholdStep
+                        } else if (val > 3.0) {
+                            val = 3.0
+                        }
+                        trackerXZ = val
+                        setTrackerXZ(val)
+                    } 
+                }
+            }
+
+            MyPushButton2 {
+                id: trackerXZPlusButton
+                Layout.preferredWidth: 40
+                text: "+"
+                onClicked: {
+                    var value = trackerXZ + thresholdStep
+                    if (value > 3.0) {
+                        value = 3.0
+                    }
+                    trackerXZ = value
+                    setTrackerXZ(value)
+                }
+            }
+
+            MyToggleButton {
+                id: useTrackers
+                Layout.preferredWidth: 160
+                Layout.fillWidth: false
+                onCheckedChanged: {
+                    setUseTrackers(checked)
+                }
+            }            
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 220
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 220
             }
         }
 

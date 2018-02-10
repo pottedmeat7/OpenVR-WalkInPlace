@@ -3,7 +3,7 @@
 # Execute this script in the root folder of the install dir
 # Dont't forget to set OUTPUTFILE to a path that is writeable
 
-OUTPUTFILE=../../installed_files.txt
+OUTPUTFILE=./installed_files.txt
 INSTALLDIR=.
 
 # Get command line arguments

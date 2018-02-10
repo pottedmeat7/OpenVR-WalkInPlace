@@ -6,7 +6,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 Rectangle {
     color: "#234f36"
     width: 1200
-    height: 800
+    height: 1000
 
     property string name : "default"
 
@@ -20,15 +20,15 @@ Rectangle {
         RowLayout {
             Button {
                 id: headerBackButton
-                Layout.preferredHeight: 50
-                Layout.preferredWidth: 50
+                Layout.preferredHeight: 30
+                Layout.preferredWidth: 30
                 hoverEnabled: true
                 enabled: headerShowBackButton
                 opacity: headerShowBackButton ? 1.0 : 0.0
                 contentItem: Image {
                     source: "backarrow.svg"
-                    sourceSize.width: 50
-                    sourceSize.height: 50
+                    sourceSize.width: 30
+                    sourceSize.height: 30
                     anchors.fill: parent
                 }
                 background: Rectangle {
@@ -52,7 +52,7 @@ Rectangle {
             MyText {
                 id: headerTitle
                 text: headerText
-                font.pointSize: 30
+                font.pointSize: 22
                 anchors.verticalCenter: headerBackButton.verticalCenter
                 Layout.leftMargin: 32
             }
@@ -61,7 +61,7 @@ Rectangle {
         Rectangle {
             color: "#cccccc"
             height: 1
-            Layout.topMargin: 10
+            Layout.topMargin: 7
             Layout.fillWidth: true
         }
     }
@@ -81,12 +81,12 @@ Rectangle {
     Component.onCompleted: {
         header.parent = mainLayout
         header.Layout.leftMargin = 40
-        header.Layout.topMargin = 30
+        header.Layout.topMargin = 17
         header.Layout.rightMargin = 40
         content.parent = mainLayout
         content.Layout.fillHeight = true
         content.Layout.fillWidth = true
-        content.Layout.topMargin = 10
+        content.Layout.topMargin = 7
         content.Layout.leftMargin = 40
         content.Layout.rightMargin = 40
         content.Layout.bottomMargin = 40
