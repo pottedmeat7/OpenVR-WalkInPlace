@@ -7,6 +7,7 @@
 ;General
 
 	!define OVERLAY_BASEDIR "..\client_overlay_standalone\bin\win64"
+	!define OVERLAY_WIP_BASEDIR "..\client_overlay\bin\win64"
 
 	;Name and file
 	Name "OpenVR Walk In Place"
@@ -112,8 +113,8 @@ Section "Install" SecInstall
 	File "${OVERLAY_BASEDIR}\*.bat"
 	File "${OVERLAY_BASEDIR}\*.vrmanifest"
 	File "${OVERLAY_BASEDIR}\*.conf"
-	File /r "${OVERLAY_BASEDIR}\res"
-	File /r "${OVERLAY_BASEDIR}\qtdata"
+	File /r "${OVERLAY_WIP_BASEDIR}\res"
+	File /r "${OVERLAY_WIP_BASEDIR}\qtdata"
 
 
 	; Install redistributable

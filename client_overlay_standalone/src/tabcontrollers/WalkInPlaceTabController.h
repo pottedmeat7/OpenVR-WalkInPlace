@@ -35,8 +35,8 @@ struct WalkInPlaceProfile {
 	float runTouch = 1.0;
 	float hmdThreshold_y = 0.27;
 	float hmdThreshold_xz = 0.27;
-	float tracker_xz = 0.27;
-	float tracker_y = 0.27;
+	float trackerThreshold_xz = 0.27;
+	float trackerThreshold_y = 0.27;
 	int useAccuracyButton = 0;
 };
 
@@ -63,10 +63,11 @@ private:
 	uint32_t maxValidDeviceId = 0;
 
 	vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
-	vr::HmdVector2_t hmdVel;
-	vr::HmdVector2_t trackerVel;
-	vr::HmdVector2_t cont1Vel;
-	vr::HmdVector2_t cont2Vel;
+	vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
+	vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
+	vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
+	vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
+	vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
 
 	double _timeLastGraphPoint = 0.0;
 
@@ -86,6 +87,7 @@ private:
 	int useAccuracyButton = 5;
 	bool useButtonAsToggle = false;
 	bool useTrackers = false;
+	bool trackerStepDetected = false;
 	bool flipButtonUse = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
@@ -201,11 +203,16 @@ public slots:
 	void setControlSelect(int control);
 	void applyStepPoseDetect();
 
-	bool isTakingStep(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
-	bool isShakingHead(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
-	bool isStepingInPlace(float * pos);
+	bool accuracyButtonOnOrDisabled();
+	bool upAndDownStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
+	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
 	bool isJoggingStep(float * vel);
 	bool isRunningStep(float * vel);
+
+	void stopMovement(uint32_t deviceId);
+	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
+	void applyClickMovement(uint32_t deviceId);
+
 
 	void updateAccuracyButtonState(uint32_t deviceId, bool firstController);
 

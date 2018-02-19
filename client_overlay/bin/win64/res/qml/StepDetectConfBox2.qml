@@ -311,7 +311,7 @@ GroupBox {
             }
 
             MyText {
-                text: " "
+                text: "Use Trackers?"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 160
             }

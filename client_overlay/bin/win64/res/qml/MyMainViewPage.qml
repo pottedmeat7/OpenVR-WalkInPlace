@@ -5,8 +5,8 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 Rectangle {
     color: "#234f36"
-    width: 1300
-    height: 1000
+    width: 1200
+    height: 800
 
     property string name : "default"
 

@@ -1,1 +1,0 @@
-start OpenVR-WalkInPlaceOverlay.exe -desktop -nosound

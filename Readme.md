@@ -30,8 +30,9 @@ also activate teleport if you'd like.
 
 - Optional Beta Algorithm in UI and algorithm improvements
 - Tracker support (for feet)
-- Options for emulating other input methods
+- Auto Configure
 - Jumping support
+- Options for emulating other input methods
 - Fixes for teleport games
 
 ## Installer

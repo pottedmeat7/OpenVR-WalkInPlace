@@ -33,7 +33,6 @@ MyMainViewPage {
 
     content: ColumnLayout {
         spacing: 18
-        anchors.fill: parent
 
         GroupBox {
 
