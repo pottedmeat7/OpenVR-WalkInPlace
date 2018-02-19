@@ -107,12 +107,12 @@ Section "Install" SecInstall
 	SetOutPath "$INSTDIR"
 
 	;ADD YOUR OWN FILES HERE...
-	File "${OVERLAY_BASEDIR}\LICENSE"
 	File "${OVERLAY_BASEDIR}\*.exe"
-	File "${OVERLAY_BASEDIR}\*.dll"
-	File "${OVERLAY_BASEDIR}\*.bat"
-	File "${OVERLAY_BASEDIR}\*.vrmanifest"
-	File "${OVERLAY_BASEDIR}\*.conf"
+	File "${OVERLAY_WIP_BASEDIR}\*.vrmanifest"
+	File "${OVERLAY_WIP_BASEDIR}\*.conf"
+	File "${OVERLAY_WIP_BASEDIR}\LICENSE"
+	File "${OVERLAY_WIP_BASEDIR}\*.dll"
+	File "${OVERLAY_WIP_BASEDIR}\*.bat"
 	File /r "${OVERLAY_WIP_BASEDIR}\res"
 	File /r "${OVERLAY_WIP_BASEDIR}\qtdata"
 

@@ -114,6 +114,7 @@ private:
 	int _controlUsedID = -1;
 	double _timeLastTick = 0.0;
 	double _timeLastStepPeak = 0.0;
+	double _timeLastTrackerStep = 0.0;
 	int stepPeaksToStart = 3;
 	float stepPeaksFullSpeed = 13.0;
 	double _stepFrequencyMin = 250;
