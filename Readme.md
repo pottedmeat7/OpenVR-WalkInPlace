@@ -21,6 +21,7 @@ also activate teleport if you'd like.
 # Features
 
 - Change Step Thresholds for Walk / Jog / Run in Place to fit different games
+- Tracker support (for feet)
 - Configuration for "Arm Swinging" Locomotion
 - Change speed of movement applied in game 
 - Profiles for different games
@@ -29,7 +30,6 @@ also activate teleport if you'd like.
 # Upcoming
 
 - Optional Beta Algorithm in UI and algorithm improvements
-- Tracker support (for feet)
 - Auto Configure
 - Jumping support
 - Options for emulating other input methods

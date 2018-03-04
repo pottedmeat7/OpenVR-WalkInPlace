@@ -12,6 +12,7 @@ GroupBox {
     property int useAccuracyButton : 5
     property bool useButtonAsToggle : false
     property bool flipButtonUse : false
+    property bool useTrackers : false
     property double handWalk : 0.02
     property double handJog : 0.35
     property double handRun : 1.7
@@ -46,6 +47,7 @@ GroupBox {
         accuracyButtonDialog.currentIndex = useAccuracyButton
         useButtonAsToggleCheck.checked = useButtonAsToggle
         flipButtonUseCheck.checked = flipButtonUse
+        useTrackersCheck.checked = useTrackers
         stepTimeInputField.text = stepTime.toFixed(2)
     }
 
@@ -429,7 +431,7 @@ GroupBox {
             }
 
             MyToggleButton {
-                id: useTrackers
+                id: useTrackersCheck
                 Layout.preferredWidth: 160
                 Layout.fillWidth: false
                 onCheckedChanged: {

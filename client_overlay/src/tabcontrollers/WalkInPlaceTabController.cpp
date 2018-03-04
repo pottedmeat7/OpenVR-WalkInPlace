@@ -310,7 +310,7 @@ namespace walkinplace {
 						tracker1Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
 						tracker1Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
 						tracker1Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-						firstController = false;
+						firstTracker = false;
 					}
 					else {
 						tracker2Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
@@ -909,8 +909,9 @@ namespace walkinplace {
 						//}
 					}
 				}
+				trackerStepDetected = trackerStepDetected || !useTrackers;
 				if (!betaEnabled) {
-					if (peaksCount >= 1 && (!useTrackers || trackerStepDetected) ) {
+					if (peaksCount >= 1 && (trackerStepDetected) ) {
 						//&& _openvrDeviceStepPoseTracker[1] != 0 && _openvrDeviceStepPoseTracker[2] != 0 ) {
 						//&& (_openvrDeviceStepPoseTracker[1] != _openvrDeviceStepPoseTracker[2])) {
 						//this->setStepPoseDetected(true);
@@ -919,7 +920,7 @@ namespace walkinplace {
 					}
 				}
 				else {
-					if (peaksCount >= stepPeaksToStart && (!useTrackers || trackerStepDetected)) {
+					if (peaksCount >= stepPeaksToStart && (trackerStepDetected)) {
 						_stepPoseDetected = true;
 						_hasUnTouchedStepAxis = 2;
 					}
@@ -989,10 +990,11 @@ namespace walkinplace {
 						//}
 					}
 				}
-				if ( !oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin) {
+				if ( useTrackers && (!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin*16 ) ) {
 					trackerStepDetected = false;
 					isWalking = false;
 				}
+				trackerStepDetected = trackerStepDetected || !useTrackers;
 				if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
 					//check if first controller is running / jogging
 					isRunning = isRunningStep(latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v);

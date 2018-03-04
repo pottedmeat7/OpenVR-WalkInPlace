@@ -15,6 +15,7 @@ MyMainViewPage {
         stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
+        stepThresholdBox.setUseTrackers(WalkInPlaceTabController.getUseTrackers())
         stepThresholdBox.setTrackerY(WalkInPlaceTabController.getTrackerYThreshold())
         stepThresholdBox.setTrackerXZ(WalkInPlaceTabController.getTrackerXZThreshold())
         stepThresholdBox.setStepTime(WalkInPlaceTabController.getStepTime())
@@ -126,6 +127,7 @@ MyMainViewPage {
             }
             setUseTrackers: function(val) {
                 WalkInPlaceTabController.setUseTrackers(val)
+                useTrackers = val
                 updateGUI()    
             }
             setTrackerXZ: function(xz) {
