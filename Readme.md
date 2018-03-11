@@ -46,7 +46,7 @@ If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-d
 ## Configuration Examples
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
-*These are settings which allow for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding (see arm-swinging config below). You can use "Button for movement" options if you prefer.*
+*These are settings which allow for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding, to increase accuracy you can use trackers (if you have them), an "Button for movement" or Disable "Walk Touch" (set to 0) and use both the HMD and controller threshold for jogging.*
 
 ### WalkInPlace Overlay
 Just "Enable WIP" in the UI.
