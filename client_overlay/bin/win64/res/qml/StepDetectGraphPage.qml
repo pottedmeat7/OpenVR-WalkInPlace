@@ -52,6 +52,7 @@ MyStackViewPage {
     property var startTimer: function() {
         refreshTimer.start()
     }
+    
     property var stopTimer: function() {
         refreshTimer.stop()
         hmdXPoints = []
@@ -66,13 +67,13 @@ MyStackViewPage {
         cont2YPoints = []
         cont2ZPoints = []
 
-        tracker1XPoints : []
-        tracker1YPoints : []
-        tracker1ZPoints : []
+        tracker1XPoints = []
+        tracker1YPoints = []
+        tracker1ZPoints = []
 
-        tracker2XPoints : []
-        tracker2YPoints : []
-        tracker2ZPoints : []
+        tracker2XPoints = []
+        tracker2YPoints = []
+        tracker2ZPoints = []
 
         stepDetects = []
 

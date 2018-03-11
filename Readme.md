@@ -11,7 +11,7 @@ The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement 
 - Fallout 4 VR
 - Arizona Sunshine
 - Onward
-- Gorn
+- VR-Chat
 - DOOM VFR (with Keyboard (WASD))
 - Any other games with Keyboard or Touchpad locomotion controls
 
@@ -39,6 +39,8 @@ also activate teleport if you'd like.
 
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
 
+If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-driver.exe' installer.
+
 # Documentation
 
 ## Configuration Examples
@@ -46,14 +48,11 @@ Download the newest installer from the [release section](https://github.com/pott
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
 *These are settings which allow for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding (see arm-swinging config below). You can use "Button for movement" options if you prefer.*
 
-![Example Screenshot](docs/screenshots/walkinplace_armswing.png)
-*These are settings for an "arm-swinging" configuration which works well in FO4VR but only allows you to move at two speeds (jog/run, the actual speed of jog can be lowered if you want it to feel slower)*
-
 ### WalkInPlace Overlay
 Just "Enable WIP" in the UI.
 
-Enable the "analog" locomotion in the games settings this is the input method that uses touching the touch-pad (not clicking)
-Then you simply walk in place to emulate walking in the VR world.
+Enable the "analog" locomotion in the games settings this is the input method that uses the touch-pad
+Then you simply walk in place to virutally walk in VR.
 
 ### Game Type
 These options are for different combinations of controls some games use the touch-pad for movement and then a click to sprint, some use the click to engage teleport. If you dont want to trigger teleport use the second option.
@@ -68,6 +67,16 @@ There is no distinction just switch until its the right one. In some games you c
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
 
 The XZ value is the Side to Side movement that will disable triggering a step (if over the threshold), in order to trigger a step the HMD values have to be less than the XZ threshold.
+
+### Tracker Thresholds
+These values are functionality the same as the HMD values except from a tracker device. 
+
+### Use Trackers?
+Enables/Disable trackers. This will use both the HMD thresholds and tracker thresholds in order to trigger a step.
+
+### Disable HMD?
+This will disable the tracking of the HMD movement, and will only utilize the thresholds of the tracker movement. 
+You must have both "Use Trackers?" Checked as well as "Disable HMD?" checked. 
 
 ### Hand Jog Y / Run Y
 These values are for the controller Up and Down movement of the arms. 
@@ -90,7 +99,7 @@ These values control the degree of movement applied in game.
 Some games will use the touchpad axis differntly, for slow games sometimes there is only 1 degree of movment.
 Some games use the entire axis from the center, 0, to 1
 
-If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require you HMD and arms to move in order to trigger a step.
+If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to move in order to trigger a step.
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
@@ -101,7 +110,10 @@ If you want to update a profile with new settings you need to select the profile
 
 If you name a profile with the name "default" it will be the initially loaded profile once you "load profiles".
 
-## Initial Setup
+
+
+## Setting up To Re-Build the project from Source
+* You do not need this if you just want to use the WIP overlay*
 ### Boost
 1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
 2. Download Boost 1.63 Binaries (boost_1_65_1-msvc-14.0-64.exe)

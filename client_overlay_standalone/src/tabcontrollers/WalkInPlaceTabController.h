@@ -23,20 +23,21 @@ struct WalkInPlaceProfile {
 	int controlSelect = 2;
 	bool useButtonAsToggle = false;
 	bool useTrackers = false;
+	bool disableHMD = false;
 	int flipButtonUse = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
-	double stepTime = 0.7;
+	double stepTime = 0.5;
 	float handWalkThreshold = 0.02;
 	float handJogThreshold = 0.50;
 	float handRunThreshold = 1.70;
 	float walkTouch = 0.6;
 	float jogTouch = 0.77;
 	float runTouch = 1.0;
-	float hmdThreshold_y = 0.27;
+	float hmdThreshold_y = 0.17;
 	float hmdThreshold_xz = 0.27;
 	float trackerThreshold_xz = 0.27;
-	float trackerThreshold_y = 0.27;
+	float trackerThreshold_y = 0.12;
 	int useAccuracyButton = 0;
 };
 
@@ -82,11 +83,12 @@ private:
 	int controlSelect = 2;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
-	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.27, 0.27 };
-	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.27, 0.27 };
+	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.12, 0.27 };
+	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
 	int useAccuracyButton = 5;
 	bool useButtonAsToggle = false;
 	bool useTrackers = false;
+	bool disableHMD = false;
 	bool trackerStepDetected = false;
 	bool flipButtonUse = false;
 	int hmdPitchDown = 35;
@@ -122,7 +124,7 @@ private:
 	double _stepIntegrateSteps = 0.0;
 	double _jogIntegrateSteps = 0.0;
 	double _runIntegrateSteps = 0.0;
-	double _stepIntegrateStepLimit = 0.7 * 1000;
+	double _stepIntegrateStepLimit = 0.5 * 1000;
 
 	bool g_stepDetectEnabled = false;
 	bool g_disableGameLocomotion = false;
@@ -161,6 +163,7 @@ public:
 	Q_INVOKABLE float getHMDXZThreshold();
 	Q_INVOKABLE float getHMDYThreshold();
 	Q_INVOKABLE bool getUseTrackers();
+	Q_INVOKABLE bool getDisableHMD();
 	Q_INVOKABLE float getTrackerXZThreshold();
 	Q_INVOKABLE float getTrackerYThreshold();
 	Q_INVOKABLE float getHandWalkThreshold();
@@ -190,6 +193,7 @@ public slots:
 	void setStepTime(double value);
 	void setHMDThreshold(float xz, float y);
 	void setUseTrackers(bool val);
+	void setDisableHMD(bool val);
 	void setTrackerThreshold(float xz, float y);
 	void setAccuracyButton(int buttonId);
 	void setAccuracyButtonAsToggle(bool val);

@@ -220,8 +220,12 @@ namespace walkinplace {
 		return _trackerThreshold.v[1];
 	}
 
-	bool WalkInPlaceTabController::getUseTrackers(){
+	bool WalkInPlaceTabController::getUseTrackers() {
 		return useTrackers;
+	}
+
+	bool WalkInPlaceTabController::getDisableHMD() {
+		return disableHMD;
 	}
 
 	float WalkInPlaceTabController::getHandWalkThreshold() {
@@ -304,7 +308,7 @@ namespace walkinplace {
 						cont2Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
 						cont2Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
 					}
-				} 
+				}
 				else if (info->deviceClass == vr::TrackedDeviceClass_GenericTracker) {
 					if (firstTracker) {
 						tracker1Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
@@ -374,9 +378,10 @@ namespace walkinplace {
 			entry.trackerThreshold_y = settings->value("trackerthreshold_y", 0.27).toFloat();
 			entry.trackerThreshold_xz = settings->value("trackerthreshold_xz", 0.27).toFloat();
 			entry.useTrackers = settings->value("useTrackers", false).toBool();
+			entry.disableHMD = settings->value("disableHMD", false).toBool();
 			entry.handJogThreshold = settings->value("handJog", 0.35).toFloat();
 			entry.handRunThreshold = settings->value("handRun", 1.7).toFloat();
-			entry.stepTime = settings->value("stepTime", 0.7).toDouble();
+			entry.stepTime = settings->value("stepTime", 0.5).toDouble();
 			entry.useAccuracyButton = settings->value("useAccuracyButton", 0).toInt();
 			//entry.hmdPitchDown = settings->value("hmdPitchDown", 20).toInt();
 			//entry.hmdPitchUp = settings->value("hmdPitchUp", 15).toInt();
@@ -414,6 +419,7 @@ namespace walkinplace {
 			settings->setValue("trackerthreshold_y", p.trackerThreshold_y);
 			settings->setValue("trackerthreshold_xz", p.trackerThreshold_xz);
 			settings->setValue("useTrackers", p.useTrackers);
+			settings->setValue("disableHMD", p.disableHMD);
 			settings->setValue("handJog", p.handJogThreshold);
 			settings->setValue("handRun", p.handRunThreshold);
 			settings->setValue("stepTime", p.stepTime);
@@ -467,6 +473,7 @@ namespace walkinplace {
 		profile->trackerThreshold_y = _trackerThreshold.v[1];
 		profile->trackerThreshold_xz = _trackerThreshold.v[0];
 		profile->useTrackers = useTrackers;
+		profile->disableHMD = disableHMD;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
 		profile->stepTime = (_stepIntegrateStepLimit / 1000);
@@ -495,6 +502,7 @@ namespace walkinplace {
 			_trackerThreshold.v[1] = profile.trackerThreshold_y;
 			_trackerThreshold.v[2] = profile.trackerThreshold_xz;
 			useTrackers = profile.useTrackers;
+			disableHMD = profile.disableHMD;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
 			_stepIntegrateStepLimit = profile.stepTime * 1000;
@@ -513,6 +521,7 @@ namespace walkinplace {
 			setHMDThreshold(profile.hmdThreshold_xz, profile.hmdThreshold_y);
 			setTrackerThreshold(profile.trackerThreshold_xz, profile.trackerThreshold_y);
 			setUseTrackers(profile.useTrackers);
+			setDisableHMD(profile.disableHMD);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
 			setStepTime(profile.stepTime);
@@ -577,6 +586,10 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setUseTrackers(bool value) {
 		useTrackers = value;
+	}
+
+	void WalkInPlaceTabController::setDisableHMD(bool value) {
+		disableHMD = value;
 	}
 
 	void WalkInPlaceTabController::setAccuracyButton(int buttonId) {
@@ -794,7 +807,7 @@ namespace walkinplace {
 				for (auto info : deviceInfos) {
 					if (latestDevicePoses[info->openvrId].bPoseIsValid) {
 						vr::ETrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(info->openvrId);
-						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
+						if (!disableHMD && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
 							//LOG(INFO) << "Detecting step";
 							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
 							auto poseWorldRot = tmpConj * pose.qRotation;
@@ -830,7 +843,7 @@ namespace walkinplace {
 							//LOG(INFO) << "HMD Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
 							//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
 
-							if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, roll, pitch)) { 
+							if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, roll, pitch)) {
 								if (!betaEnabled) {
 									peaksCount = 1;
 								}
@@ -910,20 +923,26 @@ namespace walkinplace {
 					}
 				}
 				trackerStepDetected = trackerStepDetected || !useTrackers;
-				if (!betaEnabled) {
-					if (peaksCount >= 1 && (trackerStepDetected) ) {
-						//&& _openvrDeviceStepPoseTracker[1] != 0 && _openvrDeviceStepPoseTracker[2] != 0 ) {
-						//&& (_openvrDeviceStepPoseTracker[1] != _openvrDeviceStepPoseTracker[2])) {
-						//this->setStepPoseDetected(true);
-						_stepPoseDetected = true;
-						_hasUnTouchedStepAxis = 2;
+				if (!disableHMD) {
+					if (!betaEnabled) {
+						if (peaksCount >= 1 && (trackerStepDetected)) {
+							//&& _openvrDeviceStepPoseTracker[1] != 0 && _openvrDeviceStepPoseTracker[2] != 0 ) {
+							//&& (_openvrDeviceStepPoseTracker[1] != _openvrDeviceStepPoseTracker[2])) {
+							//this->setStepPoseDetected(true);
+							_stepPoseDetected = true;
+							_hasUnTouchedStepAxis = 2;
+						}
+					}
+					else {
+						if (peaksCount >= stepPeaksToStart && (trackerStepDetected)) {
+							_stepPoseDetected = true;
+							_hasUnTouchedStepAxis = 2;
+						}
 					}
 				}
-				else {
-					if (peaksCount >= stepPeaksToStart && (trackerStepDetected)) {
-						_stepPoseDetected = true;
-						_hasUnTouchedStepAxis = 2;
-					}
+				else if (trackerStepDetected && useTrackers) {
+					_stepPoseDetected = true;
+					_hasUnTouchedStepAxis = 2;
 				}
 				if (!_stepPoseDetected && _hasUnTouchedStepAxis < 6) {
 					int deviceId = _controlUsedID;
@@ -942,57 +961,69 @@ namespace walkinplace {
 				bool axisStateChange = false;
 				bool oneTrackerStepping = false;
 				for (auto info : deviceInfos) {
-					if (info->deviceClass == vr::TrackedDeviceClass_HMD) {// || info->deviceClass == vr::TrackedDeviceClass_Controller) {
-						vr::ETrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(info->openvrId);
-						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
-							double roll = 0;
-							double pitch = 0;
+					vr::ETrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(info->openvrId);
+					if (!disableHMD && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
+						double roll = 0;
+						double pitch = 0;
 
-							vr::HmdVector3d_t poseWorldVel;// = vrmath::quaternionRotateVector(pose.qWorldFromDriverRotation, tmpConj, pose.vecVelocity, true);
-							poseWorldVel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-							poseWorldVel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-							poseWorldVel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
+						vr::HmdVector3d_t poseWorldVel;// = vrmath::quaternionRotateVector(pose.qWorldFromDriverRotation, tmpConj, pose.vecVelocity, true);
+						poseWorldVel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
+						poseWorldVel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
+						poseWorldVel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
 
-							//LOG(INFO) << "HMD In Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
+						//LOG(INFO) << "HMD In Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
 
-							if (!betaEnabled) {
-								if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, roll, pitch)) {
-									_stepIntegrateSteps = 0;
-									isWalking = true;
-									int velsign = poseWorldVel.v[1] > 0 ? 1 : -1;
-									int hmdsign = hmdLastYVel > 0 ? 1 : -1;
-									if (velsign != hmdsign) {
-										_timeLastStepPeak = now;
-										hmdLastYVel = poseWorldVel.v[1];
-									}
+						if (!betaEnabled) {
+							if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, roll, pitch)) {
+								_stepIntegrateSteps = 0;
+								isWalking = true;
+								int velsign = poseWorldVel.v[1] > 0 ? 1 : -1;
+								int hmdsign = hmdLastYVel > 0 ? 1 : -1;
+								if (velsign != hmdsign) {
+									_timeLastStepPeak = now;
+									hmdLastYVel = poseWorldVel.v[1];
 								}
 							}
-							/*else if (isShakingHead(poseWorldVel, _hmdThreshold))
-							{
-							_stepIntegrateSteps = 9999;
-							//LOG(INFO) << "HMD Rot: " << roll << "," << pitch;
-							}*/
 						}
-						else if (useTrackers && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
-
-							vr::HmdVector3d_t poseWorldVel;
-							poseWorldVel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-							poseWorldVel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-							poseWorldVel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-
-							if (upAndDownStepCheck(poseWorldVel, _trackerThreshold, 0, 0)) { 
-								trackerStepDetected = true;
-								oneTrackerStepping = true;
-								_timeLastTrackerStep = now;
-							} 
-						}
-						//else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-						//}
+						/*else if (isShakingHead(poseWorldVel, _hmdThreshold))
+						{
+						_stepIntegrateSteps = 9999;
+						//LOG(INFO) << "HMD Rot: " << roll << "," << pitch;
+						}*/
 					}
+					else if (useTrackers && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
+
+						vr::HmdVector3d_t poseWorldVel;
+						poseWorldVel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
+						poseWorldVel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
+						poseWorldVel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
+
+						if (upAndDownStepCheck(poseWorldVel, _trackerThreshold, 0, 0)) {
+							trackerStepDetected = true;
+							oneTrackerStepping = true;
+							_timeLastTrackerStep = now;
+							if (disableHMD && useTrackers) {
+								_stepIntegrateSteps = 0;
+								isWalking = true;
+							}
+						}
+					}
+					//else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+					//}
 				}
-				if ( useTrackers && (!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin*16 ) ) {
-					trackerStepDetected = false;
-					isWalking = false;
+				if (useTrackers) {
+					if (!disableHMD) {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin * 12)) {
+							trackerStepDetected = false;
+							isWalking = false;
+						}
+					}
+					else {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin * 2)) {
+							trackerStepDetected = false;
+							isWalking = false;
+						}
+					}
 				}
 				trackerStepDetected = trackerStepDetected || !useTrackers;
 				if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {

@@ -6,17 +6,18 @@ GroupBox {
     property string boxTitle: "Threshold, Accuracy, Time Config"
 
     property double hmdXZ : 0.27
-    property double hmdY : 0.27
-    property double trackerY : 0.3
-    property double trackerXZ : 0.3
+    property double hmdY : 0.17
+    property double trackerY : 0.12
+    property double trackerXZ : 0.27
     property int useAccuracyButton : 5
     property bool useButtonAsToggle : false
     property bool flipButtonUse : false
     property bool useTrackers : false
+    property bool disableHMD : false
     property double handWalk : 0.02
     property double handJog : 0.35
     property double handRun : 1.7
-    property double stepTime : 0.7
+    property double stepTime : 0.5
 
     property double thresholdStep : 0.01
     property double thresholdStepTime : 0.05
@@ -27,6 +28,7 @@ GroupBox {
     property var setHMDXZ: function(x) {}
     property var setHMDY: function(y) {}
     property var setUseTrackers: function(val) {}
+    property var setDisableHMD: function(val) {}
     property var setTrackerXZ: function(x) {}
     property var setTrackerY: function(y) {}
     property var setAccuracyButton: function(b) {}
@@ -48,6 +50,7 @@ GroupBox {
         useButtonAsToggleCheck.checked = useButtonAsToggle
         flipButtonUseCheck.checked = flipButtonUse
         useTrackersCheck.checked = useTrackers
+        disableHMDCheck.checked = disableHMD
         stepTimeInputField.text = stepTime.toFixed(2)
     }
 
@@ -314,20 +317,20 @@ GroupBox {
 
             MyText {
                 text: "Use Trackers?"
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: "Disable HMD?"
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: ""
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 160
-            }
-
-            MyText {
-                text: ""
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 230
-            }
-
-            MyText {
-                text: ""
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 230
             }    
         }
 
@@ -432,21 +435,25 @@ GroupBox {
 
             MyToggleButton {
                 id: useTrackersCheck
-                Layout.preferredWidth: 160
+                Layout.preferredWidth: 230
                 Layout.fillWidth: false
                 onCheckedChanged: {
                     setUseTrackers(checked)
                 }
-            }            
+            }  
 
-            MyText {
-                text: " "
+            MyToggleButton {
+                id: disableHMDCheck
                 Layout.preferredWidth: 220
+                Layout.fillWidth: false
+                onCheckedChanged: {
+                    setDisableHMD(checked)
+                }
             }
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 160
             }
         }
 
