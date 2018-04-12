@@ -4,10 +4,11 @@
 
 An OpenVR driver that applies virtual movement using a pedometer
 
-The OpenVR driver hooks into the HTC Vive lighthouse driver and tracks movement of the HMD and Vive Controllers. It then applies movement into the virtual envrionment.
+The OpenVR driver hooks into the lighthouse driver and tracks movement of the HMD and Controllers. It then applies movement into the virtual envrionment.
 
 # Current Games that Work Best with OpenVR-WalkInPlace
 
+- Skyrim VR
 - Fallout 4 VR
 - Arizona Sunshine
 - Onward
@@ -29,7 +30,6 @@ also activate teleport if you'd like.
 
 # Upcoming
 
-- Optional Beta Algorithm in UI and algorithm improvements
 - Auto Configure
 - Jumping support
 - Options for emulating other input methods
@@ -118,8 +118,6 @@ If you name a profile with the name "default" it will be the initially loaded pr
 1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
 2. Download Boost 1.63 Binaries (boost_1_65_1-msvc-14.0-64.exe)
 3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
-4. Open Developer Command Prompt enter `OpenVR-WalkInPlace/third-party/boost_1_65_1` and run bootstrap.bat
-5. then run `b2 toolset=msvc-14.0 address-model=64`
   
 ### Qt
 1. Goto https://download.qt.io/official_releases/qt/5.9/5.9.0/
@@ -145,7 +143,7 @@ If you name a profile with the name "default" it will be the initially loaded pr
 
 NOTE: Adjust the path the `msvc2017_64` folder in Qt to match your installation
 
-Then run the `windeployqt.bat` if your system doesn't find the exe update the batch to the absolute path
+Then run the `OpenVR-WalkInPlace\client_overlay\bin\windeployqt.bat` if your system doesn't find the exe update the batch to the absolute path
 in `{QT_INSTLATION_PATH}\5.9\msvc2017_64\bin\windeployqt.exe`
 
 ## Building
