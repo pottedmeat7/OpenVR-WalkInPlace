@@ -240,6 +240,10 @@ namespace walkinplace {
 		return handRunThreshold;
 	}
 
+	bool WalkInPlaceTabController::getScaleTouchWithSwing() {
+		return scaleSpeedWithSwing;
+	}
+
 	float WalkInPlaceTabController::getWalkTouch() {
 		return walkTouch;
 	}
@@ -345,7 +349,18 @@ namespace walkinplace {
 		vals.push_back(tracker2Vel.v[1]);
 		vals.push_back(tracker2Vel.v[2]);
 		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];
-		vals.push_back(_stepPoseDetected ? 1 : 0);
+		if (g_runPoseDetected) {
+			vals.push_back(3);
+		}
+		else if (g_jogPoseDetected) {
+			vals.push_back(2);
+		}
+		else if (_stepPoseDetected) {
+			vals.push_back(1);
+		}
+		else {
+			vals.push_back(0);
+		}
 		return vals;
 
 	}
@@ -381,6 +396,7 @@ namespace walkinplace {
 			entry.disableHMD = settings->value("disableHMD", false).toBool();
 			entry.handJogThreshold = settings->value("handJog", 0.35).toFloat();
 			entry.handRunThreshold = settings->value("handRun", 1.7).toFloat();
+			entry.scaleTouchWithSwing = settings->value("scaleTouchWithSwing", false).toBool();
 			entry.stepTime = settings->value("stepTime", 0.5).toDouble();
 			entry.useAccuracyButton = settings->value("useAccuracyButton", 0).toInt();
 			//entry.hmdPitchDown = settings->value("hmdPitchDown", 20).toInt();
@@ -476,6 +492,7 @@ namespace walkinplace {
 		profile->disableHMD = disableHMD;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
+		profile->scaleTouchWithSwing = scaleSpeedWithSwing;
 		profile->stepTime = (_stepIntegrateStepLimit / 1000);
 		profile->useAccuracyButton = useAccuracyButton;
 		//profile->hmdPitchDown = hmdPitchDown;
@@ -505,6 +522,7 @@ namespace walkinplace {
 			disableHMD = profile.disableHMD;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
+			scaleSpeedWithSwing = profile.scaleTouchWithSwing;
 			_stepIntegrateStepLimit = profile.stepTime * 1000;
 			useAccuracyButton = profile.useAccuracyButton;
 			//hmdPitchDown = profile.hmdPitchDown;
@@ -524,6 +542,7 @@ namespace walkinplace {
 			setDisableHMD(profile.disableHMD);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
+			setScaleTouchWithSwing(profile.scaleTouchWithSwing);
 			setStepTime(profile.stepTime);
 			setAccuracyButton(profile.useAccuracyButton);
 			setAccuracyButtonAsToggle(profile.useButtonAsToggle);
@@ -625,15 +644,15 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::updateAccuracyButtonState(uint32_t deviceId, bool firstController) {
+		if (firstController) {
+			g_isHoldingAccuracyButton = false;
+			g_isHoldingAccuracyButton1 = false;
+			g_isHoldingAccuracyButton2 = false;
+		}
 		if (deviceId >= 0) {
 			vr::VRControllerState_t state;
 			vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
 			//LOG(ERROR) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
-			if (firstController) {
-				g_isHoldingAccuracyButton = false;
-				g_isHoldingAccuracyButton1 = false;
-				g_isHoldingAccuracyButton2 = false;
-			}
 			switch (g_AccuracyButton) {
 			case vr::EVRButtonId::k_EButton_Grip:
 				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
@@ -780,6 +799,10 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setHandRunThreshold(float runThreshold) {
 		handRunThreshold = runThreshold;
+	}
+
+	void WalkInPlaceTabController::setScaleTouchWithSwing(bool val) {
+		scaleSpeedWithSwing = val;
 	}
 
 	void WalkInPlaceTabController::setGameStepType(int type) {
@@ -954,6 +977,7 @@ namespace walkinplace {
 					_teleportUnpressed = true;
 				}
 			}
+			_stepPoseDetected = _stepPoseDetected && accuracyButtonOnOrDisabled();
 			if (_stepPoseDetected) {
 				bool isWalking = false;
 				bool isJogging = false;
@@ -1028,31 +1052,33 @@ namespace walkinplace {
 				trackerStepDetected = trackerStepDetected || !useTrackers;
 				if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
 					//check if first controller is running / jogging
-					isRunning = isRunningStep(latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v);
+					float * hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v;
+					float * hand2Vel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v;
+					isRunning = isRunningStep(hand1Vel);
 					if (!isRunning) {
-						isJogging = isJoggingStep(latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v);
+						isJogging = isJoggingStep(hand1Vel);
 					}
 					if (!betaEnabled) {
 						//check if second controller is running / jogging
-						isRunning = isRunning || isRunningStep(latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v);
+						isRunning = isRunning || isRunningStep(hand2Vel);
 						if (!isRunning) {
-							isJogging = isJogging || isJoggingStep(latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v);
+							isJogging = isJogging || isJoggingStep(hand2Vel);
 						}
 					}
 					else {
-						isRunning = isRunning && isRunningStep(latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v);
+						isRunning = isRunning && isRunningStep(hand2Vel);
 						if (!isRunning) {
-							isJogging = isJogging && isJoggingStep(latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v);
+							isJogging = isJogging && isJoggingStep(hand2Vel);
 						}
 						if (isJogging || isRunning) {
-							int cont1Sign = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v[1] < 0 ? -1 : 1;
-							int cont2Sign = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v[1] < 0 ? -1 : 1;
+							int cont1Sign = hand1Vel[1] < 0 ? -1 : 1;
+							int cont2Sign = hand2Vel[1] < 0 ? -1 : 1;
 							if (cont1Sign != cont2Sign) {
 								int lastcont1sign = cont1LastYVel < 0 ? -1 : 1;
 								int lastcont2sign = cont2LastYVel < 0 ? -1 : 1;
 								if ((lastcont1sign != cont1Sign || lastcont2sign != cont2Sign)) {
-									cont1LastYVel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v[1];
-									cont2LastYVel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v[1];
+									cont1LastYVel = hand1Vel[1];
+									cont2LastYVel = hand2Vel[1];
 								}
 							}
 							else {
@@ -1094,25 +1120,27 @@ namespace walkinplace {
 						vr::VRControllerAxis_t axisState;
 						axisState.x = 0;
 						axisState.y = walkTouch;
+						if (scaleSpeedWithSwing) {
+							axisState.y = getScaledTouch(hand1Vel[1], hand2Vel[1]);
+						}
 						axisStateChange = axisStateChange || (isRunning && !g_runPoseDetected);
 						if (isRunning) {
-							axisState.y = runTouch;
+							if (!scaleSpeedWithSwing) {
+								axisState.y = runTouch;
+							}
 							g_runPoseDetected = true;
 						}
 						else if (isJogging) {
-							axisState.y = jogTouch;
+							if (!scaleSpeedWithSwing) {
+								axisState.y = jogTouch;
+							}
 							axisStateChange = axisStateChange || (!g_jogPoseDetected);
 							g_jogPoseDetected = true;
 						}
-						/*if (betaEnabled) {
-							if (!isRunning && !isJogging && isWalking) {
-								axisState.y = axisState.y * (((float)peaksCount) / stepPeaksFullSpeed);
-								if (axisState.y < minTouch) {
-									axisState.y = minTouch;
-								}
-							}
-						}*/
 						if (axisStateChange) {
+							if (axisState.y > 1) {
+								axisState.y = 1;
+							}
 							try {
 								applyAxisMovement(deviceId, axisState);
 								_hasUnTouchedStepAxis = 0;
@@ -1127,40 +1155,46 @@ namespace walkinplace {
 					}
 				}
 				if (gameType == 4) {
-					INPUT input[2];
-					input[0].type = INPUT_KEYBOARD;
-					input[0].ki.wVk = 0;
-					input[0].ki.wScan = MapVirtualKey(0x57, 0);
-					input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
-					input[0].ki.time = 0;
-					input[0].ki.dwExtraInfo = 0;
-					SendInput(1, input, sizeof(INPUT));
+					if (_teleportUnpressed) {
+						INPUT input[2];
+						input[0].type = INPUT_KEYBOARD;
+						input[0].ki.wVk = 0;
+						input[0].ki.wScan = MapVirtualKey(0x57, 0);
+						input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+						input[0].ki.time = 0;
+						input[0].ki.dwExtraInfo = 0;
+						SendInput(1, input, sizeof(INPUT));
 
-					input[0].type = INPUT_KEYBOARD;
-					input[0].ki.wVk = 0;
-					input[0].ki.wScan = MapVirtualKey(0x57, 0);
-					input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-					input[0].ki.time = 0;
-					input[0].ki.dwExtraInfo = 0;
-					SendInput(2, input, sizeof(INPUT));
+						/*input[0].type = INPUT_KEYBOARD;
+						input[0].ki.wVk = 0;
+						input[0].ki.wScan = MapVirtualKey(0x57, 0);
+						input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+						input[0].ki.time = 0;
+						input[0].ki.dwExtraInfo = 0;
+						SendInput(2, input, sizeof(INPUT));*/
+						_teleportUnpressed = false;
+					}
 				}
 				else if (gameType == 5) {
-					INPUT input[2];
-					input[0].type = INPUT_KEYBOARD;
-					input[0].ki.wVk = 0;
-					input[0].ki.wScan = MapVirtualKey(0x26, 0);
-					input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
-					input[0].ki.time = 0;
-					input[0].ki.dwExtraInfo = 0;
-					SendInput(1, input, sizeof(INPUT));
+					if (_teleportUnpressed) {
+						INPUT input[2];
+						input[0].type = INPUT_KEYBOARD;
+						input[0].ki.wVk = 0;
+						input[0].ki.wScan = MapVirtualKey(0x26, 0);
+						input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+						input[0].ki.time = 0;
+						input[0].ki.dwExtraInfo = 0;
+						SendInput(1, input, sizeof(INPUT));
 
-					input[0].type = INPUT_KEYBOARD;
-					input[0].ki.wVk = 0;
-					input[0].ki.wScan = MapVirtualKey(0x26, 0);
-					input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-					input[0].ki.time = 0;
-					input[0].ki.dwExtraInfo = 0;
-					SendInput(2, input, sizeof(INPUT));
+						/*input[0].type = INPUT_KEYBOARD;
+						input[0].ki.wVk = 0;
+						input[0].ki.wScan = MapVirtualKey(0x26, 0);
+						input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+						input[0].ki.time = 0;
+						input[0].ki.dwExtraInfo = 0;
+						SendInput(2, input, sizeof(INPUT));*/
+					} 
+					_teleportUnpressed = false;
 				}
 				if (!accuracyButtonOnOrDisabled() || (useTrackers && !trackerStepDetected) || _stepIntegrateSteps >= (_stepIntegrateStepLimit)) {
 					_stepPoseDetected = false;
@@ -1233,7 +1267,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState) {
 		vrwalkinplace::VRWalkInPlace vrwalkinplace;
 		vrwalkinplace.connect();
-		//vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis0, 0.0);
+		vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis0, 0.0);
 		vrwalkinplace.openvrAxisEvent(deviceId, 0, axisState);
 		if (gameType != 2) {
 			if (g_runPoseDetected) {
@@ -1292,15 +1326,33 @@ namespace walkinplace {
 	}
 
 	bool WalkInPlaceTabController::isJoggingStep(float * vel) {
-		float magVel = std::abs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-		return (std::abs(vel[1]) > std::abs(vel[0]) && std::abs(vel[1]) > std::abs(vel[2]))
+		float magVel = std::fabs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+		return (std::fabs(vel[1]) > std::fabs(vel[0]) && std::fabs(vel[1]) > std::fabs(vel[2]))
 			&& (magVel > handJogThreshold);
 	}
 
 	bool WalkInPlaceTabController::isRunningStep(float * vel) {
-		float magVel = std::abs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-		return (std::abs(vel[1]) > std::abs(vel[0]) && std::abs(vel[1]) > std::abs(vel[2]))
+		float magVel = std::fabs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+		return (std::fabs(vel[1]) > std::fabs(vel[0]) && std::fabs(vel[1]) > std::fabs(vel[2]))
 			&& (magVel > handRunThreshold);
+	}
+
+	float WalkInPlaceTabController::getScaledTouch(float hand1Y, float hand2Y) {
+		float temp = std::fabs(hand1Y) > std::fabs(hand2Y) ? std::fabs(hand1Y) : std::fabs(hand2Y);
+		float scaledTouch = 1.0;
+		if (g_runPoseDetected) {
+			scaledTouch = (temp / handRunThreshold) * runTouch;
+			scaledTouch = scaledTouch < runTouch ? runTouch : scaledTouch;
+		}
+		else if (g_jogPoseDetected) {
+			scaledTouch = jogTouch + ((temp / handRunThreshold) * (runTouch - jogTouch));
+			scaledTouch = scaledTouch < jogTouch ? jogTouch : scaledTouch;
+		}
+		else {
+			scaledTouch = walkTouch + ((temp / handJogThreshold) * (jogTouch - walkTouch));
+			scaledTouch = scaledTouch < walkTouch ? walkTouch : scaledTouch;
+		}
+		return scaledTouch > 1 ? 1 : scaledTouch;
 	}
 
 } // namespace walkinplace

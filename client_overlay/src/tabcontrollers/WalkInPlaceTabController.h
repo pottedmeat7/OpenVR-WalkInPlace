@@ -24,15 +24,16 @@ struct WalkInPlaceProfile {
 	bool useButtonAsToggle = false;
 	bool useTrackers = false;
 	bool disableHMD = false;
+	bool scaleTouchWithSwing = false;
 	int flipButtonUse = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
 	double stepTime = 0.5;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.50;
-	float handRunThreshold = 1.70;
-	float walkTouch = 0.6;
-	float jogTouch = 0.77;
+	float handJogThreshold = 0.85;
+	float handRunThreshold = 2.0;
+	float walkTouch = 0.35;
+	float jogTouch = 0.87;
 	float runTouch = 1.0;
 	float hmdThreshold_y = 0.17;
 	float hmdThreshold_xz = 0.27;
@@ -91,13 +92,14 @@ private:
 	bool useTrackers = false;
 	bool disableHMD = false;
 	bool trackerStepDetected = false;
+	bool scaleSpeedWithSwing = false;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.50;
-	float handRunThreshold = 1.70;
-	float walkTouch = 0.6;
-	float jogTouch = 0.77;
+	float handJogThreshold = 0.85;
+	float handRunThreshold = 2.0;
+	float walkTouch = 0.35;
+	float jogTouch = 0.87;
 	float runTouch = 1.0;
 	float minTouch = 0.45;
 	vr::VROverlayHandle_t overlayHandle;
@@ -169,6 +171,7 @@ public:
 	Q_INVOKABLE float getHandWalkThreshold();
 	Q_INVOKABLE float getHandJogThreshold();
 	Q_INVOKABLE float getHandRunThreshold();
+	Q_INVOKABLE bool getScaleTouchWithSwing();
 	Q_INVOKABLE float getWalkTouch();
 	Q_INVOKABLE float getJogTouch();
 	Q_INVOKABLE float getRunTouch();
@@ -201,6 +204,7 @@ public slots:
 	void setHandWalkThreshold(float walkThreshold);
 	void setHandJogThreshold(float jogThreshold);
 	void setHandRunThreshold(float runThreshold);
+	void setScaleTouchWithSwing(bool val);
 	void setWalkTouch(float value);
 	void setJogTouch(float value);
 	void setRunTouch(float value);
@@ -213,6 +217,7 @@ public slots:
 	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
 	bool isJoggingStep(float * vel);
 	bool isRunningStep(float * vel);
+	float getScaledTouch(float hand1Y, float hand2Y);
 
 	void stopMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);

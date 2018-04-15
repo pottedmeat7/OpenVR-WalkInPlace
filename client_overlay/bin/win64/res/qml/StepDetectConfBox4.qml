@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Step Touch Pad Conf"
 
-    property double walkTouch : 0.6
+    property double walkTouch : 0.35
     property double jogTouch : 0.9
     property double runTouch : 1.0
 
@@ -94,7 +94,7 @@ GroupBox {
 
             MyTextField {
                 id: walkTouchInputField
-                text: "0.6"
+                text: "0.35"
                 keyBoardUID: 120
                 Layout.preferredWidth: 140
                 horizontalAlignment: Text.AlignHCenter

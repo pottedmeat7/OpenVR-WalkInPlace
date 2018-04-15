@@ -31,7 +31,6 @@ also activate teleport if you'd like.
 # Upcoming
 
 - Auto Configure
-- Jumping support
 - Options for emulating other input methods
 - Fixes for teleport games
 
@@ -46,7 +45,7 @@ If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-d
 ## Configuration Examples
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
-*These are settings which allow for all speeds (walk/jog/run) for Fallout 4 VR, this may cause walking when just nodding, to increase accuracy you can use trackers (if you have them), an "Button for movement" or Disable "Walk Touch" (set to 0) and use both the HMD and controller threshold for jogging.*
+*These are settings which allow for all speeds (walk/jog/run) in both Skyrim VR and FO4VR, this may cause walking when just nodding, to increase accuracy you can use trackers (if you have them), an "Button for movement" or Disable "Walk Touch" (set to 0) and use both the HMD and controller threshold for jogging.*
 
 ### WalkInPlace Overlay
 Just "Enable WIP" in the UI.
@@ -78,7 +77,7 @@ Enables/Disable trackers. This will use both the HMD thresholds and tracker thre
 This will disable the tracking of the HMD movement, and will only utilize the thresholds of the tracker movement. 
 You must have both "Use Trackers?" Checked as well as "Disable HMD?" checked. 
 
-### Hand Jog Y / Run Y
+### Arm Swing Jog / Arm Swing Run
 These values are for the controller Up and Down movement of the arms. 
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
@@ -110,13 +109,18 @@ If you want to update a profile with new settings you need to select the profile
 
 If you name a profile with the name "default" it will be the initially loaded profile once you "load profiles".
 
+## Graph Page
+
+The graph page will show you realtime values from the HMD, controllers and trackers.
+If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.
+
 
 
 ## Setting up To Re-Build the project from Source
-* You do not need this if you just want to use the WIP overlay*
+*You do not need this if you just want to use the WIP overlay*
 ### Boost
 1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
-2. Download Boost 1.63 Binaries (boost_1_65_1-msvc-14.0-64.exe)
+2. Download Boost 1.65 Binaries (boost_1_65_1-msvc-14.0-64.exe)
 3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
   
 ### Qt

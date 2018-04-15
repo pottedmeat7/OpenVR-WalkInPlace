@@ -80,23 +80,25 @@ GroupBox {
                 Layout.preferredWidth: 230
             }
 
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 160
-            }
 
             MyText {
-                text: "Hand Jog Y:"
+                text: ""
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 160
+            }    
+            
+            MyText {
+                text: "Arm Swing Jog:"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Hand Run Y:"
+                text: "Arm Swing Run:"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }    
+
         }
 
         GridLayout {
@@ -198,10 +200,12 @@ GroupBox {
                 }
             }
 
+
             MyText {
-                text: " "
+                text: ""
+                horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 160
-            }
+            }    
 
             MyPushButton2 {
                 id: handJogMinusButton

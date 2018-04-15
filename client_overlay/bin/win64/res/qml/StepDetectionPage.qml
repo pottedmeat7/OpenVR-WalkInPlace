@@ -101,14 +101,6 @@ MyMainViewPage {
                     }
 
 
-                    MyToggleButton {
-                        id: enableBeta
-                        text: "Beta Detection?"
-                        Layout.fillWidth: false
-                        onCheckedChanged: {
-                            WalkInPlaceTabController.enableBeta(checked)
-                        }
-                    }
                 }
             }
         }

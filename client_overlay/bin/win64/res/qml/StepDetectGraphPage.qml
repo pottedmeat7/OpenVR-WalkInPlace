@@ -125,6 +125,7 @@ MyStackViewPage {
                         ctx.fillStyle = "#222222"
                         ctx.fillRect(0, topY, rectWidth, rectHeight);  
                         ctx.fillStyle = "#FFFFFF"
+                        ctx.fillText("HMD", 650, 37);
                         ctx.fillText("X", 725, 37);
                         ctx.fillText("Y", 775, 37);
                         ctx.fillText("Z", 825, 37); 
@@ -160,9 +161,17 @@ MyStackViewPage {
                         var lastHMDZPoint = rectHeight/2 + topY
                         var lastX = topX;
                         for(var x=topX; x<rectWidth; x+=period) {
-                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] == 1) {
+                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] >= 1) {
                                 ctx.beginPath();  
-                                ctx.strokeStyle = "#DDDD00";
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
+                                    ctx.strokeStyle = "#DDDD00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
+                                    ctx.strokeStyle = "#FFBB00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
+                                    ctx.strokeStyle = "#FF3300";
+                                }
                                 ctx.lineWidth = 1;
                                 ctx.moveTo(x,topY);
                                 ctx.lineTo(x,rectHeight+topY);
@@ -247,6 +256,7 @@ MyStackViewPage {
                         ctx.fillStyle = "#222222"
                         ctx.fillRect(0, topY, rectWidth, rectHeight);     
                         ctx.fillStyle = "#FFFFFF"
+                        ctx.fillText("Tracker", 203, 37);
                         ctx.fillText("X1", 325, 37);
                         ctx.fillText("Y1", 375, 37);
                         ctx.fillText("Z1", 425, 37); 
@@ -294,9 +304,17 @@ MyStackViewPage {
                         var lasttracker2ZPoint = rectHeight/2 + topY
                         var lastX = topX;
                         for(var x=topX; x<rectWidth; x+=period) {
-                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] == 1) {
+                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] >= 1) {
                                 ctx.beginPath();  
-                                ctx.strokeStyle = "#DDDD00";
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
+                                    ctx.strokeStyle = "#DDDD00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
+                                    ctx.strokeStyle = "#FFBB00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
+                                    ctx.strokeStyle = "#FF3300";
+                                }
                                 ctx.lineWidth = 1;
                                 ctx.moveTo(x,topY);
                                 ctx.lineTo(x,rectHeight+topY);
@@ -410,24 +428,25 @@ MyStackViewPage {
                         ctx.fillStyle = "#222222"
                         ctx.fillRect(0, topY, rectWidth, rectHeight);     
                         ctx.fillStyle = "#FFFFFF"
-                        ctx.fillText("X1", 125, 37);
-                        ctx.fillText("Y1", 175, 37);
-                        ctx.fillText("Z1", 225, 37); 
-                        ctx.fillText("X2", 275, 37);
-                        ctx.fillText("Y2", 325, 37);
-                        ctx.fillText("Z2", 375, 37); 
+                        ctx.fillText("Hand", 105, 37);
+                        ctx.fillText("X1", 175, 37);
+                        ctx.fillText("Y1", 225, 37);
+                        ctx.fillText("Z1", 275, 37); 
+                        ctx.fillText("X2", 325, 37);
+                        ctx.fillText("Y2", 375, 37);
+                        ctx.fillText("Z2", 425, 37); 
                         ctx.fillStyle = "#DD0000"
-                        ctx.fillRect(100,30,20,20);   
-                        ctx.fillStyle = "#00DD00"
                         ctx.fillRect(150,30,20,20);   
+                        ctx.fillStyle = "#00DD00"
+                        ctx.fillRect(200,30,20,20);   
                         ctx.fillStyle = "#0000DD"
-                        ctx.fillRect(200,30,20,20); 
+                        ctx.fillRect(250,30,20,20); 
                         ctx.fillStyle = "#DD00DD"
-                        ctx.fillRect(250,30,20,20);   
-                        ctx.fillStyle = "#00DDDD"
                         ctx.fillRect(300,30,20,20);   
+                        ctx.fillStyle = "#00DDDD"
+                        ctx.fillRect(350,30,20,20);   
                         ctx.fillStyle = "#FF55FF"
-                        ctx.fillRect(350,30,20,20);    
+                        ctx.fillRect(400,30,20,20);    
                         var yTicks = Math.ceil((contPlotMaxPoint-contPlotMinPoint)/resolution);
                         var crossedZeroLine = false
                         var valToCrossZero = contPlotMaxPoint
@@ -457,9 +476,17 @@ MyStackViewPage {
                         var lastcont2ZPoint = rectHeight/2 + topY
                         var lastX = topX;
                         for(var x=topX; x<rectWidth; x+=period) {
-                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] == 1) {
+                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] >= 1) {
                                 ctx.beginPath();  
-                                ctx.strokeStyle = "#DDDD00";
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
+                                    ctx.strokeStyle = "#DDDD00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
+                                    ctx.strokeStyle = "#FFBB00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
+                                    ctx.strokeStyle = "#FF3300";
+                                }
                                 ctx.lineWidth = 1;
                                 ctx.moveTo(x,topY);
                                 ctx.lineTo(x,rectHeight+topY);
@@ -782,13 +809,9 @@ MyStackViewPage {
                     tracker2ZPoints.push(velZ);
                 }
                 if ( velVals.length % 3 == 1 ) {
-                    stepDetected = velVals[velVals.length-1] == 1;
 
-                    if ( stepDetected ) {
-                        stepDetects.push(1);
-                    } else {
-                        stepDetects.push(0);            
-                    }
+                    stepDetects.push(velVals[velVals.length-1]);
+
                     if ( stepDetects.length > hmdCanvas.seconds*hmdCanvas.sections ) {
                         stepDetects.shift();
                     }
