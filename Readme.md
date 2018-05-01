@@ -67,6 +67,8 @@ The Y value is the Up and Down movement of your head to trigger a step, in order
 
 The XZ value is the Side to Side movement that will disable triggering a step (if over the threshold), in order to trigger a step the HMD values have to be less than the XZ threshold.
 
+The HMD Y values have to be greater then the HMD XZ values a in order to take a step as well as both Y and XZ meet the threshold.
+
 ### Tracker Thresholds
 These values are functionality the same as the HMD values except from a tracker device. 
 
