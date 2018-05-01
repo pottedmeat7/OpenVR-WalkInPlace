@@ -13,6 +13,7 @@ class IVRServerDriverHost004Hooks : public InterfaceHooks {
 public:
 	typedef bool(*trackedDeviceAdded_t)(void*, const char*, vr::ETrackedDeviceClass, void*);
 	typedef void(*trackedDevicePoseUpdated_t)(void*, uint32_t, const vr::DriverPose_t&, uint32_t);
+	typedef void(*trackedDevicePoseUpdated_t)(void*, uint32_t, const vr::DriverPose_t&, uint32_t);
 	typedef void(*trackedDeviceButtonPressed_t)(void*, uint32_t, vr::EVRButtonId, double);
 	typedef void(*trackedDeviceButtonUnpressed_t)(void*, uint32_t, vr::EVRButtonId, double);
 	typedef void(*trackedDeviceButtonTouched_t)(void*, uint32_t, vr::EVRButtonId, double);

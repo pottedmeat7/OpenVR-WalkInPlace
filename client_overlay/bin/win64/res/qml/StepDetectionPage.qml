@@ -92,7 +92,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 399
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["1st Controller", "2nd Controller", "Both Controllers"]
+                        model: ["1st Controller", "2nd Controller", "Either Controller"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setControlSelect(currentIndex)                        
@@ -166,6 +166,10 @@ MyMainViewPage {
             setAccuracyButtonFlip: function(val) {
                 WalkInPlaceTabController.setAccuracyButtonFlip(val)
                 flipButtonUse = val
+                updateGUI()    
+            }
+            setAccuracyButtonControlSelect: function(c) {
+                WalkInPlaceTabController.setAccuracyButtonControlSelect(c)
                 updateGUI()    
             }
             updateValues: function() {
@@ -251,7 +255,7 @@ MyMainViewPage {
                 MyPushButton {
                     id: walkInPlaceDeleteProfileButton
                     enabled: false
-                    Layout.preferredWidth: 150
+                    Layout.preferredWidth: 180
                     text: "Delete Profile"
                     onClicked: {
                         if (walkInPlaceProfileComboBox.currentIndex > 0) {
@@ -382,7 +386,7 @@ MyMainViewPage {
         walkInPlaceProfileComboBox.currentIndex = 0
         if ( defaultFound >= 0 ) {
             WalkInPlaceTabController.applyWalkInPlaceProfile(defaultFound);
-            walkInPlaceProfileComboBox.currentIndex = defaultFound
+            walkInPlaceProfileComboBox.currentIndex = defaultFound+1
             updateInfo()
         }
     }

@@ -18,6 +18,7 @@ enum class RequestType : uint32_t {
 	IPC_ClientDisconnect,
 	IPC_Ping,
 
+	OpenVR_PoseUpdate,
 	OpenVR_ButtonEvent,
 	OpenVR_AxisEvent,
 	OpenVR_DeviceAdded,
@@ -75,6 +76,11 @@ struct Request_IPC_Ping {
 	uint64_t nonce;
 };
 
+
+struct Request_OpenVR_PoseUpdate {
+	uint32_t deviceId;
+	bool flipYaw;
+};
 
 #define REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT 12
 
@@ -151,6 +157,7 @@ struct Request {
 		Request_IPC_ClientConnect ipc_ClientConnect;
 		Request_IPC_ClientDisconnect ipc_ClientDisconnect;
 		Request_IPC_Ping ipc_Ping;
+		Request_OpenVR_PoseUpdate ipc_PoseUpdate;
 		Request_OpenVR_ButtonEvent ipc_ButtonEvent;
 		Request_OpenVR_AxisEvent ipc_AxisEvent;
 		Request_OpenVR_DeviceAdded ipc_DeviceAdded;

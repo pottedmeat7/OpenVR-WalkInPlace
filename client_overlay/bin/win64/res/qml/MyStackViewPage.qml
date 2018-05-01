@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.2
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 Rectangle {
-    color: "#234f36"
+    color: "#277650"
     width: 1300
     height: 1000
 

@@ -40,20 +40,23 @@ GroupBox {
             columns: 6
 
             MyText {
-                text: "Walk Touch:"
+                text: "Touch Walk Value"
                 horizontalAlignment: Text.AlignHLeft
+                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Jog Touch:"
+                text: "Touch Jog Value"
                 horizontalAlignment: Text.AlignHCenter
+                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Run Touch:"
+                text: "Touch Run Value"
                 horizontalAlignment: Text.AlignHCenter
+                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 

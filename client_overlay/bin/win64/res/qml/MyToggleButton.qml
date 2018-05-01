@@ -19,7 +19,7 @@ CheckBox {
 			height: 38
 			x: (parent.width - width) / 2
 			y: (parent.height - height) / 2
-			source: "image://default/check/#265a32"
+			source: "image://default/check/#004021"
 			sourceSize.width: width
 			sourceSize.height: height
 			visible: parent.parent.checked
@@ -35,7 +35,7 @@ CheckBox {
 	}
 
 	background: Rectangle {
-		color: "#265a32"
+		color: "#004021"
         opacity: parent.activeFocus ? 1.0 : 0.0
     }
 

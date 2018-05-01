@@ -24,6 +24,13 @@ ServerDriver::~ServerDriver() {
 }
 
 
+bool ServerDriver::hooksTrackedDevicePoseUpdated(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::DriverPose_t& newPose, uint32_t& unPoseStructSize) {
+	if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
+		return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handlePoseUpdate(unWhichDevice, newPose, unPoseStructSize);
+	}
+	return true;
+}
+
 bool ServerDriver::hooksTrackedDeviceButtonPressed(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset) {
 	LOG(TRACE) << "ServerDriver::hooksTrackedDeviceButtonPressed(" << serverDriverHost << ", " << version << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
 	if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
@@ -315,6 +322,13 @@ void ServerDriver::_trackedDeviceActivated(uint32_t deviceId, VirtualDeviceDrive
 
 void ServerDriver::_trackedDeviceDeactivated(uint32_t deviceId) {
 	m_openvrIdToVirtualDeviceMap[deviceId] = nullptr;
+}
+
+
+void ServerDriver::openvr_poseUpdate(uint32_t unWhichDevice, bool flipYaw, int64_t timestamp) {
+		if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
+			_openvrIdToDeviceManipulationHandleMap[unWhichDevice]->setFlipYaw(flipYaw);
+		}
 }
 
 void ServerDriver::openvr_buttonEvent(uint32_t unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {	

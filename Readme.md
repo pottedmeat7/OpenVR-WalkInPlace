@@ -119,9 +119,11 @@ If you have WIP enabled the graph page will display vertical lines yellow for wa
 ## Setting up To Re-Build the project from Source
 *You do not need this if you just want to use the WIP overlay*
 ### Boost
-1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
-2. Download Boost 1.65 Binaries (boost_1_65_1-msvc-14.0-64.exe)
-3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
+1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.67.0/
+2. Download Boost 1.67 Binaries (boost_1_67_0-msvc-14.1-64.exe)
+3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_67_0`
+4. Open vs2017 Native Tools Command Prompt enter `OpenVR-WalkInPlace/third-party/boost_1_67_0` and run bootstrap.bat	
+5. then run `b2 toolset=msvc-14.0 address-model=64`
   
 ### Qt
 1. Goto https://download.qt.io/official_releases/qt/5.9/5.9.0/

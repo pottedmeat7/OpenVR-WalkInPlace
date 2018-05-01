@@ -230,6 +230,17 @@ namespace vrwalkinplace {
 		}
 	}
 
+	void VRWalkInPlace::openvrUpdatePose(uint32_t deviceId, bool flipYaw) {
+		if (_ipcServerQueue) {
+			ipc::Request message(ipc::RequestType::OpenVR_PoseUpdate);
+			message.msg.ipc_PoseUpdate.deviceId = deviceId;
+			message.msg.ipc_PoseUpdate.flipYaw = flipYaw;
+		}
+		else {
+			throw vrwalkinplace_connectionerror("No active connection.");
+		}
+	}
+
 	void VRWalkInPlace::openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_ButtonEvent);

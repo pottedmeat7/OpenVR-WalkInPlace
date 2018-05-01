@@ -12,7 +12,6 @@
 // application namespace
 namespace walkinplace {
 
-
 	WalkInPlaceTabController::~WalkInPlaceTabController() {
 		if (identifyThread.joinable()) {
 			identifyThread.join();
@@ -182,6 +181,10 @@ namespace walkinplace {
 
 	int WalkInPlaceTabController::getControlSelect() {
 		return controlSelect;
+	}
+
+	int WalkInPlaceTabController::getAccuracyButtonControlSelect() {
+		return buttonControlSelect;
 	}
 
 	int WalkInPlaceTabController::getAccuracyButton() {
@@ -388,6 +391,7 @@ namespace walkinplace {
 			entry.stepDetectionEnabled = settings->value("stepDetectionEnabled", false).toBool();
 			entry.gameType = settings->value("gameType", 0).toInt();
 			entry.controlSelect = settings->value("controlSelect", 2).toInt();
+			entry.buttonControlSelect = settings->value("buttonControlSelect", 2).toInt();
 			entry.hmdThreshold_y = settings->value("hmdthreshold_y", 0.27).toFloat();
 			entry.hmdThreshold_xz = settings->value("hmdthreshold_xz", 0.27).toFloat();
 			entry.trackerThreshold_y = settings->value("trackerthreshold_y", 0.27).toFloat();
@@ -430,6 +434,7 @@ namespace walkinplace {
 			settings->setValue("stepDetectionEnabled", p.stepDetectionEnabled);
 			settings->setValue("gameType", p.gameType);
 			settings->setValue("controlSelect", p.controlSelect);
+			settings->setValue("buttonControlSelect", p.buttonControlSelect);
 			settings->setValue("hmdthreshold_y", p.hmdThreshold_y);
 			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
 			settings->setValue("trackerthreshold_y", p.trackerThreshold_y);
@@ -484,6 +489,7 @@ namespace walkinplace {
 		profile->stepDetectionEnabled = isStepDetectionEnabled();
 		profile->gameType = gameType;
 		profile->controlSelect = controlSelect;
+		profile->buttonControlSelect = buttonControlSelect;
 		profile->hmdThreshold_y = _hmdThreshold.v[1];
 		profile->hmdThreshold_xz = _hmdThreshold.v[0];
 		profile->trackerThreshold_y = _trackerThreshold.v[1];
@@ -512,6 +518,7 @@ namespace walkinplace {
 			auto& profile = walkInPlaceProfiles[index];
 			gameType = profile.gameType;
 			controlSelect = profile.controlSelect;
+			buttonControlSelect = profile.buttonControlSelect;
 			_hmdThreshold.v[0] = profile.hmdThreshold_xz;
 			_hmdThreshold.v[1] = profile.hmdThreshold_y;
 			_hmdThreshold.v[2] = profile.hmdThreshold_xz;
@@ -536,6 +543,7 @@ namespace walkinplace {
 			enableStepDetection(profile.stepDetectionEnabled);
 			setGameStepType(profile.gameType);
 			setControlSelect(profile.controlSelect);
+			setAccuracyButtonControlSelect(profile.buttonControlSelect);
 			setHMDThreshold(profile.hmdThreshold_xz, profile.hmdThreshold_y);
 			setTrackerThreshold(profile.trackerThreshold_xz, profile.trackerThreshold_y);
 			setUseTrackers(profile.useTrackers);
@@ -644,138 +652,43 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::updateAccuracyButtonState(uint32_t deviceId, bool firstController) {
-		if (firstController) {
-			g_isHoldingAccuracyButton = false;
-			g_isHoldingAccuracyButton1 = false;
-			g_isHoldingAccuracyButton2 = false;
-		}
-		if (deviceId >= 0) {
+		if (deviceId >= 0 && (buttonControlSelect >= 2 || _controllerDeviceIds[buttonControlSelect] == deviceId)) {
 			vr::VRControllerState_t state;
 			vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
 			//LOG(ERROR) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+			bool isHoldingButton = false;
 			switch (g_AccuracyButton) {
 			case vr::EVRButtonId::k_EButton_Grip:
 				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-					if (g_useButtonAsToggle) {
-						if (g_buttonToggled) {
-							if (firstController) {
-								g_isHoldingAccuracyButton1 = !g_isHoldingAccuracyButton1;
-							}
-							else {
-								g_isHoldingAccuracyButton2 = !g_isHoldingAccuracyButton2;
-							}
-							g_buttonToggled = false;
-						}
-					}
-					else {
-						if (firstController) {
-							g_isHoldingAccuracyButton1 = true;
-						}
-						else {
-							g_isHoldingAccuracyButton2 = true;
-						}
-					}
+					isHoldingButton = true;
 				}
 				break;
 			case vr::EVRButtonId::k_EButton_Axis0:
 				if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-					if (g_useButtonAsToggle) {
-						if (g_buttonToggled) {
-							if (firstController) {
-								g_isHoldingAccuracyButton1 = !g_isHoldingAccuracyButton1;
-							}
-							else {
-								g_isHoldingAccuracyButton2 = !g_isHoldingAccuracyButton2;
-							}
-							g_buttonToggled = false;
-						}
-					}
-					else {
-						if (firstController) {
-							g_isHoldingAccuracyButton1 = true;
-						}
-						else {
-							g_isHoldingAccuracyButton2 = true;
-						}
-					}
+					isHoldingButton = true;
 				}
 				break;
 			case vr::EVRButtonId::k_EButton_A:
 				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_A)) {
-					if (g_useButtonAsToggle) {
-						if (g_buttonToggled) {
-							if (firstController) {
-								g_isHoldingAccuracyButton1 = !g_isHoldingAccuracyButton1;
-							}
-							else {
-								g_isHoldingAccuracyButton2 = !g_isHoldingAccuracyButton2;
-							}
-							g_buttonToggled = false;
-						}
-					}
-					else {
-						if (firstController) {
-							g_isHoldingAccuracyButton1 = true;
-						}
-						else {
-							g_isHoldingAccuracyButton2 = true;
-						}
-					}
+					isHoldingButton = true;
 				}
 				break;
 			case vr::EVRButtonId::k_EButton_Axis1:
 				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
-					if (g_useButtonAsToggle) {
-						if (g_buttonToggled) {
-							if (firstController) {
-								g_isHoldingAccuracyButton1 = !g_isHoldingAccuracyButton1;
-							}
-							else {
-								g_isHoldingAccuracyButton2 = !g_isHoldingAccuracyButton2;
-							}
-							g_buttonToggled = false;
-						}
-					}
-					else {
-						if (firstController) {
-							g_isHoldingAccuracyButton1 = true;
-						}
-						else {
-							g_isHoldingAccuracyButton2 = true;
-						}
-					}
+					isHoldingButton = true;
 				}
 				break;
 			case vr::EVRButtonId::k_EButton_ApplicationMenu:
 				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-					if (g_useButtonAsToggle) {
-						if (g_buttonToggled) {
-							if (firstController) {
-								g_isHoldingAccuracyButton1 = !g_isHoldingAccuracyButton1;
-							}
-							else {
-								g_isHoldingAccuracyButton2 = !g_isHoldingAccuracyButton2;
-							}
-							g_buttonToggled = false;
-						}
-					}
-					else {
-						if (firstController) {
-							g_isHoldingAccuracyButton1 = true;
-						}
-						else {
-							g_isHoldingAccuracyButton2 = true;
-						}
-					}
+					isHoldingButton = true;
 				}
 				break;
 			default:
 				break;
 			}
-			if (!firstController && !g_isHoldingAccuracyButton1 && !g_isHoldingAccuracyButton2) {
-				g_buttonToggled = true;
-			}
-			if (!firstController && (g_isHoldingAccuracyButton1 || g_isHoldingAccuracyButton2)) {
+			if ((buttonControlSelect == 0 && firstController && isHoldingButton) || 
+				(buttonControlSelect == 1 && !firstController && isHoldingButton ||
+				(buttonControlSelect >= 2 && isHoldingButton))) {
 				g_isHoldingAccuracyButton = true;
 			}
 		}
@@ -811,7 +724,13 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setControlSelect(int control) {
 		controlSelect = control;
-		_controlUsedID = _controllerDeviceIds[control];
+		if (_controlUsedID < 2) {
+			_controlUsedID = _controllerDeviceIds[control];
+		}
+	}
+
+	void WalkInPlaceTabController::setAccuracyButtonControlSelect(int control) {
+		buttonControlSelect = control;
 	}
 
 	void WalkInPlaceTabController::applyStepPoseDetect() {
@@ -822,6 +741,9 @@ namespace walkinplace {
 		if (tdiff >= deltatime) {
 			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 			if (g_AccuracyButton >= 0 && _controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+				g_isHoldingAccuracyButton = false;
+				g_isHoldingAccuracyButton1 = false;
+				g_isHoldingAccuracyButton2 = false;
 				updateAccuracyButtonState(_controllerDeviceIds[0], true);
 				updateAccuracyButtonState(_controllerDeviceIds[1], false);
 			}
@@ -936,7 +858,7 @@ namespace walkinplace {
 							else {
 								if (controlSelect != 0 && _controlUsedID != info->openvrId) {
 									_controlUsedID = info->openvrId;
-									LOG(INFO) << "Set Secondary Controller to device : " << _controllerDeviceIds[1];
+									LOG(INFO) << "Set Main Controller to device : " << _controllerDeviceIds[1];
 								}
 							}
 						}
@@ -1193,7 +1115,7 @@ namespace walkinplace {
 						input[0].ki.time = 0;
 						input[0].ki.dwExtraInfo = 0;
 						SendInput(2, input, sizeof(INPUT));*/
-					} 
+					}
 					_teleportUnpressed = false;
 				}
 				if (!accuracyButtonOnOrDisabled() || (useTrackers && !trackerStepDetected) || _stepIntegrateSteps >= (_stepIntegrateStepLimit)) {
@@ -1303,6 +1225,104 @@ namespace walkinplace {
 			}
 		}
 		_hasUnTouchedStepAxis = 0;
+	}
+
+	void WalkInPlaceTabController::axisEvent(int deviceId, int axisId, float x, float y) {
+		try {
+			vr::VRControllerAxis_t axisState;
+			axisState.x = x;
+			axisState.y = y;
+			vrwalkinplace::VRWalkInPlace vrwalkinplace;
+			vrwalkinplace.connect();
+			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis0, 0.0);
+			vrwalkinplace.openvrAxisEvent(deviceId, axisId, axisState);
+		}
+		catch (std::exception& e) {
+			LOG(INFO) << "Exception caught while applying axis event: " << e.what();
+		}
+	}
+
+	void WalkInPlaceTabController::buttonEvent(int deviceId, int buttonId, int buttonState) {
+		vrwalkinplace::ButtonEventType eventType;
+		vr::EVRButtonId button;
+		bool foundTypeId = true;
+		switch (buttonState) {
+		case 0:
+			eventType = vrwalkinplace::ButtonEventType::None;
+			break;
+		case 1:
+			eventType = vrwalkinplace::ButtonEventType::ButtonPressed;
+			break;
+		case 2:
+			eventType = vrwalkinplace::ButtonEventType::ButtonUnpressed;
+			break;
+		case 3:
+			eventType = vrwalkinplace::ButtonEventType::ButtonTouched;
+			break;
+		case 4:
+			eventType = vrwalkinplace::ButtonEventType::ButtonUntouched;
+			break;
+		default:
+			foundTypeId = false;
+			break;
+		}
+		switch (buttonId) {
+		case vr::k_EButton_ApplicationMenu:
+			button = vr::k_EButton_ApplicationMenu;
+			break;
+		case vr::k_EButton_System:
+			button = vr::k_EButton_System;
+			break;
+		case vr::k_EButton_Grip:
+			button = vr::k_EButton_Grip;
+			break;
+		case vr::k_EButton_DPad_Left:
+			button = vr::k_EButton_DPad_Left;
+			break;
+		case vr::k_EButton_DPad_Up:
+			button = vr::k_EButton_DPad_Up;
+			break;
+		case vr::k_EButton_DPad_Right:
+			button = vr::k_EButton_DPad_Right;
+			break;
+		case vr::k_EButton_DPad_Down:
+			button = vr::k_EButton_DPad_Down;
+			break;
+		case vr::k_EButton_A:
+			button = vr::k_EButton_A;
+			break;
+		case vr::k_EButton_ProximitySensor:
+			button = vr::k_EButton_ProximitySensor;
+			break;
+		case vr::k_EButton_Axis0:
+			button = vr::k_EButton_Axis0;
+			break;
+		case vr::k_EButton_Axis1:
+			button = vr::k_EButton_Axis1;
+			break;
+		case vr::k_EButton_Axis2:
+			button = vr::k_EButton_Axis2;
+			break;
+		case vr::k_EButton_Axis3:
+			button = vr::k_EButton_Axis3;
+			break;
+		case vr::k_EButton_Axis4:
+			button = vr::k_EButton_Axis4;
+			break;
+		default:
+			foundTypeId = false;
+			break;
+		}
+		if (foundTypeId) {
+			try {
+				vrwalkinplace::VRWalkInPlace vrwalkinplace;
+				vrwalkinplace.connect();
+				vrwalkinplace.openvrButtonEvent(eventType, deviceId, button, 0.0);
+			}
+			catch (std::exception& e) {
+				LOG(INFO) << "Exception caught while applying button event: " << e.what();
+			}
+		}
 	}
 
 	bool WalkInPlaceTabController::accuracyButtonOnOrDisabled() {

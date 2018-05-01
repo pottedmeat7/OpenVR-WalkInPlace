@@ -26,6 +26,7 @@ struct WalkInPlaceProfile {
 	bool disableHMD = false;
 	bool scaleTouchWithSwing = false;
 	int flipButtonUse = false;
+	int buttonControlSelect = 2;
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
 	double stepTime = 0.5;
@@ -82,6 +83,7 @@ private:
 	bool showStepGraph = false;
 	int gameType = 1;
 	int controlSelect = 2;
+	int buttonControlSelect = 2;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
 	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
@@ -159,6 +161,7 @@ public:
 	Q_INVOKABLE double getStepTime();
 	Q_INVOKABLE int getGameType();
 	Q_INVOKABLE int getControlSelect();
+	Q_INVOKABLE int getAccuracyButtonControlSelect();
 	Q_INVOKABLE int getAccuracyButton();
 	Q_INVOKABLE int getHMDPitchDown();
 	Q_INVOKABLE int getHMDPitchUp();
@@ -210,6 +213,7 @@ public slots:
 	void setRunTouch(float value);
 	void setGameStepType(int gameType);
 	void setControlSelect(int control);
+	void setAccuracyButtonControlSelect(int control);
 	void applyStepPoseDetect();
 
 	bool accuracyButtonOnOrDisabled();
@@ -222,6 +226,8 @@ public slots:
 	void stopMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
 	void applyClickMovement(uint32_t deviceId);
+	void axisEvent(int deviceId, int axisId, float x, float y);
+	void buttonEvent(int deviceId, int buttonId, int buttonState);
 
 	void updateAccuracyButtonState(uint32_t deviceId, bool firstController);
 

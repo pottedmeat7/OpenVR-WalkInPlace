@@ -24,11 +24,13 @@ class MotionCompensationManager;
 class DeviceManipulationHandle {
 private:
 	bool m_isValid = false;
+	bool flipYaw = false;
 	ServerDriver* m_parent;
 	std::recursive_mutex _mutex;
 	vr::ETrackedDeviceClass m_eDeviceClass = vr::TrackedDeviceClass_Invalid;
 	uint32_t m_openvrId = vr::k_unTrackedDeviceIndexInvalid;
 	std::string m_serialNumber;
+
 
 	int m_deviceDriverInterfaceVersion = 0;
 	void* m_deviceDriverPtr;
@@ -39,6 +41,8 @@ private:
 
 	int m_deviceMode = 0; 
 	bool _disconnectedMsgSend = false;
+
+	vr::HmdQuaternion_t yawQRotation;
 
 	vr::PropertyContainerHandle_t m_propertyContainerHandle = vr::k_ulInvalidPropertyContainer;
 
@@ -66,10 +70,13 @@ public:
 
 	int deviceMode() const { return m_deviceMode; }
 
+	void setFlipYaw(bool flipYaw);
+	void ll_sendPoseUpdate(const vr::DriverPose_t& newPose);
 	void ll_sendButtonEvent(ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
 	void ll_sendAxisEvent(uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
 	void ll_sendScalarComponentUpdate(vr::VRInputComponentHandle_t ulComponent, float fNewValue, double fTimeOffset);
 
+	bool handlePoseUpdate(uint32_t& unWhichDevice, vr::DriverPose_t& newPose, uint32_t unPoseStructSize);
 	bool handleButtonEvent(uint32_t& unWhichDevice, ButtonEventType eventType, vr::EVRButtonId& eButtonId, double& eventTimeOffset);
 	bool handleAxisUpdate(uint32_t& unWhichDevice, uint32_t& unWhichAxis, vr::VRControllerAxis_t& axisState);
 	bool handleBooleanComponentUpdate(vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset);

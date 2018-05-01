@@ -31,6 +31,24 @@ DeviceManipulationHandle::DeviceManipulationHandle(const char* serial, vr::ETrac
 	memset(_AxisIdToComponentHandleMap, 0, sizeof(_AxisIdToComponentHandleMap));
 }
 
+bool DeviceManipulationHandle::handlePoseUpdate(uint32_t& unWhichDevice, vr::DriverPose_t& newPose, uint32_t unPoseStructSize) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
+	ll_sendPoseUpdate(newPose);
+	return true;
+}
+
+void DeviceManipulationHandle::setFlipYaw(bool val) {
+	flipYaw = val;
+}
+
+void DeviceManipulationHandle::ll_sendPoseUpdate(const vr::DriverPose_t& newPose) {
+	if (m_deviceDriverInterfaceVersion == 4) {
+		IVRServerDriverHost004Hooks::trackedDevicePoseUpdatedOrig(m_deviceDriverHostPtr, m_openvrId, newPose, sizeof(vr::DriverPose_t));
+	}
+	else if (m_deviceDriverInterfaceVersion == 5) {
+		IVRServerDriverHost005Hooks::trackedDevicePoseUpdatedOrig(m_deviceDriverHostPtr, m_openvrId, newPose, sizeof(vr::DriverPose_t));
+	}
+}
 
 void DeviceManipulationHandle::ll_sendButtonEvent(ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {
 	if (m_deviceDriverInterfaceVersion == 4) {

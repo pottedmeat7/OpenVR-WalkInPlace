@@ -12,7 +12,7 @@ TextField {
     background: Button {
         hoverEnabled: true
         background: Rectangle {
-            color: parent.hovered ? "#33873e" : "#33873e"
+            color: parent.hovered ? "#0D5834" : "#0D5834"
             border.color: "#cccccc"
             border.width: 2
         }

@@ -34,6 +34,7 @@ GroupBox {
     property var setAccuracyButton: function(b) {}
     property var setAccuracyButtonAsToggle : function(v) {}
     property var setAccuracyButtonFlip : function(v) {}
+    property var setAccuracyButtonControlSelect : function(c) {}
     property var setHandJog: function(j) {}
     property var setHandRun: function(r) {}
     property var setStepTime: function(t) {}
@@ -47,11 +48,10 @@ GroupBox {
         handJogInputField.text = handJog.toFixed(2)
         handRunInputField.text = handRun.toFixed(2)  
         accuracyButtonDialog.currentIndex = useAccuracyButton
-        useButtonAsToggleCheck.checked = useButtonAsToggle
         flipButtonUseCheck.checked = flipButtonUse
         useTrackersCheck.checked = useTrackers
         disableHMDCheck.checked = disableHMD
-        stepTimeInputField.text = stepTime.toFixed(2)
+        stepTimeInputField.text = stepTime.toFixed(2)        
     }
 
     Layout.fillWidth: true
@@ -69,13 +69,13 @@ GroupBox {
             columns: 5
 
             MyText {
-                text: "Step HMD Y:"
+                text: "Step HMD Y"
                 horizontalAlignment: Text.AlignHLeft
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Step HMD XZ:"
+                text: "Step HMD XZ"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
@@ -88,13 +88,13 @@ GroupBox {
             }    
             
             MyText {
-                text: "Arm Swing Jog:"
+                text: "Arm Swing Jog"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Arm Swing Run:"
+                text: "Arm Swing Run"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }    
@@ -308,13 +308,13 @@ GroupBox {
             columns: 5
 
             MyText {
-                text: "Tracker Y:"
+                text: "Tracker Y"
                 horizontalAlignment: Text.AlignHLeft
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: "Tracker XZ:"
+                text: "Tracker XZ"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
@@ -322,24 +322,27 @@ GroupBox {
             MyText {
                 text: "Use Trackers?"
                 horizontalAlignment: Text.AlignHLeft
-                Layout.preferredWidth: 230
+                font.pointSize: 15
+                Layout.preferredWidth: 160
             }
 
             MyText {
                 text: "Disable HMD?"
                 horizontalAlignment: Text.AlignHLeft
+                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
             MyText {
-                text: ""
+                text: "Step Time (seconds)"
                 horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 160
-            }    
+                font.pointSize: 15
+                Layout.preferredWidth: 230
+            }
         }
 
         GridLayout {
-            columns: 9
+            columns: 11
 
             MyPushButton2 {
                 id: trackerYMinusButton
@@ -439,7 +442,7 @@ GroupBox {
 
             MyToggleButton {
                 id: useTrackersCheck
-                Layout.preferredWidth: 230
+                Layout.preferredWidth: 163
                 Layout.fillWidth: false
                 onCheckedChanged: {
                     setUseTrackers(checked)
@@ -448,102 +451,12 @@ GroupBox {
 
             MyToggleButton {
                 id: disableHMDCheck
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 223
                 Layout.fillWidth: false
                 onCheckedChanged: {
                     setDisableHMD(checked)
                 }
             }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 160
-            }
-        }
-
-        GridLayout {
-            columns: 5
-
-            MyText {
-                text: "Button for Movement"
-                horizontalAlignment: Text.AlignHLeft
-                Layout.preferredWidth: 230
-            }
-
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 135
-            }
-
-            MyText {
-                text: "Button as Toggle?"
-                horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
-                Layout.preferredWidth: 170
-            }    
-
-            MyText {
-                text: "Flip Button Use?"
-                horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
-                Layout.preferredWidth: 300
-            }
-
-            MyText {
-                text: "Step Time (seconds)"
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 180
-            }
-        }
-
-        GridLayout {
-            columns: 8
-
-            MyComboBox {
-                id: accuracyButtonDialog 
-                currentIndex: 0
-                Layout.maximumWidth: 360
-                Layout.minimumWidth: 360
-                Layout.preferredWidth: 360
-                Layout.fillWidth: true
-                displayText: currentText
-                model: ["grip", "touchpad touch", "touchpad click", "trigger", "App Menu", "None"]
-                onCurrentIndexChanged: {
-                    if (currentIndex >= 0) { 
-                        setAccuracyButton(currentIndex) 
-                    } 
-                }
-            }     
-
-            MyToggleButton {
-                id: useButtonAsToggleCheck
-                Layout.preferredWidth: 40
-                Layout.fillWidth: false
-                onCheckedChanged: {
-                    setAccuracyButtonAsToggle(checked)
-                }
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 125
-            }
-
-            MyToggleButton {
-                id: flipButtonUseCheck
-                Layout.preferredWidth: 40
-                Layout.fillWidth: false
-                onCheckedChanged: {
-                    setAccuracyButtonFlip(checked)
-                }
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 275
-            }
-
 
             MyPushButton2 {
                 id: stepTimeMinusButton
@@ -591,6 +504,101 @@ GroupBox {
                     stepTime = value
                     setStepTime(value)
                 }
+            }
+        }
+
+        GridLayout {
+            columns: 5
+
+            MyText {
+                text: "Button to enable WIP"
+                horizontalAlignment: Text.AlignHLeft
+                Layout.preferredWidth: 330
+            }
+
+
+            MyText {
+                text: "Disable WIP when held?"
+                horizontalAlignment: Text.AlignHLeft
+                font.pointSize: 15
+                Layout.preferredWidth: 200
+            }
+
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 90
+            }
+
+            MyText {
+                text: "Controller for button"
+                horizontalAlignment: Text.AlignHLeft
+                font.pointSize: 15
+                Layout.preferredWidth: 260
+            }    
+
+
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 200
+            }
+
+        }
+
+        GridLayout {
+            columns: 5
+
+            MyComboBox {
+                id: accuracyButtonDialog 
+                currentIndex: 0
+                Layout.maximumWidth: 330
+                Layout.minimumWidth: 330
+                Layout.preferredWidth: 330
+                Layout.fillWidth: true
+                displayText: currentText
+                model: ["grip", "touchpad touch", "touchpad click", "trigger", "App Menu", "None"]
+                onCurrentIndexChanged: {
+                    if (currentIndex >= 0) { 
+                        setAccuracyButton(currentIndex) 
+                    } 
+                }
+            }     
+
+            MyToggleButton {
+                id: flipButtonUseCheck
+                Layout.preferredWidth: 200
+                Layout.fillWidth: false
+                onCheckedChanged: {
+                    setAccuracyButtonFlip(checked)
+                }
+            }
+
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 90
+            }
+
+            MyComboBox {
+                id: buttonControlSelect 
+                currentIndex: 0
+                Layout.maximumWidth: 290
+                Layout.minimumWidth: 290
+                Layout.preferredWidth: 290
+                Layout.fillWidth: true
+                displayText: currentText
+                model: ["1st Controller", "2nd Controller", "Either Controller"]
+                onCurrentIndexChanged: {
+                    if (currentIndex >= 0) { 
+                        setAccuracyButtonControlSelect(currentIndex)                        
+                    } 
+                }
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 170
             }
         }
     }
