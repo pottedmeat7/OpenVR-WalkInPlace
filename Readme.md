@@ -51,10 +51,13 @@ If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-d
 ## GIF Step Examples
 Walking Example: 
 ![walk example](docs/gifs/wip_walk.gif)
+
 Jogging Example: 
 ![jog example](docs/gifs/wip_jog.gif)
+
 Running Example: 
 ![run example](docs/gifs/wip_run.gif)
+
 Direction Control Example: 
 ![directions example](docs/gifs/wip_dir.gif)
 
