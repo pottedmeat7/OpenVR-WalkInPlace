@@ -66,6 +66,15 @@ namespace walkinplace {
 		if (stepDetectEnabled) {
 			applyStepPoseDetect();
 		}
+		if (identifyControlTimerSet) {
+			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			double tdiff = ((double)(now - identifyControlLastTime));
+			//LOG(INFO) << "DT: " << tdiff;
+			if (tdiff >= identifyControlTimeOut) {
+				identifyControlTimerSet = false;
+				setDeviceRenderModel(controlSelectOverlayHandle, 0, 0, 1, 0);
+			}
+		}
 		if (settingsUpdateCounter >= 50) {
 			settingsUpdateCounter = 0;
 			if (showingStepGraph < 100) {
@@ -352,17 +361,22 @@ namespace walkinplace {
 		vals.push_back(tracker2Vel.v[1]);
 		vals.push_back(tracker2Vel.v[2]);
 		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];
-		if (g_runPoseDetected) {
-			vals.push_back(3);
-		}
-		else if (g_jogPoseDetected) {
-			vals.push_back(2);
-		}
-		else if (_stepPoseDetected) {
-			vals.push_back(1);
+		if (accuracyButtonOnOrDisabled()) {
+			if (g_runPoseDetected) {
+				vals.push_back(3);
+			}
+			else if (g_jogPoseDetected) {
+				vals.push_back(2);
+			}
+			else if (_stepPoseDetected) {
+				vals.push_back(1);
+			}
+			else {
+				vals.push_back(0);
+			}
 		}
 		else {
-			vals.push_back(0);
+			vals.push_back(4);
 		}
 		return vals;
 
@@ -439,7 +453,7 @@ namespace walkinplace {
 			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
 			settings->setValue("trackerthreshold_y", p.trackerThreshold_y);
 			settings->setValue("trackerthreshold_xz", p.trackerThreshold_xz);
-			settings->setValue("useTrackers", p.useTrackers);
+			settings->setValue("useTrackers", p.useTrackers || p.disableHMD);
 			settings->setValue("disableHMD", p.disableHMD);
 			settings->setValue("handJog", p.handJogThreshold);
 			settings->setValue("handRun", p.handRunThreshold);
@@ -492,14 +506,14 @@ namespace walkinplace {
 		profile->buttonControlSelect = buttonControlSelect;
 		profile->hmdThreshold_y = _hmdThreshold.v[1];
 		profile->hmdThreshold_xz = _hmdThreshold.v[0];
-		profile->trackerThreshold_y = _trackerThreshold.v[1];
-		profile->trackerThreshold_xz = _trackerThreshold.v[0];
-		profile->useTrackers = useTrackers;
+		profile->trackerThreshold_y = (float)_trackerThreshold.v[1];
+		profile->trackerThreshold_xz = (float)_trackerThreshold.v[0];
+		profile->useTrackers = useTrackers || disableHMD;
 		profile->disableHMD = disableHMD;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
 		profile->scaleTouchWithSwing = scaleSpeedWithSwing;
-		profile->stepTime = (_stepIntegrateStepLimit / 1000);
+		profile->stepTime = (_stepIntegrateStepLimit / 1000.0);
 		profile->useAccuracyButton = useAccuracyButton;
 		//profile->hmdPitchDown = hmdPitchDown;
 		//profile->hmdPitchUp = hmdPitchUp;
@@ -525,7 +539,7 @@ namespace walkinplace {
 			_trackerThreshold.v[0] = profile.trackerThreshold_xz;
 			_trackerThreshold.v[1] = profile.trackerThreshold_y;
 			_trackerThreshold.v[2] = profile.trackerThreshold_xz;
-			useTrackers = profile.useTrackers;
+			useTrackers = profile.useTrackers || profile.disableHMD;
 			disableHMD = profile.disableHMD;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
@@ -546,7 +560,7 @@ namespace walkinplace {
 			setAccuracyButtonControlSelect(profile.buttonControlSelect);
 			setHMDThreshold(profile.hmdThreshold_xz, profile.hmdThreshold_y);
 			setTrackerThreshold(profile.trackerThreshold_xz, profile.trackerThreshold_y);
-			setUseTrackers(profile.useTrackers);
+			setUseTrackers(profile.useTrackers || profile.disableHMD);
 			setDisableHMD(profile.disableHMD);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
@@ -617,6 +631,9 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setDisableHMD(bool value) {
 		disableHMD = value;
+		if (!useTrackers) {
+			useTrackers = true;
+		}
 	}
 
 	void WalkInPlaceTabController::setAccuracyButton(int buttonId) {
@@ -726,11 +743,71 @@ namespace walkinplace {
 		controlSelect = control;
 		if (_controlUsedID < 2) {
 			_controlUsedID = _controllerDeviceIds[control];
+			if (!identifyControlTimerSet) {
+				identifyControlTimerSet = true;
+				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				controlSelectOverlayHandle = _controllerDeviceIds[control];
+				//GENERIC CONTROLLER MODEL IS 4
+				setDeviceRenderModel(controlSelectOverlayHandle, 4, 0, 1, 0);
+			}
+		}
+	}
+
+	void WalkInPlaceTabController::setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b) {
+		if (deviceIndex >= 0) {
+			if (renderModelIndex == 0) {
+				if (deviceInfos[deviceIndex]->renderModelOverlay != vr::k_ulOverlayHandleInvalid) {
+					vr::VROverlay()->DestroyOverlay(deviceInfos[deviceIndex]->renderModelOverlay);
+					deviceInfos[deviceIndex]->renderModelOverlay = vr::k_ulOverlayHandleInvalid;
+				}
+			}
+			else {
+				vr::VROverlayHandle_t overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay;
+				if (overlayHandle == vr::k_ulOverlayHandleInvalid) {
+					std::string overlayName = std::string("RenderModelOverlay_") + std::string(deviceInfos[deviceIndex]->serial);
+					auto oerror = vr::VROverlay()->CreateOverlay(overlayName.c_str(), overlayName.c_str(), &overlayHandle);
+					if (oerror == vr::VROverlayError_None) {
+						overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay = overlayHandle;
+					}
+					else {
+						LOG(ERROR) << "Could not create render model overlay: " << vr::VROverlay()->GetOverlayErrorNameFromEnum(oerror);
+					}
+				}
+				if (overlayHandle != vr::k_ulOverlayHandleInvalid) {
+					std::string texturePath = QApplication::applicationDirPath().toStdString() + "\\res\\transparent.png";
+					if (QFile::exists(QString::fromStdString(texturePath))) {
+						vr::VROverlay()->SetOverlayFromFile(overlayHandle, texturePath.c_str());
+						char buffer[vr::k_unMaxPropertyStringSize];
+						vr::VRRenderModels()->GetRenderModelName(renderModelIndex - 1, buffer, vr::k_unMaxPropertyStringSize);
+						vr::VROverlay()->SetOverlayRenderModel(overlayHandle, buffer, nullptr);
+						vr::VROverlay()->SetOverlayColor(overlayHandle, r, g, b);
+						vr::HmdMatrix34_t trans = {
+							1.0f, 0.0f, 0.0f, 0.0f,
+							0.0f, 1.0f, 0.0f, 0.0f,
+							0.0f, 0.0f, 1.0f, 0.0f
+						};
+						vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(overlayHandle, deviceInfos[deviceIndex]->openvrId, &trans);
+						vr::VROverlay()->ShowOverlay(overlayHandle);
+					}
+					else {
+						LOG(ERROR) << "Could not find texture \"" << texturePath << "\"";
+					}
+				}
+			}
 		}
 	}
 
 	void WalkInPlaceTabController::setAccuracyButtonControlSelect(int control) {
 		buttonControlSelect = control;
+		if (control < 2) {
+			if (!identifyControlTimerSet) {
+				identifyControlTimerSet = true;
+				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				controlSelectOverlayHandle = _controllerDeviceIds[control];
+				//GENERIC CONTROLLER MODEL IS 4
+				setDeviceRenderModel(controlSelectOverlayHandle, 4, 0, 1, 0);
+			}
+		}
 	}
 
 	void WalkInPlaceTabController::applyStepPoseDetect() {
@@ -959,13 +1036,13 @@ namespace walkinplace {
 				}
 				if (useTrackers) {
 					if (!disableHMD) {
-						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin * 12)) {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepIntegrateStepLimit * 3)) {
 							trackerStepDetected = false;
 							isWalking = false;
 						}
 					}
 					else {
-						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin * 2)) {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepIntegrateStepLimit )) {
 							trackerStepDetected = false;
 							isWalking = false;
 						}

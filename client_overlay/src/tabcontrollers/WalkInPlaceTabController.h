@@ -51,6 +51,9 @@ struct DeviceInfo {
 	int deviceStatus = 0; // 0 .. Normal, 1 .. Disconnected/Suspended
 	int deviceMode = 0; // 0  normal, 1 step detection
 	bool stepDetectionEnabled;
+	uint32_t renderModelIndex = 0;
+	vr::VROverlayHandle_t renderModelOverlay = vr::k_ulOverlayHandleInvalid;
+	std::string renderModelOverlayName;
 };
 
 
@@ -84,6 +87,10 @@ private:
 	int gameType = 1;
 	int controlSelect = 2;
 	int buttonControlSelect = 2;
+	int controlSelectOverlayHandle = -1;
+	double identifyControlLastTime = 99999;
+	bool identifyControlTimerSet = false;
+	double identifyControlTimeOut = 10000;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
 	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
@@ -128,7 +135,7 @@ private:
 	double _stepIntegrateSteps = 0.0;
 	double _jogIntegrateSteps = 0.0;
 	double _runIntegrateSteps = 0.0;
-	double _stepIntegrateStepLimit = 0.5 * 1000;
+	double _stepIntegrateStepLimit = 500;
 
 	bool g_stepDetectEnabled = false;
 	bool g_disableGameLocomotion = false;
@@ -214,6 +221,7 @@ public slots:
 	void setGameStepType(int gameType);
 	void setControlSelect(int control);
 	void setAccuracyButtonControlSelect(int control);
+	void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b);
 	void applyStepPoseDetect();
 
 	bool accuracyButtonOnOrDisabled();

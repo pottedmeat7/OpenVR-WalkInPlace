@@ -49,7 +49,7 @@ GroupBox {
         handRunInputField.text = handRun.toFixed(2)  
         accuracyButtonDialog.currentIndex = useAccuracyButton
         flipButtonUseCheck.checked = flipButtonUse
-        useTrackersCheck.checked = useTrackers
+        useTrackersCheck.checked = useTrackers || disableHMD
         disableHMDCheck.checked = disableHMD
         stepTimeInputField.text = stepTime.toFixed(2)        
     }

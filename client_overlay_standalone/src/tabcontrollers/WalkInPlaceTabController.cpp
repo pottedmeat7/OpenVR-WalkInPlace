@@ -959,13 +959,13 @@ namespace walkinplace {
 				}
 				if (useTrackers) {
 					if (!disableHMD) {
-						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin * 12)) {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepIntegrateStepLimit * 3)) {
 							trackerStepDetected = false;
 							isWalking = false;
 						}
 					}
 					else {
-						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepFrequencyMin * 2)) {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepIntegrateStepLimit)) {
 							trackerStepDetected = false;
 							isWalking = false;
 						}

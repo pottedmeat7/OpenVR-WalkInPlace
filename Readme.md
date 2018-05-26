@@ -10,6 +10,7 @@ The OpenVR driver hooks into the lighthouse driver and tracks movement of the HM
 
 - Skyrim VR
 - Fallout 4 VR
+- Rec Room
 - Arizona Sunshine
 - Onward
 - VR-Chat
@@ -47,6 +48,20 @@ If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-d
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
 *These are settings which allow for all speeds (walk/jog/run) in both Skyrim VR and FO4VR, this may cause walking when just nodding, to increase accuracy you can use trackers (if you have them), an "Button for movement" or Disable "Walk Touch" (set to 0) and use both the HMD and controller threshold for jogging.*
 
+## GIF Step Examples
+Walking Example: 
+![walk example](docs/gifs/wip_walk.gif)
+Jogging Example: 
+![jog example](docs/gifs/wip_jog.gif)
+Running Example: 
+![run example](docs/gifs/wip_run.gif)
+Direction Control Example: 
+![directions example](docs/gifs/wip_dir.gif)
+
+## Any Issues Check out the Logs
+Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
+Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`
+
 ### WalkInPlace Overlay
 Just "Enable WIP" in the UI.
 
@@ -60,7 +75,6 @@ These options are for different combinations of controls some games use the touc
 Some games only use one controller for locomotion while the other touchpad is used for different functions.
 This menu allows you to select which controller should be used for virtual input.
 The 1st and 2nd option will just switch between two controllers without identification.
-There is no distinction just switch until its the right one. In some games you can just use the "both" option
 
 ### HMD Thresholds
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
@@ -83,14 +97,14 @@ You must have both "Use Trackers?" Checked as well as "Disable HMD?" checked.
 These values are for the controller Up and Down movement of the arms. 
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
-### Button for Movement
+### Button to enable WIP
 These options can be used to disable virtual movement when your not holding the button selected.
 
-### Button as Toggle
-This will change the default behavior for the "Button for Movement" so that you click the button once and then virtual movement will be enabled. Click the button again to disable virtual movement and so on.
+### Disable WIP when held?
+This will change the "Button to enable WIP" behavior instead of allowing virtual movement when the button is held, it will only allow virtual movement when the button is not held and visa versa.
 
-### Flip Button Use
-This will change the "Button for Movement" behavior instead of allowing virtual movement when the button is held, it will only allow virtual movement when the button is not held and visa versa.
+### Controller for button
+This is the controller used for the "Button to enable WIP" 
 
 ### Step Time
 This is how long each "step" lasts. If 1 step is detected it will last this amount of time in seconds. As you repeat steps this time is reset for every step detected. 
@@ -100,7 +114,7 @@ These values control the degree of movement applied in game.
 Some games will use the touchpad axis differntly, for slow games sometimes there is only 1 degree of movment.
 Some games use the entire axis from the center, 0, to 1
 
-If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to move in order to trigger a step.
+If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "jog" or "run" touch value with the "arm swing" thresholds above.
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 

@@ -5,10 +5,17 @@ import QtQuick.Dialogs 1.2
 import pottedmeat7.walkinplace 1.0
 
 MyStackViewPage {
-    id: stepDetectGraphPage
-    name: "stepDetectGraphPage"
+    id: stepDetectAutoConfPage
+    name: "stepDetectAutoConfPage"
     headerText: "OpenVR Walk In Place"
     headerShowBackButton: true
+
+    property bool walkInit : true
+    property bool jogInit : true
+    property bool runInit : true
+
+    property var peakValues : []
+    proptery var parabolaReverse : 1 
 
     property bool stepDetected : false
 
@@ -172,9 +179,6 @@ MyStackViewPage {
                                 if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
                                     ctx.strokeStyle = "#FF3300";
                                 }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
-                                    ctx.strokeStyle = "#CCCCCC";
-                                }
                                 ctx.lineWidth = 1;
                                 ctx.moveTo(x,topY);
                                 ctx.lineTo(x,rectHeight+topY);
@@ -317,9 +321,6 @@ MyStackViewPage {
                                 }
                                 if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
                                     ctx.strokeStyle = "#FF3300";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
-                                    ctx.strokeStyle = "#CCCCCC";
                                 }
                                 ctx.lineWidth = 1;
                                 ctx.moveTo(x,topY);
@@ -492,9 +493,6 @@ MyStackViewPage {
                                 }
                                 if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
                                     ctx.strokeStyle = "#FF3300";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
-                                    ctx.strokeStyle = "#CCCCCC";
                                 }
                                 ctx.lineWidth = 1;
                                 ctx.moveTo(x,topY);
