@@ -61,7 +61,7 @@ class WalkInPlaceTabController : public QObject {
 	Q_OBJECT
 
 private:
-	OverlayController* parent;
+	OverlayController * parent;
 	QQuickWindow* widget;
 	vrwalkinplace::VRWalkInPlace vrwalkinplace;
 
@@ -90,7 +90,7 @@ private:
 	int controlSelectOverlayHandle = -1;
 	double identifyControlLastTime = 99999;
 	bool identifyControlTimerSet = false;
-	double identifyControlTimeOut = 10000;
+	double identifyControlTimeOut = 6000;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
 	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
@@ -116,13 +116,13 @@ private:
 
 	int _teleportUnpressed = true;
 	int _hasUnTouchedStepAxis = 50;
-	
+
 	int peaksCount = 0;
 	float trackerLastYVel = 0;
 	float hmdLastYVel = 0;
 	float cont1LastYVel = 0;
 	float cont2LastYVel = 0;
-	int _controllerDeviceIds[2];
+	int _controllerDeviceIds[2] = {-1, -1};
 	int _controlSelect = 1;
 	int _controlUsedID = -1;
 	double _timeLastTick = 0.0;
@@ -221,7 +221,7 @@ public slots:
 	void setGameStepType(int gameType);
 	void setControlSelect(int control);
 	void setAccuracyButtonControlSelect(int control);
-	void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b);
+	void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);
 	void applyStepPoseDetect();
 
 	bool accuracyButtonOnOrDisabled();

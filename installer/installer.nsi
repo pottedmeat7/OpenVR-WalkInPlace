@@ -113,6 +113,7 @@ Section "Install" SecInstall
 	File "${OVERLAY_BASEDIR}\*.exe"
 	File "${OVERLAY_BASEDIR}\*.dll"
 	File "${OVERLAY_BASEDIR}\*.bat"
+	File "${OVERLAY_BASEDIR}\*.mtl"
 	File "${OVERLAY_BASEDIR}\*.vrmanifest"
 	File "${OVERLAY_BASEDIR}\*.conf"
 	File /r "${OVERLAY_BASEDIR}\res"

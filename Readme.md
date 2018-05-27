@@ -61,8 +61,12 @@ Running Example:
 Direction Control Example: 
 ![directions example](docs/gifs/wip_dir.gif)
 
+## Watch the Selected Controller touchpad to See Successful Virtual Input
+When a step is detected touchpad input will be applied to the selected controller. In the SteamVR Overlay this input will be visualized with a small grey dot on the virtual touchpad of the selected controller. 
+
 ## Any Issues Check out the Logs
 Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
+
 Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`
 
 ### WalkInPlace Overlay
@@ -78,6 +82,7 @@ These options are for different combinations of controls some games use the touc
 Some games only use one controller for locomotion while the other touchpad is used for different functions.
 This menu allows you to select which controller should be used for virtual input.
 The 1st and 2nd option will just switch between two controllers without identification.
+The selected controller will highlight green for 10 seconds
 
 ### HMD Thresholds
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.

@@ -49,6 +49,14 @@ namespace walkinplace {
 						}
 						info->deviceMode = 0;
 						deviceInfos.push_back(info);
+						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+							if (_controllerDeviceIds[0] < 0) {
+								_controllerDeviceIds[0] = info->openvrId;
+							}
+							else if (_controllerDeviceIds[1] < 0) {
+								_controllerDeviceIds[1] = info->openvrId;
+							}
+						}
 						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 					}
 					maxValidDeviceId = id;
@@ -72,7 +80,7 @@ namespace walkinplace {
 			//LOG(INFO) << "DT: " << tdiff;
 			if (tdiff >= identifyControlTimeOut) {
 				identifyControlTimerSet = false;
-				setDeviceRenderModel(controlSelectOverlayHandle, 0, 0, 1, 0);
+				setDeviceRenderModel(controlSelectOverlayHandle, 0, 1, 1, 1, 1,1,1);
 			}
 		}
 		if (settingsUpdateCounter >= 50) {
@@ -104,6 +112,14 @@ namespace walkinplace {
 
 							info->deviceMode = 0;
 							deviceInfos.push_back(info);
+							if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+								if (_controllerDeviceIds[0] < 0) {
+									_controllerDeviceIds[0] = info->openvrId;
+								}
+								else if (_controllerDeviceIds[1] < 0) {
+									_controllerDeviceIds[1] = info->openvrId;
+								}
+							}
 							LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 							newDeviceAdded = true;
 						}
@@ -361,23 +377,26 @@ namespace walkinplace {
 		vals.push_back(tracker2Vel.v[1]);
 		vals.push_back(tracker2Vel.v[2]);
 		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];
-		if (accuracyButtonOnOrDisabled()) {
-			if (g_runPoseDetected) {
-				vals.push_back(3);
-			}
-			else if (g_jogPoseDetected) {
-				vals.push_back(2);
-			}
-			else if (_stepPoseDetected) {
-				vals.push_back(1);
-			}
-			else {
-				vals.push_back(0);
-			}
+		/*if (g_AccuracyButton >= 0 && _controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+			g_isHoldingAccuracyButton = false;
+			g_isHoldingAccuracyButton1 = false;
+			g_isHoldingAccuracyButton2 = false;
+			updateAccuracyButtonState(_controllerDeviceIds[0], true);
+			updateAccuracyButtonState(_controllerDeviceIds[1], false);
+		}*/
+		if (g_runPoseDetected) {
+			vals.push_back(3);
+		}
+		else if (g_jogPoseDetected) {
+			vals.push_back(2);
+		}
+		else if (_stepPoseDetected) {
+			vals.push_back(1);
 		}
 		else {
-			vals.push_back(4);
+			vals.push_back(0);
 		}
+
 		return vals;
 
 	}
@@ -703,7 +722,7 @@ namespace walkinplace {
 			default:
 				break;
 			}
-			if ((buttonControlSelect == 0 && firstController && isHoldingButton) || 
+			if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
 				(buttonControlSelect == 1 && !firstController && isHoldingButton ||
 				(buttonControlSelect >= 2 && isHoldingButton))) {
 				g_isHoldingAccuracyButton = true;
@@ -741,58 +760,70 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setControlSelect(int control) {
 		controlSelect = control;
-		if (_controlUsedID < 2) {
+		if (control < 2) {
 			_controlUsedID = _controllerDeviceIds[control];
-			if (!identifyControlTimerSet) {
-				identifyControlTimerSet = true;
+			if (!identifyControlTimerSet && _controlUsedID >= 0) {
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				controlSelectOverlayHandle = _controllerDeviceIds[control];
-				//GENERIC CONTROLLER MODEL IS 4
-				setDeviceRenderModel(controlSelectOverlayHandle, 4, 0, 1, 0);
+				controlSelectOverlayHandle = 999;
+				for (int d = 0; d<deviceInfos.size(); d++) {
+					if (deviceInfos[d]->openvrId == _controlUsedID) {
+						controlSelectOverlayHandle = d;
+					}
+				}
+				//VIVE CONTROLLER MODEL IS 25
+				setDeviceRenderModel(controlSelectOverlayHandle, 25, 0, 1, 0, 1.25, 1.25, 1.25);
 			}
 		}
 	}
 
-	void WalkInPlaceTabController::setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b) {
-		if (deviceIndex >= 0) {
-			if (renderModelIndex == 0) {
-				if (deviceInfos[deviceIndex]->renderModelOverlay != vr::k_ulOverlayHandleInvalid) {
-					vr::VROverlay()->DestroyOverlay(deviceInfos[deviceIndex]->renderModelOverlay);
-					deviceInfos[deviceIndex]->renderModelOverlay = vr::k_ulOverlayHandleInvalid;
+	void WalkInPlaceTabController::setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz) {
+		if (deviceIndex < deviceInfos.size()) {
+			try {
+				if (renderModelIndex == 0) {
+					if (deviceInfos[deviceIndex]->renderModelOverlay != vr::k_ulOverlayHandleInvalid) {
+						vr::VROverlay()->DestroyOverlay(deviceInfos[deviceIndex]->renderModelOverlay);
+						deviceInfos[deviceIndex]->renderModelOverlay = vr::k_ulOverlayHandleInvalid;
+					}
+				}
+				else {
+					vr::VROverlayHandle_t overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay;
+					if (overlayHandle == vr::k_ulOverlayHandleInvalid) {
+						std::string overlayName = std::string("RenderModelOverlay_") + std::string(deviceInfos[deviceIndex]->serial);
+						auto oerror = vr::VROverlay()->CreateOverlay(overlayName.c_str(), overlayName.c_str(), &overlayHandle);
+						if (oerror == vr::VROverlayError_None) {
+							overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay = overlayHandle;
+						}
+						else {
+							LOG(INFO) << "Could not create render model overlay: " << vr::VROverlay()->GetOverlayErrorNameFromEnum(oerror);
+						}
+					}
+					if (overlayHandle != vr::k_ulOverlayHandleInvalid) {
+						std::string texturePath = QApplication::applicationDirPath().toStdString() + "\\res\\transparent.png";
+						if (QFile::exists(QString::fromStdString(texturePath))) {
+							vr::VROverlay()->SetOverlayFromFile(overlayHandle, texturePath.c_str());
+							char buffer[vr::k_unMaxPropertyStringSize];
+							vr::VRRenderModels()->GetRenderModelName(renderModelIndex - 1, buffer, vr::k_unMaxPropertyStringSize);
+							LOG(INFO) << "Render Model Name: " << buffer;
+							vr::VROverlay()->SetOverlayRenderModel(overlayHandle, buffer, nullptr);
+							vr::HmdMatrix34_t trans = {
+							    sx, 0.0f, 0.0f, 0.0f,
+								0.0f, sy, 0.0f, 0.0f,
+								0.0f, 0.0f, sz, 0.0f
+							};
+							vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(overlayHandle, deviceInfos[deviceIndex]->openvrId, &trans);
+							vr::VROverlay()->ShowOverlay(overlayHandle);
+							vr::VROverlay()->SetOverlayColor(overlayHandle, r, g, b);
+							identifyControlTimerSet = true;
+						}
+						else {
+							LOG(INFO) << "Could not find texture \"" << texturePath << "\"";
+						}
+					}
+					//LOG(INFO) << "Successfully created control select Overlay for device: " << deviceInfos[deviceIndex]->openvrId << " Index: " << deviceIndex;
 				}
 			}
-			else {
-				vr::VROverlayHandle_t overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay;
-				if (overlayHandle == vr::k_ulOverlayHandleInvalid) {
-					std::string overlayName = std::string("RenderModelOverlay_") + std::string(deviceInfos[deviceIndex]->serial);
-					auto oerror = vr::VROverlay()->CreateOverlay(overlayName.c_str(), overlayName.c_str(), &overlayHandle);
-					if (oerror == vr::VROverlayError_None) {
-						overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay = overlayHandle;
-					}
-					else {
-						LOG(ERROR) << "Could not create render model overlay: " << vr::VROverlay()->GetOverlayErrorNameFromEnum(oerror);
-					}
-				}
-				if (overlayHandle != vr::k_ulOverlayHandleInvalid) {
-					std::string texturePath = QApplication::applicationDirPath().toStdString() + "\\res\\transparent.png";
-					if (QFile::exists(QString::fromStdString(texturePath))) {
-						vr::VROverlay()->SetOverlayFromFile(overlayHandle, texturePath.c_str());
-						char buffer[vr::k_unMaxPropertyStringSize];
-						vr::VRRenderModels()->GetRenderModelName(renderModelIndex - 1, buffer, vr::k_unMaxPropertyStringSize);
-						vr::VROverlay()->SetOverlayRenderModel(overlayHandle, buffer, nullptr);
-						vr::VROverlay()->SetOverlayColor(overlayHandle, r, g, b);
-						vr::HmdMatrix34_t trans = {
-							1.0f, 0.0f, 0.0f, 0.0f,
-							0.0f, 1.0f, 0.0f, 0.0f,
-							0.0f, 0.0f, 1.0f, 0.0f
-						};
-						vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(overlayHandle, deviceInfos[deviceIndex]->openvrId, &trans);
-						vr::VROverlay()->ShowOverlay(overlayHandle);
-					}
-					else {
-						LOG(ERROR) << "Could not find texture \"" << texturePath << "\"";
-					}
-				}
+			catch (std::exception& e) {
+				LOG(INFO) << "Exception caught while updating control select overlay: " << e.what();
 			}
 		}
 	}
@@ -803,9 +834,14 @@ namespace walkinplace {
 			if (!identifyControlTimerSet) {
 				identifyControlTimerSet = true;
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				controlSelectOverlayHandle = _controllerDeviceIds[control];
-				//GENERIC CONTROLLER MODEL IS 4
-				setDeviceRenderModel(controlSelectOverlayHandle, 4, 0, 1, 0);
+				controlSelectOverlayHandle = 999;
+				for (int d = 0; d<deviceInfos.size(); d++) {
+					if (deviceInfos[d]->openvrId == _controllerDeviceIds[control]) {
+						controlSelectOverlayHandle = d;
+					}
+				}
+				//VIVE CONTROLLER MODEL IS 25
+				setDeviceRenderModel(controlSelectOverlayHandle, 25, 1, 0.6, 0, 1.25, 1.25, 1.25);
 			}
 		}
 	}
@@ -1042,7 +1078,7 @@ namespace walkinplace {
 						}
 					}
 					else {
-						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepIntegrateStepLimit )) {
+						if ((!oneTrackerStepping && (now - _timeLastTrackerStep) > _stepIntegrateStepLimit)) {
 							trackerStepDetected = false;
 							isWalking = false;
 						}
