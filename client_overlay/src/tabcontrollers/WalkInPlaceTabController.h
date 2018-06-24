@@ -70,6 +70,7 @@ private:
 
 	vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
 	vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
+	vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
 	vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
 	vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
 	vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
@@ -85,12 +86,14 @@ private:
 
 	bool showStepGraph = false;
 	int gameType = 1;
+	int hmdType = 1;
 	int controlSelect = 2;
 	int buttonControlSelect = 2;
 	int controlSelectOverlayHandle = -1;
 	double identifyControlLastTime = 99999;
 	bool identifyControlTimerSet = false;
 	double identifyControlTimeOut = 6000;
+	int vive_controller_model_index = -1;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
 	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
@@ -126,6 +129,7 @@ private:
 	int _controlSelect = 1;
 	int _controlUsedID = -1;
 	double _timeLastTick = 0.0;
+	double _velStepTime = 0.0;
 	double _timeLastStepPeak = 0.0;
 	double _timeLastTrackerStep = 0.0;
 	int stepPeaksToStart = 3;
@@ -234,6 +238,7 @@ public slots:
 	void stopMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
 	void applyClickMovement(uint32_t deviceId);
+	void applyGripMovement(uint32_t deviceId);
 	void axisEvent(int deviceId, int axisId, float x, float y);
 	void buttonEvent(int deviceId, int buttonId, int buttonState);
 

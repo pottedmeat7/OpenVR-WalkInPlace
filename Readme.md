@@ -142,39 +142,32 @@ If you have WIP enabled the graph page will display vertical lines yellow for wa
 
 ## Setting up To Re-Build the project from Source
 *You do not need this if you just want to use the WIP overlay*
+
 ### Boost
-1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.67.0/
-2. Download Boost 1.67 Binaries (boost_1_67_0-msvc-14.1-64.exe)
-3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_67_0`
-4. Open vs2017 Native Tools Command Prompt enter `OpenVR-WalkInPlace/third-party/boost_1_67_0` and run bootstrap.bat	
-5. then run `b2 toolset=msvc-14.0 address-model=64`
+1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
+2. Download Boost 1.65 Binaries (boost_1_65_1-msvc-14.1-64.exe)
+3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
   
 ### Qt
 1. Goto https://download.qt.io/official_releases/qt/5.9/5.9.0/
 2. Download Qt 5.9.0
 3. Run the Qt installer (I installed it to "c:\Qt")
-4. Goto `OpenVR-WalkInPlace\client_overlay`
-5. Create `client_overlay.vcxproj.user` and paste the following into it:
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QTDIR>C:\Qt\Qt5.9.0\5.9\msvc2015_64</QTDIR>
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QTDIR>C:\Qt\Qt5.9.0\5.9\msvc2015_64</QTDIR>
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
-  </PropertyGroup>
-</Project>
-```
 
 NOTE: Adjust the path the `msvc2017_64` folder in Qt to match your installation
 
 Then run the `OpenVR-WalkInPlace\client_overlay\bin\windeployqt.bat` if your system doesn't find the exe update the batch to the absolute path
 in `{QT_INSTLATION_PATH}\5.9\msvc2017_64\bin\windeployqt.exe`
+
+## Building
+1. Open *'VRWalkInPlace.sln'* in Visual Studio 2017.
+2. Build Solution
+
+### Building installer
+1. go to https://sourceforge.net/projects/nsis/files/NSIS%202/2.33/
+2. download and run the nsis-2.33-setup.exe
+3. go to `OpenVR-WalkInPlace/installer`
+4. right click the `installer.nsi` file and `Compile NSIS Script`
+5. the installer exe will be built into the same directory
 
 ## Building
 1. Open *'VRWalkInPlace.sln'* in Visual Studio 2017.

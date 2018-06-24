@@ -63,14 +63,13 @@ Function .onInit
 	StrCpy $upgradeInstallation "false"
  
 	; If OVRIE is not installed then cannot continue
-	IfFileExists $INSTDIR\..\OpenVR-InputEmulator\OpenVR-InputEmulatorOverlay.exe 0 +5
-	MessageBox MB_OK|MB_ICONEXCLAMATION \
-		"OpenVR-InputEmulator is installed.$\nPlease use the OpenVR-WalkInPlace-OVRIE.exe installer instead.$\nOr You can continue with both."
-	Abort 
+	IfFileExists $INSTDIR\..\OpenVR-InputEmulator\OpenVR-InputEmulatorOverlay.exe 0 +3
+		MessageBox MB_OK|MB_ICONEXCLAMATION \
+			"OpenVR-InputEmulator is installed.$\nPlease use the OpenVR-WalkInPlace-OVRIE.exe installer instead.$\nOr You can continue with both."
+		Abort 
 
 	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "UninstallString"
-	StrCmp $R0 "" done
-	
+	StrCmp $R0 "" done	
 	
 	; If SteamVR is already running, display a warning message and exit
 	FindWindow $0 "Qt5QWindowIcon" "SteamVR Status"
@@ -79,15 +78,16 @@ Function .onInit
 			"SteamVR is still running. Cannot install this software.$\nPlease close SteamVR and try again."
 		Abort
  
-	
-	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-		"OpenVR Walk In Place is already installed. $\n$\nClick `OK` to upgrade the \
-		existing installation or `Cancel` to cancel this upgrade." \
-		IDOK upgrade
-	Abort
+	IfFileExists $INSTDIR\OpenVR-WalkInPlaceOverlay.exe 0 +5
+		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+			"OpenVR Walk In Place is already installed. $\n$\nClick `OK` to upgrade the \
+			existing installation or `Cancel` to cancel this upgrade." \
+			IDOK upgrade
+		Abort
  
 	upgrade:
 		StrCpy $upgradeInstallation "true"
+
 	done:
 FunctionEnd
 

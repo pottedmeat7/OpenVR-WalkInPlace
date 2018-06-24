@@ -134,7 +134,7 @@
     <OutDir>$(SolutionDir)$(Configuration)\driver\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <TargetName>driver_00vrwalkinplace</TargetName>
-    <LibraryPath>C:\Users\potte\Documents\OpenVR-WalkInPlace\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -159,7 +159,7 @@
     <OutDir>$(SolutionDir)\$(ProjectName)\bin\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <TargetName>driver_00vrwalkinplace</TargetName>
-    <LibraryPath>C:\Users\potte\Documents\OpenVR-WalkInPlace\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
     <SourcePath>$(VC_SourcePath)\hooks;$(VC_SourcePath)\driver;$(VC_SourcePath)\devicemanipulation;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standalone|x64'">
@@ -167,7 +167,7 @@
     <OutDir>$(SolutionDir)\$(ProjectName)\bin\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <TargetName>driver_00vrwalkinplace</TargetName>
-    <LibraryPath>C:\Users\potte\Documents\OpenVR-WalkInPlace\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
     <SourcePath>$(VC_SourcePath)\hooks;$(VC_SourcePath)\driver;$(VC_SourcePath)\devicemanipulation;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

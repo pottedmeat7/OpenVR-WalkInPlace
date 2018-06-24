@@ -76,7 +76,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 399
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad (click to sprint)", "touchpad no click", "touchpad click only (teleport)", "Keyboard (WASD)", "Keyboard (Arrows)"]
+                        model: ["touchpad with click (Vive)", "touchpad no click (Vive)", "thumbsticks (WMR,Rift)", "touchpad (WMR, NOT WORKING)", "hold grip (Vive,WMR,Rift)", "Keyboard (WASD)", "Keyboard (Arrows)"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setGameStepType(currentIndex+1)                            
