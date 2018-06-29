@@ -174,7 +174,9 @@ in `{QT_INSTLATION_PATH}\5.9\msvc2017_64\bin\windeployqt.exe`
 2. Build Solution
 
 ## Uninstall
-1. Run "C:\Program Files\OpenVR-WalkInPlace\Uninstall.exe"
+1. Run "C:\Program Files\OpenVR-WalkInPlace\Uninstall.exe" will remove the application from the registry. 
+2. Delete the folder "C:\Program Files\OpenVR-WalkInPlace"
+3. Delete the folder "C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace" 
 
 # Known Bugs
 

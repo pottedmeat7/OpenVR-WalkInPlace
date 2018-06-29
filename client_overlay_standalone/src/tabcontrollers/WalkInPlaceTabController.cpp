@@ -873,14 +873,20 @@ namespace walkinplace {
 		double tdiff = ((double)(now - _timeLastTick));
 		//LOG(INFO) << "DT: " << tdiff;
 		if (tdiff >= deltatime) {
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 			if (g_AccuracyButton >= 0 && _controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
 				g_isHoldingAccuracyButton = false;
-				g_isHoldingAccuracyButton1 = false;
-				g_isHoldingAccuracyButton2 = false;
 				updateAccuracyButtonState(_controllerDeviceIds[0], true);
 				updateAccuracyButtonState(_controllerDeviceIds[1], false);
+				/*for (uint32_t i = 0; i < vr::k_unControllerStateAxisCount; i++) {
+				vr::ETrackedDeviceProperty prop = (vr::ETrackedDeviceProperty)(vr::Prop_Axis0Type_Int32 + i);
+				vr::EVRControllerAxisType type = (vr::EVRControllerAxisType)vr::VRSystem()->GetInt32TrackedDeviceProperty(_controllerDeviceIds[0], prop);
+				LOG(INFO) << "Axis " << i << " type: " << vr::VRSystem()->GetControllerAxisTypeNameFromEnum(type) << endl;
+				}*/
 			}
+		}
+		bool moveButtonCheck = accuracyButtonOnOrDisabled();
+		if (tdiff >= deltatime) {
+			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 			if (!_stepPoseDetected) {
 				bool firstController = true;
 				for (auto info : deviceInfos) {
@@ -1059,7 +1065,7 @@ namespace walkinplace {
 				_timeLastTick = now;
 			}
 		}
-		_stepPoseDetected = _stepPoseDetected && accuracyButtonOnOrDisabled();
+		_stepPoseDetected = _stepPoseDetected && moveButtonCheck;
 		if (_stepPoseDetected) {
 			bool isWalking = false;
 			bool isJogging = false;
@@ -1222,18 +1228,18 @@ namespace walkinplace {
 					}
 				}
 				_timeLastTick = now;
+				_stepIntegrateSteps += tdiff;
 			}
 			else {
 				isWalking = _stepPoseDetected;
 				isJogging = g_jogPoseDetected;
 				isRunning = g_runPoseDetected;
-				trackerStepDetected = trackerStepDetected;
 				axisStateChange = true;
 			}
 			trackerStepDetected = trackerStepDetected || !useTrackers;
-			_stepIntegrateSteps += tdiff;
-			if (!accuracyButtonOnOrDisabled() || (useTrackers && !trackerStepDetected) || _stepIntegrateSteps >= (_stepIntegrateStepLimit)) {
+			if (!moveButtonCheck || (useTrackers && !trackerStepDetected) || _stepIntegrateSteps >= (_stepIntegrateStepLimit)) {
 				_stepPoseDetected = false;
+				trackerStepDetected = false;
 				_stepIntegrateSteps = 0.0;
 				_jogIntegrateSteps = 0.0;
 				_runIntegrateSteps = 0.0;
@@ -1243,30 +1249,10 @@ namespace walkinplace {
 				if (gameType != 9999) {
 					g_runPoseDetected = false;
 				}
-				if (gameType == 6) {
-					INPUT input[2];
-					input[0].type = INPUT_KEYBOARD;
-					input[0].ki.wVk = 0;
-					input[0].ki.wScan = MapVirtualKey(0x57, 0);
-					input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-					input[0].ki.time = 0;
-					input[0].ki.dwExtraInfo = 0;
-					SendInput(2, input, sizeof(INPUT));
-				}
-				else if (gameType == 7) {
-					INPUT input[2];
-					input[0].type = INPUT_KEYBOARD;
-					input[0].ki.wVk = 0;
-					input[0].ki.wScan = MapVirtualKey(0x26, 0);
-					input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-					input[0].ki.time = 0;
-					input[0].ki.dwExtraInfo = 0;
-					SendInput(2, input, sizeof(INPUT));
-				}
+				stopMovement(_controlUsedID);
 			}
 			else {
 				if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
-
 					int deviceId = _controlUsedID;
 					if (_controlUsedID < 0) {
 						deviceId = _controllerDeviceIds[0];
@@ -1292,7 +1278,7 @@ namespace walkinplace {
 							axisStateChange = axisStateChange || (!g_jogPoseDetected);
 							g_jogPoseDetected = true;
 						}
-						if (axisStateChange) {
+						if (true || axisStateChange) {
 							if (axisState.y > 1) {
 								axisState.y = 1;
 							}
@@ -1323,13 +1309,6 @@ namespace walkinplace {
 						input[0].ki.dwExtraInfo = 0;
 						SendInput(1, input, sizeof(INPUT));
 
-						/*input[0].type = INPUT_KEYBOARD;
-						input[0].ki.wVk = 0;
-						input[0].ki.wScan = MapVirtualKey(0x57, 0);
-						input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-						input[0].ki.time = 0;
-						input[0].ki.dwExtraInfo = 0;
-						SendInput(2, input, sizeof(INPUT));*/
 						_teleportUnpressed = false;
 					}
 				}
@@ -1343,14 +1322,6 @@ namespace walkinplace {
 						input[0].ki.time = 0;
 						input[0].ki.dwExtraInfo = 0;
 						SendInput(1, input, sizeof(INPUT));
-
-						/*input[0].type = INPUT_KEYBOARD;
-						input[0].ki.wVk = 0;
-						input[0].ki.wScan = MapVirtualKey(0x26, 0);
-						input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-						input[0].ki.time = 0;
-						input[0].ki.dwExtraInfo = 0;
-						SendInput(2, input, sizeof(INPUT));*/
 					}
 					_teleportUnpressed = false;
 				}
@@ -1400,16 +1371,31 @@ namespace walkinplace {
 			}
 		}
 		else if (gameType == 6) {
-
+			INPUT input[2];
+			input[0].type = INPUT_KEYBOARD;
+			input[0].ki.wVk = 0;
+			input[0].ki.wScan = MapVirtualKey(0x57, 0);
+			input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+			input[0].ki.time = 0;
+			input[0].ki.dwExtraInfo = 0;
+			SendInput(2, input, sizeof(INPUT));
 		}
 		else if (gameType == 7) {
-
+			INPUT input[2];
+			input[0].type = INPUT_KEYBOARD;
+			input[0].ki.wVk = 0;
+			input[0].ki.wScan = MapVirtualKey(0x26, 0);
+			input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+			input[0].ki.time = 0;
+			input[0].ki.dwExtraInfo = 0;
+			SendInput(2, input, sizeof(INPUT));
 		}
 	}
 
 	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState) {
 		vrinputemulator::VRInputEmulator vrinputemulator;
 		vrinputemulator.connect();
+		if (gameType == 1 || gameType == 2 || gameType == 3) {
 		vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis0, 0.0);
 		vrinputemulator.openvrAxisEvent(deviceId, 0, axisState);
 		if (gameType != 2) {
@@ -1419,6 +1405,11 @@ namespace walkinplace {
 			else {
 				vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis0, 0.0);
 			}
+		}
+		}
+		else if (gameType == 4) {
+			vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis2, 0.0);
+			vrinputemulator.openvrAxisEvent(deviceId, 2, axisState);
 		}
 	}
 
