@@ -30,12 +30,16 @@ MyMainViewPage {
         stepControlBox.updateGUI()
         stepThresholdBox.updateGUI()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType() - 1
+        hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
         controlSelect.currentIndex = WalkInPlaceTabController.getControlSelect()
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
     }
 
     content: ColumnLayout {
-        spacing: 18
+        //anchors.top: parent.top
+        //anchors.topMargin: 80
+
+        spacing: 7
 
         GroupBox {
 
@@ -51,7 +55,7 @@ MyMainViewPage {
                 anchors.fill: parent
 
                 GridLayout {
-                    columns: 5
+                    columns: 4
 
                     MyToggleButton {
                         id: stepDetectionEnableToggle
@@ -62,10 +66,21 @@ MyMainViewPage {
                         }
                     }
 
-                    MyText {
-                        text: " "
-                        horizontalAlignment: Text.AlignHCenter
-                        Layout.preferredWidth: 50
+
+                    MyComboBox {
+                        id: hmdTypeDialog 
+                        currentIndex: 0
+                        Layout.maximumWidth: 150
+                        Layout.minimumWidth: 150
+                        Layout.preferredWidth: 150
+                        Layout.fillWidth: true
+                        displayText: currentText
+                        model: ["Vive", "WMR", "Rift"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex >= 0) { 
+                                WalkInPlaceTabController.setHMDType(currentIndex+1)                            
+                            } 
+                        }
                     }
 
                     MyComboBox {
@@ -76,7 +91,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 399
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad with click (Vive)", "touchpad no click (Vive)", "thumbsticks (WMR,Rift)", "touchpad (WMR, NOT WORKING)", "hold grip (Vive,WMR,Rift)", "Keyboard (WASD)", "Keyboard (Arrows)"]
+                        model: ["touchpad with click", "touchpad no click", "thumbsticks with click", "thumbsticks no click", "hold grip", "Keyboard (WASD)", "Keyboard (Arrows)"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setGameStepType(currentIndex+1)                            
@@ -88,9 +103,9 @@ MyMainViewPage {
                     MyComboBox {
                         id: controlSelect 
                         currentIndex: 0
-                        Layout.maximumWidth: 399
-                        Layout.minimumWidth: 299
-                        Layout.preferredWidth: 399
+                        Layout.maximumWidth: 299
+                        Layout.minimumWidth: 199
+                        Layout.preferredWidth: 299
                         Layout.fillWidth: true
                         displayText: currentText
                         model: ["1st Controller", "2nd Controller", "Either Controller"]
@@ -100,7 +115,6 @@ MyMainViewPage {
                             } 
                         }
                     }
-
 
                 }
             }
@@ -309,6 +323,7 @@ MyMainViewPage {
 
         Component.onCompleted: {    
             updateInfo()
+            reloadWalkInPlaceProfiles()
         }
 
         Connections {

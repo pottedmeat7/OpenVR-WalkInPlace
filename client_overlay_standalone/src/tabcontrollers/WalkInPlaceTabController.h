@@ -20,6 +20,7 @@ struct WalkInPlaceProfile {
 
 	bool stepDetectionEnabled = false;
 	int gameType = 1;
+	int hmdType = 1;
 	int controlSelect = 2;
 	bool useButtonAsToggle = false;
 	bool useTrackers = false;
@@ -171,6 +172,7 @@ public:
 	Q_INVOKABLE int getDeviceMode(unsigned index);
 	Q_INVOKABLE double getStepTime();
 	Q_INVOKABLE int getGameType();
+	Q_INVOKABLE int getHMDType();
 	Q_INVOKABLE int getControlSelect();
 	Q_INVOKABLE int getAccuracyButtonControlSelect();
 	Q_INVOKABLE int getAccuracyButton();
@@ -223,6 +225,7 @@ public slots:
 	void setJogTouch(float value);
 	void setRunTouch(float value);
 	void setGameStepType(int gameType);
+	void setHMDType(int type);
 	void setControlSelect(int control);
 	void setAccuracyButtonControlSelect(int control);
 	void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);

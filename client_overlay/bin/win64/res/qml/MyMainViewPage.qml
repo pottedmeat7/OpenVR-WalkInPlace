@@ -48,12 +48,12 @@ Rectangle {
     Component.onCompleted: {
         header.parent = mainLayout
         header.Layout.leftMargin = 40
-        header.Layout.topMargin = 17
+        header.Layout.topMargin = 7
         header.Layout.rightMargin = 40
         content.parent = mainLayout
         content.Layout.fillHeight = true
         content.Layout.fillWidth = true
-        content.Layout.topMargin = 7
+        content.Layout.topMargin = 2
         content.Layout.leftMargin = 40
         content.Layout.rightMargin = 40
         content.Layout.bottomMargin = 40

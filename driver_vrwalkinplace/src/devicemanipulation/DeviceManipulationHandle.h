@@ -95,7 +95,6 @@ public:
 
 	void RunFrame();
 
-	void suspendRedirectMode();
 
 };
 

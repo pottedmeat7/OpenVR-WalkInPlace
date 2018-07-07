@@ -231,8 +231,8 @@ std::map<std::string, vr::EVRButtonId> _inputComponentNameToButtonId = {
 
 std::map<std::string, uint32_t> _inputComponentNameToAxisId = {
 	{ "trackpad", 0 },
-	{ "joystick", 0 },
-	{ "trigger", 1 },
+	{ "joystick", 1 },
+	{ "trigger", 2 },
 };
 
 void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uint64_t pHandle) {

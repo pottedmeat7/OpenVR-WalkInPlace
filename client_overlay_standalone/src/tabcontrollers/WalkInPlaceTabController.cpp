@@ -49,6 +49,14 @@ namespace walkinplace {
 						}
 						info->deviceMode = 0;
 						deviceInfos.push_back(info);
+						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+							if (_controllerDeviceIds[0] < 0) {
+								_controllerDeviceIds[0] = info->openvrId;
+							}
+							else if (_controllerDeviceIds[1] < 0) {
+								_controllerDeviceIds[1] = info->openvrId;
+							}
+						}
 						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 					}
 					maxValidDeviceId = id;
@@ -65,6 +73,15 @@ namespace walkinplace {
 	void WalkInPlaceTabController::eventLoopTick() {
 		if (stepDetectEnabled) {
 			applyStepPoseDetect();
+		}
+		if (identifyControlTimerSet) {
+			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			double tdiff = ((double)(now - identifyControlLastTime));
+			//LOG(INFO) << "DT: " << tdiff;
+			if (tdiff >= identifyControlTimeOut) {
+				identifyControlTimerSet = false;
+				setDeviceRenderModel(controlSelectOverlayHandle, 0, 1, 1, 1, 1, 1, 1);
+			}
 		}
 		if (settingsUpdateCounter >= 50) {
 			settingsUpdateCounter = 0;
@@ -95,6 +112,14 @@ namespace walkinplace {
 
 							info->deviceMode = 0;
 							deviceInfos.push_back(info);
+							if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+								if (_controllerDeviceIds[0] < 0) {
+									_controllerDeviceIds[0] = info->openvrId;
+								}
+								else if (_controllerDeviceIds[1] < 0) {
+									_controllerDeviceIds[1] = info->openvrId;
+								}
+							}
 							LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 							newDeviceAdded = true;
 						}
@@ -177,6 +202,10 @@ namespace walkinplace {
 
 	int WalkInPlaceTabController::getGameType() {
 		return gameType;
+	}
+
+	int WalkInPlaceTabController::getHMDType() {
+		return hmdType;
 	}
 
 	int WalkInPlaceTabController::getControlSelect() {
@@ -371,6 +400,13 @@ namespace walkinplace {
 		vals.push_back(tracker2Vel.v[1]);
 		vals.push_back(tracker2Vel.v[2]);
 		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];
+		/*if (g_AccuracyButton >= 0 && _controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+		g_isHoldingAccuracyButton = false;
+		g_isHoldingAccuracyButton1 = false;
+		g_isHoldingAccuracyButton2 = false;
+		updateAccuracyButtonState(_controllerDeviceIds[0], true);
+		updateAccuracyButtonState(_controllerDeviceIds[1], false);
+		}*/
 		if (g_runPoseDetected) {
 			vals.push_back(3);
 		}
@@ -383,6 +419,7 @@ namespace walkinplace {
 		else {
 			vals.push_back(0);
 		}
+
 		return vals;
 
 	}
@@ -409,6 +446,7 @@ namespace walkinplace {
 			entry.profileName = settings->value("profileName").toString().toStdString();
 			entry.stepDetectionEnabled = settings->value("stepDetectionEnabled", false).toBool();
 			entry.gameType = settings->value("gameType", 0).toInt();
+			entry.hmdType = settings->value("hmdType", 0).toInt();
 			entry.controlSelect = settings->value("controlSelect", 2).toInt();
 			entry.buttonControlSelect = settings->value("buttonControlSelect", 2).toInt();
 			entry.hmdThreshold_y = settings->value("hmdthreshold_y", 0.27).toFloat();
@@ -452,13 +490,14 @@ namespace walkinplace {
 			settings->setValue("profileName", QString::fromStdString(p.profileName));
 			settings->setValue("stepDetectionEnabled", p.stepDetectionEnabled);
 			settings->setValue("gameType", p.gameType);
+			settings->setValue("hmdType", p.hmdType);
 			settings->setValue("controlSelect", p.controlSelect);
 			settings->setValue("buttonControlSelect", p.buttonControlSelect);
 			settings->setValue("hmdthreshold_y", p.hmdThreshold_y);
 			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
 			settings->setValue("trackerthreshold_y", p.trackerThreshold_y);
 			settings->setValue("trackerthreshold_xz", p.trackerThreshold_xz);
-			settings->setValue("useTrackers", p.useTrackers);
+			settings->setValue("useTrackers", p.useTrackers || p.disableHMD);
 			settings->setValue("disableHMD", p.disableHMD);
 			settings->setValue("handJog", p.handJogThreshold);
 			settings->setValue("handRun", p.handRunThreshold);
@@ -507,18 +546,19 @@ namespace walkinplace {
 		profile->profileName = name.toStdString();
 		profile->stepDetectionEnabled = isStepDetectionEnabled();
 		profile->gameType = gameType;
+		profile->hmdType = hmdType;
 		profile->controlSelect = controlSelect;
 		profile->buttonControlSelect = buttonControlSelect;
 		profile->hmdThreshold_y = _hmdThreshold.v[1];
 		profile->hmdThreshold_xz = _hmdThreshold.v[0];
-		profile->trackerThreshold_y = _trackerThreshold.v[1];
-		profile->trackerThreshold_xz = _trackerThreshold.v[0];
-		profile->useTrackers = useTrackers;
+		profile->trackerThreshold_y = (float)_trackerThreshold.v[1];
+		profile->trackerThreshold_xz = (float)_trackerThreshold.v[0];
+		profile->useTrackers = useTrackers || disableHMD;
 		profile->disableHMD = disableHMD;
 		profile->handJogThreshold = handJogThreshold;
 		profile->handRunThreshold = handRunThreshold;
 		profile->scaleTouchWithSwing = scaleSpeedWithSwing;
-		profile->stepTime = (_stepIntegrateStepLimit / 1000);
+		profile->stepTime = (_stepIntegrateStepLimit / 1000.0);
 		profile->useAccuracyButton = useAccuracyButton;
 		//profile->hmdPitchDown = hmdPitchDown;
 		//profile->hmdPitchUp = hmdPitchUp;
@@ -536,6 +576,7 @@ namespace walkinplace {
 		if (index < walkInPlaceProfiles.size()) {
 			auto& profile = walkInPlaceProfiles[index];
 			gameType = profile.gameType;
+			hmdType = profile.hmdType;
 			controlSelect = profile.controlSelect;
 			buttonControlSelect = profile.buttonControlSelect;
 			_hmdThreshold.v[0] = profile.hmdThreshold_xz;
@@ -544,7 +585,7 @@ namespace walkinplace {
 			_trackerThreshold.v[0] = profile.trackerThreshold_xz;
 			_trackerThreshold.v[1] = profile.trackerThreshold_y;
 			_trackerThreshold.v[2] = profile.trackerThreshold_xz;
-			useTrackers = profile.useTrackers;
+			useTrackers = profile.useTrackers || profile.disableHMD;
 			disableHMD = profile.disableHMD;
 			handJogThreshold = profile.handJogThreshold;
 			handRunThreshold = profile.handRunThreshold;
@@ -561,11 +602,12 @@ namespace walkinplace {
 
 			enableStepDetection(profile.stepDetectionEnabled);
 			setGameStepType(profile.gameType);
+			setHMDType(profile.hmdType);
 			setControlSelect(profile.controlSelect);
 			setAccuracyButtonControlSelect(profile.buttonControlSelect);
 			setHMDThreshold(profile.hmdThreshold_xz, profile.hmdThreshold_y);
 			setTrackerThreshold(profile.trackerThreshold_xz, profile.trackerThreshold_y);
-			setUseTrackers(profile.useTrackers);
+			setUseTrackers(profile.useTrackers || profile.disableHMD);
 			setDisableHMD(profile.disableHMD);
 			setHandJogThreshold(profile.handJogThreshold);
 			setHandRunThreshold(profile.handRunThreshold);
@@ -636,6 +678,9 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setDisableHMD(bool value) {
 		disableHMD = value;
+		if (!useTrackers) {
+			useTrackers = true;
+		}
 	}
 
 	void WalkInPlaceTabController::setAccuracyButton(int buttonId) {
@@ -674,7 +719,8 @@ namespace walkinplace {
 		if (deviceId >= 0 && (buttonControlSelect >= 2 || _controllerDeviceIds[buttonControlSelect] == deviceId)) {
 			vr::VRControllerState_t state;
 			vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
-			//LOG(ERROR) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+			//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+			//LOG(INFO) << "current button : " << state.ulButtonPressed;
 			bool isHoldingButton = false;
 			switch (g_AccuracyButton) {
 			case vr::EVRButtonId::k_EButton_Grip:
@@ -693,7 +739,7 @@ namespace walkinplace {
 				}
 				break;
 			case vr::EVRButtonId::k_EButton_Axis1:
-				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
+				if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
 					isHoldingButton = true;
 				}
 				break;
@@ -706,9 +752,13 @@ namespace walkinplace {
 				break;
 			}
 			if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
-				(buttonControlSelect == 1 && !firstController && isHoldingButton ||
-				(buttonControlSelect >= 2 && isHoldingButton))) {
+				(buttonControlSelect == 1 && !firstController && isHoldingButton) ||
+				(buttonControlSelect >= 2 && isHoldingButton)) {
 				g_isHoldingAccuracyButton = true;
+			}
+			if ((buttonControlSelect == 0 && firstController && !isHoldingButton) ||
+				(buttonControlSelect == 1 && !firstController && !isHoldingButton)) {
+				g_isHoldingAccuracyButton = false;
 			}
 		}
 	}
@@ -739,9 +789,10 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setGameStepType(int type) {
 		gameType = type;
-		if (gameType != 1 || gameType != 2) {
-			hmdType = gameType;
-		}
+	}
+
+	void WalkInPlaceTabController::setHMDType(int type) {
+		hmdType = type;
 	}
 
 	void WalkInPlaceTabController::setControlSelect(int control) {
@@ -751,7 +802,7 @@ namespace walkinplace {
 			if (!identifyControlTimerSet && _controlUsedID >= 0) {
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				controlSelectOverlayHandle = 999;
-				for (int d = 0; d<deviceInfos.size(); d++) {
+				for (int d = 0; d < deviceInfos.size(); d++) {
 					if (deviceInfos[d]->openvrId == _controlUsedID) {
 						controlSelectOverlayHandle = d;
 					}
@@ -838,7 +889,7 @@ namespace walkinplace {
 				identifyControlTimerSet = true;
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				controlSelectOverlayHandle = 999;
-				for (int d = 0; d<deviceInfos.size(); d++) {
+				for (int d = 0; d < deviceInfos.size(); d++) {
 					if (deviceInfos[d]->openvrId == _controllerDeviceIds[control]) {
 						controlSelectOverlayHandle = d;
 					}
@@ -1169,9 +1220,9 @@ namespace walkinplace {
 					//check if first controller is running / jogging
 					hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v;
 					hand2Vel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v;
-					isRunning = isRunningStep(hand1Vel);
+					isRunning = g_runPoseDetected || isRunningStep(hand1Vel);
 					if (!isRunning) {
-						isJogging = isJoggingStep(hand1Vel);
+						isJogging = g_jogPoseDetected || isJoggingStep(hand1Vel);
 					}
 					if (!betaEnabled) {
 						//check if second controller is running / jogging
@@ -1329,8 +1380,64 @@ namespace walkinplace {
 		}
 	}
 
+	bool WalkInPlaceTabController::accuracyButtonOnOrDisabled() {
+		return (g_AccuracyButton < 0
+			|| ((g_isHoldingAccuracyButton && !flipButtonUse)
+				|| (!g_isHoldingAccuracyButton && flipButtonUse)));
+	}
+
+	bool WalkInPlaceTabController::upAndDownStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch) {
+		bool stepParams = ((std::fabs(vel.v[2]) < threshold.v[2]) &&
+			(std::fabs(vel.v[0]) < threshold.v[0]) &&
+			((vel.v[1] > threshold.v[1] || vel.v[1] < -1 * threshold.v[1])
+				&& (std::fabs(vel.v[1]) > std::fabs(vel.v[0]) && std::fabs(vel.v[1]) > std::fabs(vel.v[2]))));
+		return stepParams;
+	}
+
+	bool WalkInPlaceTabController::sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold) {
+		bool stepParams = ((std::fabs(vel.v[2]) > threshold.v[1] && std::fabs(vel.v[2]) > threshold.v[2]) ||
+			(std::fabs(vel.v[0]) > threshold.v[1] && std::fabs(vel.v[0]) > threshold.v[0]));
+		return stepParams;
+	}
+
+	bool WalkInPlaceTabController::isJoggingStep(float * vel) {
+		float magVel = std::fabs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+		return (std::fabs(vel[1]) > std::fabs(vel[0]) && std::fabs(vel[1]) > std::fabs(vel[2]))
+			&& (magVel > handJogThreshold);
+	}
+
+	bool WalkInPlaceTabController::isRunningStep(float * vel) {
+		float magVel = std::fabs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
+		return (std::fabs(vel[1]) > std::fabs(vel[0]) && std::fabs(vel[1]) > std::fabs(vel[2]))
+			&& (magVel > handRunThreshold);
+	}
+
+	float WalkInPlaceTabController::getScaledTouch(float hand1Y, float hand2Y) {
+		float temp = std::fabs(hand1Y) > std::fabs(hand2Y) ? std::fabs(hand1Y) : std::fabs(hand2Y);
+		float scaledTouch = 1.0;
+		if (g_runPoseDetected) {
+			scaledTouch = (temp / handRunThreshold) * runTouch;
+			scaledTouch = scaledTouch < runTouch ? runTouch : scaledTouch;
+		}
+		else if (g_jogPoseDetected) {
+			scaledTouch = jogTouch + ((temp / handRunThreshold) * (runTouch - jogTouch));
+			scaledTouch = scaledTouch < jogTouch ? jogTouch : scaledTouch;
+		}
+		else {
+			scaledTouch = walkTouch + ((temp / handJogThreshold) * (jogTouch - walkTouch));
+			scaledTouch = scaledTouch < walkTouch ? walkTouch : scaledTouch;
+		}
+		return scaledTouch > 1 ? 1 : scaledTouch;
+	}
+
+
+	/********************************* DRIVER DETERMINED SPECIFIC CODE ***************************/
+	/*********************************************************************************************/
+	/*********************************************************************************************/
+
+
 	void WalkInPlaceTabController::stopMovement(uint32_t deviceId) {
-		if (gameType == 1 || gameType == 2 || gameType == 3) {
+		if (gameType == 1 || gameType == 2) {
 			vr::VRControllerAxis_t axisState;
 			axisState.x = 0;
 			axisState.y = 0;
@@ -1347,8 +1454,22 @@ namespace walkinplace {
 				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
 			}
 		}
-		else if (gameType == 4) {
-
+		else if (gameType == 3 || gameType == 4) {
+			vr::VRControllerAxis_t axisState;
+			axisState.x = 0;
+			axisState.y = 0;
+			try {
+				vrinputemulator::VRInputEmulator vrinputemulator;
+				vrinputemulator.connect();
+				if (gameType != 2) {
+					vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis1, 0.0);
+				}
+				vrinputemulator.openvrAxisEvent(deviceId, 1, axisState);
+				vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_Axis1, 0.0);
+			}
+			catch (std::exception& e) {
+				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+			}
 		}
 		else if (gameType == 5) {
 			try {
@@ -1395,7 +1516,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState) {
 		vrinputemulator::VRInputEmulator vrinputemulator;
 		vrinputemulator.connect();
-		if (gameType == 1 || gameType == 2 || gameType == 3) {
+		if (gameType == 1 || gameType == 2) {
 		vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis0, 0.0);
 		vrinputemulator.openvrAxisEvent(deviceId, 0, axisState);
 		if (gameType != 2) {
@@ -1407,9 +1528,17 @@ namespace walkinplace {
 			}
 		}
 		}
-		else if (gameType == 4) {
-			vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis2, 0.0);
-			vrinputemulator.openvrAxisEvent(deviceId, 2, axisState);
+		else if (gameType == 3 || gameType == 4) {
+			vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_Axis1, 0.0);
+			vrinputemulator.openvrAxisEvent(deviceId, 1, axisState);
+			if (gameType != 4) {
+				if (g_runPoseDetected) {
+					vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_Axis0, 0.0);
+				}
+				else {
+					vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis0, 0.0);
+				}
+			}
 		}
 	}
 
@@ -1452,54 +1581,5 @@ namespace walkinplace {
 		_hasUnTouchedStepAxis = 0;
 	}
 
-	bool WalkInPlaceTabController::accuracyButtonOnOrDisabled() {
-		return (g_AccuracyButton < 0
-			|| ((g_isHoldingAccuracyButton && !flipButtonUse)
-				|| (!g_isHoldingAccuracyButton && flipButtonUse)));
-	}
-
-	bool WalkInPlaceTabController::upAndDownStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch) {
-		bool stepParams = ((std::fabs(vel.v[2]) < threshold.v[2]) &&
-			(std::fabs(vel.v[0]) < threshold.v[0]) &&
-			((vel.v[1] > threshold.v[1] || vel.v[1] < -1 * threshold.v[1])
-				&& (std::fabs(vel.v[1]) > std::fabs(vel.v[0]) && std::fabs(vel.v[1]) > std::fabs(vel.v[2]))));
-		return stepParams;
-	}
-
-	bool WalkInPlaceTabController::sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold) {
-		bool stepParams = ((std::fabs(vel.v[2]) > threshold.v[1] && std::fabs(vel.v[2]) > threshold.v[2]) ||
-			(std::fabs(vel.v[0]) > threshold.v[1] && std::fabs(vel.v[0]) > threshold.v[0]));
-		return stepParams;
-	}
-
-	bool WalkInPlaceTabController::isJoggingStep(float * vel) {
-		float magVel = std::abs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-		return (std::abs(vel[1]) > std::abs(vel[0]) && std::abs(vel[1]) > std::abs(vel[2]))
-			&& (magVel > handJogThreshold);
-	}
-
-	bool WalkInPlaceTabController::isRunningStep(float * vel) {
-		float magVel = std::abs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-		return (std::abs(vel[1]) > std::abs(vel[0]) && std::abs(vel[1]) > std::abs(vel[2]))
-			&& (magVel > handRunThreshold);
-	}
-
-	float WalkInPlaceTabController::getScaledTouch(float hand1Y, float hand2Y) {
-		float temp = std::abs(hand1Y) > std::abs(hand2Y) ? std::abs(hand1Y) : std::abs(hand2Y);
-		float scaledTouch = 1.0;
-		if (g_runPoseDetected) {
-			scaledTouch = (temp / handRunThreshold) * runTouch;
-			scaledTouch = scaledTouch < runTouch ? runTouch : scaledTouch;
-		}
-		else if (g_jogPoseDetected) {
-			scaledTouch = jogTouch + ((temp / handRunThreshold) * (runTouch - jogTouch));
-			scaledTouch = scaledTouch < jogTouch ? jogTouch : scaledTouch;
-		}
-		else {
-			scaledTouch = walkTouch + ((temp / handJogThreshold) * (jogTouch - walkTouch));
-			scaledTouch = scaledTouch < walkTouch ? walkTouch : scaledTouch;
-		}
-		return scaledTouch > 1 ? 1 : scaledTouch;
-	}
 
 } // namespace walkinplace
