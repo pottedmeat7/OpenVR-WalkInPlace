@@ -497,7 +497,7 @@ namespace walkinplace {
 			settings->setValue("hmdthreshold_xz", p.hmdThreshold_xz);
 			settings->setValue("trackerthreshold_y", p.trackerThreshold_y);
 			settings->setValue("trackerthreshold_xz", p.trackerThreshold_xz);
-			settings->setValue("useTrackers", p.useTrackers || p.disableHMD);
+			settings->setValue("useTrackers", p.useTrackers);
 			settings->setValue("disableHMD", p.disableHMD);
 			settings->setValue("handJog", p.handJogThreshold);
 			settings->setValue("handRun", p.handRunThreshold);
@@ -1077,6 +1077,20 @@ namespace walkinplace {
 						}
 						//else if ( deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
 						//	LOG(INFO) << "CONTROLLER VEL: " << info->openvrId << pose.vecVelocity[0] << "," << pose.vecVelocity[1]  << "," << pose.vecVelocity[2];
+							/*if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+								//check if first controller is running / jogging
+								float * hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v;
+								float * hand2Vel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v;
+								bool isRunning = isRunningStep(hand1Vel);
+								if (!isRunning) {
+									if (avgContYVel <= 0) {
+										avgContYVel = (std::fabs(hand1Vel[1]) + std::fabs(hand2Vel[1])) / 2.0;
+									}
+									else {
+										avgContYVel = (avgContYVel + ((std::fabs(hand1Vel[1]) + std::fabs(hand2Vel[1])) / 2.0) / 2.0);
+									}
+								}
+							}*/
 						//}
 					}
 				}
@@ -1107,8 +1121,24 @@ namespace walkinplace {
 					if (_controlUsedID < 0) {
 						deviceId = _controllerDeviceIds[0];
 					}
-					stopMovement(deviceId);
-					_hasUnTouchedStepAxis++;
+					if (gameType == 1 || gameType == 2 || gameType == 3 || gameType == 4) {
+						if (_stepIntegrateSteps >= (_stepIntegrateStepLimit/2.0)) {
+							vr::VRControllerAxis_t axisState;
+							axisState.x = 0;
+							axisState.y = (walkTouch)*(_stepIntegrateSteps / (_stepIntegrateStepLimit / 2.0));
+							applyAxisMovement(deviceId, axisState);
+							_stepIntegrateSteps += tdiff;
+							_hasUnTouchedStepAxis = 1;
+						}
+						else {
+							stopMovement(deviceId);
+							_hasUnTouchedStepAxis++;
+						}
+					}
+					else {
+						stopMovement(deviceId);
+						_hasUnTouchedStepAxis++;
+					}
 					_teleportUnpressed = true;
 				}
 			}
@@ -1220,16 +1250,40 @@ namespace walkinplace {
 					//check if first controller is running / jogging
 					hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v;
 					hand2Vel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v;
-					isRunning = g_runPoseDetected || isRunningStep(hand1Vel);
+					isRunning = isRunningStep(hand1Vel);
+					if (isRunning) {
+						_runIntegrateSteps = 0;
+					}
+					else {
+						isRunning = g_runPoseDetected;
+					}
 					if (!isRunning) {
-						isJogging = g_jogPoseDetected || isJoggingStep(hand1Vel);
+						isJogging = isJoggingStep(hand1Vel);
+						if (isJogging) {
+							_jogIntegrateSteps = 0;
+						}
+						else {
+							isJogging = g_jogPoseDetected;
+						}
 					}
 					if (!betaEnabled) {
 						//check if second controller is running / jogging
-						isRunning = isRunning || isRunningStep(hand2Vel);
-						if (!isRunning) {
-							isJogging = isJogging || isJoggingStep(hand2Vel);
+						isRunning = isRunningStep(hand2Vel);
+						if (isRunning) {
+							_runIntegrateSteps = 0;
 						}
+						else {
+							isRunning = g_runPoseDetected;
+						}
+						if (!isRunning) {
+							isJogging = isJoggingStep(hand2Vel);
+							if (isJogging) {
+								_jogIntegrateSteps = 0;
+							}
+							else {
+								isJogging = g_jogPoseDetected;
+							}
+						} 
 					}
 					else {
 						isRunning = isRunning && isRunningStep(hand2Vel);
@@ -1253,11 +1307,13 @@ namespace walkinplace {
 							}
 						}
 					}
-					if (isJogging) {
-						_jogIntegrateSteps = 0;
-					}
-					if (isRunning) {
-						_runIntegrateSteps = 0;
+					if (!isRunning) {
+						/*if (avgContYVel <= 0) {
+							avgContYVel = (std::fabs(hand1Vel[1]) + std::fabs(hand2Vel[1])) / 2.0;
+						}
+						else {
+							avgContYVel = (avgContYVel + ((std::fabs(hand1Vel[1]) + std::fabs(hand2Vel[1])) / 2.0) / 2.0);
+						}*/
 					}
 					if (g_jogPoseDetected) {
 						_jogIntegrateSteps += tdiff;
@@ -1291,16 +1347,19 @@ namespace walkinplace {
 			if (!moveButtonCheck || (useTrackers && !trackerStepDetected) || _stepIntegrateSteps >= (_stepIntegrateStepLimit)) {
 				_stepPoseDetected = false;
 				trackerStepDetected = false;
-				_stepIntegrateSteps = 0.0;
+				if (_hasUnTouchedStepAxis == 0) {
+					_stepIntegrateSteps = 0.0;
+				}
 				_jogIntegrateSteps = 0.0;
 				_runIntegrateSteps = 0.0;
+				//avgContYVel = -1;
 				peaksCount = 0;
 				g_stepPoseDetected = false;
 				g_jogPoseDetected = false;
 				if (gameType != 9999) {
 					g_runPoseDetected = false;
 				}
-				stopMovement(_controlUsedID);
+				//stopMovement(_controlUsedID);
 			}
 			else {
 				if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
@@ -1312,22 +1371,19 @@ namespace walkinplace {
 						axisStateChange = _hasUnTouchedStepAxis != 0;
 						axisState.x = 0;
 						axisState.y = walkTouch;
-						//if (scaleSpeedWithSwing) {
-						//	axisState.y = getScaledTouch(hand1Vel[1], hand2Vel[1]);
-						//}
 						axisStateChange = axisStateChange || (isRunning && !g_runPoseDetected);
 						if (isRunning) {
-							if (!scaleSpeedWithSwing) {
-								axisState.y = runTouch;
-							}
+							axisState.y = runTouch;
 							g_runPoseDetected = true;
 						}
 						else if (isJogging) {
-							if (!scaleSpeedWithSwing) {
-								axisState.y = jogTouch;
-							}
+							//axisState.y = jogTouch;
+							axisState.y = jogTouch; //getScaledTouch(jogTouch, runTouch, avgContYVel, handRunThreshold);
 							axisStateChange = axisStateChange || (!g_jogPoseDetected);
 							g_jogPoseDetected = true;
+						}
+						else {
+							axisState.y = walkTouch; //getScaledTouch(walkTouch, jogTouch, avgContYVel, handJogThreshold);
 						}
 						if (true || axisStateChange) {
 							if (axisState.y > 1) {
@@ -1412,20 +1468,13 @@ namespace walkinplace {
 			&& (magVel > handRunThreshold);
 	}
 
-	float WalkInPlaceTabController::getScaledTouch(float hand1Y, float hand2Y) {
-		float temp = std::fabs(hand1Y) > std::fabs(hand2Y) ? std::fabs(hand1Y) : std::fabs(hand2Y);
-		float scaledTouch = 1.0;
-		if (g_runPoseDetected) {
-			scaledTouch = (temp / handRunThreshold) * runTouch;
-			scaledTouch = scaledTouch < runTouch ? runTouch : scaledTouch;
+	float WalkInPlaceTabController::getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel) {
+		float scaledTouch = maxTouch;
+		if (avgVel < maxVel) {
+			scaledTouch = (avgVel / maxVel);
 		}
-		else if (g_jogPoseDetected) {
-			scaledTouch = jogTouch + ((temp / handRunThreshold) * (runTouch - jogTouch));
-			scaledTouch = scaledTouch < jogTouch ? jogTouch : scaledTouch;
-		}
-		else {
-			scaledTouch = walkTouch + ((temp / handJogThreshold) * (jogTouch - walkTouch));
-			scaledTouch = scaledTouch < walkTouch ? walkTouch : scaledTouch;
+		if (scaledTouch < minTouch) {
+			scaledTouch = minTouch;
 		}
 		return scaledTouch > 1 ? 1 : scaledTouch;
 	}

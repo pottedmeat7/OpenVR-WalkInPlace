@@ -46,7 +46,7 @@ If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-d
 ## Configuration Examples
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
-*These are settings which allow for all speeds (walk/jog/run) in both Skyrim VR and FO4VR, this may cause walking when just nodding, to increase accuracy you can use trackers (if you have them), an "Button for movement" or Disable "Walk Touch" (set to 0) and use both the HMD and controller threshold for jogging.*
+*These are settings which work for many games
 
 ## GIF Step Examples
 Walking Example: 
@@ -60,6 +60,9 @@ Running Example:
 
 Direction Control Example: 
 ![directions example](docs/gifs/wip_dir.gif)
+
+![Example Screenshot](docs/screenshots/wip_graph.png)
+*This is what the graph should look like when walking in place
 
 ## Watch the Selected Controller touchpad to See Successful Virtual Input
 When a step is detected touchpad input will be applied to the selected controller. In the SteamVR Overlay this input will be visualized with a small grey dot on the virtual touchpad of the selected controller. 
@@ -75,8 +78,11 @@ Just "Enable WIP" in the UI.
 Enable the "analog" locomotion in the games settings this is the input method that uses the touch-pad
 Then you simply walk in place to virutally walk in VR.
 
+### HMD Type
+Choose which HMD your using
+
 ### Game Type
-These options are for different combinations of controls some games use the touch-pad for movement and then a click to sprint, some use the click to engage teleport. If you dont want to trigger teleport use the second option.
+These are the input type for the game
 
 ### Controller selection (which controller is used for virtual input)
 Some games only use one controller for locomotion while the other touchpad is used for different functions.

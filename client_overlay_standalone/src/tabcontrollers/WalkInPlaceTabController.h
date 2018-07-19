@@ -236,7 +236,7 @@ public slots:
 	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
 	bool isJoggingStep(float * vel);
 	bool isRunningStep(float * vel);
-	float getScaledTouch(float hand1Y, float hand2Y);
+	float getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel);
 
 	void stopMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);

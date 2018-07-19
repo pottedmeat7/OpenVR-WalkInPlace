@@ -15,9 +15,8 @@ MyMainViewPage {
         stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
         stepThresholdBox.setHandRun(WalkInPlaceTabController.getHandRunThreshold())
-        var nohmd = WalkInPlaceTabController.getDisableHMD()
-        stepThresholdBox.setUseTrackers(WalkInPlaceTabController.getUseTrackers() || nohmd)
-        stepThresholdBox.setDisableHMD(nohmd)
+        stepThresholdBox.setUseTrackers(WalkInPlaceTabController.getUseTrackers())
+        stepThresholdBox.setDisableHMD(WalkInPlaceTabController.getDisableHMD())
         stepThresholdBox.setTrackerY(WalkInPlaceTabController.getTrackerYThreshold())
         stepThresholdBox.setTrackerXZ(WalkInPlaceTabController.getTrackerXZThreshold())
         stepThresholdBox.setStepTime(WalkInPlaceTabController.getStepTime())
@@ -30,7 +29,7 @@ MyMainViewPage {
         stepControlBox.updateGUI()
         stepThresholdBox.updateGUI()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType() - 1
-        hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
+        hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType() - 1
         controlSelect.currentIndex = WalkInPlaceTabController.getControlSelect()
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
     }
@@ -141,7 +140,7 @@ MyMainViewPage {
             setDisableHMD: function(val) {
                 WalkInPlaceTabController.setDisableHMD(val)
                 disableHMD = val
-                updateGUI()    
+                setUseTrackers(useTrackers || val)
             }
             setTrackerXZ: function(xz) {
                 trackerXZ = xz
@@ -323,7 +322,7 @@ MyMainViewPage {
 
         Component.onCompleted: {    
             updateInfo()
-            reloadWalkInPlaceProfiles()
+            //reloadWalkInPlaceProfiles()            
         }
 
         Connections {

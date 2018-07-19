@@ -76,6 +76,8 @@ private:
 	vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
 	vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
 	vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
+	float avgContYVel = 0.0;
+	int contSampleCount = 0;
 
 	double _timeLastGraphPoint = 0.0;
 
@@ -236,7 +238,7 @@ public slots:
 	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
 	bool isJoggingStep(float * vel);
 	bool isRunningStep(float * vel);
-	float getScaledTouch(float hand1Y, float hand2Y);
+	float getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel);
 
 	void stopMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
