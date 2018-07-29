@@ -26,6 +26,8 @@ MyMainViewPage {
         stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
         stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
         stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
+        stepControlBox.setUseContDirForStraf(WalkInPlaceTabController.getUseContDirForStraf())
+        stepControlBox.setUseContDirForRev(WalkInPlaceTabController.getUseContDirForRev())
         stepControlBox.updateGUI()
         stepThresholdBox.updateGUI()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType() - 1
@@ -35,8 +37,8 @@ MyMainViewPage {
     }
 
     content: ColumnLayout {
-        //anchors.top: parent.top
-        //anchors.topMargin: 80
+        anchors.top: parent.top
+        anchors.topMargin: 80
 
         spacing: 7
 
@@ -208,6 +210,16 @@ MyMainViewPage {
             setRunTouch: function(val) {
                 WalkInPlaceTabController.setRunTouch(val)
                 runTouch = val
+                updateGUI()
+            }
+            setUseContDirForStraf: function(val) {
+                WalkInPlaceTabController.setUseContDirForStraf(val)
+                useContDirForStraf = val
+                updateGUI()
+            }
+            setUseContDirForRev: function(val) {
+                WalkInPlaceTabController.setUseContDirForRev(val)
+                useContDirForRev = val
                 updateGUI()
             }
         }

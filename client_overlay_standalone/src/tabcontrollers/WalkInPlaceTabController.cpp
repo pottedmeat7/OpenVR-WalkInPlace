@@ -677,7 +677,7 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setDisableHMD(bool value) {
 		disableHMD = value;
-		if (!useTrackers) {
+		if (disableHMD && !useTrackers) {
 			useTrackers = true;
 		}
 	}
@@ -943,29 +943,6 @@ namespace walkinplace {
 					if (latestDevicePoses[info->openvrId].bPoseIsValid) {
 						vr::ETrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(info->openvrId);
 						if (!disableHMD && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
-							//LOG(INFO) << "Detecting step";
-							/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
-							auto poseWorldRot = tmpConj * pose.qRotation;
-							double zsqr = poseWorldRot.z * poseWorldRot.z;
-							// roll (x-axis rotation)
-							double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.z * poseWorldRot.y);
-							double t1 = +1.0 - 2.0 * (poseWorldRot.x * poseWorldRot.x + zsqr);
-							double roll = (180 * std::atan2(t0, t1)) / M_PI;
-							// pitch (z-axis rotation)
-							double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z - poseWorldRot.y * poseWorldRot.x);
-							double pitch;
-							if (std::fabs(t2) >= 1) {
-							pitch = 90;
-							}
-							else {
-							pitch = (180 * std::asin(t2)) / M_PI;
-							}*/
-							double roll = 0;
-							double pitch = 0;
-
-							//double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
-							//double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
-							//double yaw = (180 * std::atan2(t3, t4)) / M_PI;
 
 							//LOG(INFO) << "HMD Rot: " << roll << "," << yaw << "," << pitch;
 
@@ -1001,6 +978,17 @@ namespace walkinplace {
 							//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
 
 							if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, roll, pitch)) {
+
+								vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[info->openvrId].mDeviceToAbsoluteTracking);
+
+								vr::HmdVector3d_t forward = { 0,0,-1 };
+								vr::HmdVector3d_t right = { 1,0,0 };
+								vr::HmdVector3d_t pitchDir = vrmath::quaternionRotateVector(qRotation, forward);
+								vr::HmdVector3d_t rollDir = vrmath::quaternionRotateVector(qRotation, right);
+
+								pitch = (180 * std::asin(pitchDir.v[1])) / M_PI;
+								roll = (180 * std::asin(rollDir.v[1])) / M_PI;
+
 								if (!betaEnabled) {
 									peaksCount = 1;
 								}
@@ -1327,6 +1315,7 @@ namespace walkinplace {
 						_runIntegrateSteps += tdiff;
 						if (_runIntegrateSteps > _stepIntegrateStepLimit) {
 							g_runPoseDetected = false;
+							_teleportUnpressed = false;
 							_runIntegrateSteps = 0.0;
 							isRunning = false;
 							axisStateChange = true;
@@ -1389,6 +1378,9 @@ namespace walkinplace {
 								axisState.y = 1;
 							}
 							try {
+								if (!_teleportUnpressed) {
+									stopClickMovement(deviceId);
+								}
 								applyAxisMovement(deviceId, axisState);
 								_hasUnTouchedStepAxis = 0;
 							}
@@ -1509,7 +1501,7 @@ namespace walkinplace {
 			try {
 				vrinputemulator::VRInputEmulator vrinputemulator;
 				vrinputemulator.connect();
-				if (gameType != 2) {
+				if (gameType != 4) {
 					vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis1, 0.0);
 				}
 				vrinputemulator.openvrAxisEvent(deviceId, 1, axisState);
@@ -1558,6 +1550,38 @@ namespace walkinplace {
 			input[0].ki.time = 0;
 			input[0].ki.dwExtraInfo = 0;
 			SendInput(2, input, sizeof(INPUT));
+		}
+	}
+
+	void WalkInPlaceTabController::stopClickMovement(uint32_t deviceId) {
+		if (gameType == 1) {
+			try {
+				vrinputemulator::VRInputEmulator vrinputemulator;
+				vrinputemulator.connect();
+				if (gameType != 2) {
+					vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis0, 0.0);
+				}
+				_teleportUnpressed = true;
+			}
+			catch (std::exception& e) {
+				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+			}
+		}
+		else if (gameType == 3) {
+			vr::VRControllerAxis_t axisState;
+			axisState.x = 0;
+			axisState.y = 0;
+			try {
+				vrinputemulator::VRInputEmulator vrinputemulator;
+				vrinputemulator.connect();
+				if (gameType != 4) {
+					vrinputemulator.openvrButtonEvent(vrinputemulator::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis1, 0.0);
+				}
+				_teleportUnpressed = true;
+			}
+			catch (std::exception& e) {
+				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+			}
 		}
 	}
 

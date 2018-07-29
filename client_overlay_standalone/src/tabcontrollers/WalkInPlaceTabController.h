@@ -96,8 +96,8 @@ private:
 	int vive_controller_model_index = -1;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
-	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.12, 0.27 };
-	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
+	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.10, 0.27 };
+	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.12, 0.27 };
 	int useAccuracyButton = 5;
 	bool useButtonAsToggle = false;
 	bool useTrackers = false;
@@ -108,10 +108,10 @@ private:
 	int hmdPitchDown = 35;
 	int hmdPitchUp = 25;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.85;
+	float handJogThreshold = 1.1;
 	float handRunThreshold = 2.0;
 	float walkTouch = 0.35;
-	float jogTouch = 0.87;
+	float jogTouch = 1.0;
 	float runTouch = 1.0;
 	float minTouch = 0.45;
 	vr::VROverlayHandle_t overlayHandle;
@@ -239,6 +239,7 @@ public slots:
 	float getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel);
 
 	void stopMovement(uint32_t deviceId);
+	void stopClickMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
 	void applyClickMovement(uint32_t deviceId);
 	void applyGripMovement(uint32_t deviceId);

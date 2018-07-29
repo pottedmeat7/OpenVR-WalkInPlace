@@ -54,16 +54,16 @@ void DeviceManipulationHandle::ll_sendButtonEvent(ButtonEventType eventType, vr:
 	if (m_deviceDriverInterfaceVersion == 4) {
 		switch (eventType) {
 		case vrwalkinplace::ButtonEventType::ButtonPressed:
-			IVRServerDriverHost004Hooks::trackedDeviceButtonPressedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
+			//IVRServerDriverHost004Hooks::trackedDeviceButtonPressedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
 			break;
 		case vrwalkinplace::ButtonEventType::ButtonUnpressed:
-			IVRServerDriverHost004Hooks::trackedDeviceButtonUnpressedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
+			//IVRServerDriverHost004Hooks::trackedDeviceButtonUnpressedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
 			break;
 		case vrwalkinplace::ButtonEventType::ButtonTouched:
-			IVRServerDriverHost004Hooks::trackedDeviceButtonTouchedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
+			//IVRServerDriverHost004Hooks::trackedDeviceButtonTouchedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
 			break;
 		case vrwalkinplace::ButtonEventType::ButtonUntouched:
-			IVRServerDriverHost004Hooks::trackedDeviceButtonUntouchedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
+			//IVRServerDriverHost004Hooks::trackedDeviceButtonUntouchedOrig(m_deviceDriverHostPtr, m_openvrId, eButtonId, eventTimeOffset);
 			break;
 		default:
 			break;
@@ -94,7 +94,8 @@ void DeviceManipulationHandle::ll_sendButtonEvent(ButtonEventType eventType, vr:
 					break;
 			}
 			if (componentHandle != 0) {
-				IVRDriverInput001Hooks::updateBooleanComponentOrig(m_driverInputPtr, componentHandle, newValue, eventTimeOffset);
+				vr::VRDriverInput()->UpdateBooleanComponent(componentHandle, newValue, eventTimeOffset);
+				//IVRDriverInput001Hooks::updateBooleanComponentOrig(m_driverInputPtr, componentHandle, newValue, eventTimeOffset);
 			}
 		} else {
 			LOG(WARNING) << "Device " << m_openvrId << ": No mapping from button id " << eButtonId << " to input component.";
@@ -105,17 +106,25 @@ void DeviceManipulationHandle::ll_sendButtonEvent(ButtonEventType eventType, vr:
 
 void DeviceManipulationHandle::ll_sendAxisEvent(uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState) {
 	if (m_deviceDriverInterfaceVersion == 4) {
-		IVRServerDriverHost004Hooks::trackedDeviceAxisUpdatedOrig(m_deviceDriverHostPtr, m_openvrId, unWhichAxis, axisState);
+		//IVRServerDriverHost004Hooks::trackedDeviceAxisUpdatedOrig(m_deviceDriverHostPtr, m_openvrId, unWhichAxis, axisState);
 	} else if (m_deviceDriverInterfaceVersion == 5) {
 		if (unWhichAxis < 5) {
 			if (_AxisIdToComponentHandleMap[unWhichAxis].first == 0 && _AxisIdToComponentHandleMap[unWhichAxis].second == 0) {
 				LOG(WARNING) << "Device " << m_openvrId << ": No mapping from axis id " << unWhichAxis << " to input component.";
 			} else {
 				if (_AxisIdToComponentHandleMap[unWhichAxis].first != 0) {
-					sendScalarComponentUpdate(m_openvrId, unWhichAxis, 0, axisState.x, 0.0);
+					//sendScalarComponentUpdate(m_openvrId, unWhichAxis, 0, axisState.x, 0.0);
+					vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateScalarComponent(_AxisIdToComponentHandleMap[unWhichAxis].first, axisState.x, 0);
+					if (eVRIError != vr::EVRInputError::VRInputError_None) {
+						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
+					}
 				}
 				if (_AxisIdToComponentHandleMap[unWhichAxis].second != 0) {
-					sendScalarComponentUpdate(m_openvrId, unWhichAxis, 1, axisState.y, 0.0);
+					//sendScalarComponentUpdate(m_openvrId, unWhichAxis, 1, axisState.y, 0.0);
+					vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateScalarComponent(_AxisIdToComponentHandleMap[unWhichAxis].second, axisState.y, 0);
+					if (eVRIError != vr::EVRInputError::VRInputError_None) {
+						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
+					}
 				} 
 			}
 		}
@@ -125,6 +134,9 @@ void DeviceManipulationHandle::ll_sendAxisEvent(uint32_t unWhichAxis, const vr::
 
 void DeviceManipulationHandle::ll_sendScalarComponentUpdate(vr::VRInputComponentHandle_t ulComponent, float fNewValue, double fTimeOffset) {
 	if (m_deviceDriverInterfaceVersion == 5) {
+		//LOG(INFO) << "bbb";
+		//vr::VRDriverInput()->UpdateScalarComponent(ulComponent, fNewValue, fTimeOffset);
+		//LOG(INFO) << "ccc";
 		IVRDriverInput001Hooks::updateScalarComponentOrig(m_driverInputPtr, ulComponent, fNewValue, fTimeOffset);
 	} else if (m_deviceDriverInterfaceVersion == 4) {
 		auto it = _componentHandleToAxisIdMap.find(ulComponent);
@@ -235,7 +247,7 @@ std::map<std::string, uint32_t> _inputComponentNameToAxisId = {
 	{ "trigger", 2 },
 };
 
-void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uint64_t pHandle) {
+void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uint64_t * pHandle) {
 	std::string sg0, sg1, sg2, sg3;
 	if (_matchInputComponentName(pchName, sg0, sg1, sg2, sg3)) {
 		LOG(DEBUG) << "Device Component Name Segments: \"" << sg0 << "\", \"" << sg1 << "\", \"" << sg2 << "\", \"" << sg3 << "\"";
@@ -265,11 +277,11 @@ void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uin
 			}
 		}
 		if (!errorFlag) {
-			_componentHandleToButtonIdMap.emplace(pHandle, std::make_pair(buttonId, buttonType));
+			_componentHandleToButtonIdMap.emplace(*pHandle, std::make_pair(buttonId, buttonType));
 			if (buttonType == 0) {
-				_ButtonIdToComponentHandleMap[buttonId].first = pHandle;
+				_ButtonIdToComponentHandleMap[buttonId].first = *pHandle;
 			} else {
-				_ButtonIdToComponentHandleMap[buttonId].second = pHandle;
+				_ButtonIdToComponentHandleMap[buttonId].second = *pHandle;
 			}
 			LOG(INFO) << "Mapped input component \"" << pchName << "\" to button id (" << (int)buttonId << ", " << buttonType << ")";
 		}
@@ -278,7 +290,7 @@ void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uin
 	}
 }
 
-void DeviceManipulationHandle::inputAddScalarComponent(const char *pchName, uint64_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
+void DeviceManipulationHandle::inputAddScalarComponent(const char *pchName, uint64_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
 	std::string sg0, sg1, sg2, sg3;
 	if (_matchInputComponentName(pchName, sg0, sg1, sg2, sg3)) {
 		LOG(DEBUG) << "Device Component Name Segments: \"" << sg0 << "\", \"" << sg1 << "\", \"" << sg2 << "\", \"" << sg3 << "\"";
@@ -308,13 +320,13 @@ void DeviceManipulationHandle::inputAddScalarComponent(const char *pchName, uint
 			}
 		}
 		if (!errorFlag) {
-			_componentHandleToAxisIdMap.emplace(pHandle, std::make_pair(axisId, axisDim));
+			_componentHandleToAxisIdMap.emplace(*pHandle, std::make_pair(axisId, axisDim));
 			if (axisDim == 0) {
-				_AxisIdToComponentHandleMap[axisId].first = pHandle;
+				_AxisIdToComponentHandleMap[axisId].first = *pHandle;
 			} else {
-				_AxisIdToComponentHandleMap[axisId].second = pHandle;
+				_AxisIdToComponentHandleMap[axisId].second = *pHandle;
 			}
-			LOG(INFO) << "Mapped input component \"" << pchName << "\" to axis id (" << axisId << ", " << axisDim << ")";
+			LOG(INFO) << "Mapped input component \"" << pchName << "\" to axis id (" << axisId << ", " << axisDim << ")" << " with handle " << pHandle;
 		}
 	} else {
 		LOG(ERROR) << "Could not parse input component name \"" << pchName << "\".";

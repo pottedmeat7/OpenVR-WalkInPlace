@@ -32,15 +32,17 @@ struct WalkInPlaceProfile {
 	int hmdPitchUp = 25;
 	double stepTime = 0.5;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.85;
+	float handJogThreshold = 1.1;
 	float handRunThreshold = 2.0;
 	float walkTouch = 0.35;
-	float jogTouch = 0.87;
+	float jogTouch = 1.0;
 	float runTouch = 1.0;
-	float hmdThreshold_y = 0.17;
+	bool useContDirForStraf = false;
+	bool useContDirForRev = false;
+	float hmdThreshold_y = 0.12;
 	float hmdThreshold_xz = 0.27;
 	float trackerThreshold_xz = 0.27;
-	float trackerThreshold_y = 0.12;
+	float trackerThreshold_y = 0.10;
 	int useAccuracyButton = 0;
 };
 
@@ -99,8 +101,8 @@ private:
 	int vive_controller_model_index = -1;
 	bool stepDetectEnabled = false;
 	bool betaEnabled = false;
-	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.17, 0.27 };
-	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.12, 0.27 };
+	vr::HmdVector3d_t _hmdThreshold = { 0.27, 0.12, 0.27 };
+	vr::HmdVector3d_t _trackerThreshold = { 0.27, 0.10, 0.27 };
 	int useAccuracyButton = 5;
 	bool useButtonAsToggle = false;
 	bool flipButtonUse = false;
@@ -108,13 +110,20 @@ private:
 	bool disableHMD = false;
 	bool trackerStepDetected = false;
 	bool scaleSpeedWithSwing = false;
-	int hmdPitchDown = 35;
-	int hmdPitchUp = 25;
+	bool useContDirForStraf = false;
+	bool useContDirForRev = false;
+	vr::HmdVector3d_t hmdForward = { 0,0,-1 };
+	float hmdYaw = 0;
+	float contYaw = 0;
+	float contRoll = 0;
+	float contPitch = 0;
+	float touchX = 0;
+	float touchY = 0;
 	float handWalkThreshold = 0.02;
-	float handJogThreshold = 0.85;
+	float handJogThreshold = 1.0;
 	float handRunThreshold = 2.0;
 	float walkTouch = 0.35;
-	float jogTouch = 0.87;
+	float jogTouch = 1.0;
 	float runTouch = 1.0;
 	float minTouch = 0.45;
 	vr::VROverlayHandle_t overlayHandle;
@@ -178,8 +187,6 @@ public:
 	Q_INVOKABLE int getControlSelect();
 	Q_INVOKABLE int getAccuracyButtonControlSelect();
 	Q_INVOKABLE int getAccuracyButton();
-	Q_INVOKABLE int getHMDPitchDown();
-	Q_INVOKABLE int getHMDPitchUp();
 	Q_INVOKABLE float getHMDXZThreshold();
 	Q_INVOKABLE float getHMDYThreshold();
 	Q_INVOKABLE bool getUseTrackers();
@@ -189,6 +196,8 @@ public:
 	Q_INVOKABLE float getHandWalkThreshold();
 	Q_INVOKABLE float getHandJogThreshold();
 	Q_INVOKABLE float getHandRunThreshold();
+	Q_INVOKABLE bool getUseContDirForStraf();
+	Q_INVOKABLE bool getUseContDirForRev();
 	Q_INVOKABLE bool getScaleTouchWithSwing();
 	Q_INVOKABLE float getWalkTouch();
 	Q_INVOKABLE float getJogTouch();
@@ -226,6 +235,8 @@ public slots:
 	void setWalkTouch(float value);
 	void setJogTouch(float value);
 	void setRunTouch(float value);
+	void setUseContDirForStraf(bool val);
+	void setUseContDirForRev(bool val);
 	void setGameStepType(int gameType);
 	void setHMDType(int gameType);
 	void setControlSelect(int control);
@@ -241,6 +252,7 @@ public slots:
 	float getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel);
 
 	void stopMovement(uint32_t deviceId);
+	void stopClickMovement(uint32_t deviceId);
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
 	void applyClickMovement(uint32_t deviceId);
 	void applyGripMovement(uint32_t deviceId);

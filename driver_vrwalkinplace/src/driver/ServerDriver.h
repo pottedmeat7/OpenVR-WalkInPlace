@@ -104,8 +104,8 @@ public:
 	void hooksPropertiesReadPropertyBatch(void* properties, int version, vr::PropertyContainerHandle_t ulContainer, void* pBatch, uint32_t unBatchEntryCount);
 	void hooksPropertiesWritePropertyBatch(void* properties, int version, vr::PropertyContainerHandle_t ulContainer, void* pBatch, uint32_t unBatchEntryCount);
 	
-	void hooksCreateBooleanComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, void* pHandle);
-	void hooksCreateScalarComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, void* pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
+	void hooksCreateBooleanComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t *  pHandle);
+	void hooksCreateScalarComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
 	bool hooksUpdateBooleanComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset);
 	bool hooksUpdateScalarComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, float& fNewValue, double& fTimeOffset);
 
@@ -134,7 +134,23 @@ private:
 	DeviceManipulationHandle* _openvrIdToDeviceManipulationHandleMap[vr::k_unMaxTrackedDeviceCount];
 	std::map<vr::PropertyContainerHandle_t, DeviceManipulationHandle*> _propertyContainerToDeviceManipulationHandleMap;
 	std::map<void*, DeviceManipulationHandle*> _ptrToDeviceManipulationHandleMap;
-	std::map<uint64_t, DeviceManipulationHandle*> _inputComponentToDeviceManipulationHandleMap;
+	std::map<vr::VRInputComponentHandle_t, DeviceManipulationHandle*> _inputComponentToDeviceManipulationHandleMap;
+	std::map<uint64_t, vr::VRInputComponentHandle_t> m_ulBoolComponentsMap;
+	std::map<uint64_t, vr::VRInputComponentHandle_t> m_ulScalarComponentsMap;
+	typedef enum
+	{
+		k_eButton_Trackpad,
+		k_eTouch_Trackpad,
+		k_eAxis_Trackpad_X,
+		k_eAxis_Trackpad_Y,
+		k_eButton_Trigger,
+		k_eTouch_Trigger,
+		k_eButton_Grip,
+		k_eTouch_Joystick,
+		k_eButton_Joystick,
+		k_eButton_Application,
+		k_eButton_System
+	} PossibleInputComponents;
 
 	//// function hooks related ////
 	std::shared_ptr<InterfaceHooks> _driverContextHooks;

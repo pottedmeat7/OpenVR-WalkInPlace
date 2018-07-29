@@ -46,10 +46,10 @@ private:
 
 	vr::PropertyContainerHandle_t m_propertyContainerHandle = vr::k_ulInvalidPropertyContainer;
 
-	std::map<uint64_t, std::pair<vr::EVRButtonId, int>> _componentHandleToButtonIdMap;
-	std::map<vr::EVRButtonId, std::pair<uint64_t, uint64_t>> _ButtonIdToComponentHandleMap;
-	std::map<uint64_t, std::pair<unsigned, unsigned>> _componentHandleToAxisIdMap;
-	std::pair<uint64_t, uint64_t> _AxisIdToComponentHandleMap[5];
+	std::map<vr::VRInputComponentHandle_t, std::pair<vr::EVRButtonId, int>> _componentHandleToButtonIdMap;
+	std::map<vr::EVRButtonId, std::pair<vr::VRInputComponentHandle_t, vr::VRInputComponentHandle_t>> _ButtonIdToComponentHandleMap;
+	std::map<vr::VRInputComponentHandle_t, std::pair<unsigned, unsigned>> _componentHandleToAxisIdMap;
+	std::pair<vr::VRInputComponentHandle_t, vr::VRInputComponentHandle_t> _AxisIdToComponentHandleMap[5];
 
 
 public:
@@ -87,8 +87,8 @@ public:
 	void sendScalarComponentUpdate(uint32_t unWhichDevice, uint32_t unWhichAxis, uint32_t unAxisDim, vr::VRInputComponentHandle_t ulComponent, float fNewValue, double fTimeOffset);
 	void sendScalarComponentUpdate(uint32_t unWhichDevice, uint32_t unWhichAxis, uint32_t unAxisDim, float, double fTimeOffset);
 	
-	void inputAddBooleanComponent(const char *pchName, uint64_t pHandle);
-	void inputAddScalarComponent(const char *pchName, uint64_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
+	void inputAddBooleanComponent(const char *pchName, uint64_t * pHandle);
+	void inputAddScalarComponent(const char *pchName, uint64_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
 
 	void setPropertyContainer(vr::PropertyContainerHandle_t container) { m_propertyContainerHandle = container; }
 	vr::PropertyContainerHandle_t propertyContainer() { return m_propertyContainerHandle; }

@@ -133,11 +133,13 @@ Section "Install" SecInstall
 	File "${DRIVER_BASEDIR}\driver.vrdrivermanifest"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources"
 	File "${DRIVER_BASEDIR}\resources\driver.vrresources"
+	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources\input"
+	File "${DRIVER_BASEDIR}\resources\input\vive_controller.json"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources\settings"
 	File "${DRIVER_BASEDIR}\resources\settings\default.vrsettings"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\bin\win64"
 	File "${DRIVER_BASEDIR}\bin\x64\driver_00vrwalkinplace.dll"
-	
+
 	; Install the vrmanifest
 	nsExec::ExecToLog '"$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" -installmanifest'
 	
@@ -175,10 +177,12 @@ Section "Uninstall"
 	DetailPrint "VR runtime path: $vrRuntimePath2"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\driver.vrdrivermanifest"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\driver.vrresources"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input\vive_controller.json"	
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings\default.vrsettings"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_00vrwalkinplace.dll"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\bin\"

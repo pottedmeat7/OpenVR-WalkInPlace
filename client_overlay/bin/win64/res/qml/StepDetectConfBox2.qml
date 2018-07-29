@@ -6,8 +6,8 @@ GroupBox {
     property string boxTitle: "Threshold, Accuracy, Time Config"
 
     property double hmdXZ : 0.27
-    property double hmdY : 0.17
-    property double trackerY : 0.12
+    property double hmdY : 0.12
+    property double trackerY : 0.10
     property double trackerXZ : 0.27
     property int useAccuracyButton : 5
     property bool useButtonAsToggle : false
@@ -15,8 +15,8 @@ GroupBox {
     property bool useTrackers : false
     property bool disableHMD : false
     property double handWalk : 0.02
-    property double handJog : 0.35
-    property double handRun : 1.7
+    property double handJog : 1.1
+    property double handRun : 2.1
     property double stepTime : 0.5
 
     property double thresholdStep : 0.01

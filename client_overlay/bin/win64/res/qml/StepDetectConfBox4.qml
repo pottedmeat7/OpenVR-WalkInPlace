@@ -8,6 +8,8 @@ GroupBox {
     property double walkTouch : 0.35
     property double jogTouch : 0.9
     property double runTouch : 1.0
+    property bool useContDirForStraf: false
+    property bool useContDirForRev: false
 
     property double thresholdStep: 0.01
 
@@ -16,12 +18,16 @@ GroupBox {
     property var setWalkTouch: function(w) {}
     property var setJogTouch: function(j) {}
     property var setRunTouch: function(r) {}
+    property var setUseContDirForStraf: function(val) {}
+    property var setUseContDirForRev: function(val) {}
     property var updateValues: function() {}
 
     function updateGUI() {
         walkTouchInputField.text = walkTouch.toFixed(2)
         jogTouchInputField.text = jogTouch.toFixed(2)
         runTouchInputField.text = runTouch.toFixed(2)
+        useContDirForStrafCheck.checked = useContDirForStraf
+        useContDirForRevCheck.checked = useContDirForRev
     }
 
     Layout.fillWidth: true
@@ -228,6 +234,87 @@ GroupBox {
             MyText {
                 text: " "
                 Layout.preferredWidth: 160
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 90
+            }
+
+            MyText {
+                text: " "
+                Layout.preferredWidth: 90
+            }
+
+        }
+
+
+        GridLayout {
+            columns: 6
+
+            MyText {
+                text: "Touch Walk Value"
+                horizontalAlignment: Text.AlignHLeft
+                font.pointSize: 15
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: "Touch Jog Value"
+                horizontalAlignment: Text.AlignHCenter
+                font.pointSize: 15
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: "Touch Run Value"
+                horizontalAlignment: Text.AlignHCenter
+                font.pointSize: 15
+                Layout.preferredWidth: 230
+            }
+
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 90
+            }
+            MyText {
+                text: " "
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 90
+            }
+
+        }
+
+        GridLayout {
+            columns: 4
+
+
+            MyToggleButton {
+                id: useContDirForStrafCheck
+                font.pointSize: 15
+                text: "Use Controller Direction For Straffing?"
+                Layout.fillWidth: false
+                Layout.preferredWidth: 230
+                onCheckedChanged: {
+                    setUseContDirForStraf(checked)
+                }
+            }
+
+            MyToggleButton {
+                id: useContDirForStrafCheck
+                text: "Use Controller Direction For Reverse?"
+                font.pointSize: 15
+                Layout.fillWidth: false
+                Layout.preferredWidth: 230
+                onCheckedChanged: {
+                    setUseContDirForRev(checked)
+                }
             }
 
             MyText {
