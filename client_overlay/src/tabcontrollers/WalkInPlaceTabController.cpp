@@ -1317,36 +1317,58 @@ namespace walkinplace {
 						touchX = 0;
 						touchY = 1;
 						float diffYaw = (hmdYaw < 0 ? -1.0 : 1.0)*(hmdYaw - yaw);
-						if (useContDirForStraf && std::fabs(diffYaw) > 45) { //std::fabs(roll) > 45 ) {
-							if ((rightRot.v[0] >= 0 && hmdForward.v[2] < 0)
-								|| (rightRot.v[0] < 0 && hmdForward.v[2] >= 0)
-								|| (hmdForward.v[2] >= 0 && rightRot.v[0] >= 0 && rightRot.v[2] >= 0)
-								|| (hmdForward.v[2] < 0 && rightRot.v[0] < 0 && rightRot.v[2] < 0)) {
+						hmdForward.v[1] = 0;
+						forwardRot.v[1] = 0;
+						double hmdForwardMag = (std::sqrt((hmdForward.v[0] * hmdForward.v[0]) + (hmdForward.v[2] * hmdForward.v[2])));
+						double forwardMag = (std::sqrt((forwardRot.v[0] * forwardRot.v[0]) + (forwardRot.v[2] * forwardRot.v[2])));
+						hmdForward.v[0] = hmdForward.v[0] / hmdForwardMag;
+						hmdForward.v[2] = hmdForward.v[2] / hmdForwardMag;
+						forwardRot.v[0] = forwardRot.v[0] / forwardMag;
+						forwardRot.v[2] = forwardRot.v[2] / forwardMag;
+						if (useContDirForStraf && pitch < 77 && std::fabs(diffYaw) > 30) { //std::fabs(roll) > 45 ) {
+							if ((hmdForward.v[0] > 0.6 && forwardRot.v[2] > 0.6)
+								|| (hmdForward.v[2] > 0.6 && forwardRot.v[0] < -0.6)
+								|| (hmdForward.v[0] < -0.6 && forwardRot.v[2] < -0.6)
+								|| (hmdForward.v[2] < -0.6 && forwardRot.v[0] > 0.6)
+								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] > 0)
+								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] < 0)
+								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[2] > 0)
+								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[2] < 0)) {
 								touchX = 1;
+								if (std::fabs(diffYaw) > 66) {
+									touchY = 0;
+								}
 							}
-							else if ((rightRot.v[0] >= 0 && hmdForward.v[2] >= 0)
-								|| (rightRot.v[0] < 0 && hmdForward.v[2] < 0)
-								|| (hmdForward.v[2] >= 0 && rightRot.v[0] < 0 && rightRot.v[2] >= 0)
-								|| (hmdForward.v[2] < 0 && rightRot.v[0] >= 0 && rightRot.v[2] < 0)) {
+							else if ((hmdForward.v[0] > 0.6 && forwardRot.v[2] < -0.6)
+								|| (hmdForward.v[2] > 0.6 && forwardRot.v[0] > 0.6)
+								|| (hmdForward.v[0] < -0.6 && forwardRot.v[2] > 0.6)
+								|| (hmdForward.v[2] < -0.6 && forwardRot.v[0] < -0.6)
+								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[2] > 0)
+								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[2] < 0)
+								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] < 0)
+								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] > 0)) {
 								touchX = -1;
-							}
-							if (std::fabs(diffYaw) > 66) {
-								touchY = 0;
+								if (std::fabs(diffYaw) > 66) {
+									touchY = 0;
+								}
 							}
 						}
 						else if (useContDirForRev && (pitch > 77
-							|| (hmdForward.v[0] >= 0 && forwardRot.v[0] >= 0 && forwardRot.v[2] < 0 && hmdForward.v[2] >= 0)
-							|| (hmdForward.v[0] >= 0 && forwardRot.v[0] >= 0 && forwardRot.v[2] >= 0 && hmdForward.v[2] < 0)
-							|| (hmdForward.v[0] < 0 && forwardRot.v[0] < 0 && forwardRot.v[2] < 0 && hmdForward.v[2] >= 0)
-							|| (hmdForward.v[0] < 0 && forwardRot.v[0] < 0 && forwardRot.v[2] >= 0 && hmdForward.v[2] < 0)
-							|| (hmdForward.v[2] >= 0 && forwardRot.v[2] >= 0 && forwardRot.v[0] < 0 && hmdForward.v[0] >= 0)
-							|| (hmdForward.v[2] >= 0 && forwardRot.v[2] >= 0 && forwardRot.v[0] >= 0 && hmdForward.v[0] < 0)
-							|| (hmdForward.v[2] < 0 && forwardRot.v[2] < 0 && forwardRot.v[0] < 0 && hmdForward.v[0] >= 0)
-							|| (hmdForward.v[2] < 0 && forwardRot.v[2] < 0 && forwardRot.v[0] >= 0 && hmdForward.v[0] < 0))) {
+							|| (hmdForward.v[0] > 0.6 && forwardRot.v[0] < 0)
+							|| (hmdForward.v[2] > 0.6 && forwardRot.v[2] < 0)
+							|| (hmdForward.v[0] < -0.6 && forwardRot.v[0] > 0)
+							|| (hmdForward.v[2] < -0.6 && forwardRot.v[2] > 0)
+							|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] > 0 && forwardRot.v[2] > 0)
+							|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] < 0 && forwardRot.v[2] < 0)
+							|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] < 0 && forwardRot.v[2] > 0)
+							|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] > 0 && forwardRot.v[2] < 0))) {
 							touchY = -1;
 							touchX = 0;
 						}
-						//LOG(INFO) << "CONT DIR: " << pitch << ",(" << hmdYaw << "-" << yaw << ")=" << diffYaw << "," << roll;
+						//LOG(INFO) << "CONT Pitch,Yaw,Roll : " << pitch << ",(" << hmdYaw << "-" << yaw << ")=" << diffYaw << "," << roll;
+						//LOG(INFO) << "CONT Pitch,Yaw,Roll : " << pitch << "," <<  yaw << "," << roll;
+						//LOG(INFO) << "Cont Forward (x,y,z): " << forwardRot.v[0] << "," << forwardRot.v[1] << "," << forwardRot.v[2];
+						//LOG(INFO) << "HMD  Forward (x,y,z): " << hmdForward.v[0] << "," << hmdForward.v[1] << "," << hmdForward.v[2];
 					}
 					if (gameType == 1 || gameType == 2 || gameType == 3 || gameType == 4) {
 						axisStateChange = _hasUnTouchedStepAxis != 0;

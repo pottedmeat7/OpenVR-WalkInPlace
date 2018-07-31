@@ -47,7 +47,7 @@ namespace driver {
 //forward declarations
 class ServerDriver;
 class IVRDriverContextHooks;
-class IVRServerDriverHost004Hooks;
+//class IVRServerDriverHost004Hooks;
 
 template<class T>
 struct HookData {

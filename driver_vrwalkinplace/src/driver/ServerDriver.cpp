@@ -11,7 +11,6 @@ namespace vrwalkinplace {
 		ServerDriver* ServerDriver::singleton = nullptr;
 		std::string ServerDriver::installDir;
 
-
 		ServerDriver::ServerDriver() {
 			singleton = this;
 			memset(m_openvrIdToVirtualDeviceMap, 0, sizeof(VirtualDeviceDriver*) * vr::k_unMaxTrackedDeviceCount);
@@ -22,55 +21,6 @@ namespace vrwalkinplace {
 		ServerDriver::~ServerDriver() {
 			LOG(TRACE) << "CServerDriver::~CServerDriver_VRWalkInPlace()";
 		}
-
-
-		bool ServerDriver::hooksTrackedDevicePoseUpdated(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::DriverPose_t& newPose, uint32_t& unPoseStructSize) {
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handlePoseUpdate(unWhichDevice, newPose, unPoseStructSize);
-			}
-			return true;
-		}
-
-		bool ServerDriver::hooksTrackedDeviceButtonPressed(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset) {
-			LOG(TRACE) << "ServerDriver::hooksTrackedDeviceButtonPressed(" << serverDriverHost << ", " << version << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handleButtonEvent(unWhichDevice, ButtonEventType::ButtonPressed, eButtonId, eventTimeOffset);
-			}
-			return true;
-		}
-
-		bool ServerDriver::hooksTrackedDeviceButtonUnpressed(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset) {
-			LOG(TRACE) << "ServerDriver::hooksTrackedDeviceButtonUnpressed(" << serverDriverHost << ", " << version << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handleButtonEvent(unWhichDevice, ButtonEventType::ButtonUnpressed, eButtonId, eventTimeOffset);
-			}
-			return true;
-		}
-
-		bool ServerDriver::hooksTrackedDeviceButtonTouched(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset) {
-			LOG(TRACE) << "ServerDriver::hooksTrackedDeviceButtonTouched(" << serverDriverHost << ", " << version << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handleButtonEvent(unWhichDevice, ButtonEventType::ButtonTouched, eButtonId, eventTimeOffset);
-			}
-			return true;
-		}
-
-		bool ServerDriver::hooksTrackedDeviceButtonUntouched(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset) {
-			LOG(TRACE) << "ServerDriver::hooksTrackedDeviceButtonUntouched(" << serverDriverHost << ", " << version << ", " << unWhichDevice << ", " << (int)eButtonId << ", " << eventTimeOffset << ")";
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handleButtonEvent(unWhichDevice, ButtonEventType::ButtonUntouched, eButtonId, eventTimeOffset);
-			}
-			return true;
-		}
-
-		bool ServerDriver::hooksTrackedDeviceAxisUpdated(void* serverDriverHost, int version, uint32_t& unWhichDevice, uint32_t& unWhichAxis, vr::VRControllerAxis_t& axisState) {
-			LOG(TRACE) << "ServerDriver::hooksTrackedDeviceAxisUpdated(" << serverDriverHost << ", " << version << ", " << unWhichDevice << ", " << (int)unWhichAxis << ")";
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				return _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->handleAxisUpdate(unWhichDevice, unWhichAxis, axisState);
-			}
-			return true;
-		}
-
 
 		bool ServerDriver::hooksPollNextEvent(void* serverDriverHost, int version, void* pEvent, uint32_t uncbVREvent) {
 			vr::VREvent_t* event = (vr::VREvent_t*)pEvent;
@@ -134,13 +84,6 @@ namespace vrwalkinplace {
 					//installDir = vr::VRProperties()->GetStringProperty(pDriverContext->GetDriverHandle(), vr::Prop_InstallPath_String, &tpeError);
 					//vr::VRProperties()->SetStringProperty(m_ulPropertyContainer, vr::Prop_InputProfilePath_String, "{vrwalkinplace}/input/vive_controller.json");
 
-					// Register all available hardware components of the PSMove controller, i.e. physical buttons
-					vr::VRInputComponentHandle_t m_ulComponent;
-
-					// Grip button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[k_eButton_Grip]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[k_eButton_Grip]);
-
 					// A button component
 					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/click", &m_ulBoolComponentsMap[k_eButton_Trackpad]);
 					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/click", &m_ulBoolComponentsMap[k_eButton_Trackpad]);
@@ -149,9 +92,21 @@ namespace vrwalkinplace {
 					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/touch", &m_ulBoolComponentsMap[k_eTouch_Trackpad]);
 					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/touch", &m_ulBoolComponentsMap[k_eTouch_Trackpad]);
 
+					// A axis component
+					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+
+					// A axis component
+					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+
 					// Joystick button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joysitck/click", &m_ulBoolComponentsMap[k_eButton_Joystick]);
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/click", &m_ulBoolComponentsMap[k_eButton_Joystick]);
 					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/click", &m_ulBoolComponentsMap[k_eButton_Joystick]);
+
+					// Joystick button component
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/touch", &m_ulBoolComponentsMap[k_eTouch_Joystick]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/touch", &m_ulBoolComponentsMap[k_eTouch_Joystick]);
 
 					// Trigger button component
 					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trigger/click", &m_ulBoolComponentsMap[k_eButton_Trigger]);
@@ -161,13 +116,9 @@ namespace vrwalkinplace {
 					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trigger/touch", &m_ulBoolComponentsMap[k_eTouch_Trigger]);
 					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trigger/touch", &m_ulBoolComponentsMap[k_eTouch_Trigger]);
 
-					// A axis component
-					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
-					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
-
-					// A axis component
-					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
-					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					// Grip button component
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[k_eButton_Grip]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[k_eButton_Grip]);
 
 				}
 			}
@@ -283,23 +234,6 @@ namespace vrwalkinplace {
 			}
 		}
 
-		bool ServerDriver::hooksUpdateBooleanComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset) {
-			auto it = _inputComponentToDeviceManipulationHandleMap.find(ulComponent);
-			if (it != _inputComponentToDeviceManipulationHandleMap.end()) {
-				return it->second->handleBooleanComponentUpdate(ulComponent, bNewValue, fTimeOffset);
-			}
-			return true;
-		}
-
-		bool ServerDriver::hooksUpdateScalarComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, float& fNewValue, double& fTimeOffset) {
-			auto it = _inputComponentToDeviceManipulationHandleMap.find(ulComponent);
-			if (it != _inputComponentToDeviceManipulationHandleMap.end()) {
-				return it->second->handleScalarComponentUpdate(ulComponent, fNewValue, fTimeOffset);
-			}
-			return true;
-		}
-
-
 		vr::EVRInitError ServerDriver::Init(vr::IVRDriverContext *pDriverContext) {
 			LOG(TRACE) << "CServerDriver::Init()";
 
@@ -380,13 +314,6 @@ namespace vrwalkinplace {
 
 		void ServerDriver::_trackedDeviceDeactivated(uint32_t deviceId) {
 			m_openvrIdToVirtualDeviceMap[deviceId] = nullptr;
-		}
-
-
-		void ServerDriver::openvr_poseUpdate(uint32_t unWhichDevice, bool flipYaw, int64_t timestamp) {
-			if (_openvrIdToDeviceManipulationHandleMap[unWhichDevice] && _openvrIdToDeviceManipulationHandleMap[unWhichDevice]->isValid()) {
-				_openvrIdToDeviceManipulationHandleMap[unWhichDevice]->setFlipYaw(flipYaw);
-			}
 		}
 
 		void ServerDriver::openvr_buttonEvent(uint32_t unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {

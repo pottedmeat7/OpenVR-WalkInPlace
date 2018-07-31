@@ -250,49 +250,19 @@ GroupBox {
 
 
         GridLayout {
-            columns: 6
+            columns: 1
 
             MyText {
-                text: "Touch Walk Value"
+                text: "Experimental Features"
                 horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
-                Layout.preferredWidth: 230
-            }
-
-            MyText {
-                text: "Touch Jog Value"
-                horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 15
-                Layout.preferredWidth: 230
-            }
-
-            MyText {
-                text: "Touch Run Value"
-                horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 15
-                Layout.preferredWidth: 230
-            }
-
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 230
-            }
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 90
-            }
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 850
             }
 
         }
 
         GridLayout {
-            columns: 4
+            columns: 2
 
 
             MyToggleButton {
@@ -300,31 +270,21 @@ GroupBox {
                 font.pointSize: 15
                 text: "Use Controller Direction For Straffing?"
                 Layout.fillWidth: false
-                Layout.preferredWidth: 230
+                Layout.preferredWidth: 550
                 onCheckedChanged: {
                     setUseContDirForStraf(checked)
                 }
             }
 
             MyToggleButton {
-                id: useContDirForStrafCheck
+                id: useContDirForRevCheck
                 text: "Use Controller Direction For Reverse?"
                 font.pointSize: 15
                 Layout.fillWidth: false
-                Layout.preferredWidth: 230
+                Layout.preferredWidth: 550
                 onCheckedChanged: {
                     setUseContDirForRev(checked)
                 }
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 90
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 90
             }
 
         }

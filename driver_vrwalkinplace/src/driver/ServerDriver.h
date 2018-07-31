@@ -65,8 +65,6 @@ public:
 
 	static std::string getInstallDirectory() { return installDir; }
 
-	void openvr_poseUpdate(uint32_t unWhichDevice, bool flipYaw, int64_t timestamp);
-
 	void openvr_buttonEvent(uint32_t unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
 
 	void openvr_axisEvent(uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
@@ -92,22 +90,13 @@ public:
 	//// function hooks related ////
 	void hooksTrackedDeviceAdded(void* serverDriverHost, int version, const char *pchDeviceSerialNumber, vr::ETrackedDeviceClass& eDeviceClass, void* pDriver);
 	void hooksTrackedDeviceActivated(void* serverDriver, int version, uint32_t unObjectId);
-	bool hooksTrackedDevicePoseUpdated(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::DriverPose_t& newPose, uint32_t& unPoseStructSize);
-	bool hooksTrackedDeviceButtonPressed(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset);
-	bool hooksTrackedDeviceButtonUnpressed(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset);
-	bool hooksTrackedDeviceButtonTouched(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset);
-	bool hooksTrackedDeviceButtonUntouched(void* serverDriverHost, int version, uint32_t& unWhichDevice, vr::EVRButtonId& eButtonId, double& eventTimeOffset);
-	bool hooksTrackedDeviceAxisUpdated(void* serverDriverHost, int version, uint32_t& unWhichDevice, uint32_t& unWhichAxis, vr::VRControllerAxis_t& axisState);
 	bool hooksPollNextEvent(void* serverDriverHost, int version, void* pEvent, uint32_t uncbVREvent);
-	
 	
 	void hooksPropertiesReadPropertyBatch(void* properties, int version, vr::PropertyContainerHandle_t ulContainer, void* pBatch, uint32_t unBatchEntryCount);
 	void hooksPropertiesWritePropertyBatch(void* properties, int version, vr::PropertyContainerHandle_t ulContainer, void* pBatch, uint32_t unBatchEntryCount);
 	
 	void hooksCreateBooleanComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t *  pHandle);
 	void hooksCreateScalarComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
-	bool hooksUpdateBooleanComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset);
-	bool hooksUpdateScalarComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, float& fNewValue, double& fTimeOffset);
 
 	// driver events injection
 	void addDriverEventForInjection(void* serverDriverHost, std::shared_ptr<void> event, uint32_t size);
@@ -147,9 +136,7 @@ private:
 		k_eTouch_Trigger,
 		k_eButton_Grip,
 		k_eTouch_Joystick,
-		k_eButton_Joystick,
-		k_eButton_Application,
-		k_eButton_System
+		k_eButton_Joystick
 	} PossibleInputComponents;
 
 	//// function hooks related ////

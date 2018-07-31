@@ -61,12 +61,6 @@ FunctionEnd
 
 Function .onInit
 	StrCpy $upgradeInstallation "false"
- 
-	; If OVRIE is not installed then cannot continue
-	IfFileExists $INSTDIR\..\OpenVR-InputEmulator\OpenVR-InputEmulatorOverlay.exe 0 +3
-		MessageBox MB_OK|MB_ICONEXCLAMATION \
-			"OpenVR-InputEmulator is installed.$\nPlease use the OpenVR-WalkInPlace-OVRIE.exe installer instead.$\nOr You can continue with both."
-		Abort 
 
 	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "UninstallString"
 	StrCmp $R0 "" done	
@@ -113,7 +107,6 @@ Section "Install" SecInstall
 	File "${OVERLAY_BASEDIR}\*.exe"
 	File "${OVERLAY_BASEDIR}\*.dll"
 	File "${OVERLAY_BASEDIR}\*.bat"
-	File "${OVERLAY_BASEDIR}\*.mtl"
 	File "${OVERLAY_BASEDIR}\*.vrmanifest"
 	File "${OVERLAY_BASEDIR}\*.conf"
 	File /r "${OVERLAY_BASEDIR}\res"
@@ -133,8 +126,6 @@ Section "Install" SecInstall
 	File "${DRIVER_BASEDIR}\driver.vrdrivermanifest"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources"
 	File "${DRIVER_BASEDIR}\resources\driver.vrresources"
-	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources\input"
-	File "${DRIVER_BASEDIR}\resources\input\vive_controller.json"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources\settings"
 	File "${DRIVER_BASEDIR}\resources\settings\default.vrsettings"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\bin\win64"
@@ -177,12 +168,11 @@ Section "Uninstall"
 	DetailPrint "VR runtime path: $vrRuntimePath2"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\driver.vrdrivermanifest"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\driver.vrresources"
-	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input\vive_controller.json"	
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings\default.vrsettings"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_00vrwalkinplace.dll"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\error.log"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings"
-	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\bin\"

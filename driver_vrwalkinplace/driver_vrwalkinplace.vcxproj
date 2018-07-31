@@ -36,9 +36,7 @@
     <ClCompile Include="src\hooks\common.cpp" />
     <ClCompile Include="src\hooks\ITrackedDeviceServerDriver005Hooks.cpp" />
     <ClCompile Include="src\hooks\IVRDriverContextHooks.cpp" />
-    <ClCompile Include="src\hooks\IVRDriverInput001Hooks.cpp" />
     <ClCompile Include="src\hooks\IVRProperties001Hooks.cpp" />
-    <ClCompile Include="src\hooks\IVRServerDriverHost004Hooks.cpp" />
     <ClCompile Include="src\hooks\IVRServerDriverHost005Hooks.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -50,9 +48,7 @@
     <ClInclude Include="src\hooks\common.h" />
     <ClInclude Include="src\hooks\ITrackedDeviceServerDriver005Hooks.h" />
     <ClInclude Include="src\hooks\IVRDriverContextHooks.h" />
-    <ClInclude Include="src\hooks\IVRDriverInput001Hooks.h" />
     <ClInclude Include="src\hooks\IVRProperties001Hooks.h" />
-    <ClInclude Include="src\hooks\IVRServerDriverHost004Hooks.h" />
     <ClInclude Include="src\hooks\IVRServerDriverHost005Hooks.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\utils\DevicePropertyValueVisitor.h" />

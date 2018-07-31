@@ -15,7 +15,6 @@ HookData<IVRServerDriverHost005Hooks::pollNextEvent_t> IVRServerDriverHost005Hoo
 IVRServerDriverHost005Hooks::IVRServerDriverHost005Hooks(void* iptr) {
 	if (!_isHooked) {
 		CREATE_MH_HOOK(trackedDeviceAddedHook, _trackedDeviceAdded, "IVRServerDriverHost005::TrackedDeviceAdded", iptr, 0);
-		//CREATE_MH_HOOK(trackedDevicePoseUpdatedHook, _trackedDevicePoseUpdated, "IVRServerDriverHost005::TrackedDevicePoseUpdated", iptr, 1);
 		CREATE_MH_HOOK(pollNextEventHook, _pollNextEvent, "IVRServerDriverHost005::PollNextEvent", iptr, 5);
 		_isHooked = true;
 	}
@@ -25,7 +24,6 @@ IVRServerDriverHost005Hooks::IVRServerDriverHost005Hooks(void* iptr) {
 IVRServerDriverHost005Hooks::~IVRServerDriverHost005Hooks() {
 	if (_isHooked) {
 		REMOVE_MH_HOOK(trackedDeviceAddedHook);
-		//REMOVE_MH_HOOK(trackedDevicePoseUpdatedHook);
 		REMOVE_MH_HOOK(pollNextEventHook);
 		_isHooked = false;
 	}
@@ -55,10 +53,10 @@ void IVRServerDriverHost005Hooks::_trackedDevicePoseUpdated(void* _this, uint32_
 	// Vive Controller: 369 calls/s each
 	//
 	// Time is key. If we assume 1 HMD and 13 controllers, we have a total of  ~6000 calls/s. That's about 166 microseconds per call at 100% load.
-	auto poseCopy = newPose;
-	if (serverDriver->hooksTrackedDevicePoseUpdated(_this, 5, unWhichDevice, poseCopy, unPoseStructSize)) {
-		trackedDevicePoseUpdatedHook.origFunc(_this, unWhichDevice, poseCopy, unPoseStructSize);
-	}
+	//auto poseCopy = newPose;
+	//if (serverDriver->hooksTrackedDevicePoseUpdated(_this, 5, unWhichDevice, poseCopy, unPoseStructSize)) {
+	//	trackedDevicePoseUpdatedHook.origFunc(_this, unWhichDevice, poseCopy, unPoseStructSize);
+	//}
 }
 
 bool IVRServerDriverHost005Hooks::_pollNextEvent(void* _this, void* pEvent, uint32_t uncbVREvent) {

@@ -122,9 +122,9 @@ namespace vrwalkinplace {
 
 								case ipc::RequestType::OpenVR_PoseUpdate:
 								{
-									if (vr::VRServerDriverHost()) {
-										driver->openvr_poseUpdate(message.msg.ipc_PoseUpdate.deviceId, message.msg.ipc_PoseUpdate.flipYaw, message.timestamp);
-									}
+									//if (vr::VRServerDriverHost()) {
+									//	driver->openvr_poseUpdate(message.msg.ipc_PoseUpdate.deviceId, message.msg.ipc_PoseUpdate.flipYaw, message.timestamp);
+									//}
 								}
 								break;
 
