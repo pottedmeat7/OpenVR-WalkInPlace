@@ -58,6 +58,7 @@ namespace vrwalkinplace {
 				}
 				if (componentHandle != 0) {
 					vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateBooleanComponent(componentHandle, newValue, eventTimeOffset);
+					LOG(INFO) << "apply boolean event " << eButtonId << " on device " << m_openvrId;
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
 						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}
@@ -78,6 +79,7 @@ namespace vrwalkinplace {
 					if (_AxisIdToComponentHandleMap[unWhichAxis].first != 0) {
 						//sendScalarComponentUpdate(m_openvrId, unWhichAxis, 0, axisState.x, 0.0);
 						vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateScalarComponent(_AxisIdToComponentHandleMap[unWhichAxis].first, axisState.x, 0);
+						LOG(INFO) << "apply axis event " << unWhichAxis << " X dimension on device " << m_openvrId;
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}
@@ -85,6 +87,7 @@ namespace vrwalkinplace {
 					if (_AxisIdToComponentHandleMap[unWhichAxis].second != 0) {
 						//sendScalarComponentUpdate(m_openvrId, unWhichAxis, 1, axisState.y, 0.0);
 						vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateScalarComponent(_AxisIdToComponentHandleMap[unWhichAxis].second, axisState.y, 0);
+						LOG(INFO) << "apply axis event " << unWhichAxis << " Y dimension on device " << m_openvrId;
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}
@@ -131,11 +134,11 @@ namespace vrwalkinplace {
 
 		std::map<std::string, uint32_t> _inputComponentNameToAxisId = {
 			{ "trackpad", 0 },
-			{ "joystick", 1 },
-			{ "trigger", 2 },
+			{ "trigger", 1 },
+			{ "joystick", 2 },
 		};
 
-		void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uint64_t * pHandle) {
+		void DeviceManipulationHandle::inputAddBooleanComponent(const char *pchName, uint64_t pHandle) {
 			std::string sg0, sg1, sg2, sg3;
 			if (_matchInputComponentName(pchName, sg0, sg1, sg2, sg3)) {
 				LOG(DEBUG) << "Device Component Name Segments: \"" << sg0 << "\", \"" << sg1 << "\", \"" << sg2 << "\", \"" << sg3 << "\"";
@@ -169,14 +172,14 @@ namespace vrwalkinplace {
 					}
 				}
 				if (!errorFlag) {
-					_componentHandleToButtonIdMap.emplace(*pHandle, std::make_pair(buttonId, buttonType));
+					_componentHandleToButtonIdMap.emplace(pHandle, std::make_pair(buttonId, buttonType));
 					if (buttonType == 0) {
-						_ButtonIdToComponentHandleMap[buttonId].first = *pHandle;
+						_ButtonIdToComponentHandleMap[buttonId].first = pHandle;
 					}
 					else {
-						_ButtonIdToComponentHandleMap[buttonId].second = *pHandle;
+						_ButtonIdToComponentHandleMap[buttonId].second = pHandle;
 					}
-					LOG(INFO) << "Mapped input component \"" << pchName << "\" to button id (" << (int)buttonId << ", " << buttonType << ")";
+					LOG(INFO) << "Mapped input component \"" << pchName << "\" on device " << m_openvrId << " to button id (" << (int)buttonId << ", " << buttonType << ")";
 				}
 			}
 			else {
@@ -184,7 +187,7 @@ namespace vrwalkinplace {
 			}
 		}
 
-		void DeviceManipulationHandle::inputAddScalarComponent(const char *pchName, uint64_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
+		void DeviceManipulationHandle::inputAddScalarComponent(const char *pchName, uint64_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
 			std::string sg0, sg1, sg2, sg3;
 			if (_matchInputComponentName(pchName, sg0, sg1, sg2, sg3)) {
 				LOG(DEBUG) << "Device Component Name Segments: \"" << sg0 << "\", \"" << sg1 << "\", \"" << sg2 << "\", \"" << sg3 << "\"";
@@ -218,14 +221,14 @@ namespace vrwalkinplace {
 					}
 				}
 				if (!errorFlag) {
-					_componentHandleToAxisIdMap.emplace(*pHandle, std::make_pair(axisId, axisDim));
+					_componentHandleToAxisIdMap.emplace(pHandle, std::make_pair(axisId, axisDim));
 					if (axisDim == 0) {
-						_AxisIdToComponentHandleMap[axisId].first = *pHandle;
+						_AxisIdToComponentHandleMap[axisId].first = pHandle;
 					}
 					else {
-						_AxisIdToComponentHandleMap[axisId].second = *pHandle;
+						_AxisIdToComponentHandleMap[axisId].second = pHandle;
 					}
-					LOG(INFO) << "Mapped input component \"" << pchName << "\" to axis id (" << axisId << ", " << axisDim << ")" << " with handle " << pHandle;
+					LOG(INFO) << "Mapped input component \"" << pchName << "\" on device " << m_openvrId << " to axis id (" << axisId << ", " << axisDim << ")" << " with handle " << pHandle;
 				}
 			}
 			else {

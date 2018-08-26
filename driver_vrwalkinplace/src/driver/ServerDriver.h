@@ -95,8 +95,8 @@ public:
 	void hooksPropertiesReadPropertyBatch(void* properties, int version, vr::PropertyContainerHandle_t ulContainer, void* pBatch, uint32_t unBatchEntryCount);
 	void hooksPropertiesWritePropertyBatch(void* properties, int version, vr::PropertyContainerHandle_t ulContainer, void* pBatch, uint32_t unBatchEntryCount);
 	
-	void hooksCreateBooleanComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t *  pHandle);
-	void hooksCreateScalarComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
+	void hooksCreateBooleanComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t pHandle);
+	void hooksCreateScalarComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
 
 	// driver events injection
 	void addDriverEventForInjection(void* serverDriverHost, std::shared_ptr<void> event, uint32_t size);
@@ -124,8 +124,8 @@ private:
 	std::map<vr::PropertyContainerHandle_t, DeviceManipulationHandle*> _propertyContainerToDeviceManipulationHandleMap;
 	std::map<void*, DeviceManipulationHandle*> _ptrToDeviceManipulationHandleMap;
 	std::map<vr::VRInputComponentHandle_t, DeviceManipulationHandle*> _inputComponentToDeviceManipulationHandleMap;
-	std::map<uint64_t, vr::VRInputComponentHandle_t> m_ulBoolComponentsMap;
-	std::map<uint64_t, vr::VRInputComponentHandle_t> m_ulScalarComponentsMap;
+	std::map<uint64_t, std::map<uint64_t, vr::VRInputComponentHandle_t> > m_ulBoolComponentsMap;
+	std::map<uint64_t, std::map<uint64_t, vr::VRInputComponentHandle_t> > m_ulScalarComponentsMap;
 	typedef enum
 	{
 		k_eButton_Trackpad,
@@ -135,8 +135,11 @@ private:
 		k_eButton_Trigger,
 		k_eTouch_Trigger,
 		k_eButton_Grip,
+		k_eTouch_Grip,
 		k_eTouch_Joystick,
-		k_eButton_Joystick
+		k_eButton_Joystick,
+		k_eAxis_Joystick_X,
+		k_eAxis_Joystick_Y,
 	} PossibleInputComponents;
 
 	//// function hooks related ////

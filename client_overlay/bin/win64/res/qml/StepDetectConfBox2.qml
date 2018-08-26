@@ -3,15 +3,12 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 GroupBox {
-    property string boxTitle: "Threshold, Accuracy, Time Config"
+    property string boxTitle: "Thresholds"
 
     property double hmdXZ : 0.27
     property double hmdY : 0.12
     property double trackerY : 0.10
     property double trackerXZ : 0.27
-    property int useAccuracyButton : 5
-    property bool useButtonAsToggle : false
-    property bool flipButtonUse : false
     property bool useTrackers : false
     property bool disableHMD : false
     property double handWalk : 0.02
@@ -31,10 +28,6 @@ GroupBox {
     property var setDisableHMD: function(val) {}
     property var setTrackerXZ: function(x) {}
     property var setTrackerY: function(y) {}
-    property var setAccuracyButton: function(b) {}
-    property var setAccuracyButtonAsToggle : function(v) {}
-    property var setAccuracyButtonFlip : function(v) {}
-    property var setAccuracyButtonControlSelect : function(c) {}
     property var setHandJog: function(j) {}
     property var setHandRun: function(r) {}
     property var setStepTime: function(t) {}
@@ -47,8 +40,6 @@ GroupBox {
         trackerXZInputField.text = trackerXZ.toFixed(2)
         handJogInputField.text = handJog.toFixed(2)
         handRunInputField.text = handRun.toFixed(2)  
-        accuracyButtonDialog.currentIndex = useAccuracyButton
-        flipButtonUseCheck.checked = flipButtonUse
         useTrackersCheck.checked = useTrackers || disableHMD
         disableHMDCheck.checked = disableHMD
         stepTimeInputField.text = stepTime.toFixed(2)        
@@ -57,13 +48,14 @@ GroupBox {
     Layout.fillWidth: true
 
     background: Rectangle {
-        color: "transparent"
+        color: "#277650"
         border.color: "#ffffff"
         radius: 8
     }
 
     ColumnLayout {
         anchors.fill: parent
+        Layout.alignment: Qt.AlignHCenter
 
         GridLayout {
             columns: 5
@@ -103,6 +95,7 @@ GroupBox {
 
         GridLayout {
             columns: 14
+            Layout.alignment: Qt.AlignHCenter
 
             MyPushButton2 {
                 id: hmdYMinusButton
@@ -504,101 +497,6 @@ GroupBox {
                     stepTime = value
                     setStepTime(value)
                 }
-            }
-        }
-
-        GridLayout {
-            columns: 5
-
-            MyText {
-                text: "Button to enable WIP"
-                horizontalAlignment: Text.AlignHLeft
-                Layout.preferredWidth: 330
-            }
-
-
-            MyText {
-                text: "Disable WIP when held?"
-                horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
-                Layout.preferredWidth: 200
-            }
-
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 90
-            }
-
-            MyText {
-                text: "Controller for button"
-                horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
-                Layout.preferredWidth: 260
-            }    
-
-
-            MyText {
-                text: " "
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 200
-            }
-
-        }
-
-        GridLayout {
-            columns: 5
-
-            MyComboBox {
-                id: accuracyButtonDialog 
-                currentIndex: 0
-                Layout.maximumWidth: 330
-                Layout.minimumWidth: 330
-                Layout.preferredWidth: 330
-                Layout.fillWidth: true
-                displayText: currentText
-                model: ["grip", "touchpad touch", "touchpad click", "trigger", "App Menu", "None"]
-                onCurrentIndexChanged: {
-                    if (currentIndex >= 0) { 
-                        setAccuracyButton(currentIndex) 
-                    } 
-                }
-            }     
-
-            MyToggleButton {
-                id: flipButtonUseCheck
-                Layout.preferredWidth: 200
-                Layout.fillWidth: false
-                onCheckedChanged: {
-                    setAccuracyButtonFlip(checked)
-                }
-            }
-
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 90
-            }
-
-            MyComboBox {
-                id: buttonControlSelect 
-                currentIndex: 0
-                Layout.maximumWidth: 290
-                Layout.minimumWidth: 290
-                Layout.preferredWidth: 290
-                Layout.fillWidth: true
-                displayText: currentText
-                model: ["1st Controller", "2nd Controller", "Either Controller"]
-                onCurrentIndexChanged: {
-                    if (currentIndex >= 0) { 
-                        setAccuracyButtonControlSelect(currentIndex)                        
-                    } 
-                }
-            }
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 170
             }
         }
     }

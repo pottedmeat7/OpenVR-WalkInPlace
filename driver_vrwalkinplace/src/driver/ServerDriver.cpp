@@ -75,50 +75,73 @@ namespace vrwalkinplace {
 				handle->setPropertyContainer(m_ulPropertyContainer);
 				_propertyContainerToDeviceManipulationHandleMap[m_ulPropertyContainer] = handle.get();
 
-				LOG(INFO) << "Successfully added device " << handle->serialNumber() << " (OpenVR Id: " << handle->openvrId() << ")";
+				LOG(INFO) << "Successfully added device " << handle->serialNumber() << " (OpenVR Id: " << unObjectId << ") (" << handle->openvrId() << ")";
 
 				if (_openvrIdToDeviceManipulationHandleMap[unObjectId]->deviceClass() == vr::TrackedDeviceClass_Controller) {
-
 					// Configure JSON controller configuration input profile
 					//vr::ETrackedPropertyError tpeError;
 					//installDir = vr::VRProperties()->GetStringProperty(pDriverContext->GetDriverHandle(), vr::Prop_InstallPath_String, &tpeError);
 					//vr::VRProperties()->SetStringProperty(m_ulPropertyContainer, vr::Prop_InputProfilePath_String, "{vrwalkinplace}/input/vive_controller.json");
 
 					// A button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/click", &m_ulBoolComponentsMap[k_eButton_Trackpad]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/click", &m_ulBoolComponentsMap[k_eButton_Trackpad]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eButton_Trackpad,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/click", &m_ulBoolComponentsMap[unObjectId][k_eButton_Trackpad]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/click", m_ulBoolComponentsMap[unObjectId][k_eButton_Trackpad]);
 
 					// A button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/touch", &m_ulBoolComponentsMap[k_eTouch_Trackpad]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/touch", &m_ulBoolComponentsMap[k_eTouch_Trackpad]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eTouch_Trackpad,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/touch", &m_ulBoolComponentsMap[unObjectId][k_eTouch_Trackpad]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/touch", m_ulBoolComponentsMap[unObjectId][k_eTouch_Trackpad]);
 
 					// A axis component
-					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
-					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					m_ulScalarComponentsMap[unObjectId].insert(std::make_pair(k_eAxis_Trackpad_X,0));
+					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/x", &m_ulScalarComponentsMap[unObjectId][k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/x", m_ulScalarComponentsMap[unObjectId][k_eAxis_Trackpad_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
 
 					// A axis component
-					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
-					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					m_ulScalarComponentsMap[unObjectId].insert(std::make_pair(k_eAxis_Trackpad_Y,0));
+					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/trackpad/y", &m_ulScalarComponentsMap[unObjectId][k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/trackpad/y", m_ulScalarComponentsMap[unObjectId][k_eAxis_Trackpad_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
 
 					// Joystick button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/click", &m_ulBoolComponentsMap[k_eButton_Joystick]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/click", &m_ulBoolComponentsMap[k_eButton_Joystick]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eButton_Joystick,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/click", &m_ulBoolComponentsMap[unObjectId][k_eButton_Joystick]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/click", m_ulBoolComponentsMap[unObjectId][k_eButton_Joystick]);
 
 					// Joystick button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/touch", &m_ulBoolComponentsMap[k_eTouch_Joystick]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/touch", &m_ulBoolComponentsMap[k_eTouch_Joystick]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eTouch_Joystick,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/touch", &m_ulBoolComponentsMap[unObjectId][k_eTouch_Joystick]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/touch", m_ulBoolComponentsMap[unObjectId][k_eTouch_Joystick]);
+
+					// joystick axis component
+					m_ulScalarComponentsMap[unObjectId].insert(std::make_pair(k_eAxis_Joystick_X,0));
+					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/joystick/x", &m_ulScalarComponentsMap[unObjectId][k_eAxis_Joystick_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/x", m_ulScalarComponentsMap[unObjectId][k_eAxis_Joystick_X], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+
+					// joystick axis component
+					m_ulScalarComponentsMap[unObjectId].insert(std::make_pair(k_eAxis_Joystick_Y,0));
+					vr::VRDriverInput()->CreateScalarComponent(m_ulPropertyContainer, "/input/joystick/y", &m_ulScalarComponentsMap[unObjectId][k_eAxis_Joystick_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
+					hooksCreateScalarComponent(serverDriver, version, m_ulPropertyContainer, "/input/joystick/y", m_ulScalarComponentsMap[unObjectId][k_eAxis_Joystick_Y], vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedTwoSided);
 
 					// Trigger button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trigger/click", &m_ulBoolComponentsMap[k_eButton_Trigger]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trigger/click", &m_ulBoolComponentsMap[k_eButton_Trigger]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eButton_Trackpad,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trigger/click", &m_ulBoolComponentsMap[unObjectId][k_eButton_Trigger]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trigger/click", m_ulBoolComponentsMap[unObjectId][k_eButton_Trigger]);
 
 					// Trigger button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trigger/touch", &m_ulBoolComponentsMap[k_eTouch_Trigger]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trigger/touch", &m_ulBoolComponentsMap[k_eTouch_Trigger]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eTouch_Trigger,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trigger/touch", &m_ulBoolComponentsMap[unObjectId][k_eTouch_Trigger]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/trigger/touch", m_ulBoolComponentsMap[unObjectId][k_eTouch_Trigger]);
 
 					// Grip button component
-					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[k_eButton_Grip]);
-					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[k_eButton_Grip]);
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eButton_Grip,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/click", &m_ulBoolComponentsMap[unObjectId][k_eButton_Grip]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/grip/click", m_ulBoolComponentsMap[unObjectId][k_eButton_Grip]);
+	
+					// Grip button component
+					m_ulBoolComponentsMap[unObjectId].insert(std::make_pair(k_eTouch_Grip,0));
+					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/touch", &m_ulBoolComponentsMap[unObjectId][k_eTouch_Grip]);
+					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/grip/touch", m_ulBoolComponentsMap[unObjectId][k_eTouch_Grip]);
 
 				}
 			}
@@ -209,27 +232,27 @@ namespace vrwalkinplace {
 			}
 		}
 
-		void ServerDriver::hooksCreateBooleanComponent(void * driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char * pchName, uint64_t * pHandle) {
+		void ServerDriver::hooksCreateBooleanComponent(void * driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char * pchName, uint64_t pHandle) {
 			auto it = _propertyContainerToDeviceManipulationHandleMap.find(ulContainer);
 			if (it != _propertyContainerToDeviceManipulationHandleMap.end()) {
-				LOG(INFO) << "Device " << it->second->serialNumber() << " has boolean input component \"" << pchName << "\"";
+				//LOG(INFO) << "Device " << it->second->serialNumber() << " has boolean input component \"" << pchName << "\"";
 				it->second->setDriverInputPtr(driverInput);
 				//_inputComponentToDeviceManipulationHandleMap[*((uint64_t*)pHandle)] = it->second;
 				//it->second->inputAddBooleanComponent(pchName, *((uint64_t*)pHandle));
-				_inputComponentToDeviceManipulationHandleMap[*pHandle] = it->second;
+				_inputComponentToDeviceManipulationHandleMap[pHandle] = it->second;
 				it->second->inputAddBooleanComponent(pchName, pHandle);
 			}
 		}
 
-		void ServerDriver::hooksCreateScalarComponent(void * driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char * pchName, vr::VRInputComponentHandle_t * pHandle,
+		void ServerDriver::hooksCreateScalarComponent(void * driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char * pchName, vr::VRInputComponentHandle_t pHandle,
 			vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
 			auto it = _propertyContainerToDeviceManipulationHandleMap.find(ulContainer);
 			if (it != _propertyContainerToDeviceManipulationHandleMap.end()) {
-				LOG(INFO) << "Device " << it->second->serialNumber() << " has scalar input component \"" << pchName << "\" (type: " << (int)eType << ", units: " << (int)eUnits << ")";
+				//LOG(INFO) << "Device " << it->second->serialNumber() << " has scalar input component \"" << pchName << "\" (type: " << (int)eType << ", units: " << (int)eUnits << ")";
 				it->second->setDriverInputPtr(driverInput);
 				//_inputComponentToDeviceManipulationHandleMap[*((uint64_t*)pHandle)] = it->second;
 				//it->second->inputAddScalarComponent(pchName, *((uint64_t*)pHandle), eType, eUnits);
-				_inputComponentToDeviceManipulationHandleMap[*pHandle] = it->second;
+				_inputComponentToDeviceManipulationHandleMap[pHandle] = it->second;
 				it->second->inputAddScalarComponent(pchName, pHandle, eType, eUnits);
 			}
 		}
@@ -362,6 +385,7 @@ namespace vrwalkinplace {
 			}
 			return std::pair<std::shared_ptr<void>, uint32_t>({ std::shared_ptr<void>(), 0 });
 		}
+
 
 
 	} // end namespace driver

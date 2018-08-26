@@ -48,6 +48,5 @@ CheckBox {
     }
 
     onClicked: {
-        MyResources.playActivationSound()
     }
 }

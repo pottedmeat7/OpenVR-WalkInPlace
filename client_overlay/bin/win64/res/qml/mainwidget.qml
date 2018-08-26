@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.0
 
 Rectangle {
     id: root
-    color: "#1b2939"
+    color: "transparent"
     width: 1200
     height: 800
 
@@ -27,6 +27,42 @@ Rectangle {
         function stopTimer() {
         	currentItem.stopTimer()
         }
+	    function setAutoConfHMDY(v) {
+	    	stepDetectionPage.setAutoConfHMDY(v)
+	    }
+
+	    function setAutoConfHMDXZ(v) {
+	    	stepDetectionPage.setAutoConfHMDXZ(v)
+	    }
+
+	    function setAutoConfUseTrackers(v) {
+	    	stepDetectionPage.setAutoConfUseTrackers(v)
+	    }
+
+	    function setAutoConfDisableHMD(v) {
+	    	stepDetectionPage.setAutoConfDisableHMD(v)
+	    }
+
+	    function setAutoConfTRKY(v) {
+	    	stepDetectionPage.setAutoConfTRKY(v)
+	    }
+
+	    function setAutoConfTRKXZ(v) {
+	    	stepDetectionPage.setAutoConfTRKXZ(v)
+	    }
+
+	    function setAutoConfContMin(v) {
+	    	stepDetectionPage.setAutoConfContMin(v)
+	    }
+
+	    function setAutoConfContMid(v) {
+	    	stepDetectionPage.setAutoConfContMid(v)
+	    }
+
+	    function setAutoConfContMax(v) {
+	    	stepDetectionPage.setAutoConfContMax(v)
+	    }
+
 		pushEnter: Transition {
 			PropertyAnimation {
 				property: "x"

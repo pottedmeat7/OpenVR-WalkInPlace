@@ -3,7 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 GroupBox {
-    property string boxTitle: "Step Touch Pad Conf"
+    property string boxTitle: "Virtual Input"
 
     property double walkTouch : 0.35
     property double jogTouch : 0.9
@@ -33,7 +33,7 @@ GroupBox {
     Layout.fillWidth: true
 
     background: Rectangle {
-        color: "transparent"
+        color: "#277650"
         border.color: "#ffffff"
         radius: 8
     }
@@ -41,6 +41,7 @@ GroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        Layout.alignment: Qt.AlignHCenter
 
         GridLayout {
             columns: 6

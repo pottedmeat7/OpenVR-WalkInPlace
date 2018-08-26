@@ -72,14 +72,13 @@ public:
 	void ll_sendButtonEvent(ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
 	void ll_sendAxisEvent(uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
 	
-	void inputAddBooleanComponent(const char *pchName, uint64_t * pHandle);
-	void inputAddScalarComponent(const char *pchName, uint64_t * pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
+	void inputAddBooleanComponent(const char *pchName, uint64_t pHandle);
+	void inputAddScalarComponent(const char *pchName, uint64_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
 
 	void setPropertyContainer(vr::PropertyContainerHandle_t container) { m_propertyContainerHandle = container; }
 	vr::PropertyContainerHandle_t propertyContainer() { return m_propertyContainerHandle; }
 
 	void RunFrame();
-
 
 };
 

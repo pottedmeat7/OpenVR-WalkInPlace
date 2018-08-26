@@ -8,8 +8,8 @@
 
 		"strings": {
 			"en_us": {
-				"name": "VR Walk in Place",
-				"description": "OpenVR Walk in Place Overlay"
+				"name": "OpenVR-WalkInPlace",
+				"description": "OpenVR-WalkInPlace Overlay"
 			}
 		}
 	}]

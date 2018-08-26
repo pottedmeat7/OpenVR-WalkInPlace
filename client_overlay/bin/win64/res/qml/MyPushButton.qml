@@ -24,8 +24,5 @@ Button {
     }
 
     onClicked: {
-        if (activationSoundEnabled) {
-			MyResources.playActivationSound()
-        }
     }
 }

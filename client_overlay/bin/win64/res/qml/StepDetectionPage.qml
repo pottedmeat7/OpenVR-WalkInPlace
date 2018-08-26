@@ -7,8 +7,6 @@ import pottedmeat7.walkinplace 1.0
 MyMainViewPage {
     id: stepDetectionPage
     name: "stepDetectionPage"
-    headerText: "OpenVR Walk In Place"
-    headerShowBackButton: false
 
     function updateInfo() {  
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
@@ -20,48 +18,109 @@ MyMainViewPage {
         stepThresholdBox.setTrackerY(WalkInPlaceTabController.getTrackerYThreshold())
         stepThresholdBox.setTrackerXZ(WalkInPlaceTabController.getTrackerXZThreshold())
         stepThresholdBox.setStepTime(WalkInPlaceTabController.getStepTime())
-        stepThresholdBox.setAccuracyButton(WalkInPlaceTabController.getAccuracyButton())
-        stepThresholdBox.setAccuracyButtonAsToggle(WalkInPlaceTabController.getAccuracyButtonIsToggle())
-        stepThresholdBox.setAccuracyButtonFlip(WalkInPlaceTabController.getAccuracyButtonFlip())
         stepControlBox.setWalkTouch(WalkInPlaceTabController.getWalkTouch())
         stepControlBox.setJogTouch(WalkInPlaceTabController.getJogTouch())
         stepControlBox.setRunTouch(WalkInPlaceTabController.getRunTouch())
         stepControlBox.setUseContDirForStraf(WalkInPlaceTabController.getUseContDirForStraf())
         stepControlBox.setUseContDirForRev(WalkInPlaceTabController.getUseContDirForRev())
         stepControlBox.updateGUI()
-        stepThresholdBox.updateGUI()
-        gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType() - 1
-        hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType() - 1
-        controlSelect.currentIndex = WalkInPlaceTabController.getControlSelect()
+        stepThresholdBox.updateGUI()    
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
+        gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType()
+        hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
+        controlSelect.currentIndex = WalkInPlaceTabController.getControlSelect()
+        buttonMode.currentIndex = WalkInPlaceTabController.getAccuracyButtonFlip() ? 0 : 1
+        accuracyButtonDialog.currentIndex = WalkInPlaceTabController.getAccuracyButton()
+        buttonControlSelect.currentIndex = WalkInPlaceTabController.getAccuracyButtonControlSelect()
+    }
+
+    function setAutoConfHMDY(v) {
+        stepThresholdBox.setHMDY(v)
+    }
+
+    function setAutoConfHMDXZ(v) {
+        stepThresholdBox.setHMDXZ(v)
+    }
+
+    function setAutoConfUseTrackers(v) {
+        stepThresholdBox.setUseTrackers(v)
+    }
+
+    function setAutoConfDisableHMD(v) {
+        stepThresholdBox.setDisableHMD(v)
+    }
+
+    function setAutoConfTRKY(v) {
+        stepThresholdBox.setTrackerY(v)
+    }
+
+    function setAutoConfTRKXZ(v) {
+        stepThresholdBox.setTrackerXZ(v)
+    }
+
+    function setAutoConfContMin(v) {
+    }
+
+    function setAutoConfContMid(v) {
+        stepThresholdBox.setHandJog(v)
+    }
+
+    function setAutoConfContMax(v) {
+        stepThresholdBox.setHandRun(v)
     }
 
     content: ColumnLayout {
         anchors.top: parent.top
-        anchors.topMargin: 80
-
-        spacing: 7
+        spacing: 20
 
         GroupBox {
-
             Layout.fillWidth: true
-
+            
             background: Rectangle {
-                color: "transparent"
+                color: "#277650"
                 border.color: "#ffffff"
                 radius: 8
             }
 
             ColumnLayout {
                 anchors.fill: parent
+                Layout.alignment: Qt.AlignHCenter
+
+                RowLayout {
+                    MyText {
+                        color: "#ffffff"
+                        id: headerTitle
+                        text: "OpenVR-WalkInPlace"
+                        font.pointSize: 22
+                    }
+                }
+            }
+        }
+
+        GroupBox {
+
+            Layout.fillWidth: true
+            
+            background: Rectangle {
+                color: "#277650"
+                border.color: "#ffffff"
+                radius: 8
+            }
+
+            ColumnLayout {
+                anchors.fill: parent
+                Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 4
+                    columns: 6
 
                     MyToggleButton {
                         id: stepDetectionEnableToggle
                         text: "Enable WIP"
-                        Layout.fillWidth: false
+                        Layout.maximumWidth: 200
+                        Layout.minimumWidth: 200
+                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
                         onCheckedChanged: {
                             WalkInPlaceTabController.enableStepDetection(checked)
                         }
@@ -71,15 +130,15 @@ MyMainViewPage {
                     MyComboBox {
                         id: hmdTypeDialog 
                         currentIndex: 0
-                        Layout.maximumWidth: 150
-                        Layout.minimumWidth: 150
-                        Layout.preferredWidth: 150
+                        Layout.maximumWidth: 100
+                        Layout.minimumWidth: 100
+                        Layout.preferredWidth: 100
                         Layout.fillWidth: true
                         displayText: currentText
                         model: ["Vive", "WMR", "Rift"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
-                                WalkInPlaceTabController.setHMDType(currentIndex+1)                            
+                                WalkInPlaceTabController.setHMDType(currentIndex)                            
                             } 
                         }
                     }
@@ -87,29 +146,39 @@ MyMainViewPage {
                     MyComboBox {
                         id: gameTypeDialog 
                         currentIndex: 0
-                        Layout.maximumWidth: 399
-                        Layout.minimumWidth: 299
-                        Layout.preferredWidth: 399
+                        Layout.maximumWidth: 400
+                        Layout.minimumWidth: 400
+                        Layout.preferredWidth: 400
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad with click", "touchpad no click", "thumbsticks with click", "thumbsticks no click", "hold grip", "Keyboard (WASD)", "Keyboard (Arrows)"]
+                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)", "thumbsticks (click sprint)", "thumbsticks", "thumbsticks (pressed)","hold grip", "Keyboard (WASD)", "Keyboard (Arrows)"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
-                                WalkInPlaceTabController.setGameStepType(currentIndex+1)                            
+                                WalkInPlaceTabController.setGameStepType(currentIndex)                            
                             } 
                         }
                     }
+  
 
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 10
+                    }  
+
+                    MyText {
+                        text: "on"
+                        Layout.preferredWidth: 50
+                    }
 
                     MyComboBox {
                         id: controlSelect 
                         currentIndex: 0
-                        Layout.maximumWidth: 299
-                        Layout.minimumWidth: 199
-                        Layout.preferredWidth: 299
+                        Layout.maximumWidth: 250
+                        Layout.minimumWidth: 250
+                        Layout.preferredWidth: 250
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["1st Controller", "2nd Controller", "Either Controller"]
+                        model: ["1st Controller", "2nd Controller"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setControlSelect(currentIndex)                        
@@ -117,6 +186,71 @@ MyMainViewPage {
                         }
                     }
 
+                }
+
+                GridLayout {
+                    columns: 5
+                    
+                    MyComboBox {
+                        id: buttonMode 
+                        currentIndex: 0
+                        Layout.maximumWidth: 304
+                        Layout.minimumWidth: 304
+                        Layout.preferredWidth: 304
+                        Layout.fillWidth: true
+                        displayText: currentText
+                        model: ["Disable WIP by", "Enable WIP by"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex == 0) { 
+                                WalkInPlaceTabController.disableByButton(true)
+                            }
+                            else if (currentIndex == 1) { 
+                                WalkInPlaceTabController.disableByButton(false)
+                            } 
+                        }
+                    }
+
+                    MyComboBox {
+                        id: accuracyButtonDialog 
+                        currentIndex: 0
+                        Layout.maximumWidth: 400
+                        Layout.minimumWidth: 400
+                        Layout.preferredWidth: 400
+                        Layout.fillWidth: true
+                        displayText: currentText
+                        model: ["holding grip", "holding trigger", "Nothing"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex >= 0) { 
+                                WalkInPlaceTabController.setAccuracyButton(currentIndex) 
+                            } 
+                        }
+                    }     
+
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 10
+                    }  
+
+                    MyText {
+                        text: "on"
+                        Layout.preferredWidth: 50
+                    }
+
+                    MyComboBox {
+                        id: buttonControlSelect 
+                        currentIndex: 0
+                        Layout.maximumWidth: 250
+                        Layout.minimumWidth: 250
+                        Layout.preferredWidth: 250
+                        Layout.fillWidth: true
+                        displayText: currentText
+                        model: ["1st Controller", "2nd Controller"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex >= 0) { 
+                               WalkInPlaceTabController.setAccuracyButtonControlSelect(currentIndex)                        
+                            } 
+                        }
+                    }
                 }
             }
         }
@@ -169,32 +303,13 @@ MyMainViewPage {
                 stepTime = t
                 updateGUI()                 
             }
-            setAccuracyButton: function(buttonId) {
-                WalkInPlaceTabController.setAccuracyButton(buttonId)
-                useAccuracyButton = buttonId
-                updateGUI()    
-            }
-            setAccuracyButtonAsToggle: function(val) {
-                WalkInPlaceTabController.setAccuracyButtonAsToggle(val)
-                useButtonAsToggle = val
-                updateGUI()    
-            }
-            setAccuracyButtonFlip: function(val) {
-                WalkInPlaceTabController.setAccuracyButtonFlip(val)
-                flipButtonUse = val
-                updateGUI()    
-            }
-            setAccuracyButtonControlSelect: function(c) {
-                WalkInPlaceTabController.setAccuracyButtonControlSelect(c)
-                updateGUI()    
-            }
             updateValues: function() {
                 updateGUI()
             }
         }
 
         StepDetectConfBox4 {
-            boxTitle: "Touch Pad Configuration"
+            boxTitle: "Virtual Input"
             id: stepControlBox
             keyboardUIDBase: 119
             setWalkTouch: function(val) {
@@ -224,111 +339,134 @@ MyMainViewPage {
             }
         }
 
-        ColumnLayout {
-            spacing: 18
-            RowLayout {
-                spacing: 18
-
-                MyPushButton {
-                    id: walkInPlaceLoadProfiles
-                    Layout.preferredWidth: 200
-                    text: "Load Profiles"
-                    onClicked: {
-                        reloadWalkInPlaceProfiles()
-                    }
-                }
-
-                MyComboBox {
-                    id: walkInPlaceProfileComboBox
-                    Layout.maximumWidth: 310
-                    Layout.minimumWidth: 310
-                    Layout.preferredWidth: 310
-                    Layout.fillWidth: true
-                    model: [""]
-                    onCurrentIndexChanged: {
-                        if (currentIndex > 0) {
-                            walkInPlaceApplyProfileButton.enabled = true
-                            walkInPlaceDeleteProfileButton.enabled = true
-                        } else {
-                            walkInPlaceApplyProfileButton.enabled = false
-                            walkInPlaceDeleteProfileButton.enabled = false
-                        }
-                    }
-                }
-
-                MyPushButton {
-                    id: walkInPlaceApplyProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 150
-                    text: "Apply"
-                    onClicked: {
-                        if (walkInPlaceProfileComboBox.currentIndex > 0) {
-                            WalkInPlaceTabController.applyWalkInPlaceProfile(walkInPlaceProfileComboBox.currentIndex - 1);
-                            updateInfo()
-                        }
-                    }
-                }
-
-                MyPushButton {
-                    id: walkInPlaceNewProfileButton
-                    Layout.preferredWidth: 150
-                    text: "New Profile"
-                    onClicked: {
-                        walkInPlaceNewProfileDialog.openPopup()
-                    }
-                }
-
-                MyPushButton {
-                    id: walkInPlaceDeleteProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 180
-                    text: "Delete Profile"
-                    onClicked: {
-                        if (walkInPlaceProfileComboBox.currentIndex > 0) {
-                            walkInPlaceDeleteProfileDialog.profileIndex = walkInPlaceProfileComboBox.currentIndex - 1
-                            walkInPlaceDeleteProfileDialog.open()
-                        }
-                    }
-                }
-            }
-        }
 
         ColumnLayout {
             spacing: 18
+            Layout.alignment: Qt.AlignHCenter
 
-            RowLayout {
-                spacing: 18
+            GroupBox {
 
-                MyPushButton {
-                    Layout.preferredWidth: 100
-                    text: "Reset"
-                    onClicked: { 
-                        gameTypeDialog.currentIndex = 0
-                        controlSelect.currentIndex = 2
-                        stepThresholdBox.setHMDY(0.13)
-                        stepThresholdBox.setHMDXZ(0.27)
-                        stepThresholdBox.setHandJog(0.40)
-                        stepThresholdBox.setHandRun(1.70)
-                        stepThresholdBox.setAccuracyButton(5)
-                        stepThresholdBox.useButtonAsToggle.checked = false
-                        stepThresholdBox.flipButtonUse.checked = false
-                        stepControlBox.setWalkTouch(0.6)
-                        stepControlBox.setJogTouch(0.87)
-                        stepControlBox.setRunTouch(1)
-                        stepControlBox.updateGUI()
-                        stepThresholdBox.updateGUI()
-                    }
+                height: 200
+                Layout.fillWidth: true
+                
+                background: Rectangle {
+                    color: "#277650"
+                    border.color: "#ffffff"
+                    radius: 8
                 }
 
-                MyPushButton {
-                    text: "Show Step Graph"
-                    onClicked: {
-                        WalkInPlaceTabController.setupStepGraph()
-                        var res = mainView.push(stepDetectGraphPage)
-                        mainView.startTimer()
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 18
+
+                        MyPushButton {
+                            id: walkInPlaceLoadProfiles
+                            Layout.preferredWidth: 200
+                            text: "Load Profiles"
+                            onClicked: {
+                                reloadWalkInPlaceProfiles()
+                            }
+                        }
+
+                        MyComboBox {
+                            id: walkInPlaceProfileComboBox
+                            Layout.maximumWidth: 310
+                            Layout.minimumWidth: 310
+                            Layout.preferredWidth: 310
+                            Layout.fillWidth: true
+                            model: [""]
+                            onCurrentIndexChanged: {
+                                if (currentIndex > 0) {
+                                    walkInPlaceApplyProfileButton.enabled = true
+                                    walkInPlaceDeleteProfileButton.enabled = true
+                                } else {
+                                    walkInPlaceApplyProfileButton.enabled = false
+                                    walkInPlaceDeleteProfileButton.enabled = false
+                                }
+                            }
+                        }
+
+                        MyPushButton {
+                            id: walkInPlaceApplyProfileButton
+                            enabled: false
+                            Layout.preferredWidth: 150
+                            text: "Apply"
+                            onClicked: {
+                                if (walkInPlaceProfileComboBox.currentIndex > 0) {
+                                    WalkInPlaceTabController.applyWalkInPlaceProfile(walkInPlaceProfileComboBox.currentIndex - 1);
+                                    updateInfo()
+                                }
+                            }
+                        }
+
+                        MyPushButton {
+                            id: walkInPlaceNewProfileButton
+                            Layout.preferredWidth: 150
+                            text: "New Profile"
+                            onClicked: {
+                                walkInPlaceNewProfileDialog.openPopup()
+                            }
+                        }
+
+                        MyPushButton {
+                            id: walkInPlaceDeleteProfileButton
+                            enabled: false
+                            Layout.preferredWidth: 180
+                            text: "Delete Profile"
+                            onClicked: {
+                                if (walkInPlaceProfileComboBox.currentIndex > 0) {
+                                    walkInPlaceDeleteProfileDialog.profileIndex = walkInPlaceProfileComboBox.currentIndex - 1
+                                    walkInPlaceDeleteProfileDialog.open()
+                                }
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 18
+
+                        MyPushButton {
+                            Layout.preferredWidth: 100
+                            text: "Reset"
+                            onClicked: { 
+                                stepThresholdBox.setHMDY(0.12)
+                                stepThresholdBox.setHMDXZ(0.2)
+                                stepThresholdBox.setHandJog(1.2)
+                                stepThresholdBox.setHandRun(2.1)
+                                stepThresholdBox.setUseTrackers(false)
+                                stepThresholdBox.setDisableHMD(false)
+                                stepThresholdBox.setTrackerY(0.12)
+                                stepThresholdBox.setTrackerXZ(0.2)
+                                stepThresholdBox.setStepTime(0.4)
+                                stepControlBox.setWalkTouch(0.4)
+                                stepControlBox.setJogTouch(1)
+                                stepControlBox.setRunTouch(1)
+                                stepControlBox.setUseContDirForStraf(false)
+                                stepControlBox.setUseContDirForRev(false)
+                                stepControlBox.updateGUI()
+                                stepThresholdBox.updateGUI()
+                                stepDetectionEnableToggle.checked = false
+                                gameTypeDialog.currentIndex = 0
+                                hmdTypeDialog.currentIndex = 0
+                                controlSelect.currentIndex = 0
+                                buttonMode.currentIndex = 0
+                                accuracyButtonDialog.currentIndex = 0
+                                buttonControlSelect.currentIndex = 0
+                            }
+                        }
+
+                        MyPushButton {
+                            text: "Auto Conf & Graph"
+                            onClicked: {
+                                WalkInPlaceTabController.setupStepGraph()
+                                var res = mainView.push(stepDetectGraphPage)
+                                mainView.startTimer()
+                            }
+                        }
                     }
                 }
-
             }
         }
 

@@ -7,7 +7,7 @@ import pottedmeat7.walkinplace 1.0
 MyStackViewPage {
     id: stepDetectAutoConfPage
     name: "stepDetectAutoConfPage"
-    headerText: "OpenVR Walk In Place"
+    headerText: "OpenVR-WalkInPlace"
     headerShowBackButton: true
 
     property bool walkInit : true
