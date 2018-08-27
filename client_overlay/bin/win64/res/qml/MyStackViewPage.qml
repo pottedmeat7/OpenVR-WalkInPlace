@@ -5,7 +5,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 Rectangle {
     color: "transparent" //#277650"
-    width: 1300
+    width: 1200
     height: 1000
 
     property string name : "default"
@@ -31,9 +31,9 @@ Rectangle {
         content.parent = mainLayout
         content.Layout.fillHeight = true
         content.Layout.fillWidth = true
-        content.Layout.topMargin = 10
-        content.Layout.leftMargin = 40
-        content.Layout.rightMargin = 40
-        content.Layout.bottomMargin = 40
+        content.Layout.topMargin = 0
+        content.Layout.leftMargin = 0
+        content.Layout.rightMargin = 0
+        content.Layout.bottomMargin = 0
     }
 }

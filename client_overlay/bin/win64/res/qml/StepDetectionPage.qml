@@ -7,6 +7,7 @@ import pottedmeat7.walkinplace 1.0
 MyMainViewPage {
     id: stepDetectionPage
     name: "stepDetectionPage"
+    property var initialLoaded: false
 
     function updateInfo() {  
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
@@ -194,12 +195,12 @@ MyMainViewPage {
                     MyComboBox {
                         id: buttonMode 
                         currentIndex: 0
-                        Layout.maximumWidth: 304
-                        Layout.minimumWidth: 304
-                        Layout.preferredWidth: 304
+                        Layout.maximumWidth: 305
+                        Layout.minimumWidth: 305
+                        Layout.preferredWidth: 305
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["Disable WIP by", "Enable WIP by"]
+                        model: ["Disable WIP", "Enable WIP"]
                         onCurrentIndexChanged: {
                             if (currentIndex == 0) { 
                                 WalkInPlaceTabController.disableByButton(true)
@@ -213,12 +214,12 @@ MyMainViewPage {
                     MyComboBox {
                         id: accuracyButtonDialog 
                         currentIndex: 0
-                        Layout.maximumWidth: 400
-                        Layout.minimumWidth: 400
-                        Layout.preferredWidth: 400
+                        Layout.maximumWidth: 401
+                        Layout.minimumWidth: 401
+                        Layout.preferredWidth: 401
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["holding grip", "holding trigger", "Nothing"]
+                        model: ["by holding grip", "by holding trigger", "only with thresholds"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setAccuracyButton(currentIndex) 
@@ -458,7 +459,7 @@ MyMainViewPage {
                         }
 
                         MyPushButton {
-                            text: "Auto Conf & Graph"
+                            text: "Auto Configuration & Velocity Graph"
                             onClicked: {
                                 WalkInPlaceTabController.setupStepGraph()
                                 var res = mainView.push(stepDetectGraphPage)
@@ -470,8 +471,11 @@ MyMainViewPage {
             }
         }
 
-        Component.onCompleted: {    
-            updateInfo()
+        Component.onCompleted: {   
+            if ( !initialLoaded ) { 
+                updateInfo()
+            }
+            initialLoaded = true
             //reloadWalkInPlaceProfiles()            
         }
 

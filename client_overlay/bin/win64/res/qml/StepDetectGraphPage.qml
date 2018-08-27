@@ -52,27 +52,25 @@ MyStackViewPage {
     property real autoConfHMDXZPeakAvg : 0
     property real autoConfTRKPeakAvg   : 0
     property real autoConfTRKXZPeakAvg : 0
-    property bool useTrackers          : false    
-    property bool disableHMD           : false   
     property real autoConfCNTPeakAvg   : 0 
     property real autoConfContJogAvg   : 0
     property real autoConfContRunAvg   : 0
-    property int autoConfMode          : -1
-    property int maxHMDYVal            : 0
-    property int maxHMDXZVal           : 0
-    property int maxTRK1YVal           : 0
-    property int maxTRK1XZVal          : 0
-    property int maxTRK2YVal           : 0
-    property int maxTRK2XZVal          : 0
-    property int maxCNT1YVal           : 0
-    property int maxCNT1XZVal          : 0
-    property int maxCNT2YVal           : 0
-    property int maxCNT2XZVal          : 0
+    property real maxHMDYVal           : 0
+    property real maxHMDXZVal          : 0
+    property real maxTRK1YVal          : 0
+    property real maxTRK1XZVal         : 0
+    property real maxTRK2YVal          : 0
+    property real maxTRK2XZVal         : 0
+    property real maxCNT1YVal          : 0
+    property real maxCNT1XZVal         : 0
+    property real maxCNT2YVal          : 0
+    property real maxCNT2XZVal         : 0
     property int lastHMDYPeakSign      : 0
     property int lastTRK1YPeakSign     : 0
     property int lastTRK2YPeakSign     : 0
     property int lastCNT1YPeakSign     : 0
     property int lastCNT2YPeakSign     : 0
+    property int autoConfMode          : -1
 
     property int sampleCount : 0
     property int sampleLimit : 100
@@ -174,15 +172,15 @@ MyStackViewPage {
                 RowLayout {
                     Button {
                         id: headerBackButton
-                        Layout.preferredHeight: 70
-                        Layout.preferredWidth: 70
+                        Layout.preferredHeight: 60
+                        Layout.preferredWidth: 60
                         hoverEnabled: true
                         enabled: true
                         opacity: 1.0
                         contentItem: Image {
                             source: "backarrow.svg"
-                            sourceSize.width: 70
-                            sourceSize.height: 70
+                            sourceSize.width: 60
+                            sourceSize.height: 60
                             anchors.fill: parent
                         }
                         background: Rectangle {
@@ -203,6 +201,7 @@ MyStackViewPage {
                             var page = mainView.pop()
                         }
                     }
+
                     MyText {
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
@@ -210,6 +209,17 @@ MyStackViewPage {
                         anchors.verticalCenter: headerBackButton.verticalCenter
                         Layout.leftMargin: 32
                     }
+
+                    MyText {
+                        id: headerSpacer
+                        text: " "
+                        font.pointSize: 22
+                        anchors.verticalCenter: headerBackButton.verticalCenter
+                        Layout.maximumWidth: 450
+                        Layout.minimumWidth: 450
+                        Layout.preferredWidth: 450
+                    }
+
                     MyPushButton {
                         text: "Start Auto Configure"
                         onClicked: {
@@ -217,6 +227,12 @@ MyStackViewPage {
                             resetGraph()
                             autoConfigPopup.openPopup()
                             autoConfMode = 0
+                            cont1XPoints = []
+                            cont1YPoints = []
+                            cont1ZPoints = []
+                            cont2XPoints = []
+                            cont2YPoints = []
+                            cont2ZPoints = []
                         }
                     }
                 }
@@ -228,28 +244,30 @@ MyStackViewPage {
             anchors.fill: parent
             topPadding: 80
 
-            RowLayout {
+            GridLayout {
+                columns: 2
+                rows: 2
+                width: 1200
+                height: 700
 
                 Canvas {
                     id: hmdCanvas
-                    width: 1200
+                    width: 600
                     height: 300
                     antialiasing: true
+                    Layout.row: 1
+                    Layout.column: 1
+                    Layout.columnSpan: 1
+                    Layout.rowSpan: 1
 
-                    property int rectWidth: 1100
+                    property int rectWidth: 600
                     property int rectHeight: 300
                     property int circleRad: 15
                     property int topX : 50
                     property int topY : 0
-                    property color strokeStyle:  "#cccccc"
-                    property color fillStyle: "#cccccc"
-                    property int lineWidth: 1
-                    property bool fill: true
-                    property bool stroke: true
-                    property real alpha: 1.0
                     property real resolution: 0.1
-                    property int seconds : 10
-                    property int sections : 10
+                    property int seconds : 5
+                    property int sections : 5
                     property int period : (rectWidth/(seconds*sections)) // width at 10 mHz for 10 seconds
 
                     onPaint: {
@@ -290,31 +308,24 @@ MyStackViewPage {
                             ctx.closePath();
                             valToCrossZero -= resolution;
                         }
+                        //if ( autoConfMode == 0 ) {   
+                        //    var r = (hmdPlotMaxPoint - hmdPlotMinPoint)  
+                        //    var g = (hmdCanvas.rectHeight)
+                        //    var avgYVel = (((autoConfHMDPeakAvg - hmdPlotMinPoint) * g) / r)
+                        //    ctx.strokeStyle = "#FFFF00";
+                        //    ctx.beginPath();  
+                        //    ctx.lineWidth = 1;
+                        //    ctx.moveTo(topX,avgYVel+topY);
+                        //    ctx.lineTo(rectWidth,avgYVel+topY);
+                        //    ctx.stroke();
+                        //    ctx.closePath();
+                        //}
                         var lastHMDXPoint = rectHeight/2 + topY
                         var lastHMDYPoint = rectHeight/2 + topY
                         var lastHMDZPoint = rectHeight/2 + topY
                         var lastX = topX;
-                        if ( autoConfMode == 0 ) {   
-                            var r = (hmdPlotMaxPoint - hmdPlotMinPoint)  
-                            var g = (hmdCanvas.rectHeight)
-                            var avgYVel = (((autoConfHMDPeakAvg - hmdPlotMinPoint) * g) / r)
-                            var avgNegYVel = (((-1*autoConfHMDPeakAvg - hmdPlotMinPoint) * g) / r)
-                            ctx.strokeStyle = "#FFFF00";
-                            ctx.beginPath();  
-                            ctx.lineWidth = 1;
-                            ctx.moveTo(topX,avgYVel+topY);
-                            ctx.lineTo(rectWidth,avgYVel+topY);
-                            ctx.stroke();
-                            ctx.closePath();
-                            ctx.beginPath();  
-                            ctx.lineWidth = 1;
-                            ctx.moveTo(topX,avgNegYVel+topY);
-                            ctx.lineTo(rectWidth,avgNegYVel+topY);
-                            ctx.stroke();
-                            ctx.closePath();
-                        }
                         for(var x=topX; x<rectWidth; x+=period) {
-                            if ( stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] == 1) {
+                            if ( autoConfMode < 0 && stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] == 1) {
                                 ctx.beginPath();  
                                 if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
                                     ctx.fillStyle = "#DDDD00";
@@ -380,31 +391,215 @@ MyStackViewPage {
                         }
                     }
                 }
-            }
 
-            RowLayout {
-                spacing: 6
+
+                Canvas {
+                    id: contCanvas
+                    width: 600
+                    height: 700
+                    antialiasing: true
+                    Layout.row: 1
+                    Layout.column: 2
+                    Layout.columnSpan: 1
+                    Layout.rowSpan: 2
+
+                    property int rectWidth: 600
+                    property int rectHeight: 700
+                    property int circleRad: 15
+                    property int topX : 25
+                    property int topY : 0
+                    property real resolution: 0.25
+                    property int seconds : 5
+                    property int sections : 5
+                    property int period : (rectWidth/(seconds*sections)) // width at 10 mHz for 5 seconds
+
+                    onPaint: {
+                        var ctx = getContext("2d");                        
+                        ctx.clearRect(0,0,contCanvas.width, contCanvas.height);
+                        ctx.font = "16px sans-serif";
+                        ctx.fillStyle = "#222222"
+                        ctx.fillRect(0, topY, rectWidth, rectHeight);     
+                        ctx.fillStyle = "#FFFFFF"
+                        ctx.fillText("Hand", 105, 37);
+                        ctx.fillText("X1", 175, 37);
+                        ctx.fillText("Y1", 225, 37);
+                        ctx.fillText("Z1", 275, 37); 
+                        ctx.fillText("X2", 325, 37);
+                        ctx.fillText("Y2", 375, 37);
+                        ctx.fillText("Z2", 425, 37); 
+                        ctx.fillStyle = "#DD0000"
+                        ctx.fillRect(150,30,20,20);   
+                        ctx.fillStyle = "#00DD00"
+                        ctx.fillRect(200,30,20,20);   
+                        ctx.fillStyle = "#0000DD"
+                        ctx.fillRect(250,30,20,20); 
+                        ctx.fillStyle = "#DD00DD"
+                        ctx.fillRect(300,30,20,20);   
+                        ctx.fillStyle = "#00DDDD"
+                        ctx.fillRect(350,30,20,20);   
+                        ctx.fillStyle = "#FF55FF"
+                        ctx.fillRect(400,30,20,20);    
+                        var yTicks = Math.ceil((contPlotMaxPoint-contPlotMinPoint)/resolution);
+                        var crossedZeroLine = false
+                        var valToCrossZero = contPlotMaxPoint
+                        ctx.fillStyle = "#FFFFFF"
+                        for(var y=topY; y<=rectHeight+topY; y+=Math.ceil(rectHeight/yTicks)){
+                            ctx.fillText(valToCrossZero.toFixed(2), 10, y);
+                            ctx.beginPath();        
+                            ctx.strokeStyle = "#CCCCCC";
+                            ctx.lineWidth = 1;
+                            if ( !crossedZeroLine ) {
+                                if ( valToCrossZero <= 0 ) { 
+                                    ctx.lineWidth = 3
+                                    crossedZeroLine = true
+                                } 
+                            }
+                            ctx.moveTo(topX,y);
+                            ctx.lineTo(rectWidth,y);
+                            ctx.stroke();
+                            ctx.closePath();
+                            valToCrossZero -= resolution;
+                        }
+                        //if ( autoConfMode == 1 || autoConfMode == 2 ) {   
+                        //    var r = (contPlotMaxPoint - contPlotMinPoint)  
+                        //    var g = (contCanvas.rectHeight)
+                        //    var avgYVel = (((autoConfCNTPeakAvg - contPlotMinPoint) * g) / r)
+                        //    ctx.strokeStyle = "#FFFF00"
+                        //    ctx.beginPath();  
+                        //    ctx.lineWidth = 1;
+                        //    ctx.moveTo(topX,avgYVel+topY);
+                        //    ctx.lineTo(rectWidth,avgYVel+topY);
+                        //    ctx.stroke();
+                        //    ctx.closePath();
+                        //}
+                        var lastcont1XPoint = rectHeight/2 + topY
+                        var lastcont1YPoint = rectHeight/2 + topY
+                        var lastcont1ZPoint = rectHeight/2 + topY
+                        var lastcont2XPoint = rectHeight/2 + topY
+                        var lastcont2YPoint = rectHeight/2 + topY
+                        var lastcont2ZPoint = rectHeight/2 + topY
+                        var lastX = topX;
+                        for(var x=topX; x<rectWidth; x+=period) {
+                            if ( false && autoConfMode < 0 && stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] >= 2) {
+                                ctx.beginPath();  
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
+                                    ctx.fillStyle = "#DDDD00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
+                                    ctx.fillStyle = "#FFBB00";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
+                                    ctx.fillStyle = "#FF3300";
+                                }
+                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
+                                    ctx.fillStyle = "#CCCCCC";
+                                }
+                                ctx.lineWidth = 1;
+                                ctx.globalAlpha = 0.5;
+                                ctx.fillRect(lastX,lastcont1YPoint-circleRad,circleRad,circleRad);
+                                ctx.stroke();
+                                ctx.fillRect(lastX,lastcont2YPoint-circleRad,circleRad,circleRad);
+                                ctx.stroke();
+                                ctx.closePath();                      
+                                ctx.globalAlpha = 1;
+                            } else if ( (x-topX) % (rectWidth/period) == 0 ) {
+                                //ctx.beginPath();  
+                                //ctx.strokeStyle = "#CCCCCC";
+                                //ctx.lineWidth = 1;
+                                //ctx.moveTo(lastX,topY);
+                                //ctx.lineTo(x,rectHeight+topY);
+                                //ctx.stroke();
+                                //ctx.closePath();
+                            }
+                            if ( cont1XPoints.length-1 > (x-topX)/period) {
+                                ctx.beginPath();                
+                                ctx.strokeStyle = "#DD0000";
+                                ctx.lineWidth = 1;
+                                ctx.moveTo(lastX,lastcont1XPoint);
+                                var val = cont1XPoints[Math.floor((x-topX)/period)];
+                                ctx.lineTo(x,val+topY);
+                                lastcont1XPoint = val+topY;
+                                ctx.stroke();
+                                ctx.closePath();
+                            }  
+                            if ( cont1YPoints.length-1 > (x-topX)/period) {
+                                ctx.beginPath();  
+                                ctx.strokeStyle = "#00DD00";
+                                ctx.lineWidth = 1;
+                                ctx.moveTo(lastX,lastcont1YPoint);
+                                var val = cont1YPoints[Math.floor((x-topX)/period)];
+                                ctx.lineTo(x,val+topY);
+                                lastcont1YPoint = val+topY;
+                                ctx.stroke();
+                                ctx.closePath();
+                            }  
+                            if ( cont1ZPoints.length-1 > (x-topX)/period) {
+                                ctx.beginPath();  
+                                ctx.strokeStyle = "#0000DD";
+                                ctx.lineWidth = 1;
+                                ctx.moveTo(lastX,lastcont1ZPoint);
+                                var val = cont1ZPoints[Math.floor((x-topX)/period)];
+                                ctx.lineTo(x,val+topY);
+                                lastcont1ZPoint = val+topY;
+                                ctx.stroke();
+                                ctx.closePath();
+                            }  
+                            if ( cont2XPoints.length-1 > (x-topX)/period) {
+                                ctx.beginPath();                
+                                ctx.strokeStyle = "#DD00DD";
+                                ctx.lineWidth = 1;
+                                ctx.moveTo(lastX,lastcont2XPoint);
+                                var val = cont2XPoints[Math.floor((x-topX)/period)];
+                                ctx.lineTo(x,val+topY);
+                                lastcont2XPoint = val+topY;
+                                ctx.stroke();
+                                ctx.closePath();
+                            }  
+                            if ( cont2YPoints.length-1 > (x-topX)/period) {
+                                ctx.beginPath();  
+                                ctx.strokeStyle = "#00DDDD";
+                                ctx.lineWidth = 1;
+                                ctx.moveTo(lastX,lastcont2YPoint);
+                                var val = cont2YPoints[Math.floor((x-topX)/period)];
+                                ctx.lineTo(x,val+topY);
+                                lastcont2YPoint = val+topY;
+                                ctx.stroke();
+                                ctx.closePath();
+                            }  
+                            if ( cont2ZPoints.length-1 > (x-topX)/period) {
+                                ctx.beginPath();  
+                                ctx.strokeStyle = "#FF55FF";
+                                ctx.lineWidth = 1;
+                                ctx.moveTo(lastX,lastcont2ZPoint);
+                                var val = cont2ZPoints[Math.floor((x-topX)/period)];
+                                ctx.lineTo(x,val+topY);
+                                lastcont2ZPoint = val+topY;
+                                ctx.stroke();
+                                ctx.closePath();
+                            }  
+                            lastX = x;
+                        }
+                    }
+                }  
 
                 Canvas {
                     id: trackerCanvas
                     width: 600
                     height: 400
-                    antialiasing: true
+                    antialiasing: true     
+                    Layout.row: 2
+                    Layout.column: 1
+                    Layout.columnSpan: 1
+                    Layout.rowSpan: 1
 
                     property int rectWidth: 600
                     property int rectHeight: 400
                     property int circleRad: 15
                     property int topX : 50
                     property int topY : 0
-                    property color strokeStyle:  "#cccccc"
-                    property color fillStyle: "#cccccc"
-                    property int lineWidth: 1
-                    property bool fill: true
-                    property bool stroke: true
-                    property real alpha: 1.0
                     property real resolution: 0.1
-                    property int seconds : 10
-                    property int sections : 10
+                    property int seconds : 5
+                    property int sections : 5
                     property int period : (rectWidth/(seconds*sections)) // width at 10 mHz for 10 seconds
 
                     onPaint: {
@@ -454,27 +649,21 @@ MyStackViewPage {
                             ctx.closePath();
                             valToCrossZero -= resolution;
                         }
-                        if ( autoConfMode == 0 ) {   
-                            if ( autoConfTRKPeakAvg >= 0.01 ) {
-                                var r = (trackerPlotMaxPoint - trackerPlotMinPoint)  
-                                var g = (trackerCanvas.rectHeight)
-                                var avgYVel = (((autoConfTRKPeakAvg - trackerPlotMinPoint) * g) / r)
-                                var avgNegYVel = (((-1*autoConfTRKPeakAvg - trackerPlotMinPoint) * g) / r)
-                                ctx.strokeStyle = "#FFFF00";
-                                ctx.beginPath();  
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(topX,avgYVel+topY);
-                                ctx.lineTo(rectWidth,avgYVel+topY);
-                                ctx.stroke();
-                                ctx.closePath();
-                                ctx.beginPath();  
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(topX,avgNegYVel+topY);
-                                ctx.lineTo(rectWidth,avgNegYVel+topY);
-                                ctx.stroke();
-                                ctx.closePath();
-                            }
-                        }
+                        //if ( autoConfMode == 0 ) {   
+                        //    if ( autoConfTRKPeakAvg >= 0.01 ) {
+                        //        var r = (trackerPlotMaxPoint - trackerPlotMinPoint)  
+                        //        var g = (trackerCanvas.rectHeight)
+                        //        var avgYVel = (((autoConfTRKPeakAvg - trackerPlotMinPoint) * g) / r)
+                        //        var avgNegYVel = (((-1*autoConfTRKPeakAvg - trackerPlotMinPoint) * g) / r)
+                        //        ctx.strokeStyle = "#FFFF00";
+                        //        ctx.beginPath();  
+                        //        ctx.lineWidth = 1;
+                        //        ctx.moveTo(topX,avgYVel+topY);
+                        //        ctx.lineTo(rectWidth,avgYVel+topY);
+                        //        ctx.stroke();
+                        //        ctx.closePath();
+                        //    }
+                        //}
                         var lasttracker1XPoint = rectHeight/2 + topY
                         var lasttracker1YPoint = rectHeight/2 + topY
                         var lasttracker1ZPoint = rectHeight/2 + topY
@@ -589,204 +778,6 @@ MyStackViewPage {
                         }
                     }
                 }
-
-                Canvas {
-                    id: contCanvas
-                    width: 500
-                    height: 400
-                    antialiasing: true
-
-                    property int rectWidth: 500
-                    property int rectHeight: 400
-                    property int circleRad: 15
-                    property int topX : 25
-                    property int topY : 0
-                    property color strokeStyle:  "#cccccc"
-                    property color fillStyle: "#cccccc"
-                    property int lineWidth: 1
-                    property bool fill: true
-                    property bool stroke: true
-                    property real alpha: 1.0
-                    property real resolution: 0.25
-                    property int seconds : 10
-                    property int sections : 10
-                    property int period : (rectWidth/(seconds*sections)) // width at 10 mHz for 10 seconds
-
-                    onPaint: {
-                        var ctx = getContext("2d");                        
-                        ctx.clearRect(0,0,contCanvas.width, contCanvas.height);
-                        ctx.font = "16px sans-serif";
-                        ctx.fillStyle = "#222222"
-                        ctx.fillRect(0, topY, rectWidth, rectHeight);     
-                        ctx.fillStyle = "#FFFFFF"
-                        ctx.fillText("Hand", 105, 37);
-                        ctx.fillText("X1", 175, 37);
-                        ctx.fillText("Y1", 225, 37);
-                        ctx.fillText("Z1", 275, 37); 
-                        ctx.fillText("X2", 325, 37);
-                        ctx.fillText("Y2", 375, 37);
-                        ctx.fillText("Z2", 425, 37); 
-                        ctx.fillStyle = "#DD0000"
-                        ctx.fillRect(150,30,20,20);   
-                        ctx.fillStyle = "#00DD00"
-                        ctx.fillRect(200,30,20,20);   
-                        ctx.fillStyle = "#0000DD"
-                        ctx.fillRect(250,30,20,20); 
-                        ctx.fillStyle = "#DD00DD"
-                        ctx.fillRect(300,30,20,20);   
-                        ctx.fillStyle = "#00DDDD"
-                        ctx.fillRect(350,30,20,20);   
-                        ctx.fillStyle = "#FF55FF"
-                        ctx.fillRect(400,30,20,20);    
-                        var yTicks = Math.ceil((contPlotMaxPoint-contPlotMinPoint)/resolution);
-                        var crossedZeroLine = false
-                        var valToCrossZero = contPlotMaxPoint
-                        ctx.fillStyle = "#FFFFFF"
-                        for(var y=topY; y<=rectHeight+topY; y+=Math.ceil(rectHeight/yTicks)){
-                            ctx.fillText(valToCrossZero.toFixed(2), 10, y);
-                            ctx.beginPath();        
-                            ctx.strokeStyle = "#CCCCCC";
-                            ctx.lineWidth = 1;
-                            if ( !crossedZeroLine ) {
-                                if ( valToCrossZero <= 0 ) { 
-                                    ctx.lineWidth = 3
-                                    crossedZeroLine = true
-                                } 
-                            }
-                            ctx.moveTo(topX,y);
-                            ctx.lineTo(rectWidth,y);
-                            ctx.stroke();
-                            ctx.closePath();
-                            valToCrossZero -= resolution;
-                        }
-                        if ( autoConfMode == 1 || autoConfMode == 2 ) {   
-                            var r = (contPlotMaxPoint - contPlotMinPoint)  
-                            var g = (contCanvas.rectHeight)
-                            var avgYVel = (((autoConfCNTPeakAvg - contPlotMinPoint) * g) / r)
-                            var avgNegYVel = (((-1*autoConfCNTPeakAvg - contPlotMinPoint) * g) / r)
-                            ctx.strokeStyle = "#FFFF00"
-                            ctx.beginPath();  
-                            ctx.lineWidth = 1;
-                            ctx.moveTo(topX,avgYVel+topY);
-                            ctx.lineTo(rectWidth,avgYVel+topY);
-                            ctx.stroke();
-                            ctx.closePath();
-                            ctx.beginPath();  
-                            ctx.lineWidth = 1;
-                            ctx.moveTo(topX,avgNegYVel+topY);
-                            ctx.lineTo(rectWidth,avgNegYVel+topY);
-                            ctx.stroke();
-                            ctx.closePath();
-                        }
-                        var lastcont1XPoint = rectHeight/2 + topY
-                        var lastcont1YPoint = rectHeight/2 + topY
-                        var lastcont1ZPoint = rectHeight/2 + topY
-                        var lastcont2XPoint = rectHeight/2 + topY
-                        var lastcont2YPoint = rectHeight/2 + topY
-                        var lastcont2ZPoint = rectHeight/2 + topY
-                        var lastX = topX;
-                        for(var x=topX; x<rectWidth; x+=period) {
-                            if ( false && stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] >= 2) {
-                                ctx.beginPath();  
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
-                                    ctx.fillStyle = "#DDDD00";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
-                                    ctx.fillStyle = "#FFBB00";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
-                                    ctx.fillStyle = "#FF3300";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
-                                    ctx.fillStyle = "#CCCCCC";
-                                }
-                                ctx.lineWidth = 1;
-                                ctx.globalAlpha = 0.5;
-                                ctx.fillRect(lastX,lastcont1YPoint-circleRad,circleRad,circleRad);
-                                ctx.stroke();
-                                ctx.fillRect(lastX,lastcont2YPoint-circleRad,circleRad,circleRad);
-                                ctx.stroke();
-                                ctx.closePath();                      
-                                ctx.globalAlpha = 1;
-                            } else if ( (x-topX) % (rectWidth/period) == 0 ) {
-                                //ctx.beginPath();  
-                                //ctx.strokeStyle = "#CCCCCC";
-                                //ctx.lineWidth = 1;
-                                //ctx.moveTo(lastX,topY);
-                                //ctx.lineTo(x,rectHeight+topY);
-                                //ctx.stroke();
-                                //ctx.closePath();
-                            }
-                            if ( cont1XPoints.length-1 > (x-topX)/period) {
-                                ctx.beginPath();                
-                                ctx.strokeStyle = "#DD0000";
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont1XPoint);
-                                var val = cont1XPoints[Math.floor((x-topX)/period)];
-                                ctx.lineTo(x,val+topY);
-                                lastcont1XPoint = val+topY;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }  
-                            if ( cont1YPoints.length-1 > (x-topX)/period) {
-                                ctx.beginPath();  
-                                ctx.strokeStyle = "#00DD00";
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont1YPoint);
-                                var val = cont1YPoints[Math.floor((x-topX)/period)];
-                                ctx.lineTo(x,val+topY);
-                                lastcont1YPoint = val+topY;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }  
-                            if ( cont1ZPoints.length-1 > (x-topX)/period) {
-                                ctx.beginPath();  
-                                ctx.strokeStyle = "#0000DD";
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont1ZPoint);
-                                var val = cont1ZPoints[Math.floor((x-topX)/period)];
-                                ctx.lineTo(x,val+topY);
-                                lastcont1ZPoint = val+topY;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }  
-                            if ( cont2XPoints.length-1 > (x-topX)/period) {
-                                ctx.beginPath();                
-                                ctx.strokeStyle = "#DD00DD";
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont2XPoint);
-                                var val = cont2XPoints[Math.floor((x-topX)/period)];
-                                ctx.lineTo(x,val+topY);
-                                lastcont2XPoint = val+topY;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }  
-                            if ( cont2YPoints.length-1 > (x-topX)/period) {
-                                ctx.beginPath();  
-                                ctx.strokeStyle = "#00DDDD";
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont2YPoint);
-                                var val = cont2YPoints[Math.floor((x-topX)/period)];
-                                ctx.lineTo(x,val+topY);
-                                lastcont2YPoint = val+topY;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }  
-                            if ( cont2ZPoints.length-1 > (x-topX)/period) {
-                                ctx.beginPath();  
-                                ctx.strokeStyle = "#FF55FF";
-                                ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont2ZPoint);
-                                var val = cont2ZPoints[Math.floor((x-topX)/period)];
-                                ctx.lineTo(x,val+topY);
-                                lastcont2ZPoint = val+topY;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }  
-                            lastX = x;
-                        }
-                    }
-                }
             }
         }
 
@@ -803,32 +794,44 @@ MyStackViewPage {
         onTriggered: {
             try {
                 var velVals = WalkInPlaceTabController.getGraphPoses();
-                if ( velVals.length >= 3 ) {
+                if ( autoConfMode <= 0 && velVals.length >= 3 ) {
                     var velX = parseFloat(velVals[0]).toFixed(4);
                     var velY = parseFloat(velVals[1]).toFixed(4);
                     var velZ = parseFloat(velVals[2]).toFixed(4);            
 
                     if ( autoConfMode  == 0 ) {
-                        if ( lastHMDYPeakSign != 0 && Math.sign(velY) != lastHMDYPeakSign) {
+                        var absVelY = Math.abs(velY)
+                        var absVelX = Math.abs(velX)
+                        var absVelZ = Math.abs(velZ)
+                        var velYSign = velY < 0 ? -1 : 1
+                        if ( lastHMDYPeakSign != 0 && velYSign != lastHMDYPeakSign) {
                                 var scalePeak = maxHMDYVal - ((maxHMDYVal - maxHMDXZVal)  * 0.4)
-                                autoConfHMDPeakAvg = (autoConfHMDPeakAvg + scalePeak) / 2.0
-                                autoConfHMDXZPeakAvg = (autoConfHMDXZPeakAvg + maxHMDXZVal) / 2.0
-                                lastHMDYPeakSign = Math.sign(velY) 
+                                if ( autoConfHMDPeakAvg == 0 ) {
+                                    autoConfHMDPeakAvg = scalePeak
+                                } else {
+                                    autoConfHMDPeakAvg = (autoConfHMDPeakAvg + scalePeak) / 2.0
+                                }
+                                if ( autoConfHMDXZPeakAvg == 0 ) {
+                                    autoConfHMDXZPeakAvg = maxHMDXZVal
+                                } else {
+                                    autoConfHMDXZPeakAvg = (autoConfHMDXZPeakAvg + maxHMDXZVal) / 2.0
+                                }
+                                lastHMDYPeakSign = velYSign 
                                 maxHMDYVal = 0
                                 maxHMDXZVal = 0                      
                         } 
-                        if ( Math.abs(velY) > Math.abs(velX) && Math.abs(velY) > Math.abs(velZ) ) {
-                            if ( Math.abs(velY) > maxHMDYVal ) {
-                                maxHMDYVal = Math.abs(velY)
+                        if ( absVelY > absVelX && absVelY > absVelZ ) {
+                            if ( absVelY > maxHMDYVal ) {
+                                maxHMDYVal = absVelY
                                 if ( lastHMDYPeakSign == 0 ) {
-                                    lastHMDYPeakSign = Math.sign(velY)
+                                    lastHMDYPeakSign = velYSign
                                 }
                             }
-                            if ( Math.abs(velX) > maxHMDXZVal ) {
-                                maxHMDXZVal = Math.abs(velX)
+                            if ( absVelX > maxHMDXZVal ) {
+                                maxHMDXZVal = absVelX
                             }
-                            if ( Math.abs(velZ) > maxHMDXZVal ) {
-                                maxHMDXZVal = Math.abs(velZ)
+                            if ( absVelZ > maxHMDXZVal ) {
+                                maxHMDXZVal = absVelZ
                             }
                         }
                     }
@@ -872,31 +875,40 @@ MyStackViewPage {
                     hmdYPoints.push(velY);
                     hmdZPoints.push(velZ);
                 }
-                if ( velVals.length >= 6 ) {
+                if ( autoConfMode != 0 && velVals.length >= 6 ) {
                     velX = parseFloat(velVals[3]).toFixed(4);
                     velY = parseFloat(velVals[4]).toFixed(4);
-                    velZ = parseFloat(velVals[5]).toFixed(4);            
+                    velZ = parseFloat(velVals[5]).toFixed(4); 
 
-                    if ( autoConfMode  == 0 ) {
-                        if ( lastCNT1YPeakSign != 0 && Math.sign(velY) != lastCNT1YPeakSign) {
+                    if ( autoConfMode  == 1 || autoConfMode  == 2 ) {
+                        var absVelY = Math.abs(velY)
+                        var absVelX = Math.abs(velX)
+                        var absVelZ = Math.abs(velZ)
+                        var velYSign = velY < 0 ? -1 : 1
+                        if ( lastCNT1YPeakSign != 0 && velYSign != lastCNT1YPeakSign) {
                                 var scalePeak = maxCNT1YVal - ((maxCNT1YVal - maxCNT1XZVal)  * 0.4)
-                                autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
-                                lastCNT1YPeakSign = Math.sign(velY) 
+                                if ( autoConfCNTPeakAvg == 0 ) {
+                                    autoConfCNTPeakAvg = scalePeak
+                                } else {
+                                    autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
+                                }
+                                //autoConfCNTXZPeakAvg = (autoConfCNTXZPeakAvg + maxCNT1XZVal) / 2.0
+                                lastCNT1YPeakSign = velYSign 
                                 maxCNT1YVal = 0
                                 maxCNT1XZVal = 0                      
                         } 
-                        if ( Math.abs(velY) > Math.abs(velX) && Math.abs(velY) > Math.abs(velZ) ) {
-                            if ( Math.abs(velY) > maxCNT1YVal ) {
-                                maxCNT1YVal = Math.abs(velY)
+                        if ( absVelY > absVelX && absVelY > absVelZ ) {
+                            if ( absVelY > maxCNT1YVal ) {
+                                maxCNT1YVal = absVelY
                                 if ( lastCNT1YPeakSign == 0 ) {
-                                    lastCNT1YPeakSign = Math.sign(velY)
+                                    lastCNT1YPeakSign = velYSign
                                 }
                             }
-                            if ( Math.abs(velX) > maxCNT1XZVal ) {
-                                maxCNT1XZVal = Math.abs(velX)
+                            if ( absVelX > maxCNT1XZVal ) {
+                                maxCNT1XZVal = absVelX
                             }
-                            if ( Math.abs(velZ) > maxCNT1XZVal ) {
-                                maxCNT1XZVal = Math.abs(velZ)
+                            if ( absVelZ > maxCNT1XZVal ) {
+                                maxCNT1XZVal = absVelZ
                             }
                         }
                     }
@@ -941,31 +953,40 @@ MyStackViewPage {
                     cont1YPoints.push(velY);
                     cont1ZPoints.push(velZ);
                 }
-                if ( velVals.length >= 9 ) {
+                if ( autoConfMode != 0 && velVals.length >= 9 ) {
                     velX = parseFloat(velVals[6]).toFixed(4);
                     velY = parseFloat(velVals[7]).toFixed(4);
-                    velZ = parseFloat(velVals[8]).toFixed(4);             
+                    velZ = parseFloat(velVals[8]).toFixed(4);
 
-                    if ( autoConfMode  == 0 ) {
-                        if ( lastCNT2YPeakSign != 0 && Math.sign(velY) != lastCNT2YPeakSign) {
+                    if ( autoConfMode  == 1 || autoConfMode  == 2 ) {
+                        var absVelY = Math.abs(velY)
+                        var absVelX = Math.abs(velX)
+                        var absVelZ = Math.abs(velZ)
+                        var velYSign = velY < 0 ? -1 : 1
+                        if ( lastCNT2YPeakSign != 0 && velYSign != lastCNT2YPeakSign) {
                                 var scalePeak = maxCNT2YVal - ((maxCNT2YVal - maxCNT2XZVal)  * 0.4)
-                                autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
-                                lastCNT2YPeakSign = Math.sign(velY) 
+                                if ( autoConfCNTPeakAvg == 0 ) {
+                                    autoConfCNTPeakAvg = scalePeak
+                                } else {
+                                    autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
+                                }
+                                //autoConfCNTXZPeakAvg = (autoConfCNTXZPeakAvg + maxCNT2XZVal) / 2.0
+                                lastCNT2YPeakSign = velYSign 
                                 maxCNT2YVal = 0
                                 maxCNT2XZVal = 0                      
                         } 
-                        if ( Math.abs(velY) > Math.abs(velX) && Math.abs(velY) > Math.abs(velZ) ) {
-                            if ( Math.abs(velY) > maxCNT2YVal ) {
-                                maxCNT2YVal = Math.abs(velY)
+                        if ( absVelY > absVelX && absVelY > absVelZ ) {
+                            if ( absVelY > maxCNT2YVal ) {
+                                maxCNT2YVal = absVelY
                                 if ( lastCNT2YPeakSign == 0 ) {
-                                    lastCNT2YPeakSign = Math.sign(velY)
+                                    lastCNT2YPeakSign = velYSign
                                 }
                             }
-                            if ( Math.abs(velX) > maxCNT2XZVal ) {
-                                maxCNT2XZVal = Math.abs(velX)
+                            if ( absVelX > maxCNT2XZVal ) {
+                                maxCNT2XZVal = absVelX
                             }
-                            if ( Math.abs(velZ) > maxCNT2XZVal ) {
-                                maxCNT2XZVal = Math.abs(velZ)
+                            if ( absVelZ > maxCNT2XZVal ) {
+                                maxCNT2XZVal = absVelZ
                             }
                         }
                     }
@@ -1010,32 +1031,44 @@ MyStackViewPage {
                     cont2YPoints.push(velY);
                     cont2ZPoints.push(velZ);
                 }
-                if ( velVals.length >= 12 ) {
+                if ( autoConfMode <= 0 && velVals.length >= 12 ) {
                     velX = parseFloat(velVals[9]).toFixed(4);
                     velY = parseFloat(velVals[10]).toFixed(4);
                     velZ = parseFloat(velVals[11]).toFixed(4);            
-    
-                    if ( autoConfMode  == 0 ) {
-                        if ( lastTRK1YPeakSign != 0 && Math.sign(velY) != lastTRK1YPeakSign) {
+               
+                    if ( autoConfMode == 0 ) {
+                        var absVelY = Math.abs(velY)
+                        var absVelX = Math.abs(velX)
+                        var absVelZ = Math.abs(velZ)
+                        var velYSign = velY < 0 ? -1 : 1
+                        if ( lastTRK1YPeakSign != 0 && velYSign != lastTRK1YPeakSign) {
                                 var scalePeak = maxTRK1YVal - ((maxTRK1YVal - maxTRK1XZVal)  * 0.4)
-                                autoConfTRKPeakAvg = (autoConfTRKPeakAvg + scalePeak) / 2.0
-                                autoConfTRKXZPeakAvg = (autoConfTRKXZPeakAvg + maxTRK1XZVal) / 2.0
-                                lastTRK1YPeakSign = Math.sign(velY)  
-                                maxTRK1YVal = 0                          
-                                maxTRK1XZVal = 0                          
+                                if ( autoConfTRKPeakAvg == 0 ) {
+                                    autoConfTRKPeakAvg = scalePeak
+                                } else {
+                                    autoConfTRKPeakAvg = (autoConfTRKPeakAvg + scalePeak) / 2.0
+                                }
+                                if ( autoConfTRKXZPeakAvg == 0 ) {
+                                    autoConfTRKXZPeakAvg = maxTRK1XZVal
+                                } else {
+                                    autoConfTRKXZPeakAvg = (autoConfTRKXZPeakAvg + maxTRK1XZVal) / 2.0
+                                }
+                                lastTRK1YPeakSign = velYSign 
+                                maxTRK1YVal = 0
+                                maxTRK1XZVal = 0                      
                         } 
-                        if ( Math.abs(velY) > Math.abs(velX) && Math.abs(velY) > Math.abs(velZ) ) {
-                            if ( Math.abs(velY) > maxTRK1YVal ) {
-                                maxTRK1YVal = Math.abs(velY)
+                        if ( absVelY > absVelX && absVelY > absVelZ ) {
+                            if ( absVelY > maxTRK1YVal ) {
+                                maxTRK1YVal = absVelY
                                 if ( lastTRK1YPeakSign == 0 ) {
-                                    lastTRK1YPeakSign = Math.sign(velY)
+                                    lastTRK1YPeakSign = velYSign
                                 }
                             }
-                            if ( Math.abs(velX) > maxTRK1XZVal ) {
-                                maxTRK1XZVal = Math.abs(velX)
+                            if ( absVelX > maxTRK1XZVal ) {
+                                maxTRK1XZVal = absVelX
                             }
-                            if ( Math.abs(velZ) > maxTRK1XZVal ) {
-                                maxTRK1XZVal = Math.abs(velZ)
+                            if ( absVelZ > maxTRK1XZVal ) {
+                                maxTRK1XZVal = absVelZ
                             }
                         }
                     }
@@ -1080,32 +1113,44 @@ MyStackViewPage {
                     tracker1YPoints.push(velY);
                     tracker1ZPoints.push(velZ);
                 }
-                if ( velVals.length >= 15 ) {
+                if ( autoConfMode <= 0 && velVals.length >= 15 ) {
                     velX = parseFloat(velVals[12]).toFixed(4);
                     velY = parseFloat(velVals[13]).toFixed(4);
                     velZ = parseFloat(velVals[14]).toFixed(4);            
-
-                    if ( autoConfMode  == 0 ) {
-                        if ( lastTRK2YPeakSign != 0 && Math.sign(velY) != lastTRK2YPeakSign) {
+          
+                    if ( autoConfMode == 0 ) {
+                        var absVelY = Math.abs(velY)
+                        var absVelX = Math.abs(velX)
+                        var absVelZ = Math.abs(velZ)
+                        var velYSign = velY < 0 ? -1 : 1
+                        if ( lastTRK2YPeakSign != 0 && velYSign != lastTRK2YPeakSign) {
                                 var scalePeak = maxTRK2YVal - ((maxTRK2YVal - maxTRK2XZVal)  * 0.4)
-                                autoConfTRKPeakAvg = (autoConfTRKPeakAvg + scalePeak) / 2.0
-                                autoConfTRKXZPeakAvg = (autoConfTRKXZPeakAvg + maxTRK2XZVal) / 2.0
-                                lastTRK2YPeakSign = Math.sign(velY)   
-                                maxTRK2YVal = 0                          
-                                maxTRK2XZVal = 0                             
+                                if ( autoConfTRKPeakAvg == 0 ) {
+                                    autoConfTRKPeakAvg = scalePeak
+                                } else {
+                                    autoConfTRKPeakAvg = (autoConfTRKPeakAvg + scalePeak) / 2.0
+                                }
+                                if ( autoConfTRKXZPeakAvg == 0 ) {
+                                    autoConfTRKXZPeakAvg = maxTRK2XZVal
+                                } else {
+                                    autoConfTRKXZPeakAvg = (autoConfTRKXZPeakAvg + maxTRK2XZVal) / 2.0
+                                }
+                                lastTRK2YPeakSign = velYSign 
+                                maxTRK2YVal = 0
+                                maxTRK2XZVal = 0                      
                         } 
-                        if ( Math.abs(velY) > Math.abs(velX) && Math.abs(velY) > Math.abs(velZ) ) {
-                            if ( Math.abs(velY) > maxTRK2YVal ) {
-                                maxTRK2YVal = Math.abs(velY)
+                        if ( absVelY > absVelX && absVelY > absVelZ ) {
+                            if ( absVelY > maxTRK2YVal ) {
+                                maxTRK2YVal = absVelY
                                 if ( lastTRK2YPeakSign == 0 ) {
-                                    lastTRK2YPeakSign = Math.sign(velY)
+                                    lastTRK2YPeakSign = velYSign
                                 }
                             }
-                            if ( Math.abs(velX) > maxTRK2XZVal ) {
-                                maxTRK2XZVal = Math.abs(velX)
+                            if ( absVelX > maxTRK2XZVal ) {
+                                maxTRK2XZVal = absVelX
                             }
-                            if ( Math.abs(velZ) > maxTRK2XZVal ) {
-                                maxTRK2XZVal = Math.abs(velZ)
+                            if ( absVelZ > maxTRK2XZVal ) {
+                                maxTRK2XZVal = absVelZ
                             }
                         }
                     }
@@ -1174,38 +1219,51 @@ MyStackViewPage {
                             autoConfMode = 1
                             sampleCount = 0
                             autoConfigPopup.setTitle("Jogging Pace Config")
-                            autoConfigPopup.setTextDetail("Start Jogging IN PLACE at desired Pace in")
+                            autoConfigPopup.setTextDetail("Start Jogging IN PLACE in")
                             autoConfigPopup.openPopup()
+                            hmdXPoints = []
+                            hmdYPoints = []
+                            hmdZPoints = []
+                            tracker1XPoints = []
+                            tracker1YPoints = []
+                            tracker1ZPoints = []
+                            tracker2XPoints = []
+                            tracker2YPoints = []
+                            tracker2ZPoints = []
                         } else if ( autoConfMode == 1 ) {
-                            autoConfMode = 2
-                            sampleCount = 0
                             autoConfContJogAvg = autoConfCNTPeakAvg
                             autoConfCNTPeakAvg = 0
+                            autoConfMode = 2
+                            sampleCount = 0
                             autoConfigPopup.setTitle("Running Pace Config")
-                            autoConfigPopup.setTextDetail("Start Running IN PLACE at desired Pace in")
+                            autoConfigPopup.setTextDetail("Start Running IN PLACE in")
                             autoConfigPopup.openPopup()
                         } else if ( autoConfMode == 2 ) {
+                            autoConfContRunAvg = autoConfCNTPeakAvg
+                            autoConfCNTPeakAvg = 0
                             autoConfMode = -1
                             sampleCount = 0
-                            autoConfContRunAvg = autoConfCNTPeakAvg
-                            if ( autoConfHMDPeakAvg > 0.05 || autoConfTRKPeakAvg < 0.02) {
-                                setAutoConfHMDY(autoConfHMDPeakAvg)
-                                setAutoConfHMDXZ(autoConfHMDXZPeakAvg)
+                            autoConfigPopup.setTitle("Walking Pace Config")
+                            autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
+                            var page = mainView.pop()
+                            if ( autoConfHMDPeakAvg > 0.09 || autoConfTRKPeakAvg < 0.1) {
+                                mainView.setAutoConfHMDY(autoConfHMDPeakAvg)
+                                mainView.setAutoConfHMDXZ(autoConfHMDXZPeakAvg)
                             } else {
-                                setAutoConfDisableHMD(true)
+                                mainView.setAutoConfDisableHMD(true)
                             }
-                            if ( autoConfTRKPeakAvg > 0.03) {
-                                setAutoConfUseTrackers(true)
-                                setAutoConfTRKY(autoConfTRKPeakAvg)
-                                setAutoConfTRKXZ(autoConfTRKXZPeakAvg)
+                            if ( autoConfTRKPeakAvg > 0.04) {
+                                mainView.setAutoConfUseTrackers(true)
+                                mainView.setAutoConfTRKY(autoConfTRKPeakAvg)
+                                mainView.setAutoConfTRKXZ(autoConfTRKXZPeakAvg)
                             }
-                            //setAutoConfContMin(autoConfContWalkAvg)
-                            setAutoConfContMid(autoConfContJogAvg)
-                            setAutoConfContMax(autoConfContRunAvg)
-                            autoConfigPopup.setTitle("Auto Config Complete")
-                            autoConfigPopup.setTextDetail("Select other input options using the main view, Returning in:")
-                            authConfigPopup.setTimeout(3)
-                            autoConfigPopup.openPopup()
+                            //mainView.setAutoConfContMin(autoConfContWalkAvg)
+                            mainView.setAutoConfContMid(autoConfContJogAvg)
+                            mainView.setAutoConfContMax(autoConfContRunAvg)
+                            //autoConfigPopup.setTitle("Auto Config Complete")
+                            //autoConfigPopup.setTextDetail("Select other input options using the main view, Returning in:")
+                            //authConfigPopup.setTimeout(3)
+                            //autoConfigPopup.openPopup()
                         }                       
                     }
                 }
@@ -1223,17 +1281,28 @@ MyStackViewPage {
         id: autoConfigPopup
         property int profileIndex: -1
         dialogTitle: "Walking Pace Config"
-        dialogText:  "Being Walking IN PLACE in:"
+        dialogText:  "Begin Walking IN PLACE in:"
         dialogTO: 5
         onClosed: {
             stopPopupTimer()
             startTimer()
-            if (cancelClicked) {
+            if (cancelClicked || autoConfMode < 0 ) {
                 autoConfMode = -1
-            } else if ( autoConfMode < 0 ) {
-                mainView.stopTimer()
-                var page = mainView.pop()
-            }
+                dialogTitle = "Walking Pace Config"
+                dialogText = "Begin Walking IN PLACE in:"
+                sampleCount = 0
+                autoConfHMDPeakAvg = 0
+                autoConfHMDXZPeakAvg = 0
+                autoConfTRKPeakAvg = 0
+                autoConfTRKXZPeakAvg = 0
+                //autoConfContWalkAvg = 0
+                autoConfContJogAvg = 0
+                autoConfContRunAvg = 0
+            } 
+            //else if ( autoConfMode < 0 ) {
+                //mainView.stopTimer()
+                //var page = mainView.pop()
+            //}
         }
         function openPopup() {
             startPopupTimer()

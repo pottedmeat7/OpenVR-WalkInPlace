@@ -265,8 +265,8 @@ int main(int argc, char *argv[]) {
 			qobject_cast<QQuickItem*>(quickObj)->setParentItem(m_pWindow->contentItem());
 			m_pWindow->setGeometry(0, 0, qobject_cast<QQuickItem*>(quickObj)->width(), qobject_cast<QQuickItem*>(quickObj)->height());
 			m_pWindow->setDefaultAlphaBuffer(true);
-			//m_pWindow->setFlags(Qt::FramelessWindowHint);
-			//m_pWindow->setColor(Qt::transparent);
+			m_pWindow->setFlags(Qt::FramelessWindowHint);
+			m_pWindow->setColor(Qt::transparent);
 			m_pWindow->show();
 
 		}

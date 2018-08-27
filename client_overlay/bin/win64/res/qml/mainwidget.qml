@@ -27,40 +27,41 @@ Rectangle {
         function stopTimer() {
         	currentItem.stopTimer()
         }
+        
 	    function setAutoConfHMDY(v) {
-	    	stepDetectionPage.setAutoConfHMDY(v)
+	    	currentItem.setAutoConfHMDY(v)
 	    }
 
 	    function setAutoConfHMDXZ(v) {
-	    	stepDetectionPage.setAutoConfHMDXZ(v)
+	    	currentItem.setAutoConfHMDXZ(v)
 	    }
 
 	    function setAutoConfUseTrackers(v) {
-	    	stepDetectionPage.setAutoConfUseTrackers(v)
+	    	currentItem.setAutoConfUseTrackers(v)
 	    }
 
 	    function setAutoConfDisableHMD(v) {
-	    	stepDetectionPage.setAutoConfDisableHMD(v)
+	    	currentItem.setAutoConfDisableHMD(v)
 	    }
 
 	    function setAutoConfTRKY(v) {
-	    	stepDetectionPage.setAutoConfTRKY(v)
+	    	currentItem.setAutoConfTRKY(v)
 	    }
 
 	    function setAutoConfTRKXZ(v) {
-	    	stepDetectionPage.setAutoConfTRKXZ(v)
+	    	currentItem.setAutoConfTRKXZ(v)
 	    }
 
 	    function setAutoConfContMin(v) {
-	    	stepDetectionPage.setAutoConfContMin(v)
+	    	currentItem.setAutoConfContMin(v)
 	    }
 
 	    function setAutoConfContMid(v) {
-	    	stepDetectionPage.setAutoConfContMid(v)
+	    	currentItem.setAutoConfContMid(v)
 	    }
 
 	    function setAutoConfContMax(v) {
-	    	stepDetectionPage.setAutoConfContMax(v)
+	    	currentItem.setAutoConfContMax(v)
 	    }
 
 		pushEnter: Transition {
