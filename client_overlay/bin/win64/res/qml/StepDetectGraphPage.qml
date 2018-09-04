@@ -168,8 +168,10 @@ MyStackViewPage {
 
             ColumnLayout {
                 anchors.fill: parent
+                width: 1200
                 
                 RowLayout {
+                    width: 1200
                     Button {
                         id: headerBackButton
                         Layout.preferredHeight: 60
@@ -205,9 +207,12 @@ MyStackViewPage {
                     MyText {
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
+                        Layout.maximumWidth: 640
+                        Layout.minimumWidth: 640
+                        Layout.preferredWidth: 640
                         font.pointSize: 22
                         anchors.verticalCenter: headerBackButton.verticalCenter
-                        Layout.leftMargin: 32
+                        Layout.leftMargin: 30
                     }
 
                     MyText {
@@ -215,13 +220,16 @@ MyStackViewPage {
                         text: " "
                         font.pointSize: 22
                         anchors.verticalCenter: headerBackButton.verticalCenter
-                        Layout.maximumWidth: 450
-                        Layout.minimumWidth: 450
-                        Layout.preferredWidth: 450
+                        Layout.maximumWidth: 120
+                        Layout.minimumWidth: 120
+                        Layout.preferredWidth: 120
                     }
 
                     MyPushButton {
                         text: "Start Auto Configure"
+                        Layout.maximumWidth: 300
+                        Layout.minimumWidth: 300
+                        Layout.preferredWidth: 300
                         onClicked: {
                             stopTimer()
                             resetGraph()
@@ -876,6 +884,7 @@ MyStackViewPage {
                     hmdZPoints.push(velZ);
                 }
                 if ( autoConfMode != 0 && velVals.length >= 6 ) {
+                
                     velX = parseFloat(velVals[3]).toFixed(4);
                     velY = parseFloat(velVals[4]).toFixed(4);
                     velZ = parseFloat(velVals[5]).toFixed(4); 
@@ -884,33 +893,34 @@ MyStackViewPage {
                         var absVelY = Math.abs(velY)
                         var absVelX = Math.abs(velX)
                         var absVelZ = Math.abs(velZ)
-                        var velYSign = velY < 0 ? -1 : 1
-                        if ( lastCNT1YPeakSign != 0 && velYSign != lastCNT1YPeakSign) {
-                                var scalePeak = maxCNT1YVal - ((maxCNT1YVal - maxCNT1XZVal)  * 0.4)
-                                if ( autoConfCNTPeakAvg == 0 ) {
-                                    autoConfCNTPeakAvg = scalePeak
-                                } else {
-                                    autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
-                                }
-                                //autoConfCNTXZPeakAvg = (autoConfCNTXZPeakAvg + maxCNT1XZVal) / 2.0
-                                lastCNT1YPeakSign = velYSign 
-                                maxCNT1YVal = 0
-                                maxCNT1XZVal = 0                      
-                        } 
-                        if ( absVelY > absVelX && absVelY > absVelZ ) {
-                            if ( absVelY > maxCNT1YVal ) {
-                                maxCNT1YVal = absVelY
-                                if ( lastCNT1YPeakSign == 0 ) {
-                                    lastCNT1YPeakSign = velYSign
-                                }
-                            }
-                            if ( absVelX > maxCNT1XZVal ) {
-                                maxCNT1XZVal = absVelX
-                            }
-                            if ( absVelZ > maxCNT1XZVal ) {
-                                maxCNT1XZVal = absVelZ
-                            }
-                        }
+                        autoConfCNTPeakAvg = (autoConfCNTPeakAvg + absVelY) / 2.0
+                        //var velYSign = velY < 0 ? -1 : 1
+                        //if ( lastCNT1YPeakSign != 0 && velYSign != lastCNT1YPeakSign) {
+                        //        var scalePeak = maxCNT1YVal - ((maxCNT1YVal - maxCNT1XZVal)  * 0.4)
+                        //        if ( autoConfCNTPeakAvg == 0 ) {
+                        //            autoConfCNTPeakAvg = scalePeak
+                        //        } else {
+                        //            autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
+                        //        }
+                        //        //autoConfCNTXZPeakAvg = (autoConfCNTXZPeakAvg + maxCNT1XZVal) / 2.0
+                        //        lastCNT1YPeakSign = velYSign 
+                        //        maxCNT1YVal = 0
+                        //        maxCNT1XZVal = 0                      
+                        //} 
+                        //if ( absVelY > absVelX && absVelY > absVelZ ) {
+                        //    if ( absVelY > maxCNT1YVal ) {
+                        //        maxCNT1YVal = absVelY
+                        //        if ( lastCNT1YPeakSign == 0 ) {
+                        //            lastCNT1YPeakSign = velYSign
+                        //        }
+                        //    }
+                        //    if ( absVelX > maxCNT1XZVal ) {
+                        //        maxCNT1XZVal = absVelX
+                        //    }
+                        //    if ( absVelZ > maxCNT1XZVal ) {
+                        //        maxCNT1XZVal = absVelZ
+                        //    }
+                        //}
                     }
 
                     velX = velX > 10 ? 10 : velX;
@@ -962,33 +972,34 @@ MyStackViewPage {
                         var absVelY = Math.abs(velY)
                         var absVelX = Math.abs(velX)
                         var absVelZ = Math.abs(velZ)
-                        var velYSign = velY < 0 ? -1 : 1
-                        if ( lastCNT2YPeakSign != 0 && velYSign != lastCNT2YPeakSign) {
-                                var scalePeak = maxCNT2YVal - ((maxCNT2YVal - maxCNT2XZVal)  * 0.4)
-                                if ( autoConfCNTPeakAvg == 0 ) {
-                                    autoConfCNTPeakAvg = scalePeak
-                                } else {
-                                    autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
-                                }
-                                //autoConfCNTXZPeakAvg = (autoConfCNTXZPeakAvg + maxCNT2XZVal) / 2.0
-                                lastCNT2YPeakSign = velYSign 
-                                maxCNT2YVal = 0
-                                maxCNT2XZVal = 0                      
-                        } 
-                        if ( absVelY > absVelX && absVelY > absVelZ ) {
-                            if ( absVelY > maxCNT2YVal ) {
-                                maxCNT2YVal = absVelY
-                                if ( lastCNT2YPeakSign == 0 ) {
-                                    lastCNT2YPeakSign = velYSign
-                                }
-                            }
-                            if ( absVelX > maxCNT2XZVal ) {
-                                maxCNT2XZVal = absVelX
-                            }
-                            if ( absVelZ > maxCNT2XZVal ) {
-                                maxCNT2XZVal = absVelZ
-                            }
-                        }
+                        autoConfCNTPeakAvg = (autoConfCNTPeakAvg + absVelY) / 2.0                        
+                        //var velYSign = velY < 0 ? -1 : 1
+                        //if ( lastCNT2YPeakSign != 0 && velYSign != lastCNT2YPeakSign) {
+                        //        var scalePeak = maxCNT2YVal - ((maxCNT2YVal - maxCNT2XZVal)  * 0.4)
+                        //        if ( autoConfCNTPeakAvg == 0 ) {
+                        //            autoConfCNTPeakAvg = scalePeak
+                        //      } else {
+                        //            autoConfCNTPeakAvg = (autoConfCNTPeakAvg + scalePeak) / 2.0
+                        //        }
+                        //        //autoConfCNTXZPeakAvg = (autoConfCNTXZPeakAvg + maxCNT2XZVal) / 2.0
+                        //        lastCNT2YPeakSign = velYSign 
+                        //        maxCNT2YVal = 0
+                        //        maxCNT2XZVal = 0                      
+                        //} 
+                        //if ( absVelY > absVelX && absVelY > absVelZ ) {
+                        //    if ( absVelY > maxCNT2YVal ) {
+                        //        maxCNT2YVal = absVelY
+                        //        if ( lastCNT2YPeakSign == 0 ) {
+                        //            lastCNT2YPeakSign = velYSign
+                        //        }
+                        //    }
+                        //    if ( absVelX > maxCNT2XZVal ) {
+                        //        maxCNT2XZVal = absVelX
+                        //    }
+                        //    if ( absVelZ > maxCNT2XZVal ) {
+                        //        maxCNT2XZVal = absVelZ
+                        //    }
+                        //}
                     }
 
                     velX = velX > 10 ? 10 : velX;

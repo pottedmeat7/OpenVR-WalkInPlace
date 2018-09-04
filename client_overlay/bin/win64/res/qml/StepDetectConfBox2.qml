@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Thresholds"
 
+
     property double hmdXZ : 0.27
     property double hmdY : 0.12
     property double trackerY : 0.10

@@ -10,6 +10,7 @@ MyMainViewPage {
     property var initialLoaded: false
 
     function updateInfo() {  
+    
         stepThresholdBox.setHMDY(WalkInPlaceTabController.getHMDYThreshold())
         stepThresholdBox.setHMDXZ(WalkInPlaceTabController.getHMDXZThreshold())
         stepThresholdBox.setHandJog(WalkInPlaceTabController.getHandJogThreshold())
@@ -326,6 +327,11 @@ MyMainViewPage {
             setRunTouch: function(val) {
                 WalkInPlaceTabController.setRunTouch(val)
                 runTouch = val
+                updateGUI()
+            }
+            setScaleTouch: function(val) {
+                WalkInPlaceTabController.setScaleTouchWithSwing(val)
+                scaleTouch = val
                 updateGUI()
             }
             setUseContDirForStraf: function(val) {

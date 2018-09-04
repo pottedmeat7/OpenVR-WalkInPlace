@@ -5,9 +5,11 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Virtual Input"
 
+
     property double walkTouch : 0.35
     property double jogTouch : 0.9
     property double runTouch : 1.0
+    property bool scaleTouch : false
     property bool useContDirForStraf: false
     property bool useContDirForRev: false
 
@@ -18,6 +20,7 @@ GroupBox {
     property var setWalkTouch: function(w) {}
     property var setJogTouch: function(j) {}
     property var setRunTouch: function(r) {}
+    property var setScaleTouch: function(c) {}
     property var setUseContDirForStraf: function(val) {}
     property var setUseContDirForRev: function(val) {}
     property var updateValues: function() {}
@@ -232,19 +235,26 @@ GroupBox {
                 }
             }
 
-            MyText {
-                text: " "
-                Layout.preferredWidth: 160
+            MyToggleButton {
+                id: enableScaleTouch
+                text: "Scale Touch with Arm Swing?"
+                Layout.maximumWidth: 300
+                Layout.minimumWidth: 300
+                Layout.preferredWidth: 300
+                Layout.fillWidth: true
+                onCheckedChanged: {
+                    setScaleTouch(checked)
+                }
             }
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 20
             }
 
             MyText {
                 text: " "
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 20
             }
 
         }
