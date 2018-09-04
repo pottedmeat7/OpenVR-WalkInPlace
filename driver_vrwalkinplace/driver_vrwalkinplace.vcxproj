@@ -27,29 +27,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\devicemanipulation\DeviceManipulationHandle.cpp" />
+    <ClCompile Include="src\virtualdevice\VirtualController.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\com\shm\driver_ipc_shm.cpp" />
     <ClCompile Include="src\driver\ServerDriver.cpp" />
     <ClCompile Include="src\driver\WatchdogProvider.cpp" />
     <ClCompile Include="src\driver_vrwalkinplace.cpp" />
-    <ClCompile Include="src\hooks\common.cpp" />
-    <ClCompile Include="src\hooks\ITrackedDeviceServerDriver005Hooks.cpp" />
-    <ClCompile Include="src\hooks\IVRDriverContextHooks.cpp" />
-    <ClCompile Include="src\hooks\IVRProperties001Hooks.cpp" />
-    <ClCompile Include="src\hooks\IVRServerDriverHost005Hooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\com\shm\driver_ipc_shm.h" />
-    <ClInclude Include="src\devicemanipulation\DeviceManipulationHandle.h" />
+    <ClInclude Include="src\virtualdevice\VirtualController.h" />
     <ClInclude Include="src\driver\ServerDriver.h" />
     <ClInclude Include="src\driver\utils\DevicePropertyValueVisitor.h" />
     <ClInclude Include="src\driver\WatchdogProvider.h" />
-    <ClInclude Include="src\hooks\common.h" />
-    <ClInclude Include="src\hooks\ITrackedDeviceServerDriver005Hooks.h" />
-    <ClInclude Include="src\hooks\IVRDriverContextHooks.h" />
-    <ClInclude Include="src\hooks\IVRProperties001Hooks.h" />
-    <ClInclude Include="src\hooks\IVRServerDriverHost005Hooks.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\utils\DevicePropertyValueVisitor.h" />
   </ItemGroup>
@@ -156,7 +146,7 @@
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <TargetName>driver_00vrwalkinplace</TargetName>
     <LibraryPath>$(SolutionDir)\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(VC_SourcePath)\hooks;$(VC_SourcePath)\driver;$(VC_SourcePath)\devicemanipulation;$(SourcePath)</SourcePath>
+    <SourcePath>$(VC_SourcePath)\hooks;$(VC_SourcePath)\driver;$(VC_SourcePath)\virtualdevice;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standalone|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -164,7 +154,7 @@
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <TargetName>driver_00vrwalkinplace</TargetName>
     <LibraryPath>$(SolutionDir)\third-party\boost_1_65_1\lib64-msvc-14.1;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(VC_SourcePath)\hooks;$(VC_SourcePath)\driver;$(VC_SourcePath)\devicemanipulation;$(SourcePath)</SourcePath>
+    <SourcePath>$(VC_SourcePath)\hooks;$(VC_SourcePath)\driver;$(VC_SourcePath)\virtualdevice;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

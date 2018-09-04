@@ -85,7 +85,7 @@ struct Request_OpenVR_PoseUpdate {
 #define REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT 12
 
 struct Request_OpenVR_ButtonEvent {
-		ButtonEventType eventType;
+		vr::EVREventType eventType;
 		uint32_t deviceId;
 		vr::EVRButtonId buttonId;
 		double timeOffset;
@@ -96,7 +96,7 @@ struct Request_OpenVR_ButtonEvent {
 
 struct Request_OpenVR_AxisEvent {
 		uint32_t deviceId;
-		uint32_t axisId;
+		vr::EVRButtonId axisId;
 		vr::VRControllerAxis_t axisState;
 };
 

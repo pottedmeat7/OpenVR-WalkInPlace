@@ -6,24 +6,6 @@
 namespace vrwalkinplace {
 
 	static const char* const vrsettings_SectionName = "driver_00vrwalkinplace";
-	static const char* const vrsettings_overrideHmdManufacturer_string = "overrideHmdManufacturer";
-	static const char* const vrsettings_overrideHmdModel_string = "overrideHmdModel";
-	static const char* const vrsettings_overrideHmdTrackingSystem_string = "overrideHmdTrackingSystem";
-	static const char* const vrsettings_genericTrackerFakeController_bool = "genericTrackerFakeController";
-
-	enum class VirtualDeviceType : uint32_t {
-		None = 0,
-		TrackedController = 1
-	};
-
-
-	enum class ButtonEventType : uint32_t {
-		None = 0,
-		ButtonPressed = 1,
-		ButtonUnpressed = 2,
-		ButtonTouched = 3,
-		ButtonUntouched = 4,
-	};
 
 
 	enum class DevicePropertyValueType : uint32_t {
@@ -37,18 +19,6 @@ namespace vrwalkinplace {
 		MATRIX44 = 21,
 		VECTOR3 = 22,
 		VECTOR4 = 23
-	};
-
-
-	struct DeviceOffsets {
-		uint32_t deviceId;
-		bool offsetsEnabled;
-		vr::HmdQuaternion_t worldFromDriverRotationOffset;
-		vr::HmdVector3d_t worldFromDriverTranslationOffset;
-		vr::HmdQuaternion_t driverFromHeadRotationOffset;
-		vr::HmdVector3d_t driverFromHeadTranslationOffset;
-		vr::HmdQuaternion_t deviceRotationOffset;
-		vr::HmdVector3d_t deviceTranslationOffset;
 	};
 
 

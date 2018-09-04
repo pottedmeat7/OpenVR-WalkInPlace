@@ -153,7 +153,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 			}
 			throw std::runtime_error(std::string("Failed to create Overlay: " + std::string(vr::VROverlay()->GetOverlayErrorNameFromEnum(overlayError))));
 		}
-		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 3.0f);
+		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.5f);
 		vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
 		vr::VROverlay()->SetOverlayFlag(m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true);
 		std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + "\\res\\thumbicon.png";

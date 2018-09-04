@@ -1,4 +1,4 @@
-![language](https://img.shields.io/badge/Language-C%2B%2B11-green.svg)  ![dependencies](https://img.shields.io/badge/Dependencies-Boost%201.63-green.svg)  ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
+![language](https://img.shields.io/badge/Language-C%2B%2B11-green.svg)  ![dependencies](https://img.shields.io/badge/Dependencies-Boost%201.65-green.svg)  ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
 
 # OpenVR-WalkInPlace
 
@@ -9,12 +9,11 @@ The OpenVR driver hooks into the lighthouse driver and tracks movement of the HM
 # Current Games that Work Best with OpenVR-WalkInPlace
 
 - Skyrim VR
-- Fallout 4 VR
 - Rec Room
 - Arizona Sunshine
 - Onward
 - VR-Chat
-- DOOM VFR (with Keyboard (WASD))
+- DOOM VFR
 - Any other games with Keyboard or Touchpad locomotion controls
 
 Other games may not have touchpad movement options however this driver will 
@@ -65,30 +64,35 @@ Direction Control Example:
 *This is what the graph should look like when walking in place
 
 ## Watch the Selected Controller touchpad to See Successful Virtual Input
-When a step is detected touchpad input will be applied to the selected controller. In the SteamVR Overlay this input will be visualized with a small grey dot on the virtual touchpad of the selected controller. 
+When a step is detected touchpad input will be applied to the selected controller. 
+In the SteamVR Overlay this input will be visualized with a small grey dot on the virtual touchpad of the selected controller. 
 
-## Any Issues Check out the Logs
-Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
-
-Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`
+### Auto Conf
+You can detect ideal HMD Thresholds, Tracker Configuration, and Jog/Run Arm swing values with Auto Conf function on the Graph Page
 
 ### WalkInPlace Overlay
-Just "Enable WIP" in the UI.
-
-Enable the "analog" locomotion in the games settings this is the input method that uses the touch-pad
-Then you simply walk in place to virutally walk in VR.
+Check "Enable WIP" to activate the virtual input
+(also enable the "analog" locomotion in the games settings this is the input method that uses the touch-pad)
 
 ### HMD Type
 Choose which HMD your using
 
-### Game Type
-These are the input type for the game
+### Input Type
+There are a few different methods of inputs used by games
+-The standard "Touchpad" locomotion games, that use from 0-1 on the touchpad for forward movement speed, often these games also have a "click to sprint" function. Use either "Touchpad (with click)" or "Touchpad" also "Joystick (with click)" or "Joysitck" for Rift
+-Some games use the touchpad locomotion except you have to also press and hold the touchpad while moving your finger from 0-1 use the option "Touchpad (pressed)" or "Joystick (pressed)" for these games
+-Some games only allow for teleport, or they have other teleport functions like Dash, for these you should use either "touchpad (with click)" or "joystick (with click)" you then should lower the "Arm Swing Run" value to 0.05 or very low also lower the "step time" very low to 0.05 this will trigger a click input and very quickly unclick. Its not perfect but I found for some games it is an improvement over teleporting over and over.
+-Keyboard input is fallback that is only needed if nothing else works
 
 ### Controller selection (which controller is used for virtual input)
-Some games only use one controller for locomotion while the other touchpad is used for different functions.
 This menu allows you to select which controller should be used for virtual input.
-The 1st and 2nd option will just switch between two controllers without identification.
 The selected controller will highlight green for 10 seconds
+
+### buttons to disable/enable WIP
+These options can be used to disable/enable virtual movement when your holding or not holding the button selected.
+- First choose either "enable WIP" or "disable WIP"  from the first drop down
+- Then choose the button action that you'd prefer from the second drop down
+- Then choose which controller that you want the button action to be on
 
 ### HMD Thresholds
 The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
@@ -111,15 +115,6 @@ You must have both "Use Trackers?" Checked as well as "Disable HMD?" checked.
 These values are for the controller Up and Down movement of the arms. 
 The real time Controller values have to be greater then these values in order to Jog / Run.
 
-### Button to enable WIP
-These options can be used to disable virtual movement when your not holding the button selected.
-
-### Disable WIP when held?
-This will change the "Button to enable WIP" behavior instead of allowing virtual movement when the button is held, it will only allow virtual movement when the button is not held and visa versa.
-
-### Controller for button
-This is the controller used for the "Button to enable WIP" 
-
 ### Step Time
 This is how long each "step" lasts. If 1 step is detected it will last this amount of time in seconds. As you repeat steps this time is reset for every step detected. 
 
@@ -130,20 +125,27 @@ Some games use the entire axis from the center, 0, to 1
 
 If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "jog" or "run" touch value with the "arm swing" thresholds above.
 
+### Scale Touch with Swing?
+This will enable varying touch values between your minimum walk/jog/run values depending on how much your average arm swinging values (average for "step time" times 3) differ from the "jog/run" swing values. The default "walk" arm swing value is assumed to be zero so anything over that will scale over the "walk touch" value.
+
+### Use Controller Direction for Straf? and Use Controller Direction for Reverse?
+These are made for games that either have HMD relative movement (ie you move the direction you face). These games do allow straf movement often by touching the left or right side of the touchpad. These options will calcuate your controller direction and use left or right touchpad values if your controllers direction is perpendicular to your HMD forward direction. 
+Some games also do not support controller direction for reverse, this option will determine if your controller is pointed backwards and apply negative values for the touchpad. 
+(These features currently have gimbal lock problems, and are having more conflicts when both options are used)
+
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
-
 After re-opening SteamVR you can reload your saved profiles by first clicking "Load Profiles" then selecting the profile you want from the drop down menu, and click "Apply".
-
 If you want to update a profile with new settings you need to select the profile and delete it and re-create a "New Profile".
-
 If you name a profile with the name "default" it will be the initially loaded profile once you "load profiles".
 
 ## Graph Page
-
 The graph page will show you realtime values from the HMD, controllers and trackers.
 If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.
 
+## Any Issues Check out the Logs
+Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
+Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`
 
 
 ## Setting up To Re-Build the project from Source

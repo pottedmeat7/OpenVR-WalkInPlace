@@ -328,6 +328,11 @@ MyMainViewPage {
                 runTouch = val
                 updateGUI()
             }
+            setScaleTouch: function(val) {
+                WalkInPlaceTabController.setScaleTouchWithSwing(val)
+                scaleTouch = val
+                updateGUI()
+            }
             setUseContDirForStraf: function(val) {
                 WalkInPlaceTabController.setUseContDirForStraf(val)
                 useContDirForStraf = val

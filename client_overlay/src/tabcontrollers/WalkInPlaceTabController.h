@@ -89,6 +89,7 @@ private:
 	vr::HmdVector3d_t hmdForward = { 0,0,-1 };
 	vr::VROverlayHandle_t overlayHandle;
 
+	std::list<float> contVelSamples;
 	bool identifyControlTimerSet = false;
 	bool stepDetectEnabled = false;
 	bool _stepPoseDetected = false;
@@ -128,7 +129,6 @@ private:
 	int _controllerDeviceIds[2] = { -1, -1 };
 	int _controlUsedID = -1;
 	int stepPeaksToStart = 3;
-	int contSampleCount = 0;
 	float hmdYaw = 0;
 	float contYaw = 0;
 	float contRoll = 0;
@@ -146,8 +146,12 @@ private:
 	float hmdLastYVel = 0;
 	float cont1LastYVel = 0;
 	float cont2LastYVel = 0;
+	float hmdLastPitch = 0;
+	float hmdPitchAngVel = 0;
+	float pitchAngVelThreshold = 90;
 	float stepPeaksFullSpeed = 13.0;
 	float avgContYVel = 0.0;
+	float totalContYVel = 0.0;
 	double _stepFrequencyMin = 250;
 	double _stepIntegrateSteps = 0.0;
 	double _jogIntegrateSteps = 0.0;
@@ -158,6 +162,7 @@ private:
 	double _timeLastStepPeak = 0.0;
 	double _timeLastTrackerStep = 0.0;
 	double _timeLastNod = 0.0;
+	double contVelSampleTime = 0.0;
 	double identifyControlLastTime = 99999;
 	double identifyControlTimeOut = 6000;
 	double _timeLastGraphPoint = 0.0;
@@ -241,7 +246,7 @@ public slots:
 
 	bool accuracyButtonOnOrDisabled();
 	bool upAndDownStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
-	bool nodCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
+	bool nodCheck(float angVel);
 	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
 	bool isJoggingStep(float * vel);
 	bool isRunningStep(float * vel);
@@ -252,8 +257,8 @@ public slots:
 	void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
 	void applyClickMovement(uint32_t deviceId);
 	void applyGripMovement(uint32_t deviceId);
-	void axisEvent(int deviceId, int axisId, float x, float y);
-	void buttonEvent(int deviceId, int buttonId, int buttonState);
+	//void axisEvent(int deviceId, int axisId, float x, float y);
+	//void buttonEvent(int deviceId, int buttonId, int buttonState);
 
 	void updateAccuracyButtonState(uint32_t deviceId, bool firstController);
 

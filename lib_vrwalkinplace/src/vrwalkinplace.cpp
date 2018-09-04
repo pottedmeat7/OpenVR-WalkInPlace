@@ -241,7 +241,7 @@ namespace vrwalkinplace {
 		}
 	}
 
-	void VRWalkInPlace::openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset) {
+	void VRWalkInPlace::openvrButtonEvent(vr::EVREventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_ButtonEvent);
 			message.msg.ipc_ButtonEvent.eventType = eventType;
@@ -256,7 +256,7 @@ namespace vrwalkinplace {
 	}
 
 
-	void VRWalkInPlace::openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t & axisState) {
+	void VRWalkInPlace::openvrAxisEvent(uint32_t deviceId, vr::EVRButtonId axisId, const vr::VRControllerAxis_t & axisState) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_AxisEvent);
 			message.msg.ipc_AxisEvent.deviceId = deviceId;

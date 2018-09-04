@@ -120,14 +120,6 @@ class vrwalkinplace_toomanydevices : public vrwalkinplace_exception {
 };
 
 
-struct VirtualDeviceInfo {
-	uint32_t virtualDeviceId;
-	uint32_t openvrDeviceId;
-	VirtualDeviceType deviceType;
-	std::string deviceSerial;
-};
-
-
 class VRWalkInPlace {
 public:
 	VRWalkInPlace(const std::string& driverQueue = "driver_vrwalkinplace.server_queue", const std::string& clientQueue = "driver_vrwalkinplace.client_queue.");
@@ -141,8 +133,8 @@ public:
 
 	void openvrDeviceAdded(uint32_t deviceId);
 	void openvrUpdatePose(uint32_t deviceId, bool flipYaw);
-	void openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
-	void openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t& axisState);
+	void openvrButtonEvent(vr::EVREventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
+	void openvrAxisEvent(uint32_t deviceId, vr::EVRButtonId axisId, const vr::VRControllerAxis_t& axisState);
 
 private:
 	std::recursive_mutex _mutex;

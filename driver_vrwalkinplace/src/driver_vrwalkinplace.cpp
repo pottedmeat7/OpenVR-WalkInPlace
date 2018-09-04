@@ -2,8 +2,8 @@
 #include "driver/WatchdogProvider.h"
 
 
-vrwalkinplace::driver::ServerDriver serverDriver;
-vrwalkinplace::driver::WatchdogProvider watchdogProvider;
+static vrwalkinplace::driver::ServerDriver serverDriver;
+static vrwalkinplace::driver::WatchdogProvider watchdogProvider;
 
 
 #define HMD_DLL_EXPORT extern "C" __declspec( dllexport )
