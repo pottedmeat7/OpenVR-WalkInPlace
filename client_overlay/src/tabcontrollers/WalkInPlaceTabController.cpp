@@ -492,7 +492,7 @@ namespace walkinplace {
 			entry.handRunThreshold = settings->value("handRun", 1.7).toFloat();
 			entry.useContDirForStraf = settings->value("useContDirForStraf", false).toBool();
 			entry.useContDirForRev = settings->value("useContDirForRev", false).toBool();
-			//entry.scaleTouchWithSwing = settings->value("scaleTouchWithSwing", false).toBool();
+			entry.scaleTouchWithSwing = settings->value("scaleTouchWithSwing", false).toBool();
 			entry.stepTime = settings->value("stepTime", 0.5).toDouble();
 			entry.useAccuracyButton = settings->value("useAccuracyButton", 0).toInt();
 			entry.walkTouch = settings->value("walkTouch", 0.6).toFloat();
@@ -761,6 +761,14 @@ namespace walkinplace {
 			g_AccuracyButton = -1;
 			break;
 		}
+	}
+	
+	void WalkInPlaceTabController::disableController(bool val, int control) {
+
+	}
+
+	void WalkInPlaceTabController::disableTracker(bool val, int control) {
+
 	}
 
 	void WalkInPlaceTabController::updateAccuracyButtonState(uint32_t deviceId, bool firstController) {

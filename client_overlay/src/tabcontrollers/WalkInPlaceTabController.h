@@ -240,6 +240,8 @@ public slots:
 	void setGameStepType(int gameType);
 	void setHMDType(int gameType);
 	void setControlSelect(int control);
+	void disableController(bool val, int control);
+	void disableTracker(bool val, int control);
 	void setAccuracyButtonControlSelect(int control);
 	void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);
 	void applyStepPoseDetect();
