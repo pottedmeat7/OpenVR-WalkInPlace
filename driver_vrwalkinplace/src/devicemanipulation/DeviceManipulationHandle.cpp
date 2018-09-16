@@ -128,7 +128,7 @@ namespace vrwalkinplace {
 			{ "b", vr::k_EButton_ApplicationMenu },
 			{ "y", vr::k_EButton_ApplicationMenu },
 			{ "trackpad", vr::k_EButton_SteamVR_Touchpad },
-			{ "joystick", vr::k_EButton_Axis2 },
+			{ "joystick", vr::k_EButton_Knuckles_JoyStick },
 			{ "trigger", vr::k_EButton_SteamVR_Trigger },
 		};
 

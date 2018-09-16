@@ -85,6 +85,9 @@
 VRWalkInPlace.VC.VC.opendb
 *.db
 installer/OpenVR-WalkInPlace.exe
+/driver_vrwalkinplace/bin/x64/driver_00vrwalkinplace.dll
+/driver_vrwalkinplace/bin/x64/driver_00vrwalkinplace.iobj
+/driver_vrwalkinplace/bin/x64/driver_00vrwalkinplace.ipdb
 .vs
 .vs/*
 .vs/VRWalkInPlace
