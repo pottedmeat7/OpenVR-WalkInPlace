@@ -35,8 +35,8 @@ namespace vrwalkinplace {
 			else {
 				LOG(INFO) << "Could not get Install Dir: " << vr::VRPropertiesRaw()->GetPropErrorNameFromEnum(tpeError);
 			}
-
-			vr::DriverPose_t test_pose = { 0 };
+			
+			/*vr::DriverPose_t test_pose = { 0 };
 			test_pose.deviceIsConnected = true;
 			test_pose.poseIsValid = true;
 			test_pose.willDriftInYaw = false;
@@ -47,16 +47,17 @@ namespace vrwalkinplace {
 			test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
 
 			vr::VRControllerState_t test_state;
-			test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
+			test_state.ulButtonPressed = test_state.ulButtonTouched = 0;*/
 
-			ovrwip_1 = VirtualController("ovrwip_1", true, test_pose, test_state);
+			//vr_locomotion1 = VirtualController("vr_locomotion1", true, test_pose, test_state);
 
-			vr::VRServerDriverHost()->TrackedDeviceAdded("ovrwip_1", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &ovrwip_1);
+			//vr::VRServerDriverHost()->TrackedDeviceAdded("vr_locomotion1", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &vr_locomotion1);
 
 			//LOG(INFO) << "Successfully added device " << ovrwip_1.serialNumber() << " (OpenVR Id: " << unObjectId << ") (" << ovrwip_1.openvrId() << ")";
 
 			// Start IPC thread
 			shmCommunicator.init(this);
+
 			return vr::VRInitError_None;
 		}
 
@@ -70,24 +71,51 @@ namespace vrwalkinplace {
 
 		// Call frequency: ~93Hz
 		void ServerDriver::RunFrame() {
-			/*for (auto d : _virtualControllerHandles) {
-				d.second->RunFrame();
+			/*if (vr_locomotion1.poseUpdated) {
+				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
+				vr_locomotion1.poseUpdated = false;
 			}*/
 		}
 
-		void ServerDriver::openvr_buttonEvent(uint32_t unWhichDevice, vr::EVREventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {
-			//_openvrIdToVirtualControllerMap[unWhichDevice]->sendButtonEvent(eventType, eButtonId, eventTimeOffset);
-			ovrwip_1.sendButtonEvent(eventType, eButtonId, eventTimeOffset);
+		void ServerDriver::openvr_deviceAdded(uint32_t unWhichDevice, bool leftRole) {
+			LOG(TRACE) << "CServerDriver::Added New Virtual Controller";
+			auto it = _openvrIdToVirtualControllerMap.find(unWhichDevice);
+			if (it != _openvrIdToVirtualControllerMap.end()) {
+			}
+			else {
+				_openvrIdToVirtualControllerMap[unWhichDevice] = VirtualController();
+				_openvrIdToVirtualControllerMap[unWhichDevice].mapInputDevice(unWhichDevice, leftRole);
+			}
+			//vr_locomotion1.updatePose(pose);
 		}
 
-		void ServerDriver::openvr_axisEvent(uint32_t unWhichDevice, vr::EVRButtonId unWhichAxis, const vr::VRControllerAxis_t & axisState) {
-			//_openvrIdToVirtualControllerMap[unWhichDevice]->sendAxisEvent(unWhichAxis, axisState);
-			ovrwip_1.sendAxisEvent(unWhichAxis, axisState);
+		void ServerDriver::openvr_poseUpdate(uint32_t unWhichDevice, const vr::DriverPose_t & pose, double eventTimeOffset) {
+			//_openvrIdToVirtualControllerMap[unWhichDevice]->sendButtonEvent(eventType, eButtonId, eventTimeOffset);
+			//vr_locomotion1.updatePose(pose);
+		}
+
+		void ServerDriver::openvr_updateState(uint32_t unWhichDevice, vr::VRControllerState_t new_state, double eventTimeOffset) {
+			//vr_locomotion1.updateState(new_state);
+		}
+
+		void ServerDriver::openvr_buttonEvent(uint32_t unWhichDevice, ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset) {
+			_openvrIdToVirtualControllerMap[unWhichDevice].sendButtonEvent(eventType, eButtonId, eventTimeOffset);
+			//vr_locomotion1.sendButtonEvent(eventType, eButtonId, eventTimeOffset);
+		}
+
+		void ServerDriver::openvr_axisEvent(uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t & axisState) {
+			_openvrIdToVirtualControllerMap[unWhichDevice].sendAxisEvent(unWhichAxis, axisState);
+			//vr_locomotion1.sendAxisEvent(unWhichAxis, axisState);
+		}
+
+		void ServerDriver::reActivateLocomotionController(bool leftMode) {
+
 		}
 
 		const char * const * ServerDriver::GetInterfaceVersions()
 		{
-			return interfaces_;
+			return vr::k_InterfaceVersions;
+			//return interfaces_;
 		}
 
 		bool ServerDriver::ShouldBlockStandbyMode()

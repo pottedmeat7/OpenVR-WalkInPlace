@@ -39,15 +39,16 @@ public:
 
 	const std::string& serialNumber() { return m_serialNumber; }
 	uint32_t openvrId() { return m_openvrId; }
+	bool poseUpdated = false;
 
-	void sendButtonEvent(vr::EVREventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
-	void sendAxisEvent(vr::EVRButtonId unWhichAxis, const vr::VRControllerAxis_t& axisState);
-	
-	void inputAddBooleanComponent(const char *pchName, uint64_t pHandle);
-	void inputAddScalarComponent(const char *pchName, uint64_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
+	void sendButtonEvent(ButtonEventType eventType, vr::EVRButtonId eButtonId, double eventTimeOffset);
+	void sendAxisEvent(uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
+	void mapInputDevice(uint32_t unWhichDevice, bool leftMode);
+	void updatePose(vr::DriverPose_t new_pose);
+	void updateState(vr::VRControllerState_t new_state);
 
-	std::map<uint64_t, std::map<uint64_t, vr::VRInputComponentHandle_t> > m_ulBoolComponentsMap;
-	std::map<uint64_t, std::map<uint64_t, vr::VRInputComponentHandle_t> > m_ulScalarComponentsMap;
+	std::map<uint64_t, std::map<ButtonEventType, vr::VRInputComponentHandle_t> > m_ulBoolComponentsMap;
+	std::map<uint64_t, std::map<ButtonEventType, vr::VRInputComponentHandle_t> > m_ulScalarComponentsMap;
 
 	typedef enum
 	{
@@ -56,6 +57,7 @@ public:
 		k_eAxis_Joystick_X,
 		k_eAxis_Joystick_Y,
 	} PossibleAxisComponents;
+
 
 	void setPropertyContainer(vr::PropertyContainerHandle_t container) { m_propertyContainerHandle = container; }
 	vr::PropertyContainerHandle_t propertyContainer() { return m_propertyContainerHandle; }
@@ -78,9 +80,6 @@ public:
 	virtual vr::EVRInputError CreateSkeletonComponent(vr::PropertyContainerHandle_t ulContainer, const char *pchName, const char *pchSkeletonPath, const char *pchBasePosePath, const vr::VRBoneTransform_t *pGripLimitTransforms, uint32_t unGripLimitTransformCount, vr::VRInputComponentHandle_t *pHandle) override;
 	virtual vr::EVRInputError UpdateSkeletonComponent(vr::VRInputComponentHandle_t ulComponent, vr::EVRSkeletalMotionRange eMotionRange, const vr::VRBoneTransform_t *pTransforms, uint32_t unTransformCount) override;
 
-	//self
-	virtual void VirtualController::updatePose(vr::DriverPose_t new_pose);
-	virtual void updateState(vr::VRControllerState_t new_state);
 
 };
 

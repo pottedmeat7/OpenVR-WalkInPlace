@@ -8,7 +8,9 @@ ComboBox {
     hoverEnabled: true
 
     background: Rectangle {
-        color: parent.pressed ? "#0E5B36" : (parent.activeFocus ? "#4B916F" : "#004021")
+        //color: parent.pressed ? "#0E5B36" : (parent.activeFocus ? "#4B916F" : "#004021")
+        border.color: parent.down ? "#000000" : (parent.activeFocus ? "#000000" : "#000000")
+        color: parent.down ? "#808080" : (parent.activeFocus ? "#b0b0b0" : "#c0c0c0")
     }
 
     contentItem: MyText {
@@ -28,10 +30,10 @@ ComboBox {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             text: parent.text
-            color: parent.enabled ? "#ffffff" : "#909090"
+            color: parent.enabled ? "#000000" : "#000000"
         }
         background: Rectangle {
-            color: parent.pressed ? "#0E5B36" : (parent.hovered ? "#4B916F" : "#004021")
+            color: parent.pressed ? "#808080" : (parent.hovered ? "#a0a0a0" : "#b0b0b0")
         }
     }
 
@@ -51,7 +53,7 @@ ComboBox {
             context.moveTo(1, 1);
             context.lineTo(Math.ceil(width / 2), height - 1);
             context.lineTo(width - 1, 1);
-            context.strokeStyle = "#ffffff"
+            context.strokeStyle = "#000000"
             context.stroke()
         }
     }
@@ -66,6 +68,6 @@ ComboBox {
     }
 
     Component.onCompleted: {
-        popup.background.color = "#004021"
+        popup.background.color = "#c0c0c0"
     }
 }

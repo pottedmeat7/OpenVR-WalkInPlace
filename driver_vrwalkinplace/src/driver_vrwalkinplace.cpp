@@ -13,6 +13,8 @@ HMD_DLL_EXPORT void *HmdDriverFactory(const char *pInterfaceName, int *pReturnCo
 	LOG(TRACE) << "HmdDriverFactory( " << pInterfaceName << " )";
 	if (std::strcmp(vr::IServerTrackedDeviceProvider_Version, pInterfaceName) == 0){
 		return &serverDriver;
+	} else if (std::strcmp(vr::ITrackedDeviceServerDriver_Version, pInterfaceName) == 0) {
+		return &serverDriver;
 	} else if (std::strcmp(vr::IVRWatchdogProvider_Version, pInterfaceName) == 0) {
 		return &watchdogProvider;
 	}

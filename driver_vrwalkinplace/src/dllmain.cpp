@@ -12,9 +12,9 @@ const char* logConfigDefault =
 "	TO_STANDARD_OUTPUT = true\n"
 "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
 "* TRACE:\n"
-"	ENABLED = true\n"
+"	ENABLED = false\n"
 "* DEBUG:\n"
-"	ENABLED = true\n";
+"	ENABLED = false\n";
 
 INITIALIZE_EASYLOGGINGPP
 

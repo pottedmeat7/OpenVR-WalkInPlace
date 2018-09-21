@@ -87,79 +87,85 @@ namespace vr {
 
 namespace vrwalkinplace {
 
-class vrwalkinplace_exception : public std::runtime_error {
-	using std::runtime_error::runtime_error;
-};
-
-class vrwalkinplace_connectionerror : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-class vrwalkinplace_invalidversion : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-class vrwalkinplace_invalidid : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-class vrwalkinplace_invalidtype : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-class vrwalkinplace_notfound : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-class vrwalkinplace_alreadyinuse : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-class vrwalkinplace_toomanydevices : public vrwalkinplace_exception {
-	using vrwalkinplace_exception::vrwalkinplace_exception;
-};
-
-
-class VRWalkInPlace {
-public:
-	VRWalkInPlace(const std::string& driverQueue = "driver_vrwalkinplace.server_queue", const std::string& clientQueue = "driver_vrwalkinplace.client_queue.");
-	~VRWalkInPlace();
-	
-	void connect();
-	bool isConnected() const;
-	void disconnect();
-
-	void ping(bool modal = true, bool enableReply = false);
-
-	void openvrDeviceAdded(uint32_t deviceId);
-	void openvrUpdatePose(uint32_t deviceId, bool flipYaw);
-	void openvrButtonEvent(vr::EVREventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
-	void openvrAxisEvent(uint32_t deviceId, vr::EVRButtonId axisId, const vr::VRControllerAxis_t& axisState);
-
-private:
-	std::recursive_mutex _mutex;
-	uint32_t m_clientId = 0;
-
-	bool _ipcThreadRunning = false;
-	volatile bool _ipcThreadStop = false;
-	std::thread _ipcThread;
-	static void _ipcThreadFunc(VRWalkInPlace* _this);
-
-	std::random_device _ipcRandomDevice;
-	std::uniform_int_distribution<uint32_t> _ipcRandomDist;
-	struct _ipcPromiseMapEntry {
-		_ipcPromiseMapEntry() : isValid(false) {}
-		_ipcPromiseMapEntry(std::promise<ipc::Reply>&& _promise, bool isValid = true) 
-				: promise(std::move(_promise)), isValid(isValid) {}
-		bool isValid;
-		std::promise<ipc::Reply> promise;
+	class vrwalkinplace_exception : public std::runtime_error {
+		using std::runtime_error::runtime_error;
 	};
-	std::map<uint32_t, _ipcPromiseMapEntry> _ipcPromiseMap;
-	std::string _ipcServerQueueName;
-	std::string _ipcClientQueueName;
-	boost::interprocess::message_queue* _ipcServerQueue = nullptr;
-	boost::interprocess::message_queue* _ipcClientQueue = nullptr;
-};
+
+	class vrwalkinplace_connectionerror : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+	class vrwalkinplace_invalidversion : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+	class vrwalkinplace_invalidid : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+	class vrwalkinplace_invalidtype : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+	class vrwalkinplace_notfound : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+	class vrwalkinplace_alreadyinuse : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+	class vrwalkinplace_toomanydevices : public vrwalkinplace_exception {
+		using vrwalkinplace_exception::vrwalkinplace_exception;
+	};
+
+
+	struct VirtualDeviceInfo {
+		uint32_t virtualDeviceId;
+		uint32_t openvrDeviceId;
+		std::string deviceSerial;
+	};
+
+
+	class VRWalkInPlace {
+	public:
+		VRWalkInPlace(const std::string& driverQueue = "driver_vrwalkinplace.server_queue", const std::string& clientQueue = "driver_vrwalkinplace.client_queue.");
+		~VRWalkInPlace();
+
+		void connect();
+		bool isConnected() const;
+		void disconnect();
+
+		void ping(bool modal = true, bool enableReply = false);
+
+		void openvrDeviceAdded(uint32_t deviceId);
+		void openvrUpdatePose(uint32_t deviceId, vr::DriverPose_t pose);
+		void openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
+		void openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t& axisState);
+
+	private:
+		std::recursive_mutex _mutex;
+		uint32_t m_clientId = 0;
+
+		bool _ipcThreadRunning = false;
+		volatile bool _ipcThreadStop = false;
+		std::thread _ipcThread;
+		static void _ipcThreadFunc(VRWalkInPlace* _this);
+
+		std::random_device _ipcRandomDevice;
+		std::uniform_int_distribution<uint32_t> _ipcRandomDist;
+		struct _ipcPromiseMapEntry {
+			_ipcPromiseMapEntry() : isValid(false) {}
+			_ipcPromiseMapEntry(std::promise<ipc::Reply>&& _promise, bool isValid = true)
+				: promise(std::move(_promise)), isValid(isValid) {}
+			bool isValid;
+			std::promise<ipc::Reply> promise;
+		};
+		std::map<uint32_t, _ipcPromiseMapEntry> _ipcPromiseMap;
+		std::string _ipcServerQueueName;
+		std::string _ipcClientQueueName;
+		boost::interprocess::message_queue* _ipcServerQueue = nullptr;
+		boost::interprocess::message_queue* _ipcClientQueue = nullptr;
+	};
 
 } // end namespace vrwalkinplace
-

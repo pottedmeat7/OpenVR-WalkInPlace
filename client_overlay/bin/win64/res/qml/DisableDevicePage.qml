@@ -15,8 +15,8 @@ MyStackViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#277650" // "transparent"
-                border.color: "#277650"
+                color: "#c0c0c0" // "#277650" // "transparent"
+                border.color: "#c0c0c0" // "#277650"
                 radius: 8
             }
 
@@ -82,7 +82,7 @@ MyStackViewPage {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: "#277650"
+                    color: "#c0c0c0" // "#277650"
                     border.color: "#ffffff"
                     radius: 8
                 }

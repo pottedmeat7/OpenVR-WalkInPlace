@@ -90,6 +90,8 @@ private:
 	vr::VROverlayHandle_t overlayHandle;
 
 	std::list<float> contVelSamples;
+	bool mappedControllerDriver1 = false;
+	bool mappedControllerDriver2 = false;
 	bool identifyControlTimerSet = false;
 	bool stepDetectEnabled = false;
 	bool _stepPoseDetected = false;
@@ -126,7 +128,7 @@ private:
 	int _teleportUnpressed = true;
 	int _hasUnTouchedStepAxis = 50;
 	int peaksCount = 0;
-	int _controllerDeviceIds[2] = { -1, -1 };
+	uint64_t _controllerDeviceIds[2] = { (uint64_t)0, (uint64_t)0 };
 	int _controlUsedID = -1;
 	int stepPeaksToStart = 3;
 	float hmdYaw = 0;
@@ -166,6 +168,8 @@ private:
 	double identifyControlLastTime = 99999;
 	double identifyControlTimeOut = 6000;
 	double _timeLastGraphPoint = 0.0;
+
+	uint32_t firstTrackerID = -1;
 
 public:
 	~WalkInPlaceTabController();
@@ -250,8 +254,7 @@ public slots:
 	bool upAndDownStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
 	bool nodCheck(float angVel);
 	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
-	bool isJoggingStep(float * vel);
-	bool isRunningStep(float * vel);
+	bool controllerSwingCheck(vr::HmdVector3_t vel, float threshold);
 	float getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel);
 
 	void stopMovement(uint32_t deviceId);

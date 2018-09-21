@@ -161,9 +161,9 @@ MyStackViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#277650" // "transparent"
-                border.color: "#277650"
-                radius: 8
+                color: "#c0c0c0" // "#277650" // "transparent"
+                border.color: "#c0c0c0" // "#277650"
+                radius: 1
             }
 
             ColumnLayout {
@@ -187,7 +187,7 @@ MyStackViewPage {
                         }
                         background: Rectangle {
                             opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                            color: "#004021"
+                            color: "#c0c0c0"
                             radius: 4
                             anchors.fill: parent
                         }

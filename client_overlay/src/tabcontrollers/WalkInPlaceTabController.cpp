@@ -50,14 +50,15 @@ namespace walkinplace {
 						info->deviceMode = 0;
 						deviceInfos.push_back(info);
 						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-							if (_controllerDeviceIds[0] < 0) {
+							if (_controllerDeviceIds[0] <= 0) {
 								_controllerDeviceIds[0] = info->openvrId;
 							}
-							else if (_controllerDeviceIds[1] < 0) {
+							else if (_controllerDeviceIds[1] <= 0) {
 								_controllerDeviceIds[1] = info->openvrId;
 							}
 						}
 						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
+
 					}
 					maxValidDeviceId = id;
 				}
@@ -108,10 +109,10 @@ namespace walkinplace {
 							info->deviceMode = 0;
 							deviceInfos.push_back(info);
 							if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								if (_controllerDeviceIds[0] < 0) {
+								if (_controllerDeviceIds[0] <= 0) {
 									_controllerDeviceIds[0] = info->openvrId;
 								}
-								else if (_controllerDeviceIds[1] < 0) {
+								else if (_controllerDeviceIds[1] <= 0) {
 									_controllerDeviceIds[1] = info->openvrId;
 								}
 							}
@@ -129,6 +130,79 @@ namespace walkinplace {
 		else {
 			settingsUpdateCounter++;
 		}
+		/*double deltatime = 1.0 / 10.0 * 1000;
+		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		double tdiff = ((double)(now - _timeLastTick));
+		//LOG(INFO) << "DT: " << tdiff;
+		if (tdiff >= deltatime) {
+			if (stepDetectEnabled && firstTrackerID > 0) {
+				/*if (_controllerDeviceIds[0] >= 0 && controlSelect == 0) {
+				vrwalkinplace::VRWalkInPlace vrwalkinplace;
+				vrwalkinplace.connect();
+				//vr::VRControllerState_t state;
+				//vr::VRSystem()->GetControllerState(_controllerDeviceIds[0], &state, sizeof(state));
+				//vrwalkinplace.openvrUpdateState(_controllerDeviceIds[0], state);
+				vr::TrackedDevicePose_t pose = latestDevicePoses[_controllerDeviceIds[0]];
+				vr::DriverPose_t driverPose;
+				driverPose.poseIsValid = pose.bPoseIsValid;
+				driverPose.poseTimeOffset = 0;
+				driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
+				auto m = pose.mDeviceToAbsoluteTracking.m;
+				driverPose.vecPosition[0] = m[0][3];
+				driverPose.vecPosition[1] = m[1][3];
+				driverPose.vecPosition[2] = m[2][3];
+				driverPose.vecVelocity[0] = pose.vVelocity.v[0];
+				driverPose.vecVelocity[1] = pose.vVelocity.v[1];
+				driverPose.vecVelocity[2] = pose.vVelocity.v[2];
+				vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[0], driverPose);
+				}
+				if (_controllerDeviceIds[1] >= 0 && controlSelect == 1) {
+				vrwalkinplace::VRWalkInPlace vrwalkinplace;
+				vrwalkinplace.connect();
+				//vr::VRControllerState_t state;
+				//vr::VRSystem()->GetControllerState(_controllerDeviceIds[1], &state, sizeof(state));
+				//vrwalkinplace.openvrUpdateState(_controllerDeviceIds[1], state);
+				vr::TrackedDevicePose_t pose = latestDevicePoses[_controllerDeviceIds[1]];
+				vr::DriverPose_t driverPose;
+				driverPose.poseIsValid = pose.bPoseIsValid;
+				driverPose.poseTimeOffset = 0;
+				driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
+				auto m = pose.mDeviceToAbsoluteTracking.m;
+				driverPose.vecPosition[0] = m[0][3];
+				driverPose.vecPosition[1] = m[1][3];
+				driverPose.vecPosition[2] = m[2][3];
+				driverPose.vecVelocity[0] = pose.vVelocity.v[0];
+				driverPose.vecVelocity[1] = pose.vVelocity.v[1];
+				driverPose.vecVelocity[2] = pose.vVelocity.v[2];
+				vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[1], driverPose);
+				}*/
+			/*	try {
+					vrwalkinplace::VRWalkInPlace vrwalkinplace;
+					if (!vrwalkinplace.isConnected() ) {
+						vrwalkinplace.connect();
+					}
+					vr::TrackedDevicePose_t pose = latestDevicePoses[firstTrackerID];
+					if ( pose.bDeviceIsConnected && pose.bPoseIsValid) {
+						vr::DriverPose_t driverPose;
+						driverPose.poseIsValid = pose.bPoseIsValid;
+						driverPose.poseTimeOffset = 0;
+						driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
+						auto m = pose.mDeviceToAbsoluteTracking.m;
+						driverPose.vecPosition[0] = m[0][3];
+						driverPose.vecPosition[1] = m[1][3];
+						driverPose.vecPosition[2] = m[2][3];
+						driverPose.vecVelocity[0] = pose.vVelocity.v[0];
+						driverPose.vecVelocity[1] = pose.vVelocity.v[1];
+						driverPose.vecVelocity[2] = pose.vVelocity.v[2];
+						vrwalkinplace.openvrUpdatePose(firstTrackerID, driverPose);
+						//vrwalkinplace.disconnect();
+					}
+				}
+				catch (std::exception& e) {
+					LOG(INFO) << "Exception caught while updating virtual pose: " << e.what();
+				}
+			}
+		}*/
 	}
 
 	void WalkInPlaceTabController::handleEvent(const vr::VREvent_t&) {
@@ -401,7 +475,7 @@ namespace walkinplace {
 			g_isHoldingAccuracyButton2 = false;
 			updateAccuracyButtonState(_controllerDeviceIds[0], true);
 			updateAccuracyButtonState(_controllerDeviceIds[1], false);
-		}*/ 
+		}*/
 		if (_stepPoseDetected) {
 			if (((now - _timeLastGraphPoint) >= _stepIntegrateStepLimit / 3)) {
 				showGraphDetectTO = true;
@@ -673,8 +747,11 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::enableStepDetection(bool enable) {
 		stepDetectEnabled = enable;
-		_controllerDeviceIds[0] = -1;
-		_controllerDeviceIds[1] = -1;
+		if (enable) {
+			//vr::VRProperties()->SetInt32Property(vr::VRProperties()->TrackedDeviceToPropertyContainer(_controllerDeviceIds[0]), vr::Prop_ControllerRoleHint_Int32, vr::ETrackedControllerRole::TrackedControllerRole_LeftHand);
+		}
+		//_controllerDeviceIds[0] = -1;
+		//_controllerDeviceIds[1] = -1;
 	}
 
 	void WalkInPlaceTabController::enableBeta(bool enable) {
@@ -762,7 +839,7 @@ namespace walkinplace {
 			break;
 		}
 	}
-	
+
 	void WalkInPlaceTabController::disableController(bool val, int control) {
 
 	}
@@ -846,6 +923,19 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setControlSelect(int control) {
 		controlSelect = control;
+		if (controlSelect > 0 && !mappedControllerDriver2) {
+			if (_controllerDeviceIds[1] >= 0) {
+				try {
+					vrwalkinplace::VRWalkInPlace vrwalkinplace;
+					vrwalkinplace.connect();
+					vrwalkinplace.openvrDeviceAdded(_controllerDeviceIds[1]);// , true);
+					mappedControllerDriver2 = true;
+				}
+				catch (std::exception& e) {
+					LOG(INFO) << "Exception caught while mapping controller: " << e.what();
+				}
+			}
+		}
 		if (control < 2) {
 			_controlUsedID = _controllerDeviceIds[control];
 			if (!identifyControlTimerSet && _controlUsedID >= 0) {
@@ -979,6 +1069,19 @@ namespace walkinplace {
 				updateAccuracyButtonState(_controllerDeviceIds[1], false);
 			}
 		}
+		if (!mappedControllerDriver1) {
+			if (_controllerDeviceIds[0] >= 0) {
+				try {
+					vrwalkinplace::VRWalkInPlace vrwalkinplace;
+					vrwalkinplace.connect();
+					vrwalkinplace.openvrDeviceAdded(_controllerDeviceIds[0]);// , true);
+					mappedControllerDriver1 = true;
+				}
+				catch (std::exception& e) {
+					LOG(INFO) << "Exception caught while mapping controller 1: " << e.what();
+				}
+			}
+		}
 		bool moveButtonCheck = accuracyButtonOnOrDisabled();
 		if (moveButtonCheck) {
 			if (tdiff >= deltatime) {
@@ -1006,7 +1109,7 @@ namespace walkinplace {
 
 								hmdPitchAngVel = (pitch - hmdLastPitch) / tvelDiff;
 								hmdLastPitch = pitch;
-								
+
 								if (nodCheck(hmdPitchAngVel)) {
 									peaksCount = 0;
 									_timeLastNod = now;
@@ -1040,7 +1143,7 @@ namespace walkinplace {
 									//LOG(INFO) << "HMD Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
 									//LOG(INFO) << "HMD POS: " << pose.vecPosition[0] << " " << pose.vecPosition[1] << " " << pose.vecPosition[2];
 
-									if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, 0, 0) && (now - _timeLastNod) >= _stepIntegrateStepLimit * 3) {
+									if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, 0, 0) ) {// && (now - _timeLastNod) >= _stepIntegrateStepLimit * 3) {
 
 										vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[info->openvrId].mDeviceToAbsoluteTracking);
 
@@ -1052,7 +1155,7 @@ namespace walkinplace {
 										peaksCount = 1;
 									}
 								}
-								if ( peaksCount < 1 && (now - _timeLastStepPeak) > _stepFrequencyMin) {
+								if (peaksCount < 1 && (now - _timeLastStepPeak) > _stepFrequencyMin) {
 									trackerStepDetected = false;
 								}
 							}
@@ -1069,12 +1172,12 @@ namespace walkinplace {
 								}
 							}
 							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								if (_controllerDeviceIds[0] < 0) {
+								/*if (_controllerDeviceIds[0] < 0) {
 									_controllerDeviceIds[0] = info->openvrId;
 								}
 								else if (_controllerDeviceIds[1] < 0) {
 									_controllerDeviceIds[1] = info->openvrId;
-								}
+								}*/
 								if (firstController) {
 									firstController = false;
 									if (controlSelect == 0 && _controlUsedID != info->openvrId) {
@@ -1143,14 +1246,12 @@ namespace walkinplace {
 				bool oneTrackerStepping = false;
 				_hasUnTouchedStepAxis = 2;
 				vr::VRControllerAxis_t axisState;
-				float * hand1Vel;
-				float * hand2Vel;
+				vr::HmdVector3_t hand1Vel;
+				vr::HmdVector3_t hand2Vel;
 				if (tdiff >= deltatime) {
 					for (auto info : deviceInfos) {
 						vr::ETrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(info->openvrId);
 						if (!disableHMD && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
-
-
 
 							auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
@@ -1163,9 +1264,9 @@ namespace walkinplace {
 
 							hmdYaw = (180 * std::asin(hmdForward.v[0])) / M_PI;
 
-							double tvelDiff = ((double)(now - _velStepTime)) / 1000.0;
+							//double tvelDiff = ((double)(now - _velStepTime)) / 1000.0;
 
-							bool detectNod = false;
+							//bool detectNod = false;
 
 							/*float pitch = (180 * std::asin(hmdForward.v[1])) / M_PI;
 							hmdPitchAngVel = (pitch - hmdLastPitch) / tvelDiff;
@@ -1179,7 +1280,7 @@ namespace walkinplace {
 							}*/
 							_velStepTime = now;
 
-							if (!detectNod) {
+							//if (!detectNod) {
 								if (hmdType != 0) {
 									auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 									double tvelDiff = ((double)(now - _velStepTime)) / 1000.0;
@@ -1209,7 +1310,7 @@ namespace walkinplace {
 
 								//LOG(INFO) << "HMD In Step: " << poseWorldVel.v[0] << "," << poseWorldVel.v[1] << "," << poseWorldVel.v[2];
 
-								if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, 0, 0) && (now - _timeLastNod) >= _stepIntegrateStepLimit * 3) {
+								if (upAndDownStepCheck(poseWorldVel, _hmdThreshold, 0, 0) ) {//&& (now - _timeLastNod) >= _stepIntegrateStepLimit * 3) {
 									_stepIntegrateSteps = 0;
 									int velsign = poseWorldVel.v[1] > 0 ? 1 : -1;
 									int hmdsign = hmdLastYVel > 0 ? 1 : -1;
@@ -1218,7 +1319,7 @@ namespace walkinplace {
 										hmdLastYVel = poseWorldVel.v[1];
 									}
 								}
-							}
+							//}
 						}
 						else if (useTrackers && deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
 
@@ -1252,73 +1353,79 @@ namespace walkinplace {
 						}
 					}
 					if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
-						//check if first controller is running / jogging
-						hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity.v;
-						hand2Vel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity.v;
-						if (scaleSpeedWithSwing) {
-							if (contVelSampleTime > _stepIntegrateStepLimit * 4) {
-								float frontVal = contVelSamples.front();
-								totalContYVel = totalContYVel - frontVal;
-								contVelSamples.pop_front();
+
+						try {
+							//check if first controller is running / jogging
+							hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity;
+							hand2Vel = latestDevicePoses[_controllerDeviceIds[1]].vVelocity;
+							if (scaleSpeedWithSwing) {
+								if (contVelSampleTime > _stepIntegrateStepLimit * 4) {
+									float frontVal = contVelSamples.front();
+									totalContYVel = totalContYVel - frontVal;
+									contVelSamples.pop_front();
+								}
+								else {
+									contVelSampleTime += tdiff;
+								}
+								contVelSamples.push_back((std::fabs(hand1Vel.v[1]) + std::fabs(hand2Vel.v[1])) / 2.0);
+								totalContYVel = totalContYVel + contVelSamples.back();
+								avgContYVel = totalContYVel / contVelSamples.size();
+							}
+							isRunning = controllerSwingCheck(hand1Vel, handRunThreshold);
+							if (isRunning) {
+								_runIntegrateSteps = 0;
 							}
 							else {
-								contVelSampleTime += tdiff;
+								isRunning = g_runPoseDetected;
 							}
-							contVelSamples.push_back((std::fabs(hand1Vel[1]) + std::fabs(hand2Vel[1])) / 2.0);
-							totalContYVel = totalContYVel + contVelSamples.back();
-							avgContYVel = totalContYVel / contVelSamples.size();
-						}
-						isRunning = isRunningStep(hand1Vel);
-						if (isRunning) {
-							_runIntegrateSteps = 0;
-						}
-						else {
-							isRunning = g_runPoseDetected;
-						}
-						if (!isRunning) {
-							isJogging = isJoggingStep(hand1Vel);
-							if (isJogging) {
-								_jogIntegrateSteps = 0;
+							if (!isRunning) {
+								isJogging = controllerSwingCheck(hand1Vel, handJogThreshold);
+								if (isJogging) {
+									_jogIntegrateSteps = 0;
+								}
+								else {
+									isJogging = g_jogPoseDetected;
+								}
+							}
+							//check if second controller is running / jogging
+							isRunning = controllerSwingCheck(hand2Vel, handRunThreshold);
+							if (isRunning) {
+								_runIntegrateSteps = 0;
 							}
 							else {
-								isJogging = g_jogPoseDetected;
+								isRunning = g_runPoseDetected;
 							}
-						}
-						//check if second controller is running / jogging
-						isRunning = isRunningStep(hand2Vel);
-						if (isRunning) {
-							_runIntegrateSteps = 0;
-						}
-						else {
-							isRunning = g_runPoseDetected;
-						}
-						if (!isRunning) {
-							isJogging = isJoggingStep(hand2Vel);
-							if (isJogging) {
-								_jogIntegrateSteps = 0;
+							if (!isRunning) {
+								isJogging = controllerSwingCheck(hand2Vel, handJogThreshold);
+								if (isJogging) {
+									_jogIntegrateSteps = 0;
+								}
+								else {
+									isJogging = g_jogPoseDetected;
+								}
 							}
-							else {
-								isJogging = g_jogPoseDetected;
+							if (g_jogPoseDetected) {
+								_jogIntegrateSteps += tdiff;
+								if (_jogIntegrateSteps > _stepIntegrateStepLimit) {
+									g_jogPoseDetected = false;
+									_jogIntegrateSteps = 0.0;
+									isJogging = false;
+									axisStateChange = true;
+								}
 							}
-						}
-						if (g_jogPoseDetected) {
-							_jogIntegrateSteps += tdiff;
-							if (_jogIntegrateSteps > _stepIntegrateStepLimit) {
-								g_jogPoseDetected = false;
-								_jogIntegrateSteps = 0.0;
-								isJogging = false;
-								axisStateChange = true;
+							if (g_runPoseDetected) {
+								_runIntegrateSteps += tdiff;
+								if (_runIntegrateSteps > _stepIntegrateStepLimit) {
+									g_runPoseDetected = false;
+									_teleportUnpressed = false;
+									_runIntegrateSteps = 0.0;
+									isRunning = false;
+									axisStateChange = true;
+								}
 							}
-						}
-						if (g_runPoseDetected) {
-							_runIntegrateSteps += tdiff;
-							if (_runIntegrateSteps > _stepIntegrateStepLimit) {
-								g_runPoseDetected = false;
-								_teleportUnpressed = false;
-								_runIntegrateSteps = 0.0;
-								isRunning = false;
-								axisStateChange = true;
-							}
+						}						
+						catch (std::exception& e) {
+							LOG(INFO) << "Exception caught while checking swinging : " << e.what();
 						}
 					}
 					_timeLastTick = now;
@@ -1367,66 +1474,14 @@ namespace walkinplace {
 							float roll = (180 * std::asin(rightRot.v[1])) / M_PI;
 							touchX = 0;
 							touchY = 1;
-							float diffYaw = (hmdYaw < 0 ? -1.0 : 1.0)*(hmdYaw - yaw);
-							hmdForward.v[1] = 0;
-							forwardRot.v[1] = 0;
-							double hmdForwardMag = (std::sqrt((hmdForward.v[0] * hmdForward.v[0]) + (hmdForward.v[2] * hmdForward.v[2])));
-							double forwardMag = (std::sqrt((forwardRot.v[0] * forwardRot.v[0]) + (forwardRot.v[2] * forwardRot.v[2])));
-							hmdForward.v[0] = hmdForward.v[0] / hmdForwardMag;
-							hmdForward.v[2] = hmdForward.v[2] / hmdForwardMag;
-							forwardRot.v[0] = forwardRot.v[0] / forwardMag;
-							forwardRot.v[2] = forwardRot.v[2] / forwardMag;
-							if (useContDirForStraf && useContDirForRev && (pitch > 77
-								|| (hmdForward.v[0] > 0.6 && forwardRot.v[0] < 0)
-								|| (hmdForward.v[2] > 0.6 && forwardRot.v[2] < 0)
-								|| (hmdForward.v[0] < -0.6 && forwardRot.v[0] > 0)
-								|| (hmdForward.v[2] < -0.6 && forwardRot.v[2] > 0)
-								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] > 0 && forwardRot.v[2] > 0)
-								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] < 0 && forwardRot.v[2] < 0)
-								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] < 0 && forwardRot.v[2] > 0)
-								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] > 0 && forwardRot.v[2] < 0))) {
-								touchY = -1;
+							float diffYaw = (hmdYaw - yaw);
+							if (useContDirForRev && pitch > 77) {
 								touchX = 0;
+								touchY = -1;
 							}
 							else if (useContDirForStraf && pitch < 77 && std::fabs(diffYaw) > 30) { //std::fabs(roll) > 45 ) {
-								if ((hmdForward.v[0] > 0.6 && forwardRot.v[2] > 0.6)
-									|| (hmdForward.v[2] > 0.6 && forwardRot.v[0] < -0.6)
-									|| (hmdForward.v[0] < -0.6 && forwardRot.v[2] < -0.6)
-									|| (hmdForward.v[2] < -0.6 && forwardRot.v[0] > 0.6)
-									|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] > 0)
-									|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] < 0)
-									|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[2] > 0)
-									|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[2] < 0)) {
-									touchX = 1;
-									if (std::fabs(diffYaw) > 66) {
-										touchY = 0;
-									}
-								}
-								else if ((hmdForward.v[0] > 0.6 && forwardRot.v[2] < -0.6)
-									|| (hmdForward.v[2] > 0.6 && forwardRot.v[0] > 0.6)
-									|| (hmdForward.v[0] < -0.6 && forwardRot.v[2] > 0.6)
-									|| (hmdForward.v[2] < -0.6 && forwardRot.v[0] < -0.6)
-									|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[2] > 0)
-									|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[2] < 0)
-									|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] < 0)
-									|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] > 0)) {
-									touchX = -1;
-									if (std::fabs(diffYaw) > 66) {
-										touchY = 0;
-									}
-								}
-							}
-							else if (!useContDirForStraf && useContDirForRev && (pitch > 77
-								|| (hmdForward.v[0] > 0.6 && forwardRot.v[0] < 0)
-								|| (hmdForward.v[2] > 0.6 && forwardRot.v[2] < 0)
-								|| (hmdForward.v[0] < -0.6 && forwardRot.v[0] > 0)
-								|| (hmdForward.v[2] < -0.6 && forwardRot.v[2] > 0)
-								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] > 0 && forwardRot.v[2] > 0)
-								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] < 0 && forwardRot.v[2] < 0)
-								|| (hmdForward.v[0] > 0.27 && hmdForward.v[2] < -0.27 && forwardRot.v[0] < 0 && forwardRot.v[2] > 0)
-								|| (hmdForward.v[0] < -0.27 && hmdForward.v[2] > 0.27 && forwardRot.v[0] > 0 && forwardRot.v[2] < 0))) {
-								touchY = -1;
-								touchX = 0;
+								touchX = std::sin((diffYaw*M_PI) / 180.0);
+								touchY = std::cos((diffYaw*M_PI) / 180.0);
 							}
 							//LOG(INFO) << "CONT Pitch,Yaw,Roll : " << pitch << ",(" << hmdYaw << "-" << yaw << ")=" << diffYaw << "," << roll;
 							//LOG(INFO) << "CONT Pitch,Yaw,Roll : " << pitch << "," <<  yaw << "," << roll;
@@ -1567,16 +1622,9 @@ namespace walkinplace {
 		return stepParams;
 	}
 
-	bool WalkInPlaceTabController::isJoggingStep(float * vel) {
-		float magVel = std::fabs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-		return (std::fabs(vel[1]) > std::fabs(vel[0]) && std::fabs(vel[1]) > std::fabs(vel[2]))
-			&& (magVel > handJogThreshold);
-	}
-
-	bool WalkInPlaceTabController::isRunningStep(float * vel) {
-		float magVel = std::fabs(vel[1]);// (std::abs(vel[0]) + std::abs(vel[1]) + std::abs(vel[2]));
-		return (std::fabs(vel[1]) > std::fabs(vel[0]) && std::fabs(vel[1]) > std::fabs(vel[2]))
-			&& (magVel > handRunThreshold);
+	bool WalkInPlaceTabController::controllerSwingCheck(vr::HmdVector3_t vel, float threshold) {
+		return (std::fabs(vel.v[1]) > std::fabs(vel.v[0]) && std::fabs(vel.v[1]) > std::fabs(vel.v[2]))
+			&& (std::fabs(vel.v[1]) > threshold);
 	}
 
 	float WalkInPlaceTabController::getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel) {
@@ -1605,10 +1653,10 @@ namespace walkinplace {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
 				if (gameType != 1) {
-					vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				}
 				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUntouch, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 			}
 			catch (std::exception& e) {
 				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
@@ -1622,10 +1670,10 @@ namespace walkinplace {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
 				if (gameType != 4) {
-					vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_Axis2, 0.0);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Axis2, 0.0);
 				}
 				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_Knuckles_JoyStick, axisState);
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUntouch, deviceId, vr::k_EButton_Axis2, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_Axis2, 0.0);
 			}
 			catch (std::exception& e) {
 				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
@@ -1635,7 +1683,7 @@ namespace walkinplace {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_Grip, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Grip, 0.0);
 			}
 			catch (std::exception& e) {
 				//LOG(INFO) << "Exception caught while applying virtual grip movement: " << e.what();
@@ -1645,7 +1693,7 @@ namespace walkinplace {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 			}
 			catch (std::exception& e) {
 				//LOG(INFO) << "Exception caught while stopping virtual teleport movement: " << e.what();
@@ -1678,7 +1726,7 @@ namespace walkinplace {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				_teleportUnpressed = true;
 			}
 			catch (std::exception& e) {
@@ -1692,7 +1740,7 @@ namespace walkinplace {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
 				_teleportUnpressed = true;
 			}
 			catch (std::exception& e) {
@@ -1705,26 +1753,26 @@ namespace walkinplace {
 		vrwalkinplace::VRWalkInPlace vrwalkinplace;
 		vrwalkinplace.connect();
 		if (gameType == 0 || gameType == 1 || gameType == 2) {
-			vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonTouch, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 			vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
 			if (gameType != 1) {
 				if (g_runPoseDetected) {
-					vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonPress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				}
 				else {
-					vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				}
 			}
 		}
 		else if (gameType == 3 || gameType == 4 || gameType == 5) {
-			vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonTouch, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 			vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_Knuckles_JoyStick, axisState);
 			if (gameType != 1) {
 				if (g_runPoseDetected) {
-					vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonPress, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
 				}
 				else {
-					vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
 				}
 			}
 		}
@@ -1735,7 +1783,7 @@ namespace walkinplace {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonPress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				_teleportUnpressed = false;
 			}
 			catch (std::exception& e) {
@@ -1746,7 +1794,7 @@ namespace walkinplace {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				_teleportUnpressed = true;
 			}
 			catch (std::exception& e) {
@@ -1760,7 +1808,7 @@ namespace walkinplace {
 		try {
 			vrwalkinplace::VRWalkInPlace vrwalkinplace;
 			vrwalkinplace.connect();
-			vrwalkinplace.openvrButtonEvent(vr::VREvent_ButtonUnpress, deviceId, vr::k_EButton_Grip, 0.0);
+			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Grip, 0.0);
 		}
 		catch (std::exception& e) {
 			//LOG(INFO) << "Exception caught while applying virtual telport movement: " << e.what();

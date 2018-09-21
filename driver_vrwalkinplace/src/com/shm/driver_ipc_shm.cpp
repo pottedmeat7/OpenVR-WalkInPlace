@@ -54,12 +54,12 @@ namespace vrwalkinplace {
 										reply.msg.ipc_ClientConnect.ipcProcotolVersion = IPC_PROTOCOL_VERSION;
 										if (message.msg.ipc_ClientConnect.ipcProcotolVersion == IPC_PROTOCOL_VERSION) {
 											auto clientId = _this->_ipcClientIdNext++;
-											if (_this->_ipcClientIdNext > 100) {
+											/*if (_this->_ipcClientIdNext > 100) {
 												_this->_ipcClientIdNext = 1;
 												clientId = 1;
 												_this->_ipcEndpoints.clear();
-											}
-											if (clientId == 7) {
+											}*/
+											if (true || clientId == 7) {
 												LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
 											}
 											_this->_ipcEndpoints.insert({ clientId, queue });
@@ -90,7 +90,7 @@ namespace vrwalkinplace {
 										reply.status = ipc::ReplyStatus::Ok;
 										auto msgQueue = i->second;
 										_this->_ipcEndpoints.erase(i);
-										//LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
+										LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
 										if (reply.messageId != 0) {
 											msgQueue->send(&reply, sizeof(ipc::Reply), 0);
 										}
@@ -119,6 +119,14 @@ namespace vrwalkinplace {
 									}
 								}
 								break;
+
+								case ipc::RequestType::OpenVR_DeviceAdded:
+								{
+									if (vr::VRServerDriverHost()) {
+										driver->openvr_deviceAdded(message.msg.ipc_DeviceAdded.deviceId, true);
+									}
+									break;
+								}
 
 								case ipc::RequestType::OpenVR_PoseUpdate:
 								{

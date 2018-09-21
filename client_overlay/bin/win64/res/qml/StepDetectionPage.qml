@@ -78,9 +78,9 @@ MyMainViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#277650"
-                border.color: "#ffffff"
-                radius: 8
+                color: "#c0c0c0" // "#277650"
+                border.color: "#dddddd"
+                radius: 1
             }
 
             ColumnLayout {
@@ -89,7 +89,7 @@ MyMainViewPage {
 
                 RowLayout {
                     MyText {
-                        color: "#ffffff"
+                        color: "#000000"
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
                         font.pointSize: 22
@@ -103,9 +103,9 @@ MyMainViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#277650"
-                border.color: "#ffffff"
-                radius: 8
+                color: "#c0c0c0" // "#277650"
+                border.color: "#000000"
+                radius: 1
             }
 
             ColumnLayout {
@@ -356,9 +356,9 @@ MyMainViewPage {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: "#277650"
-                    border.color: "#ffffff"
-                    radius: 8
+                    color: "#c0c0c0" // "#277650"
+                    border.color: "#000000"
+                    radius: 1
                 }
 
                 ColumnLayout {
@@ -521,7 +521,7 @@ MyMainViewPage {
                 }
                 MyTextField {
                     id: walkInPlaceNewProfileName
-                    color: "#cccccc"
+                    color: "#000000"
                     text: ""
                     Layout.fillWidth: true
                     font.pointSize: 20

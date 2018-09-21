@@ -9,10 +9,11 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#000000" : "#000000"
 	}
 	background: Rectangle {
-        color: parent.down ? "#4B916F" : (parent.activeFocus ? "#0E5B36" : "#004021")
+        border.color: parent.down ? "#000000" : (parent.activeFocus ? "#111111" : "#222222")
+        color: parent.down ? "#c0c0c0" : (parent.activeFocus ? "#c0c0c0" : "#c0c0c0")
     }
 
     onHoveredChanged: {

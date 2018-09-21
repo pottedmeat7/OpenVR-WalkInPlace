@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_walkinplace__WalkInPlaceTabController_t {
-    QByteArrayData data[122];
-    char stringdata0[1834];
+    QByteArrayData data[121];
+    char stringdata0[1837];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -94,65 +94,64 @@ QT_MOC_LITERAL(59, 816, 5), // "pitch"
 QT_MOC_LITERAL(60, 822, 8), // "nodCheck"
 QT_MOC_LITERAL(61, 831, 6), // "angVel"
 QT_MOC_LITERAL(62, 838, 19), // "sideToSideStepCheck"
-QT_MOC_LITERAL(63, 858, 13), // "isJoggingStep"
-QT_MOC_LITERAL(64, 872, 6), // "float*"
-QT_MOC_LITERAL(65, 879, 13), // "isRunningStep"
-QT_MOC_LITERAL(66, 893, 14), // "getScaledTouch"
-QT_MOC_LITERAL(67, 908, 8), // "minTouch"
-QT_MOC_LITERAL(68, 917, 8), // "maxTouch"
-QT_MOC_LITERAL(69, 926, 6), // "avgVel"
-QT_MOC_LITERAL(70, 933, 6), // "maxVel"
-QT_MOC_LITERAL(71, 940, 12), // "stopMovement"
-QT_MOC_LITERAL(72, 953, 8), // "uint32_t"
-QT_MOC_LITERAL(73, 962, 8), // "deviceId"
-QT_MOC_LITERAL(74, 971, 17), // "stopClickMovement"
-QT_MOC_LITERAL(75, 989, 17), // "applyAxisMovement"
-QT_MOC_LITERAL(76, 1007, 22), // "vr::VRControllerAxis_t"
-QT_MOC_LITERAL(77, 1030, 9), // "axisState"
-QT_MOC_LITERAL(78, 1040, 18), // "applyClickMovement"
-QT_MOC_LITERAL(79, 1059, 17), // "applyGripMovement"
-QT_MOC_LITERAL(80, 1077, 25), // "updateAccuracyButtonState"
-QT_MOC_LITERAL(81, 1103, 15), // "firstController"
-QT_MOC_LITERAL(82, 1119, 21), // "addWalkInPlaceProfile"
-QT_MOC_LITERAL(83, 1141, 4), // "name"
-QT_MOC_LITERAL(84, 1146, 23), // "applyWalkInPlaceProfile"
-QT_MOC_LITERAL(85, 1170, 24), // "deleteWalkInPlaceProfile"
-QT_MOC_LITERAL(86, 1195, 14), // "getDeviceCount"
-QT_MOC_LITERAL(87, 1210, 15), // "getDeviceSerial"
-QT_MOC_LITERAL(88, 1226, 11), // "getDeviceId"
-QT_MOC_LITERAL(89, 1238, 14), // "getDeviceClass"
-QT_MOC_LITERAL(90, 1253, 14), // "getDeviceState"
-QT_MOC_LITERAL(91, 1268, 13), // "getDeviceMode"
-QT_MOC_LITERAL(92, 1282, 11), // "getStepTime"
-QT_MOC_LITERAL(93, 1294, 11), // "getGameType"
-QT_MOC_LITERAL(94, 1306, 10), // "getHMDType"
-QT_MOC_LITERAL(95, 1317, 16), // "getControlSelect"
-QT_MOC_LITERAL(96, 1334, 30), // "getAccuracyButtonControlSelect"
-QT_MOC_LITERAL(97, 1365, 17), // "getAccuracyButton"
-QT_MOC_LITERAL(98, 1383, 17), // "getHMDXZThreshold"
-QT_MOC_LITERAL(99, 1401, 16), // "getHMDYThreshold"
-QT_MOC_LITERAL(100, 1418, 14), // "getUseTrackers"
-QT_MOC_LITERAL(101, 1433, 13), // "getDisableHMD"
-QT_MOC_LITERAL(102, 1447, 21), // "getTrackerXZThreshold"
-QT_MOC_LITERAL(103, 1469, 20), // "getTrackerYThreshold"
-QT_MOC_LITERAL(104, 1490, 20), // "getHandWalkThreshold"
-QT_MOC_LITERAL(105, 1511, 19), // "getHandJogThreshold"
-QT_MOC_LITERAL(106, 1531, 19), // "getHandRunThreshold"
-QT_MOC_LITERAL(107, 1551, 21), // "getUseContDirForStraf"
-QT_MOC_LITERAL(108, 1573, 19), // "getUseContDirForRev"
-QT_MOC_LITERAL(109, 1593, 22), // "getScaleTouchWithSwing"
-QT_MOC_LITERAL(110, 1616, 12), // "getWalkTouch"
-QT_MOC_LITERAL(111, 1629, 11), // "getJogTouch"
-QT_MOC_LITERAL(112, 1641, 11), // "getRunTouch"
-QT_MOC_LITERAL(113, 1653, 25), // "getAccuracyButtonIsToggle"
-QT_MOC_LITERAL(114, 1679, 21), // "getAccuracyButtonFlip"
-QT_MOC_LITERAL(115, 1701, 22), // "isStepDetectionEnabled"
-QT_MOC_LITERAL(116, 1724, 14), // "isStepDetected"
-QT_MOC_LITERAL(117, 1739, 13), // "getGraphPoses"
-QT_MOC_LITERAL(118, 1753, 12), // "QList<qreal>"
-QT_MOC_LITERAL(119, 1766, 14), // "setupStepGraph"
-QT_MOC_LITERAL(120, 1781, 26), // "getWalkInPlaceProfileCount"
-QT_MOC_LITERAL(121, 1808, 25) // "getWalkInPlaceProfileName"
+QT_MOC_LITERAL(63, 858, 20), // "controllerSwingCheck"
+QT_MOC_LITERAL(64, 879, 16), // "vr::HmdVector3_t"
+QT_MOC_LITERAL(65, 896, 14), // "getScaledTouch"
+QT_MOC_LITERAL(66, 911, 8), // "minTouch"
+QT_MOC_LITERAL(67, 920, 8), // "maxTouch"
+QT_MOC_LITERAL(68, 929, 6), // "avgVel"
+QT_MOC_LITERAL(69, 936, 6), // "maxVel"
+QT_MOC_LITERAL(70, 943, 12), // "stopMovement"
+QT_MOC_LITERAL(71, 956, 8), // "uint32_t"
+QT_MOC_LITERAL(72, 965, 8), // "deviceId"
+QT_MOC_LITERAL(73, 974, 17), // "stopClickMovement"
+QT_MOC_LITERAL(74, 992, 17), // "applyAxisMovement"
+QT_MOC_LITERAL(75, 1010, 22), // "vr::VRControllerAxis_t"
+QT_MOC_LITERAL(76, 1033, 9), // "axisState"
+QT_MOC_LITERAL(77, 1043, 18), // "applyClickMovement"
+QT_MOC_LITERAL(78, 1062, 17), // "applyGripMovement"
+QT_MOC_LITERAL(79, 1080, 25), // "updateAccuracyButtonState"
+QT_MOC_LITERAL(80, 1106, 15), // "firstController"
+QT_MOC_LITERAL(81, 1122, 21), // "addWalkInPlaceProfile"
+QT_MOC_LITERAL(82, 1144, 4), // "name"
+QT_MOC_LITERAL(83, 1149, 23), // "applyWalkInPlaceProfile"
+QT_MOC_LITERAL(84, 1173, 24), // "deleteWalkInPlaceProfile"
+QT_MOC_LITERAL(85, 1198, 14), // "getDeviceCount"
+QT_MOC_LITERAL(86, 1213, 15), // "getDeviceSerial"
+QT_MOC_LITERAL(87, 1229, 11), // "getDeviceId"
+QT_MOC_LITERAL(88, 1241, 14), // "getDeviceClass"
+QT_MOC_LITERAL(89, 1256, 14), // "getDeviceState"
+QT_MOC_LITERAL(90, 1271, 13), // "getDeviceMode"
+QT_MOC_LITERAL(91, 1285, 11), // "getStepTime"
+QT_MOC_LITERAL(92, 1297, 11), // "getGameType"
+QT_MOC_LITERAL(93, 1309, 10), // "getHMDType"
+QT_MOC_LITERAL(94, 1320, 16), // "getControlSelect"
+QT_MOC_LITERAL(95, 1337, 30), // "getAccuracyButtonControlSelect"
+QT_MOC_LITERAL(96, 1368, 17), // "getAccuracyButton"
+QT_MOC_LITERAL(97, 1386, 17), // "getHMDXZThreshold"
+QT_MOC_LITERAL(98, 1404, 16), // "getHMDYThreshold"
+QT_MOC_LITERAL(99, 1421, 14), // "getUseTrackers"
+QT_MOC_LITERAL(100, 1436, 13), // "getDisableHMD"
+QT_MOC_LITERAL(101, 1450, 21), // "getTrackerXZThreshold"
+QT_MOC_LITERAL(102, 1472, 20), // "getTrackerYThreshold"
+QT_MOC_LITERAL(103, 1493, 20), // "getHandWalkThreshold"
+QT_MOC_LITERAL(104, 1514, 19), // "getHandJogThreshold"
+QT_MOC_LITERAL(105, 1534, 19), // "getHandRunThreshold"
+QT_MOC_LITERAL(106, 1554, 21), // "getUseContDirForStraf"
+QT_MOC_LITERAL(107, 1576, 19), // "getUseContDirForRev"
+QT_MOC_LITERAL(108, 1596, 22), // "getScaleTouchWithSwing"
+QT_MOC_LITERAL(109, 1619, 12), // "getWalkTouch"
+QT_MOC_LITERAL(110, 1632, 11), // "getJogTouch"
+QT_MOC_LITERAL(111, 1644, 11), // "getRunTouch"
+QT_MOC_LITERAL(112, 1656, 25), // "getAccuracyButtonIsToggle"
+QT_MOC_LITERAL(113, 1682, 21), // "getAccuracyButtonFlip"
+QT_MOC_LITERAL(114, 1704, 22), // "isStepDetectionEnabled"
+QT_MOC_LITERAL(115, 1727, 14), // "isStepDetected"
+QT_MOC_LITERAL(116, 1742, 13), // "getGraphPoses"
+QT_MOC_LITERAL(117, 1756, 12), // "QList<qreal>"
+QT_MOC_LITERAL(118, 1769, 14), // "setupStepGraph"
+QT_MOC_LITERAL(119, 1784, 26), // "getWalkInPlaceProfileCount"
+QT_MOC_LITERAL(120, 1811, 25) // "getWalkInPlaceProfileName"
 
     },
     "walkinplace::WalkInPlaceTabController\0"
@@ -178,11 +177,11 @@ QT_MOC_LITERAL(121, 1808, 25) // "getWalkInPlaceProfileName"
     "applyStepPoseDetect\0accuracyButtonOnOrDisabled\0"
     "upAndDownStepCheck\0vr::HmdVector3d_t\0"
     "vel\0threshold\0roll\0pitch\0nodCheck\0"
-    "angVel\0sideToSideStepCheck\0isJoggingStep\0"
-    "float*\0isRunningStep\0getScaledTouch\0"
-    "minTouch\0maxTouch\0avgVel\0maxVel\0"
-    "stopMovement\0uint32_t\0deviceId\0"
-    "stopClickMovement\0applyAxisMovement\0"
+    "angVel\0sideToSideStepCheck\0"
+    "controllerSwingCheck\0vr::HmdVector3_t\0"
+    "getScaledTouch\0minTouch\0maxTouch\0"
+    "avgVel\0maxVel\0stopMovement\0uint32_t\0"
+    "deviceId\0stopClickMovement\0applyAxisMovement\0"
     "vr::VRControllerAxis_t\0axisState\0"
     "applyClickMovement\0applyGripMovement\0"
     "updateAccuracyButtonState\0firstController\0"
@@ -215,7 +214,7 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      81,   14, // methods
+      80,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -223,91 +222,90 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  419,    2, 0x06 /* Public */,
-       4,    1,  422,    2, 0x06 /* Public */,
-       6,    0,  425,    2, 0x06 /* Public */,
+       1,    1,  414,    2, 0x06 /* Public */,
+       4,    1,  417,    2, 0x06 /* Public */,
+       6,    0,  420,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       7,    1,  426,    2, 0x0a /* Public */,
-       9,    1,  429,    2, 0x0a /* Public */,
-      10,    1,  432,    2, 0x0a /* Public */,
-      12,    2,  435,    2, 0x0a /* Public */,
-      15,    1,  440,    2, 0x0a /* Public */,
-      17,    1,  443,    2, 0x0a /* Public */,
-      18,    2,  446,    2, 0x0a /* Public */,
-      19,    1,  451,    2, 0x0a /* Public */,
-      21,    1,  454,    2, 0x0a /* Public */,
-      22,    1,  457,    2, 0x0a /* Public */,
-      23,    1,  460,    2, 0x0a /* Public */,
-      25,    1,  463,    2, 0x0a /* Public */,
-      27,    1,  466,    2, 0x0a /* Public */,
-      29,    1,  469,    2, 0x0a /* Public */,
-      30,    1,  472,    2, 0x0a /* Public */,
-      31,    1,  475,    2, 0x0a /* Public */,
-      32,    1,  478,    2, 0x0a /* Public */,
-      33,    1,  481,    2, 0x0a /* Public */,
-      34,    1,  484,    2, 0x0a /* Public */,
-      35,    1,  487,    2, 0x0a /* Public */,
-      37,    1,  490,    2, 0x0a /* Public */,
-      38,    1,  493,    2, 0x0a /* Public */,
-      40,    2,  496,    2, 0x0a /* Public */,
-      41,    2,  501,    2, 0x0a /* Public */,
-      42,    1,  506,    2, 0x0a /* Public */,
-      43,    8,  509,    2, 0x0a /* Public */,
-      52,    0,  526,    2, 0x0a /* Public */,
-      53,    0,  527,    2, 0x0a /* Public */,
-      54,    4,  528,    2, 0x0a /* Public */,
-      60,    1,  537,    2, 0x0a /* Public */,
-      62,    2,  540,    2, 0x0a /* Public */,
-      63,    1,  545,    2, 0x0a /* Public */,
-      65,    1,  548,    2, 0x0a /* Public */,
-      66,    4,  551,    2, 0x0a /* Public */,
-      71,    1,  560,    2, 0x0a /* Public */,
-      74,    1,  563,    2, 0x0a /* Public */,
-      75,    2,  566,    2, 0x0a /* Public */,
-      78,    1,  571,    2, 0x0a /* Public */,
-      79,    1,  574,    2, 0x0a /* Public */,
-      80,    2,  577,    2, 0x0a /* Public */,
-      82,    1,  582,    2, 0x0a /* Public */,
-      84,    1,  585,    2, 0x0a /* Public */,
-      85,    1,  588,    2, 0x0a /* Public */,
+       7,    1,  421,    2, 0x0a /* Public */,
+       9,    1,  424,    2, 0x0a /* Public */,
+      10,    1,  427,    2, 0x0a /* Public */,
+      12,    2,  430,    2, 0x0a /* Public */,
+      15,    1,  435,    2, 0x0a /* Public */,
+      17,    1,  438,    2, 0x0a /* Public */,
+      18,    2,  441,    2, 0x0a /* Public */,
+      19,    1,  446,    2, 0x0a /* Public */,
+      21,    1,  449,    2, 0x0a /* Public */,
+      22,    1,  452,    2, 0x0a /* Public */,
+      23,    1,  455,    2, 0x0a /* Public */,
+      25,    1,  458,    2, 0x0a /* Public */,
+      27,    1,  461,    2, 0x0a /* Public */,
+      29,    1,  464,    2, 0x0a /* Public */,
+      30,    1,  467,    2, 0x0a /* Public */,
+      31,    1,  470,    2, 0x0a /* Public */,
+      32,    1,  473,    2, 0x0a /* Public */,
+      33,    1,  476,    2, 0x0a /* Public */,
+      34,    1,  479,    2, 0x0a /* Public */,
+      35,    1,  482,    2, 0x0a /* Public */,
+      37,    1,  485,    2, 0x0a /* Public */,
+      38,    1,  488,    2, 0x0a /* Public */,
+      40,    2,  491,    2, 0x0a /* Public */,
+      41,    2,  496,    2, 0x0a /* Public */,
+      42,    1,  501,    2, 0x0a /* Public */,
+      43,    8,  504,    2, 0x0a /* Public */,
+      52,    0,  521,    2, 0x0a /* Public */,
+      53,    0,  522,    2, 0x0a /* Public */,
+      54,    4,  523,    2, 0x0a /* Public */,
+      60,    1,  532,    2, 0x0a /* Public */,
+      62,    2,  535,    2, 0x0a /* Public */,
+      63,    2,  540,    2, 0x0a /* Public */,
+      65,    4,  545,    2, 0x0a /* Public */,
+      70,    1,  554,    2, 0x0a /* Public */,
+      73,    1,  557,    2, 0x0a /* Public */,
+      74,    2,  560,    2, 0x0a /* Public */,
+      77,    1,  565,    2, 0x0a /* Public */,
+      78,    1,  568,    2, 0x0a /* Public */,
+      79,    2,  571,    2, 0x0a /* Public */,
+      81,    1,  576,    2, 0x0a /* Public */,
+      83,    1,  579,    2, 0x0a /* Public */,
+      84,    1,  582,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-      86,    0,  591,    2, 0x02 /* Public */,
-      87,    1,  592,    2, 0x02 /* Public */,
-      88,    1,  595,    2, 0x02 /* Public */,
-      89,    1,  598,    2, 0x02 /* Public */,
-      90,    1,  601,    2, 0x02 /* Public */,
-      91,    1,  604,    2, 0x02 /* Public */,
-      92,    0,  607,    2, 0x02 /* Public */,
-      93,    0,  608,    2, 0x02 /* Public */,
-      94,    0,  609,    2, 0x02 /* Public */,
-      95,    0,  610,    2, 0x02 /* Public */,
-      96,    0,  611,    2, 0x02 /* Public */,
-      97,    0,  612,    2, 0x02 /* Public */,
-      98,    0,  613,    2, 0x02 /* Public */,
-      99,    0,  614,    2, 0x02 /* Public */,
-     100,    0,  615,    2, 0x02 /* Public */,
-     101,    0,  616,    2, 0x02 /* Public */,
-     102,    0,  617,    2, 0x02 /* Public */,
-     103,    0,  618,    2, 0x02 /* Public */,
-     104,    0,  619,    2, 0x02 /* Public */,
-     105,    0,  620,    2, 0x02 /* Public */,
-     106,    0,  621,    2, 0x02 /* Public */,
-     107,    0,  622,    2, 0x02 /* Public */,
-     108,    0,  623,    2, 0x02 /* Public */,
-     109,    0,  624,    2, 0x02 /* Public */,
-     110,    0,  625,    2, 0x02 /* Public */,
-     111,    0,  626,    2, 0x02 /* Public */,
-     112,    0,  627,    2, 0x02 /* Public */,
-     113,    0,  628,    2, 0x02 /* Public */,
-     114,    0,  629,    2, 0x02 /* Public */,
-     115,    0,  630,    2, 0x02 /* Public */,
-     116,    0,  631,    2, 0x02 /* Public */,
-     117,    0,  632,    2, 0x02 /* Public */,
-     119,    0,  633,    2, 0x02 /* Public */,
-     120,    0,  634,    2, 0x02 /* Public */,
-     121,    1,  635,    2, 0x02 /* Public */,
+      85,    0,  585,    2, 0x02 /* Public */,
+      86,    1,  586,    2, 0x02 /* Public */,
+      87,    1,  589,    2, 0x02 /* Public */,
+      88,    1,  592,    2, 0x02 /* Public */,
+      89,    1,  595,    2, 0x02 /* Public */,
+      90,    1,  598,    2, 0x02 /* Public */,
+      91,    0,  601,    2, 0x02 /* Public */,
+      92,    0,  602,    2, 0x02 /* Public */,
+      93,    0,  603,    2, 0x02 /* Public */,
+      94,    0,  604,    2, 0x02 /* Public */,
+      95,    0,  605,    2, 0x02 /* Public */,
+      96,    0,  606,    2, 0x02 /* Public */,
+      97,    0,  607,    2, 0x02 /* Public */,
+      98,    0,  608,    2, 0x02 /* Public */,
+      99,    0,  609,    2, 0x02 /* Public */,
+     100,    0,  610,    2, 0x02 /* Public */,
+     101,    0,  611,    2, 0x02 /* Public */,
+     102,    0,  612,    2, 0x02 /* Public */,
+     103,    0,  613,    2, 0x02 /* Public */,
+     104,    0,  614,    2, 0x02 /* Public */,
+     105,    0,  615,    2, 0x02 /* Public */,
+     106,    0,  616,    2, 0x02 /* Public */,
+     107,    0,  617,    2, 0x02 /* Public */,
+     108,    0,  618,    2, 0x02 /* Public */,
+     109,    0,  619,    2, 0x02 /* Public */,
+     110,    0,  620,    2, 0x02 /* Public */,
+     111,    0,  621,    2, 0x02 /* Public */,
+     112,    0,  622,    2, 0x02 /* Public */,
+     113,    0,  623,    2, 0x02 /* Public */,
+     114,    0,  624,    2, 0x02 /* Public */,
+     115,    0,  625,    2, 0x02 /* Public */,
+     116,    0,  626,    2, 0x02 /* Public */,
+     118,    0,  627,    2, 0x02 /* Public */,
+     119,    0,  628,    2, 0x02 /* Public */,
+     120,    1,  629,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::UInt,    3,
@@ -346,16 +344,15 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
     QMetaType::Bool, 0x80000000 | 55, 0x80000000 | 55, QMetaType::Double, QMetaType::Double,   56,   57,   58,   59,
     QMetaType::Bool, QMetaType::Float,   61,
     QMetaType::Bool, 0x80000000 | 55, 0x80000000 | 55,   56,   57,
-    QMetaType::Bool, 0x80000000 | 64,   56,
-    QMetaType::Bool, 0x80000000 | 64,   56,
-    QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float,   67,   68,   69,   70,
-    QMetaType::Void, 0x80000000 | 72,   73,
-    QMetaType::Void, 0x80000000 | 72,   73,
-    QMetaType::Void, 0x80000000 | 72, 0x80000000 | 76,   73,   77,
-    QMetaType::Void, 0x80000000 | 72,   73,
-    QMetaType::Void, 0x80000000 | 72,   73,
-    QMetaType::Void, 0x80000000 | 72, QMetaType::Bool,   73,   81,
-    QMetaType::Void, QMetaType::QString,   83,
+    QMetaType::Bool, 0x80000000 | 64, QMetaType::Float,   56,   57,
+    QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float,   66,   67,   68,   69,
+    QMetaType::Void, 0x80000000 | 71,   72,
+    QMetaType::Void, 0x80000000 | 71,   72,
+    QMetaType::Void, 0x80000000 | 71, 0x80000000 | 75,   72,   76,
+    QMetaType::Void, 0x80000000 | 71,   72,
+    QMetaType::Void, 0x80000000 | 71,   72,
+    QMetaType::Void, 0x80000000 | 71, QMetaType::Bool,   72,   80,
+    QMetaType::Void, QMetaType::QString,   82,
     QMetaType::Void, QMetaType::UInt,    5,
     QMetaType::Void, QMetaType::UInt,    5,
 
@@ -391,7 +388,7 @@ static const uint qt_meta_data_walkinplace__WalkInPlaceTabController[] = {
     QMetaType::Bool,
     QMetaType::Bool,
     QMetaType::Bool,
-    0x80000000 | 118,
+    0x80000000 | 117,
     QMetaType::Void,
     QMetaType::UInt,
     QMetaType::QString, QMetaType::UInt,    5,
@@ -443,89 +440,87 @@ void walkinplace::WalkInPlaceTabController::qt_static_metacall(QObject *_o, QMet
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         case 33: { bool _r = _t->sideToSideStepCheck((*reinterpret_cast< vr::HmdVector3d_t(*)>(_a[1])),(*reinterpret_cast< vr::HmdVector3d_t(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 34: { bool _r = _t->isJoggingStep((*reinterpret_cast< float*(*)>(_a[1])));
+        case 34: { bool _r = _t->controllerSwingCheck((*reinterpret_cast< vr::HmdVector3_t(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 35: { bool _r = _t->isRunningStep((*reinterpret_cast< float*(*)>(_a[1])));
-            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 36: { float _r = _t->getScaledTouch((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])));
+        case 35: { float _r = _t->getScaledTouch((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])));
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 37: _t->stopMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
-        case 38: _t->stopClickMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
-        case 39: _t->applyAxisMovement((*reinterpret_cast< uint32_t(*)>(_a[1])),(*reinterpret_cast< vr::VRControllerAxis_t(*)>(_a[2]))); break;
-        case 40: _t->applyClickMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
-        case 41: _t->applyGripMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
-        case 42: _t->updateAccuracyButtonState((*reinterpret_cast< uint32_t(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
-        case 43: _t->addWalkInPlaceProfile((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 44: _t->applyWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 45: _t->deleteWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
-        case 46: { uint _r = _t->getDeviceCount();
+        case 36: _t->stopMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
+        case 37: _t->stopClickMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
+        case 38: _t->applyAxisMovement((*reinterpret_cast< uint32_t(*)>(_a[1])),(*reinterpret_cast< vr::VRControllerAxis_t(*)>(_a[2]))); break;
+        case 39: _t->applyClickMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
+        case 40: _t->applyGripMovement((*reinterpret_cast< uint32_t(*)>(_a[1]))); break;
+        case 41: _t->updateAccuracyButtonState((*reinterpret_cast< uint32_t(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
+        case 42: _t->addWalkInPlaceProfile((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 43: _t->applyWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 44: _t->deleteWalkInPlaceProfile((*reinterpret_cast< uint(*)>(_a[1]))); break;
+        case 45: { uint _r = _t->getDeviceCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = std::move(_r); }  break;
-        case 47: { QString _r = _t->getDeviceSerial((*reinterpret_cast< uint(*)>(_a[1])));
+        case 46: { QString _r = _t->getDeviceSerial((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 48: { uint _r = _t->getDeviceId((*reinterpret_cast< uint(*)>(_a[1])));
+        case 47: { uint _r = _t->getDeviceId((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = std::move(_r); }  break;
-        case 49: { int _r = _t->getDeviceClass((*reinterpret_cast< uint(*)>(_a[1])));
+        case 48: { int _r = _t->getDeviceClass((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 50: { int _r = _t->getDeviceState((*reinterpret_cast< uint(*)>(_a[1])));
+        case 49: { int _r = _t->getDeviceState((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 51: { int _r = _t->getDeviceMode((*reinterpret_cast< uint(*)>(_a[1])));
+        case 50: { int _r = _t->getDeviceMode((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 52: { double _r = _t->getStepTime();
+        case 51: { double _r = _t->getStepTime();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 53: { int _r = _t->getGameType();
+        case 52: { int _r = _t->getGameType();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 54: { int _r = _t->getHMDType();
+        case 53: { int _r = _t->getHMDType();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 55: { int _r = _t->getControlSelect();
+        case 54: { int _r = _t->getControlSelect();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 56: { int _r = _t->getAccuracyButtonControlSelect();
+        case 55: { int _r = _t->getAccuracyButtonControlSelect();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 57: { int _r = _t->getAccuracyButton();
+        case 56: { int _r = _t->getAccuracyButton();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 58: { float _r = _t->getHMDXZThreshold();
+        case 57: { float _r = _t->getHMDXZThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 59: { float _r = _t->getHMDYThreshold();
+        case 58: { float _r = _t->getHMDYThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 60: { bool _r = _t->getUseTrackers();
+        case 59: { bool _r = _t->getUseTrackers();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 61: { bool _r = _t->getDisableHMD();
+        case 60: { bool _r = _t->getDisableHMD();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 62: { float _r = _t->getTrackerXZThreshold();
+        case 61: { float _r = _t->getTrackerXZThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 63: { float _r = _t->getTrackerYThreshold();
+        case 62: { float _r = _t->getTrackerYThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 64: { float _r = _t->getHandWalkThreshold();
+        case 63: { float _r = _t->getHandWalkThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 65: { float _r = _t->getHandJogThreshold();
+        case 64: { float _r = _t->getHandJogThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 66: { float _r = _t->getHandRunThreshold();
+        case 65: { float _r = _t->getHandRunThreshold();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 67: { bool _r = _t->getUseContDirForStraf();
+        case 66: { bool _r = _t->getUseContDirForStraf();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 68: { bool _r = _t->getUseContDirForRev();
+        case 67: { bool _r = _t->getUseContDirForRev();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 69: { bool _r = _t->getScaleTouchWithSwing();
+        case 68: { bool _r = _t->getScaleTouchWithSwing();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 70: { float _r = _t->getWalkTouch();
+        case 69: { float _r = _t->getWalkTouch();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 71: { float _r = _t->getJogTouch();
+        case 70: { float _r = _t->getJogTouch();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 72: { float _r = _t->getRunTouch();
+        case 71: { float _r = _t->getRunTouch();
             if (_a[0]) *reinterpret_cast< float*>(_a[0]) = std::move(_r); }  break;
-        case 73: { bool _r = _t->getAccuracyButtonIsToggle();
+        case 72: { bool _r = _t->getAccuracyButtonIsToggle();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 74: { bool _r = _t->getAccuracyButtonFlip();
+        case 73: { bool _r = _t->getAccuracyButtonFlip();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 75: { bool _r = _t->isStepDetectionEnabled();
+        case 74: { bool _r = _t->isStepDetectionEnabled();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 76: { bool _r = _t->isStepDetected();
+        case 75: { bool _r = _t->isStepDetected();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 77: { QList<qreal> _r = _t->getGraphPoses();
+        case 76: { QList<qreal> _r = _t->getGraphPoses();
             if (_a[0]) *reinterpret_cast< QList<qreal>*>(_a[0]) = std::move(_r); }  break;
-        case 78: _t->setupStepGraph(); break;
-        case 79: { uint _r = _t->getWalkInPlaceProfileCount();
+        case 77: _t->setupStepGraph(); break;
+        case 78: { uint _r = _t->getWalkInPlaceProfileCount();
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = std::move(_r); }  break;
-        case 80: { QString _r = _t->getWalkInPlaceProfileName((*reinterpret_cast< uint(*)>(_a[1])));
+        case 79: { QString _r = _t->getWalkInPlaceProfileName((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
@@ -581,13 +576,13 @@ int walkinplace::WalkInPlaceTabController::qt_metacall(QMetaObject::Call _c, int
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 81)
+        if (_id < 80)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 81;
+        _id -= 80;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 81)
+        if (_id < 80)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 81;
+        _id -= 80;
     }
     return _id;
 }

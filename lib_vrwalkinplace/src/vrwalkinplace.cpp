@@ -230,18 +230,18 @@ namespace vrwalkinplace {
 		}
 	}
 
-	void VRWalkInPlace::openvrUpdatePose(uint32_t deviceId, bool flipYaw) {
+	void VRWalkInPlace::openvrUpdatePose(uint32_t deviceId, vr::DriverPose_t pose) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_PoseUpdate);
 			message.msg.ipc_PoseUpdate.deviceId = deviceId;
-			message.msg.ipc_PoseUpdate.flipYaw = flipYaw;
+			//message.msg.ipc_PoseUpdate.pose = pose;
 		}
 		else {
 			throw vrwalkinplace_connectionerror("No active connection.");
 		}
 	}
 
-	void VRWalkInPlace::openvrButtonEvent(vr::EVREventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset) {
+	void VRWalkInPlace::openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_ButtonEvent);
 			message.msg.ipc_ButtonEvent.eventType = eventType;
@@ -256,7 +256,7 @@ namespace vrwalkinplace {
 	}
 
 
-	void VRWalkInPlace::openvrAxisEvent(uint32_t deviceId, vr::EVRButtonId axisId, const vr::VRControllerAxis_t & axisState) {
+	void VRWalkInPlace::openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t & axisState) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_AxisEvent);
 			message.msg.ipc_AxisEvent.deviceId = deviceId;

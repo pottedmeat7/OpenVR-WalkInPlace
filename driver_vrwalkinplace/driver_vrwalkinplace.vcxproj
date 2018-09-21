@@ -42,6 +42,7 @@
     <ClInclude Include="src\driver\WatchdogProvider.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\utils\DevicePropertyValueVisitor.h" />
+    <ClInclude Include="urmem.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AF6FBE95-527D-499B-9ABD-3A47E9E84C8A}</ProjectGuid>
