@@ -104,6 +104,7 @@ namespace vrwalkinplace {
 		}
 
 		void ServerDriver::openvr_axisEvent(uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t & axisState) {
+			LOG(INFO) << "send axis event for device " << unWhichDevice;
 			_openvrIdToVirtualControllerMap[unWhichDevice].sendAxisEvent(unWhichAxis, axisState);
 			//vr_locomotion1.sendAxisEvent(unWhichAxis, axisState);
 		}

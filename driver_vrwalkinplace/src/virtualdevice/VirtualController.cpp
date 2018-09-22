@@ -313,9 +313,11 @@ namespace vrwalkinplace {
 		}
 
 		void VirtualController::sendAxisEvent(uint32_t eButtonId, const vr::VRControllerAxis_t& axisState) {
+			LOG(INFO) << "Applying VR axis event with axis " << eButtonId;
 			auto it = m_ulScalarComponentsMap.find(eButtonId);
 			if (it != m_ulScalarComponentsMap.end()) {
 				if (eButtonId == vr::EVRButtonId::k_EButton_SteamVR_Touchpad) {
+					LOG(INFO) << "Applying VR touchpad axis event";
 					try {
 						vr::EVRInputError eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad][ButtonEventType::TrackpadX], axisState.x, 0);
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
