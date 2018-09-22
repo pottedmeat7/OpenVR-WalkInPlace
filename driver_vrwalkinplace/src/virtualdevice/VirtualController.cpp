@@ -17,8 +17,9 @@ namespace vrwalkinplace {
 
 		}
 
-		VirtualController::VirtualController(std::string serial, bool side, vr::DriverPose_t initial_pose, vr::VRControllerState_t initial_state) :
+		VirtualController::VirtualController(std::string serial, uint32_t mapId, bool side, vr::DriverPose_t initial_pose, vr::VRControllerState_t initial_state) :
 			m_serialNumber(serial),
+			mappedOpenVRId(mapId),
 			leftSide(side),
 			devicePose(initial_pose),
 			currentState(initial_state)
@@ -255,6 +256,8 @@ namespace vrwalkinplace {
 			devicePose.poseTimeOffset = 0;
 			devicePose.result = vr::ETrackingResult::TrackingResult_Running_OK;
 			poseUpdated = true;
+
+			vr::VRServerDriverHost()->TrackedDevicePoseUpdated(m_openvrId, devicePose, sizeof(vr::DriverPose_t));
 		}
 
 		void VirtualController::updateState(vr::VRControllerState_t new_state) {
@@ -313,11 +316,9 @@ namespace vrwalkinplace {
 		}
 
 		void VirtualController::sendAxisEvent(uint32_t eButtonId, const vr::VRControllerAxis_t& axisState) {
-			LOG(INFO) << "Applying VR axis event with axis " << eButtonId;
 			auto it = m_ulScalarComponentsMap.find(eButtonId);
 			if (it != m_ulScalarComponentsMap.end()) {
 				if (eButtonId == vr::EVRButtonId::k_EButton_SteamVR_Touchpad) {
-					LOG(INFO) << "Applying VR touchpad axis event";
 					try {
 						vr::EVRInputError eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad][ButtonEventType::TrackpadX], axisState.x, 0);
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {

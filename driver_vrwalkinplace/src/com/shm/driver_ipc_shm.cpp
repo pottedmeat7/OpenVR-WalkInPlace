@@ -54,14 +54,14 @@ namespace vrwalkinplace {
 										reply.msg.ipc_ClientConnect.ipcProcotolVersion = IPC_PROTOCOL_VERSION;
 										if (message.msg.ipc_ClientConnect.ipcProcotolVersion == IPC_PROTOCOL_VERSION) {
 											auto clientId = _this->_ipcClientIdNext++;
-											/*if (_this->_ipcClientIdNext > 100) {
+											if (_this->_ipcClientIdNext > 100) {
 												_this->_ipcClientIdNext = 1;
 												clientId = 1;
 												_this->_ipcEndpoints.clear();
-											}*/
-											if (true || clientId == 7) {
-												LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
 											}
+											//if (clientId == 7) {
+											//	LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											//}
 											_this->_ipcEndpoints.insert({ clientId, queue });
 											reply.msg.ipc_ClientConnect.clientId = clientId;
 											reply.status = ipc::ReplyStatus::Ok;
@@ -90,7 +90,7 @@ namespace vrwalkinplace {
 										reply.status = ipc::ReplyStatus::Ok;
 										auto msgQueue = i->second;
 										_this->_ipcEndpoints.erase(i);
-										LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
+										//LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
 										if (reply.messageId != 0) {
 											msgQueue->send(&reply, sizeof(ipc::Reply), 0);
 										}
@@ -130,9 +130,9 @@ namespace vrwalkinplace {
 
 								case ipc::RequestType::OpenVR_PoseUpdate:
 								{
-									//if (vr::VRServerDriverHost()) {
-									//	driver->openvr_poseUpdate(message.msg.ipc_PoseUpdate.deviceId, message.msg.ipc_PoseUpdate.flipYaw, message.timestamp);
-									//}
+									if (vr::VRServerDriverHost()) {
+										driver->openvr_poseUpdate(message.msg.ipc_PoseUpdate.deviceId, message.msg.ipc_PoseUpdate.pose, message.timestamp);
+									}
 								}
 								break;
 

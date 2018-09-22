@@ -234,7 +234,8 @@ namespace vrwalkinplace {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_PoseUpdate);
 			message.msg.ipc_PoseUpdate.deviceId = deviceId;
-			//message.msg.ipc_PoseUpdate.pose = pose;
+			message.msg.ipc_PoseUpdate.pose = pose;
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
 		}
 		else {
 			throw vrwalkinplace_connectionerror("No active connection.");

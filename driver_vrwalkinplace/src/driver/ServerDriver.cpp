@@ -75,6 +75,10 @@ namespace vrwalkinplace {
 				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
 				vr_locomotion1.poseUpdated = false;
 			}*/
+			auto it = _openvrIdToVirtualControllerMap.begin();
+			while (it != _openvrIdToVirtualControllerMap.end()) {
+				it->second.RunFrame();
+			}
 		}
 
 		void ServerDriver::openvr_deviceAdded(uint32_t unWhichDevice, bool leftRole) {
@@ -83,15 +87,33 @@ namespace vrwalkinplace {
 			if (it != _openvrIdToVirtualControllerMap.end()) {
 			}
 			else {
-				_openvrIdToVirtualControllerMap[unWhichDevice] = VirtualController();
-				_openvrIdToVirtualControllerMap[unWhichDevice].mapInputDevice(unWhichDevice, leftRole);
+				//_openvrIdToVirtualControllerMap[unWhichDevice] = VirtualController();
+				//_openvrIdToVirtualControllerMap[unWhichDevice].mapInputDevice(unWhichDevice, leftRole);
+			
+				vr::DriverPose_t test_pose = { 0 };
+				test_pose.deviceIsConnected = true;
+				test_pose.poseIsValid = true;
+				test_pose.willDriftInYaw = false;
+				test_pose.shouldApplyHeadModel = false;
+				test_pose.poseTimeOffset = 0;
+				test_pose.result = vr::ETrackingResult::TrackingResult_Running_OK;
+				test_pose.qDriverFromHeadRotation = { 1,0,0,0 };
+				test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
+
+				vr::VRControllerState_t test_state;
+				test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
+
+				_openvrIdToVirtualControllerMap[unWhichDevice] = VirtualController("vr_locomotion1", unWhichDevice, true, test_pose, test_state);
+
+				vr::VRServerDriverHost()->TrackedDeviceAdded("vr_locomotion1", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &_openvrIdToVirtualControllerMap[unWhichDevice]);
+
+				//LOG(INFO) << "Successfully added device " << ovrwip_1.serialNumber() << " (OpenVR Id: " << unObjectId << ") (" << ovrwip_1.openvrId() << ")";
 			}
 			//vr_locomotion1.updatePose(pose);
 		}
 
 		void ServerDriver::openvr_poseUpdate(uint32_t unWhichDevice, const vr::DriverPose_t & pose, double eventTimeOffset) {
-			//_openvrIdToVirtualControllerMap[unWhichDevice]->sendButtonEvent(eventType, eButtonId, eventTimeOffset);
-			//vr_locomotion1.updatePose(pose);
+			_openvrIdToVirtualControllerMap[unWhichDevice].updatePose(pose);
 		}
 
 		void ServerDriver::openvr_updateState(uint32_t unWhichDevice, vr::VRControllerState_t new_state, double eventTimeOffset) {
@@ -104,7 +126,6 @@ namespace vrwalkinplace {
 		}
 
 		void ServerDriver::openvr_axisEvent(uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t & axisState) {
-			LOG(INFO) << "send axis event for device " << unWhichDevice;
 			_openvrIdToVirtualControllerMap[unWhichDevice].sendAxisEvent(unWhichAxis, axisState);
 			//vr_locomotion1.sendAxisEvent(unWhichAxis, axisState);
 		}

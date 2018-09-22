@@ -130,33 +130,35 @@ namespace walkinplace {
 		else {
 			settingsUpdateCounter++;
 		}
-		/*double deltatime = 1.0 / 10.0 * 1000;
+		double deltatime = 1.0 / 10.0 * 1000;
 		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double tdiff = ((double)(now - _timeLastTick));
 		//LOG(INFO) << "DT: " << tdiff;
 		if (tdiff >= deltatime) {
-			if (stepDetectEnabled && firstTrackerID > 0) {
-				/*if (_controllerDeviceIds[0] >= 0 && controlSelect == 0) {
-				vrwalkinplace::VRWalkInPlace vrwalkinplace;
-				vrwalkinplace.connect();
-				//vr::VRControllerState_t state;
-				//vr::VRSystem()->GetControllerState(_controllerDeviceIds[0], &state, sizeof(state));
-				//vrwalkinplace.openvrUpdateState(_controllerDeviceIds[0], state);
-				vr::TrackedDevicePose_t pose = latestDevicePoses[_controllerDeviceIds[0]];
-				vr::DriverPose_t driverPose;
-				driverPose.poseIsValid = pose.bPoseIsValid;
-				driverPose.poseTimeOffset = 0;
-				driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
-				auto m = pose.mDeviceToAbsoluteTracking.m;
-				driverPose.vecPosition[0] = m[0][3];
-				driverPose.vecPosition[1] = m[1][3];
-				driverPose.vecPosition[2] = m[2][3];
-				driverPose.vecVelocity[0] = pose.vVelocity.v[0];
-				driverPose.vecVelocity[1] = pose.vVelocity.v[1];
-				driverPose.vecVelocity[2] = pose.vVelocity.v[2];
-				vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[0], driverPose);
+			if (stepDetectEnabled) {
+				if (_controllerDeviceIds[_controlUsedID] >= 0) {
+					vrwalkinplace::VRWalkInPlace vrwalkinplace;
+					vrwalkinplace.connect();
+					//vr::VRControllerState_t state;
+					//vr::VRSystem()->GetControllerState(_controllerDeviceIds[0], &state, sizeof(state));
+					//vrwalkinplace.openvrUpdateState(_controllerDeviceIds[0], state);
+					vr::TrackedDevicePose_t pose = latestDevicePoses[_controllerDeviceIds[_controlUsedID]];
+					vr::DriverPose_t driverPose;
+					driverPose.poseIsValid = pose.bPoseIsValid;
+					driverPose.poseTimeOffset = 0;
+					driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
+					auto m = pose.mDeviceToAbsoluteTracking.m;
+					driverPose.vecPosition[0] = m[0][3];
+					driverPose.vecPosition[1] = m[1][3];
+					driverPose.vecPosition[2] = m[2][3];
+					driverPose.vecVelocity[0] = pose.vVelocity.v[0];
+					driverPose.vecVelocity[1] = pose.vVelocity.v[1];
+					driverPose.vecVelocity[2] = pose.vVelocity.v[2];
+					vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[_controlUsedID], driverPose);
 				}
-				if (_controllerDeviceIds[1] >= 0 && controlSelect == 1) {
+			}
+		}
+				/*if (_controllerDeviceIds[1] >= 0 && controlSelect == 1) {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
 				//vr::VRControllerState_t state;

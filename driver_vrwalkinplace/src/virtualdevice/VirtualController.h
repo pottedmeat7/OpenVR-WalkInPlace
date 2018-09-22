@@ -21,6 +21,7 @@ private:
 	vr::VRControllerState_t currentState;
 	vr::ETrackedDeviceClass m_eDeviceClass = vr::TrackedDeviceClass_Invalid;
 	uint32_t m_openvrId = vr::k_unTrackedDeviceIndexInvalid;
+	uint32_t mappedOpenVRId = vr::k_unTrackedDeviceIndexInvalid;
 	std::string m_serialNumber;
 	
 	vr::PropertyContainerHandle_t m_propertyContainerHandle = vr::k_ulInvalidPropertyContainer;
@@ -35,7 +36,7 @@ public:
 	VirtualController();
 	VirtualController(const VirtualController &handle);
 	~VirtualController();
-	VirtualController(std::string serial, bool side, vr::DriverPose_t initial_pose, vr::VRControllerState_t initial_state);
+	VirtualController(std::string serial, uint32_t mapId, bool side, vr::DriverPose_t initial_pose, vr::VRControllerState_t initial_state);
 
 	const std::string& serialNumber() { return m_serialNumber; }
 	uint32_t openvrId() { return m_openvrId; }
