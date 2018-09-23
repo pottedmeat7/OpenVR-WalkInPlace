@@ -50,11 +50,16 @@ namespace walkinplace {
 						info->deviceMode = 0;
 						deviceInfos.push_back(info);
 						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-							if (_controllerDeviceIds[0] <= 0) {
-								_controllerDeviceIds[0] = info->openvrId;
+							if (info->serial.find("vr_locomotion") == std::string::npos) {
+								if (_controllerDeviceIds[0] <= 0) {
+									_controllerDeviceIds[0] = info->openvrId;
+								}
+								else if (_controllerDeviceIds[1] <= 0) {
+									_controllerDeviceIds[1] = info->openvrId;
+								}
 							}
-							else if (_controllerDeviceIds[1] <= 0) {
-								_controllerDeviceIds[1] = info->openvrId;
+							else {
+								vrLocoContID = info->openvrId;
 							}
 						}
 						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
@@ -109,11 +114,16 @@ namespace walkinplace {
 							info->deviceMode = 0;
 							deviceInfos.push_back(info);
 							if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								if (_controllerDeviceIds[0] <= 0) {
-									_controllerDeviceIds[0] = info->openvrId;
+								if (info->serial.find("vr_locomotion") == std::string::npos) {
+									if (_controllerDeviceIds[0] <= 0) {
+										_controllerDeviceIds[0] = info->openvrId;
+									}
+									else if (_controllerDeviceIds[1] <= 0) {
+										_controllerDeviceIds[1] = info->openvrId;
+									}
 								}
-								else if (_controllerDeviceIds[1] <= 0) {
-									_controllerDeviceIds[1] = info->openvrId;
+								else {
+									vrLocoContID = info->openvrId;
 								}
 							}
 							LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
@@ -130,7 +140,29 @@ namespace walkinplace {
 		else {
 			settingsUpdateCounter++;
 		}
-		double deltatime = 1.0 / 10.0 * 1000;
+		if (stepDetectEnabled && _controlUsedID > 0 ) {
+			vrwalkinplace::VRWalkInPlace vrwalkinplace;
+			vrwalkinplace.connect();
+			vr::VRControllerState_t state;
+			vr::VRSystem()->GetControllerState(_controlUsedID, &state, sizeof(state));
+			vrwalkinplace.openvrUpdateState(_controlUsedID, state);
+			vr::TrackedDevicePose_t pose = latestDevicePoses[_controlUsedID];
+			if (pose.bPoseIsValid) {
+				vr::DriverPose_t driverPose;
+				driverPose.poseIsValid = pose.bPoseIsValid;
+				driverPose.poseTimeOffset = 0;
+				driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
+				auto m = pose.mDeviceToAbsoluteTracking.m;
+				driverPose.vecPosition[0] = m[0][3];
+				driverPose.vecPosition[1] = m[1][3];
+				driverPose.vecPosition[2] = m[2][3];
+				driverPose.vecVelocity[0] = pose.vVelocity.v[0];
+				driverPose.vecVelocity[1] = pose.vVelocity.v[1];
+				driverPose.vecVelocity[2] = pose.vVelocity.v[2];
+				vrwalkinplace.openvrUpdatePose(_controlUsedID, driverPose);
+			}
+		}
+		/*double deltatime = 1.0 / 10.0 * 1000;
 		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double tdiff = ((double)(now - _timeLastTick));
 		//LOG(INFO) << "DT: " << tdiff;
@@ -156,9 +188,7 @@ namespace walkinplace {
 					driverPose.vecVelocity[2] = pose.vVelocity.v[2];
 					vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[_controlUsedID], driverPose);
 				}
-			}
-		}
-				/*if (_controllerDeviceIds[1] >= 0 && controlSelect == 1) {
+				if (_controllerDeviceIds[1] >= 0 && controlSelect == 1) {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
 				vrwalkinplace.connect();
 				//vr::VRControllerState_t state;
@@ -422,16 +452,18 @@ namespace walkinplace {
 					double yaw = (180 * std::atan2(t3, t4)) / M_PI;*/
 				}
 				else if (info->deviceClass == vr::TrackedDeviceClass_Controller) {
-					if (firstController) {
-						cont1Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-						cont1Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-						cont1Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-						firstController = false;
-					}
-					else {
-						cont2Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-						cont2Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-						cont2Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
+					if (info->serial.find("vr_locomotion") == std::string::npos) {
+						if (firstController) {
+							cont1Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
+							cont1Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
+							cont1Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
+							firstController = false;
+						}
+						else {
+							cont2Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
+							cont2Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
+							cont2Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
+						}
 					}
 				}
 				else if (info->deviceClass == vr::TrackedDeviceClass_GenericTracker) {
@@ -750,6 +782,9 @@ namespace walkinplace {
 	void WalkInPlaceTabController::enableStepDetection(bool enable) {
 		stepDetectEnabled = enable;
 		if (enable) {
+			vrwalkinplace::VRWalkInPlace vrwalkinplace;
+			vrwalkinplace.connect();
+			vrwalkinplace.openvrEnableDriver(enable);
 			//vr::VRProperties()->SetInt32Property(vr::VRProperties()->TrackedDeviceToPropertyContainer(_controllerDeviceIds[0]), vr::Prop_ControllerRoleHint_Int32, vr::ETrackedControllerRole::TrackedControllerRole_LeftHand);
 		}
 		//_controllerDeviceIds[0] = -1;
@@ -925,20 +960,17 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setControlSelect(int control) {
 		controlSelect = control;
-		if (controlSelect > 0 && !mappedControllerDriver2) {
-			if (_controllerDeviceIds[1] >= 0) {
+		if (control < 2) {
+			if (_controllerDeviceIds[control] > 0) {
 				try {
 					vrwalkinplace::VRWalkInPlace vrwalkinplace;
 					vrwalkinplace.connect();
-					vrwalkinplace.openvrDeviceAdded(_controllerDeviceIds[1]);// , true);
-					mappedControllerDriver2 = true;
+					vrwalkinplace.openvrDeviceAdded(_controllerDeviceIds[control]);// , true);
 				}
 				catch (std::exception& e) {
 					LOG(INFO) << "Exception caught while mapping controller: " << e.what();
 				}
 			}
-		}
-		if (control < 2) {
 			_controlUsedID = _controllerDeviceIds[control];
 			if (!identifyControlTimerSet && _controlUsedID >= 0) {
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -1174,23 +1206,25 @@ namespace walkinplace {
 								}
 							}
 							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								/*if (_controllerDeviceIds[0] < 0) {
-									_controllerDeviceIds[0] = info->openvrId;
-								}
-								else if (_controllerDeviceIds[1] < 0) {
-									_controllerDeviceIds[1] = info->openvrId;
-								}*/
-								if (firstController) {
-									firstController = false;
-									if (controlSelect == 0 && _controlUsedID != info->openvrId) {
-										_controlUsedID = info->openvrId;
-										LOG(INFO) << "Set Main Controller to device : " << _controllerDeviceIds[0];
+								if (info->serial.find("vr_locomotion") == std::string::npos) {
+									/*if (_controllerDeviceIds[0] < 0) {
+										_controllerDeviceIds[0] = info->openvrId;
 									}
-								}
-								else {
-									if (controlSelect != 0 && _controlUsedID != info->openvrId) {
-										_controlUsedID = info->openvrId;
-										LOG(INFO) << "Set Main Controller to device : " << _controllerDeviceIds[1];
+									else if (_controllerDeviceIds[1] < 0) {
+										_controllerDeviceIds[1] = info->openvrId;
+									}*/
+									if (firstController) {
+										firstController = false;
+										if (controlSelect == 0 && _controlUsedID != info->openvrId) {
+											_controlUsedID = info->openvrId;
+											LOG(INFO) << "Set Main Controller to device : " << _controllerDeviceIds[0];
+										}
+									}
+									else {
+										if (controlSelect != 0 && _controlUsedID != info->openvrId) {
+											_controlUsedID = info->openvrId;
+											LOG(INFO) << "Set Main Controller to device : " << _controllerDeviceIds[1];
+										}
 									}
 								}
 							}
@@ -1646,7 +1680,8 @@ namespace walkinplace {
 	/*********************************************************************************************/
 
 
-	void WalkInPlaceTabController::stopMovement(uint32_t deviceId) {
+	void WalkInPlaceTabController::stopMovement(uint32_t deviceIdOLD) {
+		uint32_t deviceId = vrLocoContID;
 		if (gameType == 0 || gameType == 1 || gameType == 2) {
 			vr::VRControllerAxis_t axisState;
 			axisState.x = 0;
@@ -1751,7 +1786,8 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState) {
+	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceIdOLD, vr::VRControllerAxis_t axisState) {
+		uint32_t deviceId = vrLocoContID;
 		vrwalkinplace::VRWalkInPlace vrwalkinplace;
 		vrwalkinplace.connect();
 		if (gameType == 0 || gameType == 1 || gameType == 2) {

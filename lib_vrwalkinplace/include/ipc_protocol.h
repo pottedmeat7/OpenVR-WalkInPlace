@@ -19,9 +19,12 @@ namespace vrwalkinplace {
 			IPC_Ping,
 
 			OpenVR_PoseUpdate,
+			OpenVR_StateUpdate,
 			OpenVR_ButtonEvent,
 			OpenVR_AxisEvent,
-			OpenVR_DeviceAdded
+			OpenVR_DeviceAdded,
+
+			OpenVR_EnableDriver
 		};
 
 
@@ -68,10 +71,14 @@ namespace vrwalkinplace {
 			uint64_t nonce;
 		};
 
-
 		struct Request_OpenVR_PoseUpdate {
 			uint32_t deviceId;
 			vr::DriverPose_t pose;
+		};
+
+		struct Request_OpenVR_StateUpdate {
+			uint32_t deviceId;
+			vr::VRControllerState_t new_state;
 		};
 
 #define REQUEST_OPENVR_BUTTONEVENT_MAXCOUNT 12
@@ -96,11 +103,8 @@ namespace vrwalkinplace {
 			uint32_t deviceId;
 		};
 
-		struct Request_OpenVR_VendorSpecificEvent {
-			uint32_t deviceId;
-			vr::EVREventType eventType;
-			vr::VREvent_Data_t eventData;
-			double timeOffset;
+		struct Request_OpenVR_EnableDriver {
+			bool enable;
 		};
 
 		struct Request {
@@ -121,9 +125,11 @@ namespace vrwalkinplace {
 				Request_IPC_ClientDisconnect ipc_ClientDisconnect;
 				Request_IPC_Ping ipc_Ping;
 				Request_OpenVR_PoseUpdate ipc_PoseUpdate;
+				Request_OpenVR_StateUpdate ipc_StateUpdate;
 				Request_OpenVR_ButtonEvent ipc_ButtonEvent;
 				Request_OpenVR_AxisEvent ipc_AxisEvent;
 				Request_OpenVR_DeviceAdded ipc_DeviceAdded;
+				Request_OpenVR_EnableDriver ipc_EnableDriver;
 			} msg;
 		};
 

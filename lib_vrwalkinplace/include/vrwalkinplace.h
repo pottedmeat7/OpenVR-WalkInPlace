@@ -140,8 +140,10 @@ namespace vrwalkinplace {
 
 		void openvrDeviceAdded(uint32_t deviceId);
 		void openvrUpdatePose(uint32_t deviceId, vr::DriverPose_t pose);
+		void openvrUpdateState(uint32_t deviceId, vr::VRControllerState_t new_state);
 		void openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);
 		void openvrAxisEvent(uint32_t deviceId, uint32_t axisId, const vr::VRControllerAxis_t& axisState);
+		void openvrEnableDriver(bool val);
 
 	private:
 		std::recursive_mutex _mutex;

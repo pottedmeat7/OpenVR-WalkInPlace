@@ -130,6 +130,7 @@ private:
 	int peaksCount = 0;
 	uint64_t _controllerDeviceIds[2] = { (uint64_t)0, (uint64_t)0 };
 	int _controlUsedID = -1;
+	int vrLocoContID = -1;
 	int stepPeaksToStart = 3;
 	float hmdYaw = 0;
 	float contYaw = 0;

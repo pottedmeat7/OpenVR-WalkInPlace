@@ -136,6 +136,14 @@ namespace vrwalkinplace {
 								}
 								break;
 
+								case ipc::RequestType::OpenVR_StateUpdate:
+								{
+									if (vr::VRServerDriverHost()) {
+										driver->openvr_updateState(message.msg.ipc_StateUpdate.deviceId, message.msg.ipc_StateUpdate.new_state, message.timestamp);
+									}
+								}
+								break;
+
 								case ipc::RequestType::OpenVR_ButtonEvent:
 								{
 									try {
@@ -149,13 +157,26 @@ namespace vrwalkinplace {
 									}
 								}
 								break;
-
 								case ipc::RequestType::OpenVR_AxisEvent:
 								{
 									try {
 										if (vr::VRServerDriverHost()) {
 											auto& e = message.msg.ipc_AxisEvent;
 											driver->openvr_axisEvent(e.deviceId, e.axisId, e.axisState);
+										}
+									}
+									catch (std::exception& e) {
+										LOG(ERROR) << "Error in axis event ipc thread: " << e.what();
+									}
+								}
+								break;
+
+								case ipc::RequestType::OpenVR_EnableDriver:
+								{
+									try {
+										if (vr::VRServerDriverHost()) {
+											auto& e = message.msg.ipc_EnableDriver;
+											driver->openvr_enableDriver(e.enable);
 										}
 									}
 									catch (std::exception& e) {
