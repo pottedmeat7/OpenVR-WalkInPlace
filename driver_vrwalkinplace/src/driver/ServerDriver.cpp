@@ -76,7 +76,7 @@ namespace vrwalkinplace {
 				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
 				vr_locomotion1.poseUpdated = false;
 			}*/
-			/*if (controlUsedId != vr::k_unTrackedDeviceIndexInvalid) {
+			if (controlUsedId != vr::k_unTrackedDeviceIndexInvalid) {
 				vr::VRServerDriverHost()->GetRawTrackedDevicePoses(0, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 				vr::TrackedDevicePose_t pose = latestDevicePoses[controlUsedId];
 				//LOG(INFO) << "Updating VR Loco Cont Pose " << pose.bPoseIsValid << " from device " << controlUsedId;
@@ -86,9 +86,9 @@ namespace vrwalkinplace {
 					driverPose.poseTimeOffset = 0;
 					driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
 					auto m = pose.mDeviceToAbsoluteTracking.m;
-					driverPose.vecPosition[0] = m[0][3] + 0.7;
-					driverPose.vecPosition[1] = m[1][3];
-					driverPose.vecPosition[2] = m[2][3];
+					driverPose.vecWorldFromDriverTranslation[0] = m[0][3];
+					driverPose.vecWorldFromDriverTranslation[1] = m[1][3];
+					driverPose.vecWorldFromDriverTranslation[2] = m[2][3];
 					driverPose.vecVelocity[0] = pose.vVelocity.v[0];
 					driverPose.vecVelocity[1] = pose.vVelocity.v[1];
 					driverPose.vecVelocity[2] = pose.vVelocity.v[2];
@@ -97,7 +97,7 @@ namespace vrwalkinplace {
 					vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
 				}
 
-			}*/
+			}
 			/*auto it = _openvrIdToVirtualControllerMap.begin();
 			while (it != _openvrIdToVirtualControllerMap.end()) {
 				it->second.RunFrame();

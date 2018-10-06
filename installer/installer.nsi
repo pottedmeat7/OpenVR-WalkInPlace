@@ -146,6 +146,9 @@ Section "Install" SecInstall
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "DisplayName" "OpenVR Walk In Place"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRWalkInPlace" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
 
+	;create desktop shortcut
+	  CreateShortCut "$DESKTOP\OpenVR-WalkInPlace.lnk" "$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" "-directmode"
+
 SectionEnd
 
 ;--------------------------------

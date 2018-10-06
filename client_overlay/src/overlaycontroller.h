@@ -57,7 +57,7 @@ private:
 	Qt::MouseButtons m_lastMouseButtons = 0;
 
 	bool desktopMode;
-	bool noSound;
+	bool directMode;
 
 	QUrl m_runtimePathUrl;
 
@@ -65,7 +65,7 @@ public: // I know it's an ugly hack to make them public to enable external acces
 	WalkInPlaceTabController walkInPlaceTabController;
 
 private:
-    OverlayController(bool desktopMode, bool noSound) : QObject(), desktopMode(desktopMode), noSound(noSound) {}
+    OverlayController(bool desktopMode, bool directMode) : QObject(), desktopMode(desktopMode), directMode(directMode) {}
 
 public:
 	virtual ~OverlayController();
@@ -84,7 +84,7 @@ public:
 	Q_INVOKABLE QString getVersionString();
 	Q_INVOKABLE QUrl getVRRuntimePathUrl();
 
-	Q_INVOKABLE bool soundDisabled();
+	bool isDirectMode();
 
 	const vr::VROverlayHandle_t& overlayHandle();
 	const vr::VROverlayHandle_t& overlayThumbnailHandle();
@@ -109,8 +109,8 @@ public:
 		return singleton.get();
 	}
 
-	static OverlayController* createInstance(bool desktopMode, bool noSound) {
-		singleton.reset(new walkinplace::OverlayController(desktopMode, noSound));
+	static OverlayController* createInstance(bool desktopMode, bool directMode) {
+		singleton.reset(new walkinplace::OverlayController(desktopMode, directMode));
 		return singleton.get();
 	}
 

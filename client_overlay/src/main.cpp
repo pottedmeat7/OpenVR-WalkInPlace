@@ -113,6 +113,7 @@ int main(int argc, char *argv[]) {
 	std::ofstream errorLog;
 
 	bool desktopMode = false;
+	bool directmode = false;
 	bool noSound = true;
 	bool noManifest = false;
 
@@ -121,7 +122,9 @@ int main(int argc, char *argv[]) {
 
 	// Parse command line arguments
 	for (int i = 1; i < argc; i++) {
-		if (std::string(argv[i]).compare("-desktop") == 0) {
+		if (std::string(argv[i]).compare("-directmode") == 0) {
+			directmode = true;
+		} else if (std::string(argv[i]).compare("-desktop") == 0) {
 			desktopMode = true;
 		} else if (std::string(argv[i]).compare("-nonosound") == 0) {
 			noSound = false;
@@ -264,9 +267,9 @@ int main(int argc, char *argv[]) {
 			auto m_pWindow = new QQuickWindow();
 			qobject_cast<QQuickItem*>(quickObj)->setParentItem(m_pWindow->contentItem());
 			m_pWindow->setGeometry(0, 0, qobject_cast<QQuickItem*>(quickObj)->width(), qobject_cast<QQuickItem*>(quickObj)->height());
-			m_pWindow->setDefaultAlphaBuffer(true);
-			m_pWindow->setFlags(Qt::FramelessWindowHint);
-			m_pWindow->setColor(Qt::transparent);
+			//m_pWindow->setDefaultAlphaBuffer(true);
+			//m_pWindow->setFlags(Qt::FramelessWindowHint);
+			//m_pWindow->setColor(Qt::transparent);
 			m_pWindow->show();
 
 		}

@@ -65,7 +65,7 @@ namespace vrwalkinplace {
 											_this->_ipcEndpoints.insert({ clientId, queue });
 											reply.msg.ipc_ClientConnect.clientId = clientId;
 											reply.status = ipc::ReplyStatus::Ok;
-											//LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
 										}
 										else {
 											reply.msg.ipc_ClientConnect.clientId = 0;

@@ -171,6 +171,7 @@ private:
 	double _timeLastGraphPoint = 0.0;
 
 	uint32_t firstTrackerID = -1;
+	bool hasInititalizedLocoCont = false;
 
 public:
 	~WalkInPlaceTabController();

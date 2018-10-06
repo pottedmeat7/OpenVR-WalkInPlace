@@ -251,7 +251,15 @@ namespace vrwalkinplace {
 		}
 		void VirtualController::updatePose(vr::DriverPose_t new_pose)
 		{
-			devicePose = new_pose;
+			//LOG(INFO) << "new pose values - pos(x,y,z): (" << new_pose.vecPosition[0] << "," << new_pose.vecPosition[1] << "," << new_pose.vecPosition[2] << ") - vel(x,y,x): (" << new_pose.vecVelocity[0] << "," << new_pose.vecVelocity[1] << "," << new_pose.vecVelocity[2] << ")";
+			devicePose.vecWorldFromDriverTranslation[0] = new_pose.vecWorldFromDriverTranslation[0];
+			devicePose.vecWorldFromDriverTranslation[1] = new_pose.vecWorldFromDriverTranslation[1];
+			devicePose.vecWorldFromDriverTranslation[2] = new_pose.vecWorldFromDriverTranslation[2];
+			devicePose.vecVelocity[0] = new_pose.vecVelocity[0];
+			devicePose.vecVelocity[1] = new_pose.vecVelocity[1];
+			devicePose.vecVelocity[2] = new_pose.vecVelocity[2];
+			devicePose.qRotation = new_pose.qRotation;
+			//devicePose = new_pose;
 
 		}
 
@@ -272,6 +280,14 @@ namespace vrwalkinplace {
 			}
 			else if (currentState.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
 				sendButtonEvent(ButtonEventType::ButtonUnpressed, vr::EVRButtonId::k_EButton_ApplicationMenu, 0);
+			}
+			if (new_state.ulButtonPressed& vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Touchpad)) {
+				if (!(currentState.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad))) {
+					sendButtonEvent(ButtonEventType::ButtonPressed, vr::EVRButtonId::k_EButton_SteamVR_Touchpad, 0);
+				}
+			}
+			else if (currentState.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad)) {
+				sendButtonEvent(ButtonEventType::ButtonUnpressed, vr::EVRButtonId::k_EButton_SteamVR_Touchpad, 0);
 			}
 			if (new_state.ulButtonPressed& vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger)) {
 				if (!(currentState.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger))) {

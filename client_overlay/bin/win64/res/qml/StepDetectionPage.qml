@@ -367,7 +367,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 18
 
-                        MyPushButton {
+                        Button {
                             id: walkInPlaceLoadProfiles
                             Layout.preferredWidth: 200
                             text: "Load Profiles"

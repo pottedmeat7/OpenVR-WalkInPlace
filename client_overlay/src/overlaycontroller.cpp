@@ -357,8 +357,8 @@ QUrl OverlayController::getVRRuntimePathUrl() {
 }
 
 
-bool OverlayController::soundDisabled() {
-	return noSound;
+bool OverlayController::isDirectMode() {
+	return directMode;
 }
 
 
