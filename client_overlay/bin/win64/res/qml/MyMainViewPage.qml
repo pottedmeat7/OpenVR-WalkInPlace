@@ -16,7 +16,7 @@ Rectangle {
         background: Rectangle {
             color: "transparent"
         }
-        MyText {
+        Text {
             text: "Content"
         }
     }

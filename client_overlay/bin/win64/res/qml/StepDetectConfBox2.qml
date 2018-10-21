@@ -48,12 +48,6 @@ GroupBox {
 
     Layout.fillWidth: true
 
-    background: Rectangle {
-        color: "#277650"
-        border.color: "#ffffff"
-        radius: 8
-    }
-
     ColumnLayout {
         anchors.fill: parent
         Layout.alignment: Qt.AlignHCenter
@@ -61,32 +55,37 @@ GroupBox {
         GridLayout {
             columns: 5
 
-            MyText {
+            Text {            
+                font.pointSize: 20
                 text: "Step HMD Y"
                 horizontalAlignment: Text.AlignHLeft
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {            
+                font.pointSize: 20
                 text: "Step HMD XZ"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
 
 
-            MyText {
+            Text {            
+                font.pointSize: 20
                 text: ""
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 160
             }    
             
-            MyText {
+            Text {            
+                font.pointSize: 20
                 text: "Arm Swing Jog"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {            
+                font.pointSize: 20
                 text: "Arm Swing Run"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
@@ -98,7 +97,7 @@ GroupBox {
             columns: 14
             Layout.alignment: Qt.AlignHCenter
 
-            MyPushButton2 {
+            Button {
                 id: hmdYMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -132,7 +131,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: hmdYPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -146,7 +145,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: hmdXZMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -180,7 +179,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: hmdXZPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -195,13 +194,14 @@ GroupBox {
             }
 
 
-            MyText {
+            Text {
+                font.pointSize: 20
                 text: ""
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 160
             }    
 
-            MyPushButton2 {
+            Button {
                 id: handJogMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -235,7 +235,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: handJogPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -249,7 +249,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: handRunMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -283,7 +283,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: handRunPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -301,33 +301,35 @@ GroupBox {
         GridLayout {
             columns: 5
 
-            MyText {
+            Text {
+                font.pointSize: 20
                 text: "Tracker Y"
                 horizontalAlignment: Text.AlignHLeft
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {
+                font.pointSize: 20
                 text: "Tracker XZ"
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {
                 text: "Use Trackers?"
                 horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
                 Layout.preferredWidth: 160
             }
 
-            MyText {
+            Text {
                 text: "Disable HMD?"
                 horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {
                 text: "Step Time (seconds)"
                 horizontalAlignment: Text.AlignHCenter
                 font.pointSize: 15
@@ -338,7 +340,7 @@ GroupBox {
         GridLayout {
             columns: 11
 
-            MyPushButton2 {
+            Button {
                 id: trackerYMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -372,7 +374,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: trackerYPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -386,7 +388,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: trackerXZMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -420,7 +422,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: trackerXZPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -434,7 +436,7 @@ GroupBox {
                 }
             }
 
-            MyToggleButton {
+            CheckBox {
                 id: useTrackersCheck
                 Layout.preferredWidth: 163
                 Layout.fillWidth: false
@@ -443,7 +445,7 @@ GroupBox {
                 }
             }  
 
-            MyToggleButton {
+            CheckBox {
                 id: disableHMDCheck
                 Layout.preferredWidth: 223
                 Layout.fillWidth: false
@@ -452,7 +454,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: stepTimeMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -486,7 +488,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: stepTimePlusButton
                 Layout.preferredWidth: 40
                 text: "+"

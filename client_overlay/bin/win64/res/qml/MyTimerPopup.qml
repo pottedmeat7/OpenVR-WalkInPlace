@@ -15,14 +15,14 @@ Popup {
     property int dialogWidth: 600
     property int dialogHeight: 300
 
-    property Item dialogContentItem: MyText {
+    property Item dialogContentItem: Text {
         text: dialogText
         font.pointSize: 24
         horizontalAlignment: Text.AlignHCenter
         Layout.fillWidth: true
     }
 
-    property Item dialogTOItem: MyText {
+    property Item dialogTOItem: Text {
         text: ""+dialogTO
         font.pointSize: 27
         horizontalAlignment: Text.AlignHCenter
@@ -51,7 +51,7 @@ Popup {
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 12
-                MyText {
+                Text {
                     Layout.leftMargin: 16
                     Layout.rightMargin: 16
                     text: dialogTitle
@@ -80,7 +80,7 @@ Popup {
                     Item {
                         Layout.fillWidth: true
                     }
-                    MyPushButton {
+                    Button {
                         implicitWidth: 200
                         text: "Cancel"
                         onClicked: {

@@ -4,15 +4,15 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 Button {
     hoverEnabled: true
-    contentItem: MyText {
+    contentItem: Text {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#000000" : "#909090"
     }
     background: Rectangle {
         color: parent.down ? "#00391E" : (parent.activeFocus ? "#00391E" : "#0D5834")
-        border.color: parent.enabled ? "#ffffff" : "#909090"
+        border.color: parent.enabled ? "#000000" : "#909090"
         radius: 8
     }
     onHoveredChanged: {

@@ -15,7 +15,7 @@ HookData<IVRServerDriverHost005Hooks::pollNextEvent_t> IVRServerDriverHost005Hoo
 IVRServerDriverHost005Hooks::IVRServerDriverHost005Hooks(void* iptr) {
 	if (!_isHooked) {
 		CREATE_MH_HOOK(trackedDeviceAddedHook, _trackedDeviceAdded, "IVRServerDriverHost005::TrackedDeviceAdded", iptr, 0);
-		CREATE_MH_HOOK(pollNextEventHook, _pollNextEvent, "IVRServerDriverHost005::PollNextEvent", iptr, 5);
+		//CREATE_MH_HOOK(pollNextEventHook, _pollNextEvent, "IVRServerDriverHost005::PollNextEvent", iptr, 5);
 		_isHooked = true;
 	}
 }
@@ -24,7 +24,7 @@ IVRServerDriverHost005Hooks::IVRServerDriverHost005Hooks(void* iptr) {
 IVRServerDriverHost005Hooks::~IVRServerDriverHost005Hooks() {
 	if (_isHooked) {
 		REMOVE_MH_HOOK(trackedDeviceAddedHook);
-		REMOVE_MH_HOOK(pollNextEventHook);
+		//REMOVE_MH_HOOK(pollNextEventHook);
 		_isHooked = false;
 	}
 }

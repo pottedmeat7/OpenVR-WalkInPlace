@@ -6,16 +6,11 @@ TextField {
 	property int keyBoardUID: 0
     property string savedText: ""
     id: myTextField
-    color: "#cccccc"
+    color: "#000000"
     text: ""
     font.pointSize: 20
     background: Button {
         hoverEnabled: true
-        background: Rectangle {
-            color: parent.hovered ? "#0D5834" : "#0D5834"
-            border.color: "#cccccc"
-            border.width: 2
-        }
         onClicked: {
             myTextField.forceActiveFocus()
         }

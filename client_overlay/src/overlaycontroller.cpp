@@ -179,8 +179,8 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 		m_pWindow->setRenderTarget(m_pFbo.get());
 		quickItem->setParentItem(m_pWindow->contentItem());
 		m_pWindow->setGeometry(0, 0, quickItem->width(), quickItem->height());
-		m_pWindow->setFlags(Qt::FramelessWindowHint);
-		m_pWindow->setColor(Qt::transparent);
+		//m_pWindow->setFlags(Qt::FramelessWindowHint);
+		//m_pWindow->setColor(Qt::transparent);
 		m_pRenderControl->initialize(m_pOpenGLContext.get());
 
 		vr::HmdVector2_t vecWindowSize = {

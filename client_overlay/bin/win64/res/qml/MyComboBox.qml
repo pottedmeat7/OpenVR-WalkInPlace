@@ -11,7 +11,7 @@ ComboBox {
         color: parent.pressed ? "#0E5B36" : (parent.activeFocus ? "#4B916F" : "#004021")
     }
 
-    contentItem: MyText {
+    contentItem: Text {
         leftPadding: 0
         rightPadding: parent.indicator.width + parent.spacing
         text: parent.displayText
@@ -24,11 +24,11 @@ ComboBox {
         width: myComboBox.width
         text: modelData
         hoverEnabled: true
-        contentItem: MyText {
+        contentItem: Text {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             text: parent.text
-            color: parent.enabled ? "#ffffff" : "#909090"
+            color: parent.enabled ? "#000000" : "#909090"
         }
         background: Rectangle {
             color: parent.pressed ? "#0E5B36" : (parent.hovered ? "#4B916F" : "#004021")
@@ -51,7 +51,7 @@ ComboBox {
             context.moveTo(1, 1);
             context.lineTo(Math.ceil(width / 2), height - 1);
             context.lineTo(width - 1, 1);
-            context.strokeStyle = "#ffffff"
+            context.strokeStyle = "#000000"
             context.stroke()
         }
     }

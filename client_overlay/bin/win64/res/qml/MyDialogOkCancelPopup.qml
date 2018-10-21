@@ -13,7 +13,7 @@ Popup {
     property int dialogWidth: 600
     property int dialogHeight: 300
 
-    property Item dialogContentItem: MyText {
+    property Item dialogContentItem: Text {
         text: dialogText
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -35,15 +35,14 @@ Popup {
             implicitHeight: dialogHeight
             anchors.centerIn: parent
             radius: 24
-            color: "#0E5B36"
-            border.color: "#cccccc"
             border.width: 2
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 12
-                MyText {
+                Text {
                     Layout.leftMargin: 16
                     Layout.rightMargin: 16
+                    font.pointSize: 20
                     text: dialogTitle
                 }
                 Rectangle {
@@ -67,7 +66,7 @@ Popup {
                     Layout.leftMargin: 24
                     Layout.rightMargin: 24
                     Layout.bottomMargin: 12
-                    MyPushButton {
+                    Button {
                         implicitWidth: 200
                         text: "Ok"
                         onClicked: {
@@ -78,7 +77,7 @@ Popup {
                     Item {
                         Layout.fillWidth: true
                     }
-                    MyPushButton {
+                    Button {
                         implicitWidth: 200
                         text: "Cancel"
                         onClicked: {

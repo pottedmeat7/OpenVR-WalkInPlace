@@ -160,12 +160,6 @@ MyStackViewPage {
         GroupBox {
             Layout.fillWidth: true
             
-            background: Rectangle {
-                color: "#277650" // "transparent"
-                border.color: "#277650"
-                radius: 8
-            }
-
             ColumnLayout {
                 anchors.fill: parent
                 width: 1200
@@ -187,7 +181,6 @@ MyStackViewPage {
                         }
                         background: Rectangle {
                             opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                            color: "#004021"
                             radius: 4
                             anchors.fill: parent
                         }
@@ -204,7 +197,7 @@ MyStackViewPage {
                         }
                     }
 
-                    MyText {
+                    Text {
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
                         Layout.maximumWidth: 640
@@ -215,7 +208,7 @@ MyStackViewPage {
                         Layout.leftMargin: 30
                     }
 
-                    MyText {
+                    Text {
                         id: headerSpacer
                         text: " "
                         font.pointSize: 22
@@ -225,7 +218,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 120
                     }
 
-                    MyPushButton {
+                    Button {
                         text: "Start Auto Configure"
                         Layout.maximumWidth: 300
                         Layout.minimumWidth: 300

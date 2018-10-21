@@ -12,14 +12,7 @@ MyStackViewPage {
         id:container
 
         GroupBox {
-            Layout.fillWidth: true
-            
-            background: Rectangle {
-                color: "#277650" // "transparent"
-                border.color: "#277650"
-                radius: 8
-            }
-            
+            Layout.fillWidth: true            
 
             ColumnLayout {
                 anchors.fill: parent
@@ -40,12 +33,6 @@ MyStackViewPage {
                             sourceSize.height: 60
                             anchors.fill: parent
                         }
-                        background: Rectangle {
-                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                            color: "#004021"
-                            radius: 4
-                            anchors.fill: parent
-                        }
                         onHoveredChanged: {
                             if (hovered) {
                                 forceActiveFocus()
@@ -59,7 +46,7 @@ MyStackViewPage {
                         }
                     }
 
-                    MyText {
+                    Text {
                         id: headerTitle
                         text: " "
                         Layout.maximumWidth: 1100
@@ -81,12 +68,6 @@ MyStackViewPage {
             GroupBox {
 
                 Layout.fillWidth: true
-                
-                background: Rectangle {
-                    color: "#277650"
-                    border.color: "#ffffff"
-                    radius: 8
-                }
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -95,7 +76,7 @@ MyStackViewPage {
                     GridLayout {
                         columns: 4
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonA
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -107,12 +88,12 @@ MyStackViewPage {
                             }
                         }
 
-                        MyText {
+                        Text {
                             text: "Controller 1"
                             Layout.preferredWidth: 200
                         }  
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonB
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -124,7 +105,7 @@ MyStackViewPage {
                             }
                         }
                         
-                        MyText {
+                        Text {
                             text: "Controller 2"
                             Layout.preferredWidth: 200
                         }  
@@ -133,7 +114,7 @@ MyStackViewPage {
                     GridLayout {
                         columns: 4
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonC
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -145,12 +126,12 @@ MyStackViewPage {
                             }
                         }
 
-                        MyText {
+                        Text {
                             text: "Controller 1"
                             Layout.preferredWidth: 200
                         }  
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonD
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -162,7 +143,7 @@ MyStackViewPage {
                             }
                         }
                         
-                        MyText {
+                        Text {
                             text: "Controller 2"
                             Layout.preferredWidth: 200
                         }  
@@ -171,7 +152,7 @@ MyStackViewPage {
                     GridLayout {
                         columns: 4
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonE
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -183,12 +164,12 @@ MyStackViewPage {
                             }
                         }
 
-                        MyText {
+                        Text {
                             text: "Controller 1"
                             Layout.preferredWidth: 200
                         }  
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonF
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -200,7 +181,7 @@ MyStackViewPage {
                             }
                         }
                         
-                        MyText {
+                        Text {
                             text: "Controller 2"
                             Layout.preferredWidth: 200
                         }  
@@ -208,7 +189,7 @@ MyStackViewPage {
                     GridLayout {
                         columns: 4
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonG
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -220,12 +201,12 @@ MyStackViewPage {
                             }
                         }
 
-                        MyText {
+                        Text {
                             text: "Controller 1"
                             Layout.preferredWidth: 200
                         }  
 
-                        MyToggleButton {
+                        CheckBox {
                             id: disableButtonH
                             text: "Disable?"
                             Layout.maximumWidth: 200
@@ -237,7 +218,7 @@ MyStackViewPage {
                             }
                         }
                         
-                        MyText {
+                        Text {
                             text: "Controller 2"
                             Layout.preferredWidth: 200
                         }  

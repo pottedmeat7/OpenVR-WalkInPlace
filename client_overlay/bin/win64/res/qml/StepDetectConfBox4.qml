@@ -35,12 +35,6 @@ GroupBox {
 
     Layout.fillWidth: true
 
-    background: Rectangle {
-        color: "#277650"
-        border.color: "#ffffff"
-        radius: 8
-    }
-
 
     ColumnLayout {
         anchors.fill: parent
@@ -49,38 +43,38 @@ GroupBox {
         GridLayout {
             columns: 6
 
-            MyText {
+            Text {
                 text: "Touch Walk Value"
                 horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {
                 text: "Touch Jog Value"
                 horizontalAlignment: Text.AlignHCenter
                 font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {
                 text: "Touch Run Value"
                 horizontalAlignment: Text.AlignHCenter
                 font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
-            MyText {
+            Text {
                 text: " "
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 230
             }
-            MyText {
+            Text {
                 text: " "
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 90
             }
-            MyText {
+            Text {
                 text: " "
                 horizontalAlignment: Text.AlignHCenter
                 Layout.preferredWidth: 90
@@ -91,7 +85,7 @@ GroupBox {
         GridLayout {
             columns: 12
 
-            MyPushButton2 {
+            Button {
                 id: walkTouchMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -125,7 +119,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: walkTouchPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -139,7 +133,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: jogTouchMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -173,7 +167,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: jogTouchPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -187,7 +181,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: runTouchMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -221,7 +215,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            Button {
                 id: runTouchPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -235,7 +229,7 @@ GroupBox {
                 }
             }
 
-            MyToggleButton {
+            CheckBox {
                 id: enableScaleTouch
                 text: "Scale Touch with Arm Swing?"
                 Layout.maximumWidth: 300
@@ -247,12 +241,12 @@ GroupBox {
                 }
             }
 
-            MyText {
+            Text {
                 text: " "
                 Layout.preferredWidth: 20
             }
 
-            MyText {
+            Text {
                 text: " "
                 Layout.preferredWidth: 20
             }
@@ -263,7 +257,7 @@ GroupBox {
         GridLayout {
             columns: 1
 
-            MyText {
+            Text {
                 text: "Experimental Features"
                 horizontalAlignment: Text.AlignHLeft
                 font.pointSize: 15
@@ -276,7 +270,7 @@ GroupBox {
             columns: 2
 
 
-            MyToggleButton {
+            CheckBox {
                 id: useContDirForStrafCheck
                 font.pointSize: 15
                 text: "Use Controller Direction For Straffing?"
@@ -287,7 +281,7 @@ GroupBox {
                 }
             }
 
-            MyToggleButton {
+            CheckBox {
                 id: useContDirForRevCheck
                 text: "Use Controller Direction For Reverse?"
                 font.pointSize: 15

@@ -12,7 +12,7 @@ CheckBox {
 		implicitHeight: 28
 		x: parent.leftPadding
 		y: parent.height / 2 - height / 2
-		color: parent.enabled ? (parent.down ? "#e0e0e0" : "#ffffff") : "#a0a0a0"
+		color: parent.enabled ? (parent.down ? "#e0e0e0" : "#000000") : "#a0a0a0"
 		border.width: 0
 		Image {
 			width: 38
@@ -26,12 +26,12 @@ CheckBox {
 		}
 	}
 
-	contentItem: MyText {
+	contentItem: Text {
         text: parent.text
         horizontalAlignment: Text.AlignLeft
 		verticalAlignment: Text.AlignVCenter
         leftPadding: parent.indicator.width + parent.spacing
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#000000" : "#909090"
 	}
 
 	background: Rectangle {

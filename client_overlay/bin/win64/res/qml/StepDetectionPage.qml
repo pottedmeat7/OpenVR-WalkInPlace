@@ -77,20 +77,14 @@ MyMainViewPage {
 
         GroupBox {
             Layout.fillWidth: true
-            
-            background: Rectangle {
-                color: "#277650"
-                border.color: "#ffffff"
-                radius: 8
-            }
 
             ColumnLayout {
                 anchors.fill: parent
                 Layout.alignment: Qt.AlignHCenter
 
                 RowLayout {
-                    MyText {
-                        color: "#ffffff"
+                    Text {
+                        color: "#000000"
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
                         font.pointSize: 22
@@ -102,12 +96,6 @@ MyMainViewPage {
         GroupBox {
 
             Layout.fillWidth: true
-            
-            background: Rectangle {
-                color: "#277650"
-                border.color: "#ffffff"
-                radius: 8
-            }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -116,7 +104,7 @@ MyMainViewPage {
                 GridLayout {
                     columns: 6
 
-                    MyToggleButton {
+                    CheckBox {
                         id: stepDetectionEnableToggle
                         text: "Enable WIP"
                         Layout.maximumWidth: 200
@@ -129,7 +117,7 @@ MyMainViewPage {
                     }
 
 
-                    MyComboBox {
+                    ComboBox {
                         id: hmdTypeDialog 
                         currentIndex: 0
                         Layout.maximumWidth: 100
@@ -145,7 +133,7 @@ MyMainViewPage {
                         }
                     }
 
-                    MyComboBox {
+                    ComboBox {
                         id: gameTypeDialog 
                         currentIndex: 0
                         Layout.maximumWidth: 400
@@ -162,17 +150,17 @@ MyMainViewPage {
                     }
   
 
-                    MyText {
+                    Text {
                         text: " "
                         Layout.preferredWidth: 10
                     }  
 
-                    MyText {
+                    Text {
                         text: "on"
                         Layout.preferredWidth: 50
                     }
 
-                    MyComboBox {
+                    ComboBox {
                         id: controlSelect 
                         currentIndex: 0
                         Layout.maximumWidth: 250
@@ -193,7 +181,7 @@ MyMainViewPage {
                 GridLayout {
                     columns: 5
                     
-                    MyComboBox {
+                    ComboBox {
                         id: buttonMode 
                         currentIndex: 0
                         Layout.maximumWidth: 305
@@ -212,7 +200,7 @@ MyMainViewPage {
                         }
                     }
 
-                    MyComboBox {
+                    ComboBox {
                         id: accuracyButtonDialog 
                         currentIndex: 0
                         Layout.maximumWidth: 401
@@ -228,17 +216,17 @@ MyMainViewPage {
                         }
                     }     
 
-                    MyText {
+                    Text {
                         text: " "
                         Layout.preferredWidth: 10
                     }  
 
-                    MyText {
+                    Text {
                         text: "on"
                         Layout.preferredWidth: 50
                     }
 
-                    MyComboBox {
+                    ComboBox {
                         id: buttonControlSelect 
                         currentIndex: 0
                         Layout.maximumWidth: 250
@@ -356,19 +344,13 @@ MyMainViewPage {
                 height: 200
                 Layout.fillWidth: true
                 
-                background: Rectangle {
-                    color: "#277650"
-                    border.color: "#ffffff"
-                    radius: 8
-                }
-
                 ColumnLayout {
                     anchors.fill: parent
 
                     RowLayout {
                         spacing: 18
 
-                        MyPushButton {
+                        Button {
                             id: walkInPlaceLoadProfiles
                             Layout.preferredWidth: 200
                             text: "Load Profiles"
@@ -377,7 +359,7 @@ MyMainViewPage {
                             }
                         }
 
-                        MyComboBox {
+                        ComboBox {
                             id: walkInPlaceProfileComboBox
                             Layout.maximumWidth: 310
                             Layout.minimumWidth: 310
@@ -395,7 +377,7 @@ MyMainViewPage {
                             }
                         }
 
-                        MyPushButton {
+                        Button {
                             id: walkInPlaceApplyProfileButton
                             enabled: false
                             Layout.preferredWidth: 150
@@ -408,7 +390,7 @@ MyMainViewPage {
                             }
                         }
 
-                        MyPushButton {
+                        Button {
                             id: walkInPlaceNewProfileButton
                             Layout.preferredWidth: 150
                             text: "New Profile"
@@ -417,7 +399,7 @@ MyMainViewPage {
                             }
                         }
 
-                        MyPushButton {
+                        Button {
                             id: walkInPlaceDeleteProfileButton
                             enabled: false
                             Layout.preferredWidth: 180
@@ -434,7 +416,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 18
 
-                        MyPushButton {
+                        Button {
                             Layout.preferredWidth: 100
                             text: "Reset"
                             onClicked: { 
@@ -464,7 +446,7 @@ MyMainViewPage {
                             }
                         }
 
-                        MyPushButton {
+                        Button {
                             text: "Auto Configuration & Velocity Graph"
                             onClicked: {
                                 WalkInPlaceTabController.setupStepGraph()
@@ -517,7 +499,8 @@ MyMainViewPage {
                 Layout.topMargin: 16
                 Layout.leftMargin: 16
                 Layout.rightMargin: 16
-                MyText {
+                Text {
+                    font.pointSize: 20
                     text: "Name: "
                 }
                 MyTextField {
