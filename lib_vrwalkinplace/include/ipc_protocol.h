@@ -23,6 +23,7 @@ namespace vrwalkinplace {
 			OpenVR_ButtonEvent,
 			OpenVR_AxisEvent,
 			OpenVR_DeviceAdded,
+			EnableLeapMotion,
 
 			OpenVR_EnableDriver
 		};
@@ -69,6 +70,10 @@ namespace vrwalkinplace {
 			uint32_t clientId;
 			uint32_t messageId;
 			uint64_t nonce;
+		};
+
+		struct Request_EnableLeapMotion {
+			bool enable;
 		};
 
 		struct Request_OpenVR_PoseUpdate {
@@ -124,6 +129,7 @@ namespace vrwalkinplace {
 				Request_IPC_ClientConnect ipc_ClientConnect;
 				Request_IPC_ClientDisconnect ipc_ClientDisconnect;
 				Request_IPC_Ping ipc_Ping;
+				Request_EnableLeapMotion ipc_LeapMotion;
 				Request_OpenVR_PoseUpdate ipc_PoseUpdate;
 				Request_OpenVR_StateUpdate ipc_StateUpdate;
 				Request_OpenVR_ButtonEvent ipc_ButtonEvent;

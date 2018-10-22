@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\virtualdevice\LeapController.cpp" />
     <ClCompile Include="src\virtualdevice\VirtualController.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\com\shm\driver_ipc_shm.cpp" />
@@ -36,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\com\shm\driver_ipc_shm.h" />
+    <ClInclude Include="src\virtualdevice\LeapController.h" />
     <ClInclude Include="src\virtualdevice\VirtualController.h" />
     <ClInclude Include="src\driver\ServerDriver.h" />
     <ClInclude Include="src\driver\utils\DevicePropertyValueVisitor.h" />
@@ -239,15 +241,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;DRIVER_VRWALKINPLACE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\lib_vrwalkinplace\include;..\openvr\headers;..\third-party\boost_1_65_1;..\third-party\easylogging++;..\third-party\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\third-party\LeapSDK\include;..\lib_vrwalkinplace\include;..\openvr\headers;..\third-party\boost_1_65_1;..\third-party\easylogging++;..\third-party\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\openvr\lib\win64;..\third-party\boost_1_65_1\lib64-msvc-14.0;..\third-party\MinHook\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libMinHook-x64-v141-mtd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third-party\LeapSDK\lib\x64\;..\openvr\lib\win64;..\third-party\boost_1_65_1\lib64-msvc-14.0;..\third-party\MinHook\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Leap.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standalone|x64'">

@@ -78,17 +78,6 @@ namespace walkinplace {
 
 
 	void WalkInPlaceTabController::eventLoopTick() {
-		if (this->parent->isDirectMode() && !hasInititalizedLocoCont) {
-			try {
-				vrwalkinplace::VRWalkInPlace vrwalkinplace;
-				vrwalkinplace.connect();
-				vrwalkinplace.openvrEnableDriver(true);
-				hasInititalizedLocoCont = true;
-			} 
-			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while updating virtual pose: " << e.what();
-			}
-		}
 		if (_controlUsedID > 0) {
 			vrwalkinplace::VRWalkInPlace vrwalkinplace;
 			vrwalkinplace.connect();
@@ -159,6 +148,9 @@ namespace walkinplace {
 		}
 		else {
 			settingsUpdateCounter++;
+		}
+		if (!usingLeapMotion) {
+			addLeapControllers(true);
 		}
 		/*double deltatime = 1.0 / 10.0 * 1000;
 		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -956,6 +948,19 @@ namespace walkinplace {
 		hmdType = type;
 	}
 
+	void WalkInPlaceTabController::addLeapControllers(bool val) {
+		usingLeapMotion = val;
+		try {
+			vrwalkinplace::VRWalkInPlace vrwalkinplace;
+			vrwalkinplace.connect();
+			vrwalkinplace.enableLeapMotion(val);
+		}
+		catch (std::exception& e) {
+			LOG(INFO) << "Exception caught while configuring leap controller: " << e.what();
+		}
+
+	}
+
 	void WalkInPlaceTabController::setControlSelect(int control) {
 		controlSelect = control;
 		if (control < 2) {
@@ -1707,6 +1712,9 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::stopMovement(uint32_t deviceIdOLD) {
 		uint32_t deviceId = vrLocoContID;
+		if (vrLocoContID < 0) {
+			deviceId = deviceIdOLD;
+		}
 		if (gameType == 0 || gameType == 1 || gameType == 2) {
 			vr::VRControllerAxis_t axisState;
 			axisState.x = 0;
@@ -1813,6 +1821,9 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceIdOLD, vr::VRControllerAxis_t axisState) {
 		uint32_t deviceId = vrLocoContID;
+		if (vrLocoContID < 0) {
+			deviceId = deviceIdOLD;
+		}
 		vrwalkinplace::VRWalkInPlace vrwalkinplace;
 		vrwalkinplace.connect();
 		if (gameType == 0 || gameType == 1 || gameType == 2) {

@@ -1,7 +1,5 @@
-Delete $INSTDIR\copy_wip_touchpad_material.bat
 Delete $INSTDIR\D3Dcompiler_47.dll
 Delete $INSTDIR\error.log
-Delete $INSTDIR\killoverlay.bat
 Delete $INSTDIR\libEGL.dll
 Delete $INSTDIR\libEGLd.dll
 Delete $INSTDIR\libGLESV2.dll
@@ -12,7 +10,6 @@ Delete $INSTDIR\manifest.vrmanifest
 Delete $INSTDIR\opengl32sw.dll
 Delete $INSTDIR\OpenVR-WalkInPlaceOverlay.exe
 Delete $INSTDIR\openvr_api.dll
-Delete $INSTDIR\open_overlay.bat
 Delete $INSTDIR\qt.conf
 Delete $INSTDIR\Qt5Charts.dll
 Delete $INSTDIR\Qt5Chartsd.dll
@@ -875,6 +872,7 @@ Delete $INSTDIR\qtdata\Universal\ToolButton.qml
 Delete $INSTDIR\qtdata\Universal\ToolTip.qml
 Delete $INSTDIR\qtdata\Universal\Tumbler.qml
 Delete $INSTDIR\res\qml\backarrow.svg
+Delete $INSTDIR\res\qml\DisableDevicePage.qml
 Delete $INSTDIR\res\qml\mainwidget.qml
 Delete $INSTDIR\res\qml\MyComboBox.qml
 Delete $INSTDIR\res\qml\MyDialogOkCancelPopup.qml
@@ -887,9 +885,9 @@ Delete $INSTDIR\res\qml\MySlider.qml
 Delete $INSTDIR\res\qml\MyStackViewPage.qml
 Delete $INSTDIR\res\qml\MyText.qml
 Delete $INSTDIR\res\qml\MyTextField.qml
+Delete $INSTDIR\res\qml\MyTimerPopup.qml
 Delete $INSTDIR\res\qml\MyToggleButton.qml
 Delete $INSTDIR\res\qml\qmldir
-Delete $INSTDIR\res\qml\StepDetectAutoConfPage.qml
 Delete $INSTDIR\res\qml\StepDetectConfBox2.qml
 Delete $INSTDIR\res\qml\StepDetectConfBox4.qml
 Delete $INSTDIR\res\qml\StepDetectGraphPage.qml
@@ -898,9 +896,6 @@ Delete $INSTDIR\res\thumbicon.png
 Delete $INSTDIR\res\Thumbs.db
 Delete $INSTDIR\res\transparent.png
 Delete $INSTDIR\startdesktopmode.bat
-Delete $INSTDIR\trackpad_touch.mtl
-Delete $INSTDIR\trackpad_touch_backup.mtl
-Delete $INSTDIR\undo_copy_wip_touchpad_material.bat
 Delete $INSTDIR\Uninstall.exe
 RMdir $INSTDIR\res\qml
 RMdir $INSTDIR\res

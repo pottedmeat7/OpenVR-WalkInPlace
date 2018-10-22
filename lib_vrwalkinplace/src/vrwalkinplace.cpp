@@ -219,6 +219,17 @@ namespace vrwalkinplace {
 		}
 	}
 
+	void VRWalkInPlace::enableLeapMotion(bool enable) {
+		if (_ipcServerQueue) {
+			ipc::Request message(ipc::RequestType::EnableLeapMotion);
+			message.msg.ipc_LeapMotion.enable = enable;
+			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
+		}
+		else {
+			throw vrwalkinplace_connectionerror("No active connection.");
+		}
+	}
+
 	void VRWalkInPlace::openvrDeviceAdded(uint32_t deviceId) {
 		if (_ipcServerQueue) {
 			ipc::Request message(ipc::RequestType::OpenVR_DeviceAdded);

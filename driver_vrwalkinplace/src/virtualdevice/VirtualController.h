@@ -14,7 +14,7 @@ namespace driver {
 
 // Stores manipulation information about an openvr device
 class VirtualController : public vr::ITrackedDeviceServerDriver, public vr::IVRDriverInput {
-private:
+protected:
 	bool m_isValid = false;
 	vr::DriverPose_t devicePose;
 	bool leftSide = false;

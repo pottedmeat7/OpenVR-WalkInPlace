@@ -117,6 +117,7 @@ private:
 	bool g_accuracyButtonWithTouch = false;
 	bool showingStepGraph = false;
 	bool showGraphDetectTO = true;
+	bool usingLeapMotion = false;
 	int gameType = 0;
 	int hmdType = 0;
 	int controlSelect = 0;
@@ -246,6 +247,7 @@ public slots:
 	void setGameStepType(int gameType);
 	void setHMDType(int gameType);
 	void setControlSelect(int control);
+	void addLeapControllers(bool val);
 	void disableController(bool val, int control);
 	void disableTracker(bool val, int control);
 	void setAccuracyButtonControlSelect(int control);
