@@ -94,7 +94,7 @@ private:
 	bool mappedControllerDriver1 = false;
 	bool mappedControllerDriver2 = false;
 	bool identifyControlTimerSet = true;
-	bool stepDetectEnabled = false;
+	bool stepDetectEnabled = true;
 	bool _stepPoseDetected = false;
 	bool betaEnabled = false;
 	bool useButtonAsToggle = false;
@@ -172,6 +172,7 @@ private:
 	double identifyControlLastTime = 99999;
 	double identifyControlTimeOut = 6000;
 	double _timeLastGraphPoint = 0.0;
+	double _timeLastLeapFrame = 0;
 
 	uint32_t firstTrackerID = -1;
 	bool hasInititalizedLocoCont = false;
