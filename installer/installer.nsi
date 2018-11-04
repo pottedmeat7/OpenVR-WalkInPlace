@@ -102,7 +102,10 @@ Section "Install" SecInstall
 
 	SetOutPath "$INSTDIR"
 
+
 	;ADD YOUR OWN FILES HERE...
+	File "${DRIVER_BASEDIR}\..\third-party\LeapSDK\lib\x64\Leap.lib"
+	File "${DRIVER_BASEDIR}\..\third-party\LeapSDK\lib\x64\Leap.dll"
 	File "${OVERLAY_BASEDIR}\LICENSE"
 	File "${OVERLAY_BASEDIR}\*.exe"
 	File "${OVERLAY_BASEDIR}\*.dll"
@@ -130,8 +133,6 @@ Section "Install" SecInstall
 	File "${DRIVER_BASEDIR}\resources\settings\default.vrsettings"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\bin\win64"
 	File "${DRIVER_BASEDIR}\bin\x64\driver_00vrwalkinplace.dll"
-	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\bin\win64"
-	File "${DRIVER_BASEDIR}\..\third-party\LeapSDK\lib\x64\Leap.dll"
 
 	; Install the vrmanifest
 	nsExec::ExecToLog '"$INSTDIR\OpenVR-WalkInPlaceOverlay.exe" -installmanifest'
@@ -172,7 +173,6 @@ Section "Uninstall"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\driver.vrresources"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings\default.vrsettings"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_00vrwalkinplace.dll"
-	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\Leap.dll"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\error.log"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\OpenVR-WalkInPlaceOverlay.log"

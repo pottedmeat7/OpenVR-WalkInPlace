@@ -572,6 +572,8 @@ void *walkinplace::WalkInPlaceTabController::qt_metacast(const char *_clname)
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_walkinplace__WalkInPlaceTabController.stringdata0))
         return static_cast<void*>(const_cast< WalkInPlaceTabController*>(this));
+    if (!strcmp(_clname, "Leap::Listener"))
+        return static_cast< Leap::Listener*>(const_cast< WalkInPlaceTabController*>(this));
     return QObject::qt_metacast(_clname);
 }
 

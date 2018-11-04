@@ -252,6 +252,9 @@ namespace vrwalkinplace {
 		void VirtualController::updatePose(vr::DriverPose_t new_pose)
 		{
 			//LOG(INFO) << "new pose values - pos(x,y,z): (" << new_pose.vecPosition[0] << "," << new_pose.vecPosition[1] << "," << new_pose.vecPosition[2] << ") - vel(x,y,x): (" << new_pose.vecVelocity[0] << "," << new_pose.vecVelocity[1] << "," << new_pose.vecVelocity[2] << ")";
+			devicePose.vecPosition[0] = new_pose.vecPosition[0];
+			devicePose.vecPosition[1] = new_pose.vecPosition[1];
+			devicePose.vecPosition[2] = new_pose.vecPosition[2];
 			devicePose.vecWorldFromDriverTranslation[0] = new_pose.vecWorldFromDriverTranslation[0];
 			devicePose.vecWorldFromDriverTranslation[1] = new_pose.vecWorldFromDriverTranslation[1];
 			devicePose.vecWorldFromDriverTranslation[2] = new_pose.vecWorldFromDriverTranslation[2];
@@ -259,6 +262,15 @@ namespace vrwalkinplace {
 			devicePose.vecVelocity[1] = new_pose.vecVelocity[1];
 			devicePose.vecVelocity[2] = new_pose.vecVelocity[2];
 			devicePose.qRotation = new_pose.qRotation;
+
+			devicePose.qDriverFromHeadRotation.w = 1;
+			devicePose.qDriverFromHeadRotation.x = 0; //  -m_hmdRot.x;   this would cancel out the HMD's rotation
+			devicePose.qDriverFromHeadRotation.y = 0; //  -m_hmdRot.y;   but instead we rely on the Leap Motion to
+			devicePose.qDriverFromHeadRotation.z = 0; //  -m_hmdRot.z;   update the hand rotation as the head rotates
+			devicePose.vecDriverFromHeadTranslation[0] = 0;
+			devicePose.vecDriverFromHeadTranslation[1] = 0;
+			devicePose.vecDriverFromHeadTranslation[2] = 0;
+
 			//devicePose = new_pose;
 
 		}

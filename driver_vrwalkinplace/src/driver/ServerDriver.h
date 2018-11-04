@@ -9,13 +9,11 @@
 #include "../logging.h"
 #include "../com/shm/driver_ipc_shm.h"
 #include "../virtualdevice/VirtualController.h";
-#include "../virtualdevice/LeapController.h";
 
 
 // driver namespace
 namespace vrwalkinplace {
 namespace driver {
-
 
 /**
 * Implements the IServerTrackedDeviceProvider interface.
@@ -69,8 +67,7 @@ public:
 private:
 
 	VirtualController vr_locomotion1;
-	LeapController leap_cont1;
-	LeapController leap_cont2;
+	VirtualController vr_locomotion2;
 	uint64_t controlUsedId = vr::k_unTrackedDeviceIndexInvalid;
 	uint64_t hmdID = vr::k_unTrackedDeviceIndexInvalid;
 	bool initDriver = false;
@@ -82,7 +79,6 @@ private:
 	static const char* const interfaces_[];
 
 	bool loadedInit = false;
-	bool leapEnabled = false;
 
 	static std::string installDir;
 

@@ -9,6 +9,8 @@ Delete $INSTDIR\logging.conf
 Delete $INSTDIR\manifest.vrmanifest
 Delete $INSTDIR\opengl32sw.dll
 Delete $INSTDIR\OpenVR-WalkInPlaceOverlay.exe
+Delete $INSTDIR\Leap.lib
+Delete $INSTDIR\Leap.dll
 Delete $INSTDIR\openvr_api.dll
 Delete $INSTDIR\qt.conf
 Delete $INSTDIR\Qt5Charts.dll
