@@ -7,10 +7,6 @@ ComboBox {
     id: myComboBox
     hoverEnabled: true
 
-    background: Rectangle {
-        color: parent.pressed ? "#0E5B36" : (parent.activeFocus ? "#4B916F" : "#004021")
-    }
-
     contentItem: Text {
         leftPadding: 0
         rightPadding: parent.indicator.width + parent.spacing
@@ -29,9 +25,6 @@ ComboBox {
             verticalAlignment: Text.AlignVCenter
             text: parent.text
             color: parent.enabled ? "#000000" : "#909090"
-        }
-        background: Rectangle {
-            color: parent.pressed ? "#0E5B36" : (parent.hovered ? "#4B916F" : "#004021")
         }
     }
 
@@ -66,6 +59,5 @@ ComboBox {
     }
 
     Component.onCompleted: {
-        popup.background.color = "#004021"
     }
 }

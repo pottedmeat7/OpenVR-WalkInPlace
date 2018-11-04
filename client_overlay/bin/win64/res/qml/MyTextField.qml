@@ -6,7 +6,6 @@ TextField {
 	property int keyBoardUID: 0
     property string savedText: ""
     id: myTextField
-    color: "#000000"
     text: ""
     font.pointSize: 20
     background: Button {

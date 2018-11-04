@@ -84,7 +84,6 @@ MyMainViewPage {
 
                 RowLayout {
                     Text {
-                        color: "#000000"
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
                         font.pointSize: 22
@@ -505,7 +504,6 @@ MyMainViewPage {
                 }
                 MyTextField {
                     id: walkInPlaceNewProfileName
-                    color: "#cccccc"
                     text: ""
                     Layout.fillWidth: true
                     font.pointSize: 20

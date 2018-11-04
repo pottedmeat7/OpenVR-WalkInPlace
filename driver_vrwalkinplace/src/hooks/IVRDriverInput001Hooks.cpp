@@ -14,7 +14,7 @@ HookData<IVRDriverInput001Hooks::updateScalarComponent_t> IVRDriverInput001Hooks
 
 
 IVRDriverInput001Hooks::IVRDriverInput001Hooks(void* iptr) {
-	if (false && !_isHooked) {
+	if (!_isHooked) {
 		CREATE_MH_HOOK(createBooleanComponentHook, _createBooleanComponent, "IVRDriverInput001Hooks::CreateBooleanComponent", iptr, 0);
 		CREATE_MH_HOOK(updateBooleanComponentHook, _updateBooleanComponent, "IVRDriverInput001Hooks::UpdateBooleanComponent", iptr, 1);
 		CREATE_MH_HOOK(createScalarComponentHook, _createScalarComponent, "IVRDriverInput001Hooks::CreateScalarComponent", iptr, 2);
@@ -52,7 +52,7 @@ vr::EVRInputError IVRDriverInput001Hooks::updateScalarComponentOrig(void* _this,
 vr::EVRInputError IVRDriverInput001Hooks::_createBooleanComponent(void* _this, vr::PropertyContainerHandle_t ulContainer, const char *pchName, void* pHandle) {
 	auto retval = createBooleanComponentHook.origFunc(_this, ulContainer, pchName, pHandle);
 	if (retval == 0) {
-		//serverDriver->hooksCreateBooleanComponent(_this, 1, ulContainer, pchName, (uint64_t*)pHandle);
+		serverDriver->hooksCreateBooleanComponent(_this, 1, ulContainer, pchName, (vr::VRInputComponentHandle_t)&pHandle);
 	}
 	LOG(TRACE) << "IVRDriverInput001Hooks::_createBooleanComponent(" << _this << ", " << ulContainer << ", " << pchName << ", " << pHandle << ") = " << (int)retval;
 	return retval;
@@ -69,7 +69,7 @@ vr::EVRInputError IVRDriverInput001Hooks::_updateBooleanComponent(void* _this, v
 vr::EVRInputError IVRDriverInput001Hooks::_createScalarComponent(void* _this, vr::PropertyContainerHandle_t ulContainer, const char *pchName, void* pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
 	auto retval = createScalarComponentHook.origFunc(_this, ulContainer, pchName, pHandle, eType, eUnits);
 	if (retval == 0) {
-		//serverDriver->hooksCreateScalarComponent(_this, 1, ulContainer, pchName, (uint64_t*)pHandle, eType, eUnits);
+		serverDriver->hooksCreateScalarComponent(_this, 1, ulContainer, pchName, (vr::VRInputComponentHandle_t)&pHandle, eType, eUnits);
 	}
 	LOG(TRACE) << "IVRDriverInput001Hooks::_createScalarComponent(" << _this << ", " << ulContainer << ", " << pchName << ", " << pHandle << ", " << (int)eType << ", " << (int)eUnits << ") = " << (int)retval;
 	return retval;

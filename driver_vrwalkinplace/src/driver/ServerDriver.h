@@ -98,6 +98,9 @@ public:
 	void hooksCreateBooleanComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t pHandle);
 	void hooksCreateScalarComponent(void* driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char *pchName, vr::VRInputComponentHandle_t pHandle, vr::EVRScalarType eType, vr::EVRScalarUnits eUnits);
 
+	bool hooksUpdateBooleanComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset);
+	bool hooksUpdateScalarComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, float& fNewValue, double& fTimeOffset);
+
 	// driver events injection
 	void addDriverEventForInjection(void* serverDriverHost, std::shared_ptr<void> event, uint32_t size);
 	std::pair<std::shared_ptr<void>, uint32_t> getDriverEventForInjection(void* serverDriverHost);

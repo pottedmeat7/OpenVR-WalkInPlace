@@ -25,7 +25,11 @@ std::shared_ptr<InterfaceHooks> InterfaceHooks::hookInterface(void* interfaceRef
 	} else if (interfaceVersion.compare("IVRServerDriverHost_005") == 0) {
 		retval = IVRServerDriverHost005Hooks::createHooks(interfaceRef);
 	} else if (interfaceVersion.compare("IVRDriverInput_001") == 0) {
-		//retval = IVRDriverInput001Hooks::createHooks(interfaceRef);
+		retval = IVRDriverInput001Hooks::createHooks(interfaceRef);
+	} else if (interfaceVersion.compare("IVRDriverInput_002") == 0) {
+		retval = IVRDriverInput001Hooks::createHooks(interfaceRef);
+	} else if (interfaceVersion.compare("IVRDriverInput_003") == 0) {
+		retval = IVRDriverInput001Hooks::createHooks(interfaceRef);
 	} else if (interfaceVersion.compare("ITrackedDeviceServerDriver_005") == 0) {
 		retval = ITrackedDeviceServerDriver005Hooks::createHooks(interfaceRef);
 	} else if (interfaceVersion.compare("IVRProperties_001") == 0) {

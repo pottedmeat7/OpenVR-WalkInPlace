@@ -79,7 +79,7 @@ namespace vrwalkinplace {
 					if (_AxisIdToComponentHandleMap[unWhichAxis].first != 0) {
 						//sendScalarComponentUpdate(m_openvrId, unWhichAxis, 0, axisState.x, 0.0);
 						vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateScalarComponent(_AxisIdToComponentHandleMap[unWhichAxis].first, axisState.x, 0);
-						LOG(INFO) << "apply axis event " << unWhichAxis << " X dimension on device " << m_openvrId;
+						//LOG(INFO) << "apply axis event " << unWhichAxis << " X dimension on device " << m_openvrId;
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}
@@ -87,7 +87,7 @@ namespace vrwalkinplace {
 					if (_AxisIdToComponentHandleMap[unWhichAxis].second != 0) {
 						//sendScalarComponentUpdate(m_openvrId, unWhichAxis, 1, axisState.y, 0.0);
 						vr::EVRInputError eVRIError = vr::VRDriverInput()->UpdateScalarComponent(_AxisIdToComponentHandleMap[unWhichAxis].second, axisState.y, 0);
-						LOG(INFO) << "apply axis event " << unWhichAxis << " Y dimension on device " << m_openvrId;
+						//LOG(INFO) << "apply axis event " << unWhichAxis << " Y dimension on device " << m_openvrId;
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}
@@ -96,6 +96,53 @@ namespace vrwalkinplace {
 			}
 		}
 
+		bool DeviceManipulationHandle::handleBooleanComponentUpdate(vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset) {
+			LOG(DEBUG) << "DeviceManipulationHandle::handleBooleanComponentUpdate(" << ulComponent << ", " << bNewValue << ", " << fTimeOffset << ")";
+			auto it = _componentHandleToButtonIdMap.find(ulComponent);
+			if (it != _componentHandleToButtonIdMap.end()) {
+				ButtonEventType eventType;
+				if (it->second.second == 0) { // touch
+					eventType = bNewValue ? ButtonEventType::ButtonTouched : ButtonEventType::ButtonUntouched;
+				}
+				else { // press
+					eventType = bNewValue ? ButtonEventType::ButtonPressed : ButtonEventType::ButtonUnpressed;
+				}
+				ll_sendButtonEvent(eventType, it->second.first, 0);
+				return false;
+			}
+			else {
+				LOG(INFO) << "No mapping from boolean component handle " << ulComponent << " to button id";
+			}
+			return true;
+		}
+
+
+		bool DeviceManipulationHandle::handleScalarComponentUpdate(vr::VRInputComponentHandle_t& ulComponent, float& fNewValue, double& fTimeOffset) {
+			LOG(DEBUG) << "DeviceManipulationHandle::handleScalarComponentUpdate(" << ulComponent << ", " << fNewValue << ", " << fTimeOffset << ")";
+			auto it = _componentHandleToAxisIdMap.find(ulComponent);
+			if (it != _componentHandleToAxisIdMap.end()) {
+				std::lock_guard<std::recursive_mutex> lock(_mutex);
+				unsigned unWhichAxis = it->second.first;
+				unsigned unWhichAxisDim = it->second.second;
+				vr::VRControllerAxis_t axisState;
+				if (_AxisIdToComponentHandleMap[unWhichAxis].first != 0) {
+					axisState.x = fNewValue;
+					axisState.y = 0;
+					ll_sendAxisEvent(unWhichAxis, axisState);
+				}
+				else if (_AxisIdToComponentHandleMap[unWhichAxis].second != 0) {
+					axisState.x = 0;
+					axisState.y = fNewValue;
+					ll_sendAxisEvent(unWhichAxis, axisState);
+				}
+				//sendScalarComponentUpdate(m_openvrId, unWhichAxis, unWhichAxisDim, ulComponent, fNewValue, fTimeOffset);
+				return false;
+			}
+			else {
+				LOG(INFO) << "No mapping from scalar component handle " << ulComponent << " to axis id";
+			}
+			return true;
+		}
 		void DeviceManipulationHandle::RunFrame() {
 		}
 

@@ -77,7 +77,7 @@ namespace vrwalkinplace {
 
 				LOG(INFO) << "Successfully added device " << handle->serialNumber() << " (OpenVR Id: " << unObjectId << ") (" << handle->openvrId() << ")";
 
-				if (_openvrIdToDeviceManipulationHandleMap[unObjectId]->deviceClass() == vr::TrackedDeviceClass_Controller) {
+				/*if (_openvrIdToDeviceManipulationHandleMap[unObjectId]->deviceClass() == vr::TrackedDeviceClass_Controller) {
 					// Configure JSON controller configuration input profile
 					//vr::ETrackedPropertyError tpeError;
 					//installDir = vr::VRProperties()->GetStringProperty(pDriverContext->GetDriverHandle(), vr::Prop_InstallPath_String, &tpeError);
@@ -143,7 +143,7 @@ namespace vrwalkinplace {
 					vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/touch", &m_ulBoolComponentsMap[unObjectId][k_eTouch_Grip]);
 					hooksCreateBooleanComponent(serverDriver, version, m_ulPropertyContainer, "/input/grip/touch", m_ulBoolComponentsMap[unObjectId][k_eTouch_Grip]);
 
-				}
+				}*/
 			}
 		}
 
@@ -235,7 +235,7 @@ namespace vrwalkinplace {
 		void ServerDriver::hooksCreateBooleanComponent(void * driverInput, int version, vr::PropertyContainerHandle_t ulContainer, const char * pchName, uint64_t pHandle) {
 			auto it = _propertyContainerToDeviceManipulationHandleMap.find(ulContainer);
 			if (it != _propertyContainerToDeviceManipulationHandleMap.end()) {
-				//LOG(INFO) << "Device " << it->second->serialNumber() << " has boolean input component \"" << pchName << "\"";
+				LOG(INFO) << "Device " << it->second->serialNumber() << " has boolean input component \"" << pchName << "\"";
 				it->second->setDriverInputPtr(driverInput);
 				//_inputComponentToDeviceManipulationHandleMap[*((uint64_t*)pHandle)] = it->second;
 				//it->second->inputAddBooleanComponent(pchName, *((uint64_t*)pHandle));
@@ -248,7 +248,7 @@ namespace vrwalkinplace {
 			vr::EVRScalarType eType, vr::EVRScalarUnits eUnits) {
 			auto it = _propertyContainerToDeviceManipulationHandleMap.find(ulContainer);
 			if (it != _propertyContainerToDeviceManipulationHandleMap.end()) {
-				//LOG(INFO) << "Device " << it->second->serialNumber() << " has scalar input component \"" << pchName << "\" (type: " << (int)eType << ", units: " << (int)eUnits << ")";
+				LOG(INFO) << "Device " << it->second->serialNumber() << " has scalar input component \"" << pchName << "\" (type: " << (int)eType << ", units: " << (int)eUnits << ")";
 				it->second->setDriverInputPtr(driverInput);
 				//_inputComponentToDeviceManipulationHandleMap[*((uint64_t*)pHandle)] = it->second;
 				//it->second->inputAddScalarComponent(pchName, *((uint64_t*)pHandle), eType, eUnits);
@@ -257,6 +257,21 @@ namespace vrwalkinplace {
 			}
 		}
 
+		bool ServerDriver::hooksUpdateBooleanComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, bool& bNewValue, double& fTimeOffset) {
+			auto it = _inputComponentToDeviceManipulationHandleMap.find(ulComponent);
+			if (it != _inputComponentToDeviceManipulationHandleMap.end()) {
+				return it->second->handleBooleanComponentUpdate(ulComponent, bNewValue, fTimeOffset);
+			}
+			return true;
+		}
+
+		bool ServerDriver::hooksUpdateScalarComponent(void* driverInput, int version, vr::VRInputComponentHandle_t& ulComponent, float& fNewValue, double& fTimeOffset) {
+			auto it = _inputComponentToDeviceManipulationHandleMap.find(ulComponent);
+			if (it != _inputComponentToDeviceManipulationHandleMap.end()) {
+				return it->second->handleScalarComponentUpdate(ulComponent, fNewValue, fTimeOffset);
+			}
+			return true;
+		}
 		vr::EVRInitError ServerDriver::Init(vr::IVRDriverContext *pDriverContext) {
 			LOG(TRACE) << "CServerDriver::Init()";
 
