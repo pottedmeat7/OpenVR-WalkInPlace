@@ -1723,9 +1723,9 @@ namespace walkinplace {
 								vr::VRControllerState_t NewState = { 0 };
 
 								// system menu mapping (timeout gesture)
-								if (scores[GestureMatcher::Timeout] >= 0.5f)
-									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_System);
 								if (scores[GestureMatcher::Timeout] >= 0.6f)
+									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_System);
+								if (scores[GestureMatcher::Timeout] >= 0.65f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_System);
 
 								// application menu mapping (Flat hand towards your face gesture)
@@ -1737,26 +1737,26 @@ namespace walkinplace {
 								// digital trigger mapping (fist clenching gesture)
 								if (scores[GestureMatcher::TriggerFinger] > 0.1f)
 									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
-								if (scores[GestureMatcher::TriggerFinger] > 0.6f)
+								if (scores[GestureMatcher::TriggerFinger] > 0.4f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
 
 								// grip mapping (clench fist with middle, index, pinky fingers)
-								if (scores[GestureMatcher::LowerFist] >= 0.65f)
+								if (scores[GestureMatcher::LowerFist] >= 0.85f)
 									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_Grip);
-								if (scores[GestureMatcher::LowerFist] >= 0.7f)
+								if (scores[GestureMatcher::LowerFist] >= 0.95f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_Grip);
 
 								// touchpad button press mapping (Thumbpress gesture)
-								if (scores[GestureMatcher::TODO_DiverOkay] >= 0.2f)
+								if (scores[GestureMatcher::Thumbpress] >= 0.2f)
 									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad);
-								if (scores[GestureMatcher::TODO_DiverOkay] >= 1.0f)
+								if (scores[GestureMatcher::Thumbpress] >= 1.0f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad);
 
 								// All pressed buttons are touched
 								NewState.ulButtonTouched |= NewState.ulButtonPressed;
 
 								try {
-									LOG(INFO) << which << " hand found updating gestures";
+									//LOG(INFO) << which << " hand found updating gestures";
 									vrwalkinplace.openvrUpdateState(h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], NewState);
 								}
 								catch (std::exception& e) {

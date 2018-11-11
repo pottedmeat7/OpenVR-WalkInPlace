@@ -44,8 +44,6 @@
 /client_overlay/bin/win64/Qt5Svgd.dll
 /client_overlay/bin/win64/Qt5Widgets.dll
 /client_overlay/bin/win64/Qt5Widgetsd.dll
-/driver_vrwalkinplace/resources/icons/*
-driver_vrwalkinplace/resources/icons/*
 *.cache
 VRWalkInPlace.VC.VC.opendb
 *.db

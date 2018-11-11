@@ -121,9 +121,9 @@ bool GestureMatcher::MatchGestures(const Frame &frame, WhichHand which, float(&r
 		}
 
 		// trigger figure gesture means the bend angles of the upper two joints
-		// of the index finger exceed 70 degrees.
+		// of the index finger exceed 70 degrees. //pottedmeat7 updated to 60
 		float triggerbend = bends[Finger::TYPE_INDEX][1] + bends[Finger::TYPE_INDEX][2];
-		float trigger = maprange(triggerbend, 70.0, 100.0);
+		float trigger = maprange(triggerbend, 60.0, 100.0);
 		merge(result[TriggerFinger], trigger);
 
 		// lower first gesture means clenching middle, ring, pinky fingers beyond 90 degrees

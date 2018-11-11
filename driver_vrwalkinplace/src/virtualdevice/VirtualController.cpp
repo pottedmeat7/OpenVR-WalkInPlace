@@ -290,7 +290,7 @@ namespace vrwalkinplace {
 					uint64_t componentHandle = m_ulBoolComponentsMap[eButtonId][findType];
 					bool boolVal = (eventType == ButtonEventType::ButtonPressed || eventType == ButtonEventType::ButtonTouched);
 					vr::EVRInputError eVRIError = UpdateBooleanComponent(componentHandle, boolVal, eventTimeOffset);
-					LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
+					//LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
 						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}
