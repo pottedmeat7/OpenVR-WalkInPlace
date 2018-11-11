@@ -48,8 +48,8 @@ GroupBox {
     Layout.fillWidth: true
 
     background: Rectangle {
-        color: "#c0c0c0" // "#277650"
-        border.color: "#000000"
+        color: myPalette.mid //"#c0c0c0" // "#277650"
+        border.color: myPalette.mid //"#000000"
         radius: 1
     }
 
@@ -97,7 +97,7 @@ GroupBox {
             columns: 14
             Layout.alignment: Qt.AlignHCenter
 
-            MyPushButton2 {
+            MyPushButton {
                 id: hmdYMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -131,7 +131,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: hmdYPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -145,7 +145,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: hmdXZMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -179,7 +179,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: hmdXZPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -200,7 +200,7 @@ GroupBox {
                 Layout.preferredWidth: 160
             }    
 
-            MyPushButton2 {
+            MyPushButton {
                 id: handJogMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -234,7 +234,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: handJogPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -248,7 +248,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: handRunMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -282,7 +282,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: handRunPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -315,21 +315,18 @@ GroupBox {
             MyText {
                 text: "Use Trackers?"
                 horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
                 Layout.preferredWidth: 160
             }
 
             MyText {
                 text: "Disable HMD?"
                 horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Step Time (seconds)"
                 horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
         }
@@ -337,7 +334,7 @@ GroupBox {
         GridLayout {
             columns: 11
 
-            MyPushButton2 {
+            MyPushButton {
                 id: trackerYMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -371,7 +368,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: trackerYPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -385,7 +382,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: trackerXZMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -419,7 +416,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: trackerXZPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -451,7 +448,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: stepTimeMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -485,7 +482,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: stepTimePlusButton
                 Layout.preferredWidth: 40
                 text: "+"

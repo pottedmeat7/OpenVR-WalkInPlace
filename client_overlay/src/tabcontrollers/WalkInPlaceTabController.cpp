@@ -495,7 +495,7 @@ namespace walkinplace {
 		vals.push_back(tracker2Vel.v[1]);
 		vals.push_back(tracker2Vel.v[2]);
 		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];
-		/*if (g_AccuracyButton >= 0 && _controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+		/*if (g_AccuracyButton >= 0 && _controllerDeviceIds[0] != vr::k_unTrackedDeviceIndexInvalid && _controllerDeviceIds[1] != vr::k_unTrackedDeviceIndexInvalid) {
 			g_isHoldingAccuracyButton = false;
 			g_isHoldingAccuracyButton1 = false;
 			g_isHoldingAccuracyButton2 = false;
@@ -870,7 +870,7 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::updateAccuracyButtonState(uint32_t deviceId, bool firstController) {
-		if (deviceId >= 0 && (buttonControlSelect >= 2 || _controllerDeviceIds[buttonControlSelect] == deviceId)) {
+		if (deviceId != vr::k_unTrackedDeviceIndexInvalid && (buttonControlSelect >= 2 || _controllerDeviceIds[buttonControlSelect] == deviceId)) {
 			vr::VRControllerState_t state;
 			vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
 			//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
@@ -959,7 +959,7 @@ namespace walkinplace {
 		controlSelect = control;
 		if (control < 2) {
 			_controlUsedID = _controllerDeviceIds[control];
-			if (!identifyControlTimerSet && _controlUsedID >= 0) {
+			if (!identifyControlTimerSet && _controlUsedID != vr::k_unTrackedDeviceIndexInvalid) {
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				controlSelectOverlayHandle = 999;
 				for (int d = 0; d < deviceInfos.size(); d++) {
@@ -1079,7 +1079,7 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::applyStepPoseDetect() {
-		if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+		if (_controllerDeviceIds[0] != vr::k_unTrackedDeviceIndexInvalid && _controllerDeviceIds[1] != vr::k_unTrackedDeviceIndexInvalid) {
 			double deltatime = 1.0 / 90.0 * 1000;
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			double tdiff = ((double)(now - _timeLastTick));
@@ -1365,8 +1365,7 @@ namespace walkinplace {
 								}
 							}
 						}
-						if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
-
+						if (_controllerDeviceIds[0] != vr::k_unTrackedDeviceIndexInvalid && _controllerDeviceIds[1] != vr::k_unTrackedDeviceIndexInvalid) {
 							try {
 								//check if first controller is running / jogging
 								hand1Vel = latestDevicePoses[_controllerDeviceIds[0]].vVelocity;
@@ -1469,7 +1468,7 @@ namespace walkinplace {
 						g_runPoseDetected = false;
 					}
 					else {
-						if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
+						if (_controllerDeviceIds[0] != vr::k_unTrackedDeviceIndexInvalid && _controllerDeviceIds[1] != vr::k_unTrackedDeviceIndexInvalid) {
 							int deviceId = _controlUsedID;
 							if (_controlUsedID == vr::k_unTrackedDeviceIndexInvalid) {
 								deviceId = _controllerDeviceIds[0];
@@ -1698,9 +1697,20 @@ namespace walkinplace {
 							Leap::Vector d = { -h.direction().x, -h.direction().z, -h.direction().y };
 							Leap::Vector palmNormal = { -h.palmNormal().x, -h.palmNormal().z, -h.palmNormal().y };
 							float yaw = d.yaw();
-							float pitch = d.pitch();
+							float pitch = d.pitch() + ((-20*PI)/180.0);
 							float roll = palmNormal.roll() + (h.isLeft() ? -1 : 1)*((90.0*PI) / 180.0);
-							devicePose.qRotation = vrmath::quaternionFromYawPitchRoll(-yaw, pitch, roll);
+							if (h.isLeft()) {
+								leapLYaw = (leapLYaw + yaw) / 2.0;
+								leapLPitch = (leapLPitch + pitch) / 2.0;
+								leapLRoll = (leapLRoll + roll) / 2.0;
+								devicePose.qRotation = vrmath::quaternionFromYawPitchRoll(-leapLYaw, leapLPitch, leapLRoll);
+							}
+							else {
+								leapRYaw = (leapRYaw + yaw) / 2.0;
+								leapRPitch = (leapRPitch + pitch) / 2.0;
+								leapRRoll = (leapRRoll + roll) / 2.0;
+								devicePose.qRotation = vrmath::quaternionFromYawPitchRoll(-leapRYaw, leapRPitch, leapRRoll);
+							}
 
 							devicePose.poseIsValid = true;
 							devicePose.result = vr::ETrackingResult::TrackingResult_Running_OK;
@@ -1735,21 +1745,21 @@ namespace walkinplace {
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu);
 
 								// digital trigger mapping (fist clenching gesture)
-								if (scores[GestureMatcher::TriggerFinger] > 0.1f)
+								if (scores[GestureMatcher::LowerFist] > 0.85f && scores[GestureMatcher::ThumbUp] >= 0.3f)
 									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
-								if (scores[GestureMatcher::TriggerFinger] > 0.4f)
+								if (scores[GestureMatcher::LowerFist] > 0.95f && scores[GestureMatcher::ThumbUp] >= 0.7f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
 
-								// grip mapping (clench fist with middle, index, pinky fingers)
-								if (scores[GestureMatcher::LowerFist] >= 0.85f)
+								// grip mapping (clench fist with middle, ring, pinky fingers)
+								if (scores[GestureMatcher::TriggerFinger] > 0.85f && scores[GestureMatcher::LowerFist] >= 0.9f && scores[GestureMatcher::Thumbpress] >= 0.2f)
 									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_Grip);
-								if (scores[GestureMatcher::LowerFist] >= 0.95f)
+								if (scores[GestureMatcher::TriggerFinger] > 0.85f && scores[GestureMatcher::LowerFist] >= 0.95f && scores[GestureMatcher::Thumbpress] >= 0.9f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_Grip);
 
 								// touchpad button press mapping (Thumbpress gesture)
-								if (scores[GestureMatcher::Thumbpress] >= 0.2f)
+								if (scores[GestureMatcher::LowerFist] < 0.4 && scores[GestureMatcher::Thumbpress] >= 0.5f)
 									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad);
-								if (scores[GestureMatcher::Thumbpress] >= 1.0f)
+								if (scores[GestureMatcher::LowerFist] < 0.4 && scores[GestureMatcher::Thumbpress] >= 0.85f)
 									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad);
 
 								// All pressed buttons are touched

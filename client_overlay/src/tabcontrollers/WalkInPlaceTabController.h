@@ -159,6 +159,12 @@ private:
 	float stepPeaksFullSpeed = 13.0;
 	float avgContYVel = 0.0;
 	float totalContYVel = 0.0;
+	float leapLYaw = 0;
+	float leapLPitch = 0;
+	float leapLRoll = 0;
+	float leapRYaw = 0;
+	float leapRPitch = 0;
+	float leapRRoll = 0;
 	double _stepFrequencyMin = 250;
 	double _stepIntegrateSteps = 0.0;
 	double _jogIntegrateSteps = 0.0;

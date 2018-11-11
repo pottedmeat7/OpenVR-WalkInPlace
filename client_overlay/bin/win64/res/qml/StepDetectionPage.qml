@@ -72,14 +72,14 @@ MyMainViewPage {
 
     content: ColumnLayout {
         anchors.top: parent.top
-        spacing: 20
+        spacing: 7
 
         GroupBox {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#c0c0c0" // "#277650"
-                border.color: "#dddddd"
+                color: myPalette.base // "#c0c0c0" // "#277650"
+                border.color: myPalette.base // "#dddddd"
                 radius: 1
             }
 
@@ -89,7 +89,6 @@ MyMainViewPage {
 
                 RowLayout {
                     MyText {
-                        color: "#000000"
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
                         font.pointSize: 22
@@ -99,12 +98,14 @@ MyMainViewPage {
         }
 
         GroupBox {
+            anchors.top: parent.top
+            anchors.topMargin: 55
 
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#c0c0c0" // "#277650"
-                border.color: "#000000"
+                color: myPalette.mid //  "#c0c0c0" // "#277650"
+                border.color: myPalette.mid // "#000000"
                 radius: 1
             }
 
@@ -356,8 +357,8 @@ MyMainViewPage {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: "#c0c0c0" // "#277650"
-                    border.color: "#000000"
+                    color: myPalette.mid // "#c0c0c0" // "#277650"
+                    border.color: myPalette.mid // "#000000"
                     radius: 1
                 }
 
@@ -367,7 +368,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 18
 
-                        Button {
+                        MyPushButton {
                             id: walkInPlaceLoadProfiles
                             Layout.preferredWidth: 200
                             text: "Load Profiles"
@@ -521,10 +522,8 @@ MyMainViewPage {
                 }
                 MyTextField {
                     id: walkInPlaceNewProfileName
-                    color: "#000000"
                     text: ""
                     Layout.fillWidth: true
-                    font.pointSize: 20
                     function onInputEvent(input) {
                         text = input
                     }

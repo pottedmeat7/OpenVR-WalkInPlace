@@ -3,6 +3,6 @@ import QtQuick.Controls 2.0
 
 
 Text {
-	color: "#000000"
-	font.pointSize: 20
+	color:myPalette.windowText //  "#000000"
+	font.pointSize: 15
 }

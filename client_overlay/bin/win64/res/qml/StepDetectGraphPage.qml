@@ -161,8 +161,8 @@ MyStackViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#c0c0c0" // "#277650" // "transparent"
-                border.color: "#c0c0c0" // "#277650"
+                color: myPalette.base // "#c0c0c0" // "#277650" // "transparent"
+                border.color: myPalette.base // "#c0c0c0" // "#277650"
                 radius: 1
             }
 
@@ -187,7 +187,7 @@ MyStackViewPage {
                         }
                         background: Rectangle {
                             opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                            color: "#c0c0c0"
+                            color: myPalette.base // "#c0c0c0"
                             radius: 4
                             anchors.fill: parent
                         }

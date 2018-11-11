@@ -35,8 +35,8 @@ GroupBox {
     Layout.fillWidth: true
 
     background: Rectangle {
-        color: "#c0c0c0" // "#277650"
-        border.color: "#000000"
+        color: myPalette.mid //"#c0c0c0" // "#277650"
+        border.color: myPalette.mid //"#000000"
         radius: 1
     }
 
@@ -51,21 +51,18 @@ GroupBox {
             MyText {
                 text: "Touch Walk Value"
                 horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Touch Jog Value"
                 horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
             MyText {
                 text: "Touch Run Value"
                 horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 15
                 Layout.preferredWidth: 230
             }
 
@@ -90,7 +87,7 @@ GroupBox {
         GridLayout {
             columns: 12
 
-            MyPushButton2 {
+            MyPushButton {
                 id: walkTouchMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -124,7 +121,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: walkTouchPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -138,7 +135,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: jogTouchMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -172,7 +169,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: jogTouchPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -186,7 +183,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: runTouchMinusButton
                 Layout.preferredWidth: 40
                 text: "-"
@@ -220,7 +217,7 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
+            MyPushButton {
                 id: runTouchPlusButton
                 Layout.preferredWidth: 40
                 text: "+"
@@ -236,7 +233,7 @@ GroupBox {
 
             MyToggleButton {
                 id: enableScaleTouch
-                text: "Scale Touch with Arm Swing?"
+                text: "Scale with Arm Swing?"
                 Layout.maximumWidth: 300
                 Layout.minimumWidth: 300
                 Layout.preferredWidth: 300
@@ -265,7 +262,6 @@ GroupBox {
             MyText {
                 text: "Experimental Features"
                 horizontalAlignment: Text.AlignHLeft
-                font.pointSize: 15
                 Layout.preferredWidth: 850
             }
 
@@ -277,8 +273,7 @@ GroupBox {
 
             MyToggleButton {
                 id: useContDirForStrafCheck
-                font.pointSize: 15
-                text: "Use Controller Direction For Straffing?"
+                text: "Controller Direction For Straffing?"
                 Layout.fillWidth: false
                 Layout.preferredWidth: 550
                 onCheckedChanged: {
@@ -288,8 +283,7 @@ GroupBox {
 
             MyToggleButton {
                 id: useContDirForRevCheck
-                text: "Use Controller Direction For Reverse?"
-                font.pointSize: 15
+                text: "Controller Direction For Reverse?"
                 Layout.fillWidth: false
                 Layout.preferredWidth: 550
                 onCheckedChanged: {

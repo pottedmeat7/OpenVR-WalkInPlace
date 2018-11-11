@@ -4,8 +4,10 @@ import QtQuick.Layouts 1.0
 
 
 Rectangle {
+    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
+
     id: root
-    color: "transparent"
+    color: myPalette.base // "transparent"
     width: 1200
     height: 800
 
