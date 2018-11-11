@@ -25,7 +25,19 @@ namespace walkinplace {
 		reloadWalkInPlaceSettings();
 
 		leapControl.setPolicyFlags(Leap::Controller::PolicyFlag::POLICY_BACKGROUND_FRAMES);
+
+		leapControl.setPolicy(Leap::Controller::POLICY_OPTIMIZE_HMD);
+		leapControl.setPolicy(Leap::Controller::POLICY_BACKGROUND_FRAMES);
+
+		// make sure we always get background frames even when we lose the focus to another
+		// Leap-enabled application
+		leapControl.setPolicy((Leap::Controller::PolicyFlag)(15));
+
+		// allow other background applications to receive frames even when SteamVR has the focus.
+		leapControl.setPolicy((Leap::Controller::PolicyFlag)(23));
+
 		leapControl.addListener(*this);
+
 	}
 
 
@@ -53,29 +65,30 @@ namespace walkinplace {
 						info->deviceMode = 0;
 						deviceInfos.push_back(info);
 						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
-							hmdID = info->openvrId;
-							try {
-								vrwalkinplace::VRWalkInPlace vrwalkinplace;
-								vrwalkinplace.connect();
-								vrwalkinplace.openvrDeviceAdded(hmdID);
-							}
-							catch (std::exception& e) {
-								LOG(INFO) << "Exception caught while configuring leap controller: " << e.what();
+							if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
+								hmdID = info->openvrId;							
+								try {
+									vrwalkinplace::VRWalkInPlace vrwalkinplace;
+									vrwalkinplace.connect();
+									vrwalkinplace.openvrDeviceAdded(hmdID);
+								}
+								catch (std::exception& e) {
+									LOG(INFO) << "Exception caught while configuring leap controller: " << e.what();
+								}
 							}
 						}
 						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-							if (info->serial.find("vr_locomotion") == std::string::npos) {
-								if (_controllerDeviceIds[0] <= 0) {
+							if (_controllerDeviceIds[0] == vr::k_unTrackedDeviceIndexInvalid) {
+								if (info->serial.find("right") != std::string::npos) {
 									_controllerDeviceIds[0] = info->openvrId;
+									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 								}
-								else if (_controllerDeviceIds[1] <= 0) {
-									_controllerDeviceIds[1] = info->openvrId;
-								}
-								LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 							}
-							else {
-								vrLocoContID = info->openvrId;
-								LOG(INFO) << "Found Virtual VR locomotion device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
+							if (_controllerDeviceIds[1] == vr::k_unTrackedDeviceIndexInvalid) {
+								if (info->serial.find("left") != std::string::npos) {
+									_controllerDeviceIds[1] = info->openvrId;
+									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
+								}
 							}
 						}
 
@@ -151,9 +164,9 @@ namespace walkinplace {
 				setDeviceRenderModel(controlSelectOverlayHandle, vive_controller_model_index, 1, 1, 1, 1, 1, 1);
 			}
 		}
-		if (settingsUpdateCounter >= 50) {
+		if (settingsUpdateCounter >= 5) {
 			settingsUpdateCounter = 0;
-			if (parent->isDashboardVisible() || parent->isDesktopMode()) {
+			if (hmdID == vr::k_unTrackedDeviceIndexInvalid || (_controllerDeviceIds[0] == vr::k_unTrackedDeviceIndexInvalid || _controllerDeviceIds[1] == vr::k_unTrackedDeviceIndexInvalid) ) {
 				bool newDeviceAdded = false;
 				for (uint32_t id = maxValidDeviceId + 1; id < vr::k_unMaxTrackedDeviceCount; ++id) {
 					auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(id);
@@ -176,38 +189,35 @@ namespace walkinplace {
 							info->deviceMode = 0;
 							deviceInfos.push_back(info);
 							if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
-								hmdID = info->openvrId;
-								try {
-									vrwalkinplace::VRWalkInPlace vrwalkinplace;
-									vrwalkinplace.connect();
-									vrwalkinplace.openvrDeviceAdded(hmdID);
-								}
-								catch (std::exception& e) {
-									LOG(INFO) << "Exception caught while configuring leap controller: " << e.what();
+								if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
+									hmdID = info->openvrId;
+									try {
+										vrwalkinplace::VRWalkInPlace vrwalkinplace;
+										vrwalkinplace.connect();
+										vrwalkinplace.openvrDeviceAdded(hmdID);
+									}
+									catch (std::exception& e) {
+										LOG(INFO) << "Exception caught while configuring leap controller: " << e.what();
+									}
 								}
 							}
-							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								if (info->serial.find("vr_locomotion") == std::string::npos) {
-									if (_controllerDeviceIds[0] <= 0) {
-										_controllerDeviceIds[0] = info->openvrId;
+							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {								
+									if (_controllerDeviceIds[0] == vr::k_unTrackedDeviceIndexInvalid) {
+										if (info->serial.find("right") != std::string::npos) {
+											_controllerDeviceIds[0] = info->openvrId;
+											LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
+										}
 									}
-									else if (_controllerDeviceIds[1] <= 0) {
-										_controllerDeviceIds[1] = info->openvrId;
+									if (_controllerDeviceIds[1] == vr::k_unTrackedDeviceIndexInvalid) {
+										if (info->serial.find("left") != std::string::npos) {
+											_controllerDeviceIds[1] = info->openvrId;
+											LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
+										}
 									}
-									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								}
-								else {
-									vrLocoContID = info->openvrId;
-									LOG(INFO) << "Found Virtual VR locomotion device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								}
 							}
-							newDeviceAdded = true;
 						}
 						maxValidDeviceId = id;
 					}
-				}
-				if (newDeviceAdded) {
-					emit deviceCountChanged((unsigned)deviceInfos.size());
 				}
 			}
 		}
@@ -1172,10 +1182,10 @@ namespace walkinplace {
 								}
 								else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
 									if (info->serial.find("vr_locomotion") == std::string::npos) {
-										if (_controllerDeviceIds[0] < 0) {
+										if (_controllerDeviceIds[0] == vr::k_unTrackedDeviceIndexInvalid) {
 											_controllerDeviceIds[0] = info->openvrId;
 										}
-										else if (_controllerDeviceIds[1] < 0) {
+										else if (_controllerDeviceIds[1] == vr::k_unTrackedDeviceIndexInvalid) {
 											_controllerDeviceIds[1] = info->openvrId;
 										}
 										if (firstController) {
@@ -1210,7 +1220,7 @@ namespace walkinplace {
 						}
 						if (!_stepPoseDetected && _hasUnTouchedStepAxis < 4) {
 							int deviceId = _controlUsedID;
-							if (_controlUsedID < 0) {
+							if (_controlUsedID == vr::k_unTrackedDeviceIndexInvalid) {
 								deviceId = _controllerDeviceIds[0];
 							}
 							if (gameType == 0 || gameType == 1 || gameType == 2 || gameType == 3) {
@@ -1461,7 +1471,7 @@ namespace walkinplace {
 					else {
 						if (_controllerDeviceIds[0] >= 0 && _controllerDeviceIds[1] >= 0) {
 							int deviceId = _controlUsedID;
-							if (_controlUsedID < 0) {
+							if (_controlUsedID == vr::k_unTrackedDeviceIndexInvalid) {
 								deviceId = _controllerDeviceIds[0];
 							}
 							if (useContDirForStraf || useContDirForRev) {
@@ -1585,7 +1595,7 @@ namespace walkinplace {
 				else if (_hasUnTouchedStepAxis < 4) {
 					if (tdiff >= deltatime) {
 						int deviceId = _controlUsedID;
-						if (_controlUsedID < 0) {
+						if (_controlUsedID == vr::k_unTrackedDeviceIndexInvalid) {
 							deviceId = _controllerDeviceIds[0];
 						}
 						stopMovement(deviceId);
@@ -1645,139 +1655,136 @@ namespace walkinplace {
 	/************* LEAP MOTION CONTROL ****************/
 
 	void WalkInPlaceTabController::onConnect(const Leap::Controller& controller) {
-		LOG(INFO) << "Connected to leap motion service" << std::endl;
+		LOG(INFO) << "Connected to leap motion service";
 	}
 
 	void WalkInPlaceTabController::onFrame(const Leap::Controller& controller) {
-		Leap::Frame frame0 = controller.frame();
-		//LOG(INFO) << "Frame id: " << frame0.id()
-		//	<< ", timestamp: " << frame0.timestamp()
-		//	<< ", hands: " << frame0.hands().count()
-		//	<< ", fingers: " << frame0.fingers().count();
-
-		vr::DriverPose_t devicePose;
-		auto timeOffset = ((double)frame0.timestamp() - controller.now()) / 1000000.0;
-		devicePose.poseTimeOffset = timeOffset;
-		devicePose.deviceIsConnected = true;
-
-		if (true || latestDevicePoses[hmdID].bPoseIsValid) {
-
+		if (_controllerDeviceIds[0] != vr::k_unTrackedDeviceIndexInvalid && _controllerDeviceIds[1] != vr::k_unTrackedDeviceIndexInvalid) {
+			Leap::Frame frame0 = controller.frame();
 			//LOG(INFO) << "Frame id: " << frame0.id()
 			//	<< ", timestamp: " << frame0.timestamp()
 			//	<< ", hands: " << frame0.hands().count()
 			//	<< ", fingers: " << frame0.fingers().count();
 
-			for (auto& h : frame0.hands()) {
-				if (h.isValid()) {
-					Leap::Vector position = h.palmPosition();
-					Leap::Vector velocity = h.palmVelocity();
+			vr::DriverPose_t devicePose;
+			auto timeOffset = ((double)frame0.timestamp() - controller.now()) / 1000000.0;
+			devicePose.poseTimeOffset = timeOffset;
+			devicePose.deviceIsConnected = true;
 
-					devicePose.vecPosition[0] = -0.001*position.x;
-					devicePose.vecPosition[1] = -0.001*position.z;
-					devicePose.vecPosition[2] = -0.001*position.y;
+			if (true || latestDevicePoses[hmdID].bPoseIsValid) {
 
-					devicePose.vecVelocity[0] = -0.001*velocity.x;
-					devicePose.vecVelocity[1] = -0.001*velocity.z;
-					devicePose.vecVelocity[2] = -0.001*velocity.y;
+				//LOG(INFO) << "Frame id: " << frame0.id()
+				//	<< ", timestamp: " << frame0.timestamp()
+				//	<< ", hands: " << frame0.hands().count()
+				//	<< ", fingers: " << frame0.fingers().count();
 
-					Leap::Vector d = { -h.direction().x, -h.direction().z, -h.direction().y };
-					Leap::Vector palmNormal = { -h.palmNormal().x, -h.palmNormal().z, -h.palmNormal().y };
-					float yaw = d.yaw();
-					float pitch = d.pitch();
-					float roll = palmNormal.roll();
-					devicePose.qRotation = vrmath::quaternionFromYawPitchRoll(-yaw, pitch, roll);
+				for (auto& h : frame0.hands()) {
+					if (h.isValid() && (h.isLeft() || h.isRight())) {
+						try {
+							vrwalkinplace::VRWalkInPlace vrwalkinplace;
+							vrwalkinplace.connect();
 
-					devicePose.poseIsValid = true;
-					devicePose.result = vr::ETrackingResult::TrackingResult_Running_OK;
+							Leap::Vector position = h.palmPosition();
+							Leap::Vector velocity = h.palmVelocity();
 
-					try {
-						vrwalkinplace::VRWalkInPlace vrwalkinplace;
-						vrwalkinplace.connect();
-						if (h.isLeft()) {
-							vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[1], devicePose);
-						}
-						else {
-							vrwalkinplace.openvrUpdatePose(_controllerDeviceIds[0], devicePose);
-						}
-						_timeLastLeapFrame = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					}
-					catch (std::exception& e) {
-						LOG(INFO) << "Exception caught while updating leap to pose: " << e.what();
-					}
-					double fingerBendFactor[5];
-					std::map<Leap::Finger::Type, Leap::Finger> fingerMap;
-					for (auto& f : h.fingers()) {
-						fingerMap[f.type()] = f;
-					}
-					Leap::Vector pd;
-					for (int i = 0; i < 4; ++i) {
-						auto& b = fingerMap[Leap::Finger::Type::TYPE_RING].bone((Leap::Bone::Type)i);
-						Leap::Vector d = -b.direction();
-						if (i > 0) {
-							auto a = d.angleTo(pd);
-							fingerBendFactor[(int)Leap::Finger::Type::TYPE_RING] += a;
-						}
-						pd = d;
-					}
-					pd.zero();
-					for (int i = 0; i < 4; ++i) {
-						auto& b = fingerMap[Leap::Finger::Type::TYPE_MIDDLE].bone((Leap::Bone::Type)i);
-						Leap::Vector d = -b.direction();
-						if (i > 0) {
-							auto a = d.angleTo(pd);
-							fingerBendFactor[(int)Leap::Finger::Type::TYPE_MIDDLE] += a;
-						}
-						pd = d;
-					}
-					pd.zero();
-					for (int i = 0; i < 4; ++i) {
-						auto& b = fingerMap[Leap::Finger::Type::TYPE_INDEX].bone((Leap::Bone::Type)i);
-						Leap::Vector d = -b.direction();
-						if (i > 0) {
-							auto a = d.angleTo(pd);
-							fingerBendFactor[(int)Leap::Finger::Type::TYPE_INDEX] += a;
-						}
-						pd = d;
-					}
-					pd.zero();
-					for (int i = 0; i < 4; ++i) {
-						auto& b = fingerMap[Leap::Finger::Type::TYPE_THUMB].bone((Leap::Bone::Type)i);
-						Leap::Vector d = -b.direction();
-						if (i > 0) {
-							auto a = d.angleTo(pd);
-							fingerBendFactor[(int)Leap::Finger::Type::TYPE_THUMB] += a;
-						}
-						pd = d;
-					}
-					if (true || h.isRight()) {
-						if (fingerBendFactor[(int)Leap::Finger::Type::TYPE_INDEX] > 0.4) {
-							if (fingerBendFactor[(int)Leap::Finger::Type::TYPE_THUMB] < 0.2) {
-								vr::VRControllerAxis_t axisState;
-								axisState.x = (float)((fingerBendFactor[0] - 0.4) / 0.6);
-								axisState.y = 0;
-								vrwalkinplace.openvrAxisEvent(h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], (uint32_t)vr::EVRButtonId::k_EButton_SteamVR_Trigger, axisState);
-								if (axisState.x >= 0.95) {
-									vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::EVRButtonId::k_EButton_SteamVR_Trigger, 0);
+							devicePose.vecPosition[0] = -0.001*position.x;
+							devicePose.vecPosition[1] = -0.001*position.z;
+							devicePose.vecPosition[2] = -0.001*position.y;
+
+							devicePose.vecVelocity[0] = -0.001*velocity.x;
+							devicePose.vecVelocity[1] = -0.001*velocity.z;
+							devicePose.vecVelocity[2] = -0.001*velocity.y;
+
+							Leap::Vector d = { -h.direction().x, -h.direction().z, -h.direction().y };
+							Leap::Vector palmNormal = { -h.palmNormal().x, -h.palmNormal().z, -h.palmNormal().y };
+							float yaw = d.yaw();
+							float pitch = d.pitch();
+							float roll = palmNormal.roll() + (h.isLeft() ? -1 : 1)*((90.0*PI) / 180.0);
+							devicePose.qRotation = vrmath::quaternionFromYawPitchRoll(-yaw, pitch, roll);
+
+							devicePose.poseIsValid = true;
+							devicePose.result = vr::ETrackingResult::TrackingResult_Running_OK;
+
+							try {
+								vrwalkinplace.openvrUpdatePose(h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], devicePose);								
+								_timeLastLeapFrame = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+							}
+							catch (std::exception& e) {
+								LOG(INFO) << "Exception caught while updating leap to pose: " << e.what();
+							}
+							GestureMatcher::WhichHand which = h.isLeft() ? GestureMatcher::LeftHand : GestureMatcher::RightHand;
+							float scores[GestureMatcher::NUM_GESTURES];
+							bool handFound = matcher.MatchGestures(frame0, which, scores);
+							if (!handFound) {
+								LOG(INFO) << which << " hand does not meet correct patterns";
+							}
+							if (handFound)
+							{
+								vr::VRControllerState_t NewState = { 0 };
+
+								// system menu mapping (timeout gesture)
+								if (scores[GestureMatcher::Timeout] >= 0.5f)
+									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_System);
+								if (scores[GestureMatcher::Timeout] >= 0.6f)
+									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_System);
+
+								// application menu mapping (Flat hand towards your face gesture)
+								if (scores[GestureMatcher::FlatHandPalmTowards] >= 0.8f)
+									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu);
+								if (scores[GestureMatcher::FlatHandPalmTowards] >= 0.9f)
+									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu);
+
+								// digital trigger mapping (fist clenching gesture)
+								if (scores[GestureMatcher::TriggerFinger] > 0.1f)
+									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+								if (scores[GestureMatcher::TriggerFinger] > 0.6f)
+									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+
+								// grip mapping (clench fist with middle, index, pinky fingers)
+								if (scores[GestureMatcher::LowerFist] >= 0.65f)
+									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_Grip);
+								if (scores[GestureMatcher::LowerFist] >= 0.7f)
+									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_Grip);
+
+								// touchpad button press mapping (Thumbpress gesture)
+								if (scores[GestureMatcher::TODO_DiverOkay] >= 0.2f)
+									NewState.ulButtonTouched |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad);
+								if (scores[GestureMatcher::TODO_DiverOkay] >= 1.0f)
+									NewState.ulButtonPressed |= vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad);
+
+								// All pressed buttons are touched
+								NewState.ulButtonTouched |= NewState.ulButtonPressed;
+
+								try {
+									LOG(INFO) << which << " hand found updating gestures";
+									vrwalkinplace.openvrUpdateState(h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], NewState);
 								}
-								else {
-									vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::EVRButtonId::k_EButton_SteamVR_Trigger, 0);
+								catch (std::exception& e) {
+									LOG(INFO) << "Exception caught while updating leap controller state: " << e.what();
 								}
-							}
-							else if (fingerBendFactor[(int)Leap::Finger::Type::TYPE_MIDDLE] > 0.4) {
-								vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::EVRButtonId::k_EButton_Grip, 0);
-							}
-							else {
-								vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::EVRButtonId::k_EButton_Grip, 0);
+
+								if (scores[GestureMatcher::TriggerFinger] >= 0.1f) {
+									try {
+										vr::VRControllerAxis_t axisState;
+										axisState.x = scores[GestureMatcher::TriggerFinger];
+										axisState.y = 0;
+										vrwalkinplace.openvrAxisEvent(h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::k_EButton_SteamVR_Trigger, axisState);
+									}
+									catch (std::exception& e) {
+										LOG(INFO) << "Exception caught while updating leap controller state: " << e.what();
+									}
+								}
+
+								//NewState.rAxis[0].x = scores[GestureMatcher::TouchpadAxisX];
+								//NewState.rAxis[0].y = scores[GestureMatcher::TouchpadAxisY];
+
+								//NewState.rAxis[1].x = scores[GestureMatcher::TriggerFinger];
+								//NewState.rAxis[1].y = 0.0f;
+
 							}
 						}
-						else if (!appmenupressed && fingerBendFactor[(int)Leap::Finger::Type::TYPE_MIDDLE] > 0.4 && fingerBendFactor[(int)Leap::Finger::Type::TYPE_RING] > 0.4) {
-							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::EVRButtonId::k_EButton_ApplicationMenu, 0);
-							//vr::VRControllerState_t state;	
-							appmenupressed = true;
-						}
-						else if (appmenupressed) {
-							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, h.isLeft() ? _controllerDeviceIds[1] : _controllerDeviceIds[0], vr::EVRButtonId::k_EButton_ApplicationMenu, 0);
-							appmenupressed = false;
+						catch (std::exception& e) {
+							LOG(INFO) << "Exception caught while updating leap controller driver: " << e.what();
 						}
 					}
 				}
@@ -1790,11 +1797,11 @@ namespace walkinplace {
 	/*********************************************************************************************/
 
 
-	void WalkInPlaceTabController::stopMovement(uint32_t deviceIdOLD) {
-		uint32_t deviceId = vrLocoContID;
-		if (vrLocoContID < 0) {
-			deviceId = deviceIdOLD;
-		}
+	void WalkInPlaceTabController::stopMovement(uint32_t deviceId) {
+		//uint32_t deviceId = vrLocoContID;
+		//if (vrLocoContID == vr::k_unTrackedDeviceIndexInvalid) {
+		//	deviceId = deviceIdOLD;
+		//}
 		if (gameType == 0 || gameType == 1 || gameType == 2) {
 			vr::VRControllerAxis_t axisState;
 			axisState.x = 0;
@@ -1899,36 +1906,40 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceIdOLD, vr::VRControllerAxis_t axisState) {
-		uint32_t deviceId = vrLocoContID;
-		if (vrLocoContID < 0) {
-			deviceId = deviceIdOLD;
-		}
-		vrwalkinplace::VRWalkInPlace vrwalkinplace;
-		vrwalkinplace.connect();
-		if (gameType == 0 || gameType == 1 || gameType == 2) {
-			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-			vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
-			if (gameType != 1) {
-				if (g_runPoseDetected) {
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-				}
-				else {
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-				}
-			}
-		}
-		else if (gameType == 3 || gameType == 4 || gameType == 5) {
-			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-			vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_Knuckles_JoyStick, axisState);
-			if (gameType != 1) {
-				if (g_runPoseDetected) {
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
-				}
-				else {
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
+	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState) {
+		//uint32_t deviceId = vrLocoContID;
+		//if (vrLocoContID == vr::k_unTrackedDeviceIndexInvalid) {
+		//	deviceId = deviceIdOLD;
+		//}
+		try {
+			vrwalkinplace::VRWalkInPlace vrwalkinplace;
+			vrwalkinplace.connect();
+			if (gameType == 0 || gameType == 1 || gameType == 2) {
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
+				if (gameType != 1) {
+					if (g_runPoseDetected) {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					}
+					else {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					}
 				}
 			}
+			else if (gameType == 3 || gameType == 4 || gameType == 5) {
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_Knuckles_JoyStick, axisState);
+				if (gameType != 1) {
+					if (g_runPoseDetected) {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
+					}
+					else {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Knuckles_JoyStick, 0.0);
+					}
+				}
+			}
+		} catch (std::exception& e) {
+			//LOG(INFO) << "Exception caught while applying virtual axis movement: " << e.what();
 		}
 	}
 

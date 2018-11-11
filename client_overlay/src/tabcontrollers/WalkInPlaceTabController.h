@@ -5,6 +5,7 @@
 #include <memory>
 #include <openvr.h>
 #include <vrwalkinplace.h>
+#include "../GestureMatcher.h"
 #include "Leap.h"
 
 class QQuickWindow;
@@ -94,7 +95,7 @@ private:
 	bool mappedControllerDriver1 = false;
 	bool mappedControllerDriver2 = false;
 	bool identifyControlTimerSet = true;
-	bool stepDetectEnabled = true;
+	bool stepDetectEnabled = false;
 	bool _stepPoseDetected = false;
 	bool betaEnabled = false;
 	bool useButtonAsToggle = false;
@@ -130,10 +131,10 @@ private:
 	int _teleportUnpressed = true;
 	int _hasUnTouchedStepAxis = 50;
 	int peaksCount = 0;
-	uint64_t _controllerDeviceIds[2] = { (uint64_t)0, (uint64_t)0 };
-	int _controlUsedID = -1;
-	int hmdID = -1;
-	int vrLocoContID = -1;
+	uint64_t _controllerDeviceIds[2] = { vr::k_unTrackedDeviceIndexInvalid, vr::k_unTrackedDeviceIndexInvalid };
+	int _controlUsedID = vr::k_unTrackedDeviceIndexInvalid;
+	int hmdID = vr::k_unTrackedDeviceIndexInvalid;
+	int vrLocoContID = vr::k_unTrackedDeviceIndexInvalid;
 	int stepPeaksToStart = 3;
 	float hmdYaw = 0;
 	float contYaw = 0;
@@ -174,10 +175,11 @@ private:
 	double _timeLastGraphPoint = 0.0;
 	double _timeLastLeapFrame = 0;
 
-	uint32_t firstTrackerID = -1;
+	uint32_t firstTrackerID = vr::k_unTrackedDeviceIndexInvalid;
 	bool hasInititalizedLocoCont = false;
 
 	Leap::Controller leapControl;
+	GestureMatcher matcher;
 	bool appmenupressed = false;
 
 public:

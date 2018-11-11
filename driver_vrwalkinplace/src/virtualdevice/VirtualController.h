@@ -45,6 +45,7 @@ public:
 	void mapInputDevice(uint32_t unWhichDevice, bool leftMode);
 	void updatePose(vr::DriverPose_t new_pose);
 	void updateState(vr::VRControllerState_t new_state);
+	void buttonUpdates(ButtonEventType eventType, uint64_t ulMask);
 
 	std::map<uint64_t, std::map<ButtonEventType, vr::VRInputComponentHandle_t> > m_ulBoolComponentsMap;
 	std::map<uint64_t, std::map<ButtonEventType, vr::VRInputComponentHandle_t> > m_ulScalarComponentsMap;

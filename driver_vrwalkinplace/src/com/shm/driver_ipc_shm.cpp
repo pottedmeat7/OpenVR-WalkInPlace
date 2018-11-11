@@ -65,12 +65,12 @@ namespace vrwalkinplace {
 											_this->_ipcEndpoints.insert({ clientId, queue });
 											reply.msg.ipc_ClientConnect.clientId = clientId;
 											reply.status = ipc::ReplyStatus::Ok;
-											LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											LOG(TRACE) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
 										}
 										else {
 											reply.msg.ipc_ClientConnect.clientId = 0;
 											reply.status = ipc::ReplyStatus::InvalidVersion;
-											LOG(INFO) << "Client (endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\") reports incompatible ipc version "
+											LOG(TRACE) << "Client (endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\") reports incompatible ipc version "
 												<< message.msg.ipc_ClientConnect.ipcProcotolVersion;
 										}
 										queue->send(&reply, sizeof(ipc::Reply), 0);

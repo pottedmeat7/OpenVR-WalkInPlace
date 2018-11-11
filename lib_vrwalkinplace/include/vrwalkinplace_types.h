@@ -16,7 +16,8 @@ namespace vrwalkinplace {
 		TrackpadX = 5,
 		TrackpadY = 6,
 		JoystickX = 7,
-		JoystickY = 8
+		JoystickY = 8,
+		TriggerX = 9
 	};
 
 } // end namespace vrwalkinplace
