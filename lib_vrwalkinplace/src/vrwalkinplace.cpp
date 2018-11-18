@@ -103,7 +103,7 @@ namespace vrwalkinplace {
 			auto messageId = _ipcRandomDist(_ipcRandomDevice);
 			message.msg.ipc_ClientConnect.messageId = messageId;
 			message.msg.ipc_ClientConnect.ipcProcotolVersion = IPC_PROTOCOL_VERSION;
-			strncpy_s(message.msg.ipc_ClientConnect.queueName, _ipcClientQueueName.c_str(), 127);
+			strncpy(message.msg.ipc_ClientConnect.queueName, _ipcClientQueueName.c_str(), 127);
 			message.msg.ipc_ClientConnect.queueName[127] = '\0';
 			std::promise<ipc::Reply> respPromise;
 			auto respFuture = respPromise.get_future();

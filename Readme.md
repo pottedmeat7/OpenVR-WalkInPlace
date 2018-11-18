@@ -152,23 +152,32 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 *You do not need this if you just want to use the WIP overlay*
 
 ### Boost
-1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
-2. Download Boost 1.65 Binaries (boost_1_65_1-msvc-14.1-64.exe)
-3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
+- WINDOWS
+	1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
+	2. Download Boost 1.65 Binaries (boost_1_65_1-msvc-14.1-64.exe)
+	3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
+- LINUX
+	1. Go to https://sourceforge.net/projects/boost/files/boost/1.65.1/
+	2. Download boost_1_65_1.tar.gz
+	3. Extract the files into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
   
 ### Qt
 1. Goto https://download.qt.io/official_releases/qt/5.9/5.9.0/
-2. Download Qt 5.9.0
-3. Run the Qt installer (I installed it to "c:\Qt")
+2. Download Qt 5.9.0 (Either windows .exe or linux .run file)
+3. Run the Qt installer (I installed it to `c:\Qt` or `/home/<user>/` on linux)
 
-NOTE: Adjust the path the `msvc2017_64` folder in Qt to match your installation
-
-Then run the `OpenVR-WalkInPlace\client_overlay\bin\windeployqt.bat` if your system doesn't find the exe update the batch to the absolute path
-in `{QT_INSTLATION_PATH}\5.9\msvc2017_64\bin\windeployqt.exe`
 
 ## Building
-1. Open *'VRWalkInPlace.sln'* in Visual Studio 2017.
-2. Build Solution
+- WINDOWS
+	Build *'VRWalkInPlace.sln'* in Visual Studio 2017
+- LINUX	
+	Build the OpenVR-WalkInPlaceOverlay.pro project with Qt Creator 
+	from a shell run
+	`./build.sh`
+	go to https://github.com/probonopd/linuxdeployqt/releases and download the AppImage
+	then run
+	`cd <OpenVR-WalkInPlace path>/client_overlay/bin/x64/
+	<linuxdeployqt path>/linuxdeployqt-5-x86_64.AppImage OpenVR-WalkInPlaceOverlay -qmldir=res/qml/ -no-translations -bundle-non-qt-libs -appimage -verbose=2`
 
 ### Building installer
 1. go to https://sourceforge.net/projects/nsis/files/NSIS%202/2.33/
@@ -176,10 +185,6 @@ in `{QT_INSTLATION_PATH}\5.9\msvc2017_64\bin\windeployqt.exe`
 3. go to `OpenVR-WalkInPlace/installer`
 4. right click the `installer.nsi` file and `Compile NSIS Script`
 5. the installer exe will be built into the same directory
-
-## Building
-1. Open *'VRWalkInPlace.sln'* in Visual Studio 2017.
-2. Build Solution
 
 ## Uninstall
 1. Run "C:\Program Files\OpenVR-WalkInPlace\Uninstall.exe" will remove everything

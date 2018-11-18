@@ -5,8 +5,6 @@
 #include <memory>
 #include <openvr.h>
 #include <vrwalkinplace.h>
-#include "../GestureMatcher.h"
-#include "Leap.h"
 
 class QQuickWindow;
 
@@ -62,7 +60,7 @@ struct DeviceInfo {
 };
 
 
-class WalkInPlaceTabController : public QObject, Leap::Listener {
+class WalkInPlaceTabController : public QObject {
 	Q_OBJECT
 
 private:
@@ -119,7 +117,6 @@ private:
 	bool g_accuracyButtonWithTouch = false;
 	bool showingStepGraph = false;
 	bool showGraphDetectTO = true;
-	bool leapMotionInit = false;
 	int gameType = 0;
 	int hmdType = 0;
 	int controlSelect = 0;
@@ -159,12 +156,6 @@ private:
 	float stepPeaksFullSpeed = 13.0;
 	float avgContYVel = 0.0;
 	float totalContYVel = 0.0;
-	float leapLYaw = 0;
-	float leapLPitch = 0;
-	float leapLRoll = 0;
-	float leapRYaw = 0;
-	float leapRPitch = 0;
-	float leapRRoll = 0;
 	double _stepFrequencyMin = 250;
 	double _stepIntegrateSteps = 0.0;
 	double _jogIntegrateSteps = 0.0;
@@ -179,14 +170,9 @@ private:
 	double identifyControlLastTime = 99999;
 	double identifyControlTimeOut = 6000;
 	double _timeLastGraphPoint = 0.0;
-	double _timeLastLeapFrame = 0;
 
 	uint32_t firstTrackerID = vr::k_unTrackedDeviceIndexInvalid;
 	bool hasInititalizedLocoCont = false;
-
-	Leap::Controller leapControl;
-	GestureMatcher matcher;
-	bool appmenupressed = false;
 
 public:
 	~WalkInPlaceTabController();
@@ -195,9 +181,6 @@ public:
 
 	void eventLoopTick();
 	void handleEvent(const vr::VREvent_t& vrEvent);
-
-	virtual void onConnect(const Leap::Controller&);
-	virtual void onFrame(const Leap::Controller&);
 
 	Q_INVOKABLE unsigned getDeviceCount();
 	Q_INVOKABLE QString getDeviceSerial(unsigned index);
@@ -264,7 +247,6 @@ public slots:
 	void setGameStepType(int gameType);
 	void setHMDType(int gameType);
 	void setControlSelect(int control);
-	void addLeapControllers(bool val);
 	void disableController(bool val, int control);
 	void disableTracker(bool val, int control);
 	void setAccuracyButtonControlSelect(int control);

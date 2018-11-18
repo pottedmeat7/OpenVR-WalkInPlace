@@ -8,13 +8,11 @@
     <ClCompile Include="src\tabcontrollers\WalkInPlaceTabController.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\overlaycontroller.cpp" />
-    <ClCompile Include="src\GestureMatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\logging.h" />
-    <ClInclude Include="src\GestureMatcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -156,7 +156,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.5f);
 		vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
 		vr::VROverlay()->SetOverlayFlag(m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true);
-		std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + "\\res\\thumbicon.png";
+		std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + slash + "res" + slash + "thumbicon.png";
 		if (QFile::exists(QString::fromStdString(thumbIconPath))) {
 			vr::VROverlay()->SetOverlayFromFile(m_ulOverlayThumbnailHandle, thumbIconPath.c_str());
 		} else {
