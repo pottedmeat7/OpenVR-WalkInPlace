@@ -9,6 +9,7 @@ Debug/*
 CMakeFiles/*
 client_overlay/CMakeFiles/*
 driver_vrwalkinplace/CMakeFiles/*
+driver_vrwalkinplace/bin/x64/*
 lib_vrwalkinplace/CMakeFiles/*
 openvr/*
 *.cmake
@@ -20,6 +21,8 @@ CMakeCache.*
 *.so
 *.qmlc
 *.pro.user
+client_overlay/Release/*
+client_overlay/bin/x64/OpenVR-WalkInplaceOverlay
 client_overlay/bin/x64/translations/*
 client_overlay/bin/x64/doc/*
 client_overlay/bin/x64/lib/*
