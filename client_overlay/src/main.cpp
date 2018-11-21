@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
 		walkinplace::OverlayController* controller = walkinplace::OverlayController::createInstance(desktopMode, noSound);
 		controller->Init(&qmlEngine);
 
-        QQmlComponent component(&qmlEngine, QUrl::fromLocalFile("res/qml/mainwidget.qml"));
+        QQmlComponent component(&qmlEngine, QStringLiteral("res/qml/mainwidget.qml"));
 		auto errors = component.errors();
 		for (auto& e : errors) {
 			LOG(ERROR) << "QML Error: " << e.toString().toStdString() << std::endl;
