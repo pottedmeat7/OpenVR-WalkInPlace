@@ -4,7 +4,12 @@
 
 An OpenVR driver that applies virtual movement using a pedometer
 
-The OpenVR driver hooks into the lighthouse driver and tracks movement of the HMD and Controllers. It then applies movement into the virtual envrionment.
+The OpenVR driver adds software defined controllers, tracks movement of the Physical HMD and Controllers, then applies input to the software controllers as well as mirror all physical input.
+
+## A history
+
+https://sites.google.com/view/openvr-walkinplace/home
+
 
 # Current Games that Work Best with OpenVR-WalkInPlace
 
