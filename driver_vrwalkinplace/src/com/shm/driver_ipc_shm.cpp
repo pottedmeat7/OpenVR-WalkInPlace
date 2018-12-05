@@ -120,14 +120,6 @@ namespace vrwalkinplace {
 								}
 								break;
 
-								case ipc::RequestType::EnableLeapMotion:
-								{
-									if (vr::VRServerDriverHost()) {
-										driver->enable_leap_controllers(message.msg.ipc_LeapMotion.enable);
-									}
-									break;
-								}
-
 								case ipc::RequestType::OpenVR_DeviceAdded:
 								{
 									if (vr::VRServerDriverHost()) {

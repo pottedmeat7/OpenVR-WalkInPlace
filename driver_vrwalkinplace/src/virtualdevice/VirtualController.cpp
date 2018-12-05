@@ -37,13 +37,7 @@ namespace vrwalkinplace {
 			vr::VRProperties()->SetBoolProperty(m_propertyContainerHandle, vr::Prop_DeviceIsWireless_Bool, true);
 			vr::VRProperties()->SetBoolProperty(m_propertyContainerHandle, vr::Prop_HasControllerComponent_Bool, true);
 
-
-			if (leftSide) {
-				vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_ControllerRoleHint_Int32, vr::ETrackedControllerRole::TrackedControllerRole_LeftHand);
-			}
-			else {
-				vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_ControllerRoleHint_Int32, vr::ETrackedControllerRole::TrackedControllerRole_RightHand);
-			}
+			vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_ControllerRoleHint_Int32, vr::ETrackedControllerRole::TrackedControllerRole_Treadmill);
 			
 
 			vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_Axis0Type_Int32, vr::k_eControllerAxis_TrackPad);
@@ -52,7 +46,7 @@ namespace vrwalkinplace {
 
 			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_SerialNumber_String, m_serialNumber.c_str());
 			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_ModelNumber_String, "Vive Controller MV");
-			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_RenderModelName_String, "vr_controller_vive_1_5"); 
+			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_RenderModelName_String, "vr_controller_vive_1_5"); 
 			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_ManufacturerName_String, "HTC");
 
 			uint64_t available_buttons = vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu) |
@@ -64,14 +58,10 @@ namespace vrwalkinplace {
 
 			vr::VRProperties()->SetUint64Property(m_propertyContainerHandle, vr::Prop_SupportedButtons_Uint64, available_buttons);
 			
-			//vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_DeviceClass_Int32, vr::TrackedDeviceClass_Controller);
-			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_ControllerType_String, "vive_controller");
-			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_LegacyInputProfile_String, "legacy_bindings_vive_controller");
+			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_LegacyInputProfile_String, "legacy_bindings_ovrwip_controller");
 
 			// Configure JSON controller configuration input profile
-			//vr::ETrackedPropertyError tpeError;
-			//installDir = vr::VRProperties()->GetStringProperty(pDriverContext->GetDriverHandle(), vr::Prop_InstallPath_String, &tpeError);
-			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_InputProfilePath_String, "{htc}/input/vive_controller_profile.json");
+			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_InputProfilePath_String, "{00vrwalkinplace}/input/ovrwip_controller_profile.json");
 			
 			// A button component
 			m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad].insert(std::make_pair(ButtonEventType::ButtonPressed, 0));
@@ -273,7 +263,7 @@ namespace vrwalkinplace {
 			return vr::EVRInputError::VRInputError_None;
 		}
 
-		vr::EVRInputError VirtualController::CreateSkeletonComponent(vr::PropertyContainerHandle_t ulContainer, const char *pchName, const char *pchSkeletonPath, const char *pchBasePosePath, const vr::VRBoneTransform_t *pGripLimitTransforms, uint32_t unGripLimitTransformCount, vr::VRInputComponentHandle_t *pHandle) {
+		vr::EVRInputError VirtualController::CreateSkeletonComponent(vr::PropertyContainerHandle_t ulContainer, const char *pchName, const char *pchSkeletonPath, const char *pchBasePosePath, vr::EVRSkeletalTrackingLevel eSkeletalTrackingLevel, const vr::VRBoneTransform_t *pGripLimitTransforms, uint32_t unGripLimitTransformCount, vr::VRInputComponentHandle_t *pHandle) {
 			return vr::EVRInputError::VRInputError_None;
 		}
 
@@ -290,7 +280,7 @@ namespace vrwalkinplace {
 					uint64_t componentHandle = m_ulBoolComponentsMap[eButtonId][findType];
 					bool boolVal = (eventType == ButtonEventType::ButtonPressed || eventType == ButtonEventType::ButtonTouched);
 					vr::EVRInputError eVRIError = UpdateBooleanComponent(componentHandle, boolVal, eventTimeOffset);
-					//LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
+					LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
 						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}
@@ -314,7 +304,7 @@ namespace vrwalkinplace {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}
 						eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad][ButtonEventType::TrackpadY], axisState.y, 0);
-						//LOG(INFO) << "apply axis event " << unWhichAxis << " X dimension on device " << m_openvrId;
+						LOG(INFO) << "apply axis event " << eButtonId << " X dimension on device " << m_openvrId;
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}

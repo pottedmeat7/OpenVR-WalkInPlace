@@ -3,10 +3,15 @@
 
 	!include "MUI2.nsh"
 
+	!define MUI_ICON "..\client_overlay\bin\x64\res\OVRWIP.ico"
+	!define MUI_HEADERIMAGE
+	!define MUI_HEADERIMAGE_BITMAP "..\client_overlay\bin\x64\res\OVRWIP.ico"
+	!define MUI_HEADERIMAGE_RIGHT
+
 ;--------------------------------
 ;General
 
-	!define OVERLAY_BASEDIR "..\client_overlay\bin\win64"
+	!define OVERLAY_BASEDIR "..\client_overlay\bin\x64"
 	!define DRIVER_BASEDIR "..\driver_vrwalkinplace"
 
 	;Name and file
@@ -104,14 +109,13 @@ Section "Install" SecInstall
 
 
 	;ADD YOUR OWN FILES HERE...
-	File "${DRIVER_BASEDIR}\..\third-party\LeapSDK\lib\x64\Leap.lib"
-	File "${DRIVER_BASEDIR}\..\third-party\LeapSDK\lib\x64\Leap.dll"
 	File "${OVERLAY_BASEDIR}\LICENSE"
 	File "${OVERLAY_BASEDIR}\*.exe"
 	File "${OVERLAY_BASEDIR}\*.dll"
 	File "${OVERLAY_BASEDIR}\*.bat"
 	File "${OVERLAY_BASEDIR}\*.vrmanifest"
-	File "${OVERLAY_BASEDIR}\*.conf"
+	File "/oname=qt.conf" "${OVERLAY_BASEDIR}\qt_win.conf"
+	File "${OVERLAY_BASEDIR}\..\logging.conf"
 	File /r "${OVERLAY_BASEDIR}\res"
 	File /r "${OVERLAY_BASEDIR}\qtdata"
 
@@ -130,8 +134,8 @@ Section "Install" SecInstall
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources"
 	File "${DRIVER_BASEDIR}\resources\driver.vrresources"
 	File /r "${DRIVER_BASEDIR}\resources\icons"
-	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\resources\settings"
-	File "${DRIVER_BASEDIR}\resources\settings\default.vrsettings"
+	File /r "${DRIVER_BASEDIR}\resources\input"
+	File /r "${DRIVER_BASEDIR}\resources\settings"
 	SetOutPath "$vrRuntimePath\drivers\00vrwalkinplace\bin\win64"
 	File "${DRIVER_BASEDIR}\bin\x64\driver_00vrwalkinplace.dll"
 
@@ -179,6 +183,9 @@ Section "Uninstall"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\bin\win64\OpenVR-WalkInPlaceOverlay.log"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\icons\controller_status_ready.png"
 	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\icons\vive_wand.svg"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input\ovrwip_controller_profile.json"
+	Delete "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input\legacy_bindings_ovrwip_controller.json"
+	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\input"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\icons"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\settings"
 	RMdir "$vrRuntimePath2\drivers\00vrwalkinplace\resources\"

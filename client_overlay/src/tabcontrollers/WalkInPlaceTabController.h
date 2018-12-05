@@ -128,10 +128,13 @@ private:
 	int _teleportUnpressed = true;
 	int _hasUnTouchedStepAxis = 50;
 	int peaksCount = 0;
-	uint64_t _controllerDeviceIds[2] = { vr::k_unTrackedDeviceIndexInvalid, vr::k_unTrackedDeviceIndexInvalid };
-	int _controlUsedID = vr::k_unTrackedDeviceIndexInvalid;
-	int hmdID = vr::k_unTrackedDeviceIndexInvalid;
-	int vrLocoContID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t _controller1ID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t _controller2ID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t _controlUsedID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t hmdID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t vrLocoContID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
+	uint64_t tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 	int stepPeaksToStart = 3;
 	float hmdYaw = 0;
 	float contYaw = 0;

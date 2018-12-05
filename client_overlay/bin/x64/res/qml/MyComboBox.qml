@@ -10,6 +10,7 @@ ComboBox {
     background: Rectangle {
         border.color: parent.down ? myPalette.base : (parent.activeFocus ? myPalette.base : myPalette.base)
         color: parent.down ? myPalette.base : (parent.activeFocus ? myPalette.base : myPalette.mid )
+        height: 36
     }
 
     contentItem: MyText {

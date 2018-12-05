@@ -73,7 +73,6 @@ client_overlay/bin/x64/lib/*
 client_overlay/bin/x64/LICENSE
 client_overlay/bin/x64/manifest.vrmanifest
 client_overlay/bin/x64/translations/*
-driver_vrwalkinplace/resources/icons/*
 *.cache
 VRWalkInPlace.VC.VC.opendb
 *.db

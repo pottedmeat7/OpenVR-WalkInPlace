@@ -1,0 +1,89 @@
+{
+   "bindings" : {
+      "/actions/legacy" : {
+         "haptics" : [
+            {
+               "output" : "/actions/legacy/out/left_haptic",
+               "path" : "/user/treadmill/output/haptic"
+            }
+         ],
+         "poses" : [
+            {
+               "output" : "/actions/legacy/in/Left_Pose",
+               "path" : "/user/treadmill/pose/raw"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/legacy/in/left_system_press"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/treadmill/input/system"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/legacy/in/left_axis1_value"
+                  },
+                  "touch" : {
+                     "output" : "/actions/legacy/in/left_axis1_touch"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/treadmill/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/legacy/in/left_grip_press"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/treadmill/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/legacy/in/left_applicationmenu_press"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/treadmill/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/legacy/in/left_axis0_press"
+                  },
+                  "position" : {
+                     "output" : "/actions/legacy/in/left_axis0_value"
+                  },
+                  "touch" : {
+                     "output" : "/actions/legacy/in/left_axis0_touch"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/treadmill/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/legacy/in/left_axis1_press"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {
+                  "haptic_amplitude" : "0"
+               },
+               "path" : "/user/treadmill/input/trigger"
+            }
+         ]
+      }
+   },
+   "controller_type" : "ovrwip_controller",
+   "description" : "",
+   "name" : "Default bindings for OVRWIP"
+}

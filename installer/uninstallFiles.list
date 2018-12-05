@@ -9,8 +9,6 @@ Delete $INSTDIR\logging.conf
 Delete $INSTDIR\manifest.vrmanifest
 Delete $INSTDIR\opengl32sw.dll
 Delete $INSTDIR\OpenVR-WalkInPlaceOverlay.exe
-Delete $INSTDIR\Leap.lib
-Delete $INSTDIR\Leap.dll
 Delete $INSTDIR\openvr_api.dll
 Delete $INSTDIR\qt.conf
 Delete $INSTDIR\Qt5Charts.dll
@@ -873,6 +871,10 @@ Delete $INSTDIR\qtdata\Universal\ToolBar.qml
 Delete $INSTDIR\qtdata\Universal\ToolButton.qml
 Delete $INSTDIR\qtdata\Universal\ToolTip.qml
 Delete $INSTDIR\qtdata\Universal\Tumbler.qml
+Delete $INSTDIR\qtdata\plugins\qmltooling\qmldbg_messages.dll
+Delete $INSTDIR\qtdata\plugins\qmltooling\qmldbg_nativedebugger.dll
+Delete $INSTDIR\qtdata\plugins\scenegraph\qsgd3d12backend.dll
+Delete $INSTDIR\qtdata\QtQuick\Controls\qtquickcontrolsplugin.dll
 Delete $INSTDIR\res\qml\backarrow.svg
 Delete $INSTDIR\res\qml\DisableDevicePage.qml
 Delete $INSTDIR\res\qml\mainwidget.qml
@@ -901,6 +903,11 @@ Delete $INSTDIR\startdesktopmode.bat
 Delete $INSTDIR\Uninstall.exe
 RMdir $INSTDIR\res\qml
 RMdir $INSTDIR\res
+RMdir $INSTDIR\qtdata\QtQuick\Controls
+RMdir $INSTDIR\qtdata\QtQuick
+RMdir $INSTDIR\qtdata\plugins\scenegraph
+RMdir $INSTDIR\qtdata\plugins\qmltooling
+RMdir $INSTDIR\qtdata\plugins
 RMdir $INSTDIR\qtdata\Universal
 RMdir $INSTDIR\qtdata\translations
 RMdir $INSTDIR\qtdata\QtQuick.2

@@ -19,9 +19,9 @@ Rectangle {
         stackView: mainView
     }
 
-    property DisableDevicePage disableDevicePage:  DisableDevicePage {
-        stackView: mainView
-    }
+    //property DisableDevicePage disableDevicePage:  DisableDevicePage {
+    //    stackView: mainView
+    //}
 
     StackView {
         id: mainView

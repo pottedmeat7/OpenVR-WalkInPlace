@@ -1,0 +1,39 @@
+{
+  "jsonid" : "input_profile",
+  "controller_type": "ovrwip_controller",
+  "legacy_profile": "ovrwip_controller",
+  "legacy_binding" :  "{00vrwalkinplace}/input/legacy_bindings_ovrwip_controller.json",
+  "input_bindingui_mode" : "single_device",
+  "input_bindingui_right" :
+  {
+    "image": "{00vrwalkinplace}/icons/ovrwip_wand.svg"
+  },
+  "input_source" :
+  {
+    "/input/trackpad" : { 
+        "type" : "trackpad",
+        "binding_image_point" : [ 66, 59 ],
+        "order" : 2
+    },
+    "/input/trigger" : {
+        "type" : "trigger",
+        "binding_image_point" : [ 41, 64 ],
+        "order" : 1
+    },
+    "/input/grip" : {
+        "type" : "button",
+        "binding_image_point" : [ 52, 87 ],
+        "order" : 3
+    },
+    "/input/application_menu" : {
+        "type" : "button",
+        "binding_image_point" : [ 64, 35 ],
+        "order" : 4
+    },
+    "/input/system" : {
+        "type" : "button",
+        "binding_image_point" : [ 67, 81 ],
+        "order" : 5
+    }
+  }
+}
