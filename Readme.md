@@ -68,10 +68,6 @@ Direction Control Example:
 ![Example Screenshot](docs/screenshots/wip_graph.png)
 *This is what the graph should look like when walking in place
 
-## Watch the Selected Controller touchpad to See Successful Virtual Input
-When a step is detected touchpad input will be applied to the selected controller. 
-In the SteamVR Overlay this input will be visualized with a small grey dot on the virtual touchpad of the selected controller. 
-
 ### Auto Conf
 You can detect ideal HMD Thresholds, Tracker Configuration, and Jog/Run Arm swing values with Auto Conf function on the Graph Page
 
@@ -84,12 +80,11 @@ Choose which HMD your using
 
 ### Input Type
 There are a few different methods of inputs used by games
--The standard "Touchpad" locomotion games, that use from 0-1 on the touchpad for forward movement speed, often these games also have a "click to sprint" function. Use either "Touchpad (with click)" or "Touchpad" also "Joystick (with click)" or "Joysitck" for Rift
--Some games use the touchpad locomotion except you have to also press and hold the touchpad while moving your finger from 0-1 use the option "Touchpad (pressed)" or "Joystick (pressed)" for these games
--Some games only allow for teleport, or they have other teleport functions like Dash, for these you should use either "touchpad (with click)" or "joystick (with click)" you then should lower the "Arm Swing Run" value to 0.05 or very low also lower the "step time" very low to 0.05 this will trigger a click input and very quickly unclick. Its not perfect but I found for some games it is an improvement over teleporting over and over.
--Keyboard input is fallback that is only needed if nothing else works
+- The standard "Touchpad" locomotion games, that use from 0-1 on the touchpad for forward movement speed, often these games also have a "click to sprint" function. Use either "Touchpad (with click)" or "Touchpad" also "Joystick (with click)" or "Joysitck" for Rift
+- Some games use touchpad locomotion except you have to press and hold the touchpad while moving your finger from 0-1 use the option "Touchpad (pressed)" or "Joystick (pressed)" for these games
+- Anything else such as Teleport games just generating a click with "click to sprint" is the best option
 
-### Controller selection (Replaced with 1 custom controller)
+### Controller selection
 All input now goes into the OVRWIP Custom Controller you can also rebind the input from the OVRWIP controller to other controllers.
 
 ### buttons to disable/enable WIP
