@@ -8,7 +8,7 @@ TextField {
     id: myTextField
     color: myPalette.windowText //"#000000"
     text: ""
-    font.pointSize: 17
+    font.pointSize: 19
     background: Button {
         hoverEnabled: true
         background: Rectangle {

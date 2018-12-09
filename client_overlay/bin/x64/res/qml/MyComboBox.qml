@@ -14,7 +14,7 @@ ComboBox {
     }
 
     contentItem: MyText {
-        leftPadding: 0
+        leftPadding: 7
         rightPadding: parent.indicator.width + parent.spacing
         text: parent.displayText
         horizontalAlignment: Text.AlignLeft

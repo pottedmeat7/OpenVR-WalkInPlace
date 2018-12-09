@@ -120,10 +120,18 @@ namespace vrwalkinplace {
 								}
 								break;
 
-								case ipc::RequestType::OpenVR_DeviceAdded:
+								case ipc::RequestType::OpenVR_HMDAdded:
 								{
 									if (vr::VRServerDriverHost()) {
-										driver->openvr_deviceAdded(message.msg.ipc_DeviceAdded.deviceId, true);
+										driver->openvr_hmdAdded(message.msg.ipc_HMDAdded.deviceId);
+									}
+									break;
+								}
+
+								case ipc::RequestType::OpenVR_FollowDevice:
+								{
+									if (vr::VRServerDriverHost()) {
+										driver->openvr_followDevice(message.msg.ipc_FollowDevice.deviceId);
 									}
 									break;
 								}

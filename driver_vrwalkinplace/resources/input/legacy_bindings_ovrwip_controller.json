@@ -1,28 +1,7 @@
 {
    "bindings" : {
       "/actions/legacy" : {
-         "haptics" : [
-            {
-               "output" : "/actions/legacy/out/left_haptic",
-               "path" : "/user/treadmill/output/haptic"
-            }
-         ],
-         "poses" : [
-            {
-               "output" : "/actions/legacy/in/Left_Pose",
-               "path" : "/user/treadmill/pose/raw"
-            }
-         ],
          "sources" : [
-            {
-               "inputs" : {
-                  "click" : {
-                     "output" : "/actions/legacy/in/left_system_press"
-                  }
-               },
-               "mode" : "button",
-               "path" : "/user/treadmill/input/system"
-            },
             {
                "inputs" : {
                   "pull" : {
@@ -38,20 +17,23 @@
             {
                "inputs" : {
                   "click" : {
+                     "output" : "/actions/legacy/in/left_axis1_press"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {
+                  "haptic_amplitude" : "0"
+               },
+               "path" : "/user/treadmill/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
                      "output" : "/actions/legacy/in/left_grip_press"
                   }
                },
                "mode" : "button",
                "path" : "/user/treadmill/input/grip"
-            },
-            {
-               "inputs" : {
-                  "click" : {
-                     "output" : "/actions/legacy/in/left_applicationmenu_press"
-                  }
-               },
-               "mode" : "button",
-               "path" : "/user/treadmill/input/application_menu"
             },
             {
                "inputs" : {
@@ -71,14 +53,17 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/legacy/in/left_axis1_press"
+                     "output" : "/actions/legacy/in/left_axis2_press"
+                  },
+                  "position" : {
+                     "output" : "/actions/legacy/in/left_axis2_value"
+                  },
+                  "touch" : {
+                     "output" : "/actions/legacy/in/left_axis2_touch"
                   }
-               },
-               "mode" : "button",
-               "parameters" : {
-                  "haptic_amplitude" : "0"
-               },
-               "path" : "/user/treadmill/input/trigger"
+               },             
+               "mode" : "joystick",
+               "path" : "/user/treadmill/input/joystick"
             }
          ]
       }

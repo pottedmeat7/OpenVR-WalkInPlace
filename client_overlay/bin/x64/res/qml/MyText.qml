@@ -4,5 +4,5 @@ import QtQuick.Controls 2.0
 
 Text {
 	color:myPalette.windowText //  "#000000"
-	font.pointSize: 17
+	font.pointSize: 19
 }

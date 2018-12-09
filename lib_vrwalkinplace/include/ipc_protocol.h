@@ -22,8 +22,8 @@ namespace vrwalkinplace {
 			OpenVR_StateUpdate,
 			OpenVR_ButtonEvent,
 			OpenVR_AxisEvent,
-			OpenVR_DeviceAdded,
-			EnableLeapMotion,
+			OpenVR_HMDAdded,
+			OpenVR_FollowDevice,
 
 			OpenVR_EnableDriver
 		};
@@ -104,7 +104,11 @@ namespace vrwalkinplace {
 			vr::VRControllerAxis_t axisState;
 		};
 
-		struct Request_OpenVR_DeviceAdded {
+		struct Request_OpenVR_HMDAdded {
+			uint32_t deviceId;
+		};
+
+		struct Request_OpenVR_FollowDevice {
 			uint32_t deviceId;
 		};
 
@@ -134,7 +138,8 @@ namespace vrwalkinplace {
 				Request_OpenVR_StateUpdate ipc_StateUpdate;
 				Request_OpenVR_ButtonEvent ipc_ButtonEvent;
 				Request_OpenVR_AxisEvent ipc_AxisEvent;
-				Request_OpenVR_DeviceAdded ipc_DeviceAdded;
+				Request_OpenVR_HMDAdded ipc_HMDAdded;
+				Request_OpenVR_FollowDevice ipc_FollowDevice;
 				Request_OpenVR_EnableDriver ipc_EnableDriver;
 			} msg;
 		};

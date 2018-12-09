@@ -14,31 +14,31 @@ https://sites.google.com/view/openvr-walkinplace/home
 # Current Games that Work Best with OpenVR-WalkInPlace
 
 - Skyrim VR
+- The Forest
 - Rec Room
 - Arizona Sunshine
 - Onward
 - VR-Chat
 - DOOM VFR
-- Any other games with Keyboard or Touchpad locomotion controls
+- Any other games with Analog locomotion controls
 
 Other games may not have touchpad movement options however this driver will 
 also activate teleport if you'd like.
 
 # Features
 
-- Change Step Thresholds for Walk / Jog / Run in Place to fit different games
+- Auto Configuration for best settings
 - Tracker support (for feet)
 - Configuration for "Arm Swinging" Locomotion
-- Change speed of movement applied in game 
-- Profiles for different games
-- graph of velocity values for step configuration
+- Profiles saving
+- Device movemnt Graph
 
 # Upcoming
 
-- Auto Configure
 - Options for emulating other input methods
-- Fixes for teleport games
-
+- HMD Relative Direction Override to Controller Relative Direction
+- Any Relative Direction to Tracker Relative Direction
+ 
 ## Installer
 
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
@@ -89,9 +89,8 @@ There are a few different methods of inputs used by games
 -Some games only allow for teleport, or they have other teleport functions like Dash, for these you should use either "touchpad (with click)" or "joystick (with click)" you then should lower the "Arm Swing Run" value to 0.05 or very low also lower the "step time" very low to 0.05 this will trigger a click input and very quickly unclick. Its not perfect but I found for some games it is an improvement over teleporting over and over.
 -Keyboard input is fallback that is only needed if nothing else works
 
-### Controller selection (which controller is used for virtual input)
-This menu allows you to select which controller should be used for virtual input.
-The selected controller will highlight green for 10 seconds
+### Controller selection (Replaced with 1 custom controller)
+All input now goes into the OVRWIP Custom Controller you can also rebind the input from the OVRWIP controller to other controllers.
 
 ### buttons to disable/enable WIP
 These options can be used to disable/enable virtual movement when your holding or not holding the button selected.
@@ -133,20 +132,26 @@ If you find the walking with just the HMD is too sensitive you can set the "Walk
 ### Scale Touch with Swing?
 This will enable varying touch values between your minimum walk/jog/run values depending on how much your average arm swinging values (average for "step time" times 3) differ from the "jog/run" swing values. The default "walk" arm swing value is assumed to be zero so anything over that will scale over the "walk touch" value.
 
-### Use Controller Direction for Straf? and Use Controller Direction for Reverse?
-These are made for games that either have HMD relative movement (ie you move the direction you face). These games do allow straf movement often by touching the left or right side of the touchpad. These options will calcuate your controller direction and use left or right touchpad values if your controllers direction is perpendicular to your HMD forward direction. 
+### Use Controller Direction for Straf?
+These are made for games that have HMD relative movement (ie you move the direction you face). These games do allow straf movement often by touching the left or right side of the touchpad. These options will calcuate your controller direction and use left or right touchpad values if your controllers direction is perpendicular to your HMD forward direction. 
+(These features currently have problems, and are having more conflicts when both options are used)
+
+### Use Controller Direction for Reverse?
 Some games also do not support controller direction for reverse, this option will determine if your controller is pointed backwards and apply negative values for the touchpad. 
-(These features currently have gimbal lock problems, and are having more conflicts when both options are used)
+(These features currently have problems, and are having more conflicts when both options are used)
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
-After re-opening SteamVR you can reload your saved profiles by first clicking "Load Profiles" then selecting the profile you want from the drop down menu, and click "Apply".
 If you want to update a profile with new settings you need to select the profile and delete it and re-create a "New Profile".
-If you name a profile with the name "default" it will be the initially loaded profile once you "load profiles".
+
+If you name a profile with the name "default" it will be the initially loaded profile once you start SteamVR. If you dont want to automatically enable walk in place locomotion on startup save the default profile with "enableWIP" unchecked.
 
 ## Graph Page
 The graph page will show you realtime values from the HMD, controllers and trackers.
 If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.
+
+### Auto Configuration
+Just follow the on screen instructions and the auto configuration will make some approximations and set HMD, Tracker and Arm Swing thresholds for you.
 
 ## Any Issues Check out the Logs
 Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`

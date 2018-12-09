@@ -138,8 +138,8 @@ namespace vrwalkinplace {
 
 		void ping(bool modal = true, bool enableReply = false);
 
-		void openvrDeviceAdded(uint32_t deviceId);
-		void enableLeapMotion(bool enable);
+		void openvrHMDAdded(uint32_t deviceId);
+		void openvrFollowDevice(uint32_t deviceId);
 		void openvrUpdatePose(uint32_t deviceId, vr::DriverPose_t pose);
 		void openvrUpdateState(uint32_t deviceId, vr::VRControllerState_t new_state);
 		void openvrButtonEvent(ButtonEventType eventType, uint32_t deviceId, vr::EVRButtonId buttonId, double timeOffset = 0.0);

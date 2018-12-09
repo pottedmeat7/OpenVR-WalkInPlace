@@ -29,7 +29,6 @@ MyMainViewPage {
         stepDetectionEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType()
         hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
-        controlSelect.currentIndex = WalkInPlaceTabController.getControlSelect()
         buttonMode.currentIndex = WalkInPlaceTabController.getAccuracyButtonFlip() ? 0 : 1
         accuracyButtonDialog.currentIndex = WalkInPlaceTabController.getAccuracyButton()
         buttonControlSelect.currentIndex = WalkInPlaceTabController.getAccuracyButtonControlSelect()
@@ -172,20 +171,9 @@ MyMainViewPage {
                         Layout.preferredWidth: 50
                     }
 
-                    MyComboBox {
-                        id: controlSelect 
-                        currentIndex: 0
-                        Layout.maximumWidth: 250
-                        Layout.minimumWidth: 250
+                    MyText {
+                        text: "OVRWIP Controller"
                         Layout.preferredWidth: 250
-                        Layout.fillWidth: true
-                        displayText: currentText
-                        model: ["1st Controller", "2nd Controller"]
-                        onCurrentIndexChanged: {
-                            if (currentIndex >= 0) { 
-                                WalkInPlaceTabController.setControlSelect(currentIndex)                        
-                            } 
-                        }
                     }
 
                 }
@@ -368,14 +356,15 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 18
 
-                        MyPushButton {
-                            id: walkInPlaceLoadProfiles
-                            Layout.preferredWidth: 200
-                            text: "Load Profiles"
-                            onClicked: {
-                                reloadWalkInPlaceProfiles()
-                            }
-                        }
+                        //MyPushButton {
+                        //    id: walkInPlaceLoadProfiles
+                        //    Layout.topMargin: 10
+                        //    Layout.preferredWidth: 200
+                        //    text: "Load Profiles"
+                        //    onClicked: {
+                        //        reloadWalkInPlaceProfiles()
+                        //    }
+                        //}
 
                         MyComboBox {
                             id: walkInPlaceProfileComboBox
@@ -397,6 +386,7 @@ MyMainViewPage {
 
                         MyPushButton {
                             id: walkInPlaceApplyProfileButton
+                            Layout.topMargin: 10
                             enabled: false
                             Layout.preferredWidth: 150
                             text: "Apply"
@@ -411,6 +401,7 @@ MyMainViewPage {
                         MyPushButton {
                             id: walkInPlaceNewProfileButton
                             Layout.preferredWidth: 150
+                            Layout.topMargin: 10
                             text: "New Profile"
                             onClicked: {
                                 walkInPlaceNewProfileDialog.openPopup()
@@ -421,6 +412,7 @@ MyMainViewPage {
                             id: walkInPlaceDeleteProfileButton
                             enabled: false
                             Layout.preferredWidth: 180
+                            Layout.topMargin: 10
                             text: "Delete Profile"
                             onClicked: {
                                 if (walkInPlaceProfileComboBox.currentIndex > 0) {
@@ -433,36 +425,6 @@ MyMainViewPage {
 
                     RowLayout {
                         spacing: 18
-
-                        MyPushButton {
-                            Layout.preferredWidth: 100
-                            text: "Reset"
-                            onClicked: { 
-                                stepThresholdBox.setHMDY(0.12)
-                                stepThresholdBox.setHMDXZ(0.2)
-                                stepThresholdBox.setHandJog(1.2)
-                                stepThresholdBox.setHandRun(2.1)
-                                stepThresholdBox.setUseTrackers(false)
-                                stepThresholdBox.setDisableHMD(false)
-                                stepThresholdBox.setTrackerY(0.12)
-                                stepThresholdBox.setTrackerXZ(0.2)
-                                stepThresholdBox.setStepTime(0.4)
-                                stepControlBox.setWalkTouch(0.4)
-                                stepControlBox.setJogTouch(1)
-                                stepControlBox.setRunTouch(1)
-                                stepControlBox.setUseContDirForStraf(false)
-                                stepControlBox.setUseContDirForRev(false)
-                                stepControlBox.updateGUI()
-                                stepThresholdBox.updateGUI()
-                                stepDetectionEnableToggle.checked = false
-                                gameTypeDialog.currentIndex = 0
-                                hmdTypeDialog.currentIndex = 0
-                                controlSelect.currentIndex = 0
-                                buttonMode.currentIndex = 0
-                                accuracyButtonDialog.currentIndex = 0
-                                buttonControlSelect.currentIndex = 0
-                            }
-                        }
 
                         MyPushButton {
                             text: "Auto Configuration & Velocity Graph"
@@ -479,17 +441,16 @@ MyMainViewPage {
 
         Component.onCompleted: {   
             if ( !initialLoaded ) { 
-                updateInfo()
+                //updateInfo()
+                reloadWalkInPlaceProfiles()
             }
             initialLoaded = true
-            //reloadWalkInPlaceProfiles()            
         }
 
         Connections {
             target: WalkInPlaceTabController
             onWalkInPlaceProfilesChanged: {
                 reloadWalkInPlaceProfiles()
-                updateInfo()
             }
         }
 

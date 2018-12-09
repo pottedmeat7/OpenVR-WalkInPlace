@@ -14,10 +14,10 @@ GroupBox {
     property double handWalk : 0.02
     property double handJog : 1.1
     property double handRun : 2.1
-    property double stepTime : 0.5
+    property double stepTime : 0.2
 
     property double thresholdStep : 0.01
-    property double thresholdStepTime : 0.05
+    property double thresholdStepTime : 0.02
     property int pitchStep : 1
 
     property int keyboardUIDBase: 100
@@ -298,7 +298,7 @@ GroupBox {
         }
 
         GridLayout {
-            columns: 5
+            columns: 6
 
             MyText {
                 text: "Tracker Y"
@@ -313,6 +313,12 @@ GroupBox {
             }
 
             MyText {
+                text: ""
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 160
+            }    
+
+            MyText {
                 text: "Use Trackers?"
                 horizontalAlignment: Text.AlignHLeft
                 Layout.preferredWidth: 160
@@ -323,16 +329,10 @@ GroupBox {
                 horizontalAlignment: Text.AlignHLeft
                 Layout.preferredWidth: 230
             }
-
-            MyText {
-                text: "Step Time (seconds)"
-                horizontalAlignment: Text.AlignHCenter
-                Layout.preferredWidth: 230
-            }
         }
 
         GridLayout {
-            columns: 11
+            columns: 9
 
             MyPushButton {
                 id: trackerYMinusButton
@@ -430,6 +430,12 @@ GroupBox {
                 }
             }
 
+            MyText {
+                text: ""
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 160
+            }    
+
             MyToggleButton {
                 id: useTrackersCheck
                 Layout.preferredWidth: 163
@@ -447,6 +453,19 @@ GroupBox {
                     setDisableHMD(checked)
                 }
             }
+        }
+
+        GridLayout {
+            columns: 1
+            MyText {
+                text: "Step Time (seconds)"
+                horizontalAlignment: Text.AlignHCenter
+                Layout.preferredWidth: 230
+            }
+        }
+
+        GridLayout {
+            columns: 3
 
             MyPushButton {
                 id: stepTimeMinusButton

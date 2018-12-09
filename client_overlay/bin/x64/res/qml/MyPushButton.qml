@@ -8,7 +8,7 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        font.pointSize: 15
+        font.pointSize: 19
         color: parent.enabled ? myPalette.buttonText : "#737373"
 	}
 	background: Rectangle {

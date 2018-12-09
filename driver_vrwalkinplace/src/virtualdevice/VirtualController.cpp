@@ -39,21 +39,18 @@ namespace vrwalkinplace {
 
 			vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_ControllerRoleHint_Int32, vr::ETrackedControllerRole::TrackedControllerRole_Treadmill);
 			
-
 			vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_Axis0Type_Int32, vr::k_eControllerAxis_TrackPad);
 			vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_Axis1Type_Int32, vr::k_eControllerAxis_Trigger);
 			vr::VRProperties()->SetInt32Property(m_propertyContainerHandle, vr::Prop_Axis2Type_Int32, vr::k_eControllerAxis_Joystick);
 
 			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_SerialNumber_String, m_serialNumber.c_str());
 			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_ModelNumber_String, "Vive Controller MV");
-			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_RenderModelName_String, "vr_controller_vive_1_5"); 
+			vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_RenderModelName_String, "vr_controller_vive_1_5"); 
 			//vr::VRProperties()->SetStringProperty(m_propertyContainerHandle, vr::Prop_ManufacturerName_String, "HTC");
 
-			uint64_t available_buttons = vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu) |
-				vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad) |
+			uint64_t available_buttons = vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Touchpad) |
 				vr::ButtonMaskFromId(vr::k_EButton_Knuckles_JoyStick) |
 				vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger) |
-				vr::ButtonMaskFromId(vr::k_EButton_System) |
 				vr::ButtonMaskFromId(vr::k_EButton_Grip);
 
 			vr::VRProperties()->SetUint64Property(m_propertyContainerHandle, vr::Prop_SupportedButtons_Uint64, available_buttons);
@@ -128,19 +125,6 @@ namespace vrwalkinplace {
 			CreateBooleanComponent(m_propertyContainerHandle, "/input/grip/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_Grip][ButtonEventType::ButtonTouched]);
 
 			// app button component
-			m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_ApplicationMenu].insert(std::make_pair(ButtonEventType::ButtonTouched, 0));
-			CreateBooleanComponent(m_propertyContainerHandle, "/input/application_menu/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_ApplicationMenu][ButtonEventType::ButtonTouched]);
-
-			m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_ApplicationMenu].insert(std::make_pair(ButtonEventType::ButtonPressed, 0));
-			CreateBooleanComponent(m_propertyContainerHandle, "/input/application_menu/click", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_ApplicationMenu][ButtonEventType::ButtonPressed]);
-
-			// system button component
-			m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_System].insert(std::make_pair(ButtonEventType::ButtonTouched, 0));
-			CreateBooleanComponent(m_propertyContainerHandle, "/input/system/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_System][ButtonEventType::ButtonTouched]);
-
-			m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_System].insert(std::make_pair(ButtonEventType::ButtonPressed, 0));
-			CreateBooleanComponent(m_propertyContainerHandle, "/input/system/click", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_System][ButtonEventType::ButtonPressed]);
-
 			return vr::EVRInitError::VRInitError_None;
 		}
 
@@ -185,33 +169,15 @@ namespace vrwalkinplace {
 
 		void VirtualController::updatePose(vr::DriverPose_t new_pose)
 		{
-			//LOG(INFO) << "new pose values - pos(x,y,z): (" << new_pose.vecPosition[0] << "," << new_pose.vecPosition[1] << "," << new_pose.vecPosition[2] << ") - vel(x,y,x): (" << new_pose.vecVelocity[0] << "," << new_pose.vecVelocity[1] << "," << new_pose.vecVelocity[2] << ")";			
-			devicePose.poseTimeOffset = new_pose.poseTimeOffset;
-			devicePose.poseIsValid = new_pose.poseIsValid;
-			devicePose.result = new_pose.result;
-			devicePose.deviceIsConnected = true;// new_pose.deviceIsConnected;
-			devicePose.vecPosition[0] = (devicePose.vecPosition[0] + new_pose.vecPosition[0]) / 2.0;
-			devicePose.vecPosition[1] = (devicePose.vecPosition[1] + new_pose.vecPosition[1]) / 2.0;
-			devicePose.vecPosition[2] = (devicePose.vecPosition[2] + new_pose.vecPosition[2]) / 2.0;
-			devicePose.vecVelocity[0] = (devicePose.vecVelocity[0] + new_pose.vecVelocity[0]) / 2.0;
-			devicePose.vecVelocity[1] = (devicePose.vecVelocity[1] + new_pose.vecVelocity[1]) / 2.0;
-			devicePose.vecVelocity[2] = (devicePose.vecVelocity[2] + new_pose.vecVelocity[2]) / 2.0;
-			devicePose.qRotation = new_pose.qRotation;
-			devicePose.qWorldFromDriverRotation = new_pose.qWorldFromDriverRotation;
+			//LOG(INFO) << "new pose values - pos(x,y,z): (" << new_pose.vecPosition[0] << "," << new_pose.vecPosition[1] << "," << new_pose.vecPosition[2] << ") - vel(x,y,x): (" << new_pose.vecVelocity[0] << "," << new_pose.vecVelocity[1] << "," << new_pose.vecVelocity[2] << ")";
 			devicePose.vecWorldFromDriverTranslation[0] = new_pose.vecWorldFromDriverTranslation[0];
 			devicePose.vecWorldFromDriverTranslation[1] = new_pose.vecWorldFromDriverTranslation[1];
 			devicePose.vecWorldFromDriverTranslation[2] = new_pose.vecWorldFromDriverTranslation[2];
-
-			//devicePose.qDriverFromHeadRotation.w = 1;
-			//devicePose.qDriverFromHeadRotation.x = 0; //  -m_hmdRot.x;   this would cancel out the HMD's rotation
-			//devicePose.qDriverFromHeadRotation.y = 0; //  -m_hmdRot.y;   but instead we rely on the Leap Motion to
-			//devicePose.qDriverFromHeadRotation.z = 0; //  -m_hmdRot.z;   update the hand rotation as the head rotates
-			//devicePose.vecDriverFromHeadTranslation[0] = 0;
-			//devicePose.vecDriverFromHeadTranslation[1] = 0;
-			//devicePose.vecDriverFromHeadTranslation[2] = 0;
-
+			devicePose.vecVelocity[0] = new_pose.vecVelocity[0];
+			devicePose.vecVelocity[1] = new_pose.vecVelocity[1];
+			devicePose.vecVelocity[2] = new_pose.vecVelocity[2];
+			devicePose.qRotation = new_pose.qRotation;
 			//devicePose = new_pose;
-
 		}
 
 		void VirtualController::updateState(vr::VRControllerState_t new_state) {
@@ -280,7 +246,7 @@ namespace vrwalkinplace {
 					uint64_t componentHandle = m_ulBoolComponentsMap[eButtonId][findType];
 					bool boolVal = (eventType == ButtonEventType::ButtonPressed || eventType == ButtonEventType::ButtonTouched);
 					vr::EVRInputError eVRIError = UpdateBooleanComponent(componentHandle, boolVal, eventTimeOffset);
-					LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
+					//LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
 						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}
@@ -304,7 +270,7 @@ namespace vrwalkinplace {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}
 						eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad][ButtonEventType::TrackpadY], axisState.y, 0);
-						LOG(INFO) << "apply axis event " << eButtonId << " X dimension on device " << m_openvrId;
+						//LOG(INFO) << "apply axis event " << eButtonId << " X dimension on device " << m_openvrId;
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
 							LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 						}

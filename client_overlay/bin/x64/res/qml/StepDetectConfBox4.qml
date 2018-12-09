@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Virtual Input"
 
-    property double walkTouch : 0.35
+    property double walkTouch : 0.17
     property double jogTouch : 0.9
     property double runTouch : 1.0
     property bool scaleTouch : false
@@ -28,6 +28,7 @@ GroupBox {
         walkTouchInputField.text = walkTouch.toFixed(2)
         jogTouchInputField.text = jogTouch.toFixed(2)
         runTouchInputField.text = runTouch.toFixed(2)
+        enableScaleTouch.checked = scaleTouch
         useContDirForStrafCheck.checked = useContDirForStraf
         useContDirForRevCheck.checked = useContDirForRev
     }
@@ -110,10 +111,10 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < -1) {
-                            val = -1
-                        } else if (val > 1.0) {
-                            val = 1.0
+                        if (val < -100) {
+                            //val = -100
+                        } else if (val > 100) {
+                            //val = 100
                         }
                         walkTouch = val
                         setWalkTouch(val)
@@ -127,8 +128,8 @@ GroupBox {
                 text: "+"
                 onClicked: {
                     var value = walkTouch + thresholdStep
-                    if (value > 1.0) {
-                        value = 1.0
+                    if (value > 100.0) {
+                        //value = 100.0
                     }
                     walkTouch = value  
                     setWalkTouch(value)                  
@@ -158,10 +159,10 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < -1) {
-                            val = -1
-                        } else if (val > 1.0) {
-                            val = 1.0
+                        if (val < -100) {
+                            //val = -100
+                        } else if (val > 100) {
+                            //val = 100
                         }
                         jogTouch = val
                         setJogTouch(val)
@@ -175,8 +176,8 @@ GroupBox {
                 text: "+"
                 onClicked: {
                     var value = jogTouch + thresholdStep
-                    if (value > 1.0) {
-                        value = 1.0
+                    if (value > 100.0) {
+                        //value = 100.0
                     }
                     jogTouch = value
                     setJogTouch(value)
@@ -206,10 +207,10 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < -1) {
-                            val = -1
-                        } else if (val > 1.0) {
-                            val = 1.0
+                        if (val < -100) {
+                            //val = -100
+                        } else if (val > 100) {
+                            //val = 100
                         }
                         runTouch = val
                         setRunTouch(val)
@@ -223,8 +224,8 @@ GroupBox {
                 text: "+"
                 onClicked: {
                     var value = runTouch + thresholdStep
-                    if (value > 1.0) {
-                        value = 1.0
+                    if (value > 100.0) {
+                        //value = 100.0
                     }
                     runTouch = value
                     setRunTouch(value)

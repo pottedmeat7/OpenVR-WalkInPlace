@@ -46,31 +46,53 @@ namespace vrwalkinplace {
 		void ServerDriver::Cleanup() {
 			LOG(TRACE) << "CServerDriver::Cleanup()";
 			shmCommunicator.shutdown();
-			//VR_CLEANUP_SERVER_DRIVER_CONTEXT();
+			VR_CLEANUP_SERVER_DRIVER_CONTEXT();
 		}
 
 
 		// Call frequency: ~93Hz
 		void ServerDriver::RunFrame() {
+			/*if (initDriver && followDevice != vr::k_unTrackedDeviceIndexInvalid) {
+				vr::VRServerDriverHost()->GetRawTrackedDevicePoses(0, latestDevicePoses, vr::k_unMaxTrackedDeviceCount); 
+				vr::TrackedDevicePose_t pose = latestDevicePoses[followDevice];
+				if (pose.bPoseIsValid) {
+					vr::DriverPose_t driverPose;
+					driverPose.poseIsValid = pose.bPoseIsValid;
+					driverPose.poseTimeOffset = 0;
+					driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
+					//auto m = pose.mDeviceToAbsoluteTracking.m;
+					driverPose.vecWorldFromDriverTranslation[0] = 0;//m[0][3];
+					driverPose.vecWorldFromDriverTranslation[1] = 0;//m[1][3];
+					driverPose.vecWorldFromDriverTranslation[2] = 0;//m[2][3];
+					driverPose.vecVelocity[0] = 0;//pose.vVelocity.v[0];
+					driverPose.vecVelocity[1] = 0;//pose.vVelocity.v[1];
+					driverPose.vecVelocity[2] = 0;//pose.vVelocity.v[2];
+					vr_locomotion1.updatePose(driverPose);
+					vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
+				}
+			}*/
 		}
 
-		void ServerDriver::openvr_deviceAdded(uint32_t unWhichDevice, bool leftRole) {
-			LOG(TRACE) << "CServerDriver::Added New Virtual Controller";
+		void ServerDriver::openvr_hmdAdded(uint32_t unWhichDevice) {
 			if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
 				hmdID = unWhichDevice;
 			}
 		}
 
+		void ServerDriver::openvr_followDevice(uint32_t unWhichDevice) {
+			followDevice = unWhichDevice;
+		}
+
 		void ServerDriver::openvr_poseUpdate(uint32_t unWhichDevice, const vr::DriverPose_t & pose, double eventTimeOffset) {
-			if (initDriver) {
+			/*if (initDriver) {
 				vr::DriverPose_t devicePose = pose;
 				devicePose.qWorldFromDriverRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
-				devicePose.vecWorldFromDriverTranslation[0] = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[0][3];
-				devicePose.vecWorldFromDriverTranslation[1] = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[1][3];
-				devicePose.vecWorldFromDriverTranslation[2] = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[2][3];
+				devicePose.vecWorldFromDriverTranslation[0] = 0;// latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[0][3];
+				devicePose.vecWorldFromDriverTranslation[1] = 0;// latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[1][3];
+				devicePose.vecWorldFromDriverTranslation[2] = 0;// latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[2][3];
 				vr_locomotion1.updatePose(devicePose);
 				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
-			}
+			}*/
 		}
 
 		void ServerDriver::openvr_updateState(uint32_t unWhichDevice, vr::VRControllerState_t new_state, double eventTimeOffset) {			 
@@ -113,10 +135,6 @@ namespace vrwalkinplace {
 				vr::VRServerDriverHost()->TrackedDeviceAdded("ovrwip_", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &vr_locomotion1);
 
 			}
-		}
-
-		void ServerDriver::reActivateLocomotionController(bool leftMode) {
-
 		}
 
 		const char * const * ServerDriver::GetInterfaceVersions()

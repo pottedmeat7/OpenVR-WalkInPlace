@@ -219,10 +219,10 @@ namespace vrwalkinplace {
 		}
 	}
 
-	void VRWalkInPlace::enableLeapMotion(bool enable) {
+	void VRWalkInPlace::openvrHMDAdded(uint32_t deviceId) {
 		if (_ipcServerQueue) {
-			ipc::Request message(ipc::RequestType::EnableLeapMotion);
-			message.msg.ipc_LeapMotion.enable = enable;
+			ipc::Request message(ipc::RequestType::OpenVR_HMDAdded);
+			message.msg.ipc_HMDAdded.deviceId = deviceId;
 			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
 		}
 		else {
@@ -230,10 +230,10 @@ namespace vrwalkinplace {
 		}
 	}
 
-	void VRWalkInPlace::openvrDeviceAdded(uint32_t deviceId) {
+	void VRWalkInPlace::openvrFollowDevice(uint32_t deviceId) {
 		if (_ipcServerQueue) {
-			ipc::Request message(ipc::RequestType::OpenVR_DeviceAdded);
-			message.msg.ipc_DeviceAdded.deviceId = deviceId;
+			ipc::Request message(ipc::RequestType::OpenVR_FollowDevice);
+			message.msg.ipc_FollowDevice.deviceId = deviceId;
 			_ipcServerQueue->send(&message, sizeof(ipc::Request), 0);
 		}
 		else {

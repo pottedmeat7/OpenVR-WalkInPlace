@@ -12,28 +12,18 @@
   {
     "/input/trackpad" : { 
         "type" : "trackpad",
-        "binding_image_point" : [ 66, 59 ],
-        "order" : 2
+        "binding_image_point" : [ 100, 100 ],
+        "order" : 1
     },
     "/input/trigger" : {
         "type" : "trigger",
-        "binding_image_point" : [ 41, 64 ],
-        "order" : 1
+        "binding_image_point" : [ 100, 100 ],
+        "order" : 2
     },
     "/input/grip" : {
         "type" : "button",
-        "binding_image_point" : [ 52, 87 ],
+        "binding_image_point" : [ 100, 100 ],
         "order" : 3
-    },
-    "/input/application_menu" : {
-        "type" : "button",
-        "binding_image_point" : [ 64, 35 ],
-        "order" : 4
-    },
-    "/input/system" : {
-        "type" : "button",
-        "binding_image_point" : [ 67, 81 ],
-        "order" : 5
     }
   }
 }
