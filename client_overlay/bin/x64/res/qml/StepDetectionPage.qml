@@ -152,7 +152,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 400
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)", "thumbsticks (click sprint)", "thumbsticks", "thumbsticks (pressed)","hold grip", "Keyboard (WASD)", "Keyboard (Arrows)"]
+                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)", "thumbsticks (click sprint)", "thumbsticks", "thumbsticks (pressed)","hold grip"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setGameStepType(currentIndex)                            

@@ -428,19 +428,19 @@ MyStackViewPage {
                         ctx.fillStyle = "#222222"
                         ctx.fillRect(0, topY, rectWidth, rectHeight);     
                         ctx.fillStyle = "#FFFFFF"
-                        ctx.fillText("Hand", 105, 37);
-                        ctx.fillText("X1", 175, 37);
-                        ctx.fillText("Y1", 225, 37);
-                        ctx.fillText("Z1", 275, 37); 
-                        ctx.fillText("X2", 325, 37);
-                        ctx.fillText("Y2", 375, 37);
-                        ctx.fillText("Z2", 425, 37); 
-                        ctx.fillStyle = "#DD0000"
-                        ctx.fillRect(150,30,20,20);   
+                        ctx.fillText("Hands", 105, 37);
+                        //ctx.fillText("X1", 175, 37);
+                        ctx.fillText("AVG", 225, 37);
+                        //ctx.fillText("Z1", 275, 37); 
+                        ctx.fillText("X", 325, 37);
+                        ctx.fillText("Y", 375, 37);
+                        ctx.fillText("Z", 425, 37); 
+                        //ctx.fillStyle = "#DD0000"
+                        //ctx.fillRect(150,30,20,20);   
                         ctx.fillStyle = "#00DD00"
                         ctx.fillRect(200,30,20,20);   
-                        ctx.fillStyle = "#0000DD"
-                        ctx.fillRect(250,30,20,20); 
+                        //ctx.fillStyle = "#0000DD"
+                        //ctx.fillRect(250,30,20,20); 
                         ctx.fillStyle = "#DD00DD"
                         ctx.fillRect(300,30,20,20);   
                         ctx.fillStyle = "#00DDDD"
@@ -1205,10 +1205,10 @@ MyStackViewPage {
                     tracker2YPoints.push(velY);
                     tracker2ZPoints.push(velZ);
                 }
-                if ( velVals.length >= 18 ) {
+                if ( velVals.length >= 17 ) {
                     if ( autoConfMode < 0 ) {
-                        stepDetects.push(velVals[16]);
-                        trkrStepDetects.push(velVals[17]);
+                        stepDetects.push(velVals[15]);
+                        trkrStepDetects.push(velVals[16]);
 
                         if ( stepDetects.length > hmdCanvas.seconds*hmdCanvas.sections ) {
                             stepDetects.shift();

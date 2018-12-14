@@ -285,7 +285,7 @@ namespace vrwalkinplace {
 						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}
 					eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_Knuckles_JoyStick][ButtonEventType::JoystickY], axisState.y, 0);
-					//LOG(INFO) << "apply axis event " << unWhichAxis << " Y dimension on device " << m_openvrId;
+					//LOG(INFO) << "apply axis event " << eButtonId << " Y dimension on device " << m_openvrId;
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
 						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}

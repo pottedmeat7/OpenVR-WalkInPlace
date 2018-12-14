@@ -4,6 +4,7 @@
 #include <QObject>
 #include <memory>
 #include <openvr.h>
+#include <vector>
 #include <vrwalkinplace.h>
 
 class QQuickWindow;
@@ -14,6 +15,11 @@ namespace walkinplace {
 // forward declaration
 class OverlayController;
 
+struct greater
+{
+	template<class T>
+	bool operator()(T const &a, T const &b) const { return a > b; }
+};
 
 struct WalkInPlaceProfile {
 	std::string profileName;
@@ -89,7 +95,7 @@ private:
 	vr::HmdVector3d_t hmdForward = { 0,0,-1 };
 	vr::VROverlayHandle_t overlayHandle;
 
-	std::list<float> contVelSamples;
+	std::vector<float> contVelSamples;
 	bool mappedControllerDriver1 = false;
 	bool mappedControllerDriver2 = false;
 	bool identifyControlTimerSet = true;
@@ -260,7 +266,7 @@ public slots:
 	bool upAndDownStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold, double roll, double pitch);
 	bool nodCheck(float angVel);
 	bool sideToSideStepCheck(vr::HmdVector3d_t vel, vr::HmdVector3d_t threshold);
-	bool controllerSwingCheck(vr::HmdVector3_t vel, float threshold);
+	bool controllerSwingCheck(float avgVel, vr::HmdVector3_t vel, float threshold);
 	float getScaledTouch(float minTouch, float maxTouch, float avgVel, float maxVel);
 
 	void stopMovement(uint32_t deviceId);

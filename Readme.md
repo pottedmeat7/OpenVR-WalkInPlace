@@ -125,7 +125,10 @@ Some games use the entire axis from the center, 0, to 1
 If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "jog" or "run" touch value with the "arm swing" thresholds above.
 
 ### Scale Touch with Swing?
-This will enable varying touch values between your minimum walk/jog/run values depending on how much your average arm swinging values (average for "step time" times 3) differ from the "jog/run" swing values. The default "walk" arm swing value is assumed to be zero so anything over that will scale over the "walk touch" value.
+This will enable varying touch values between your set walk/run values the Hand Jog/Run values should be set much higher to make this feel smoother and get more variance in the movement. Even with no arm swing movement the walk touch will still be the minimum value. So if you want no movement without arm swinging, set Walk touch to 0.
+
+When using scale touch, I've changed the algorithm to use average arm swinging to make it smoother. 
+You can see the current average arm swing values in the graph.
 
 ### Use Controller Direction for Straf?
 These are made for games that have HMD relative movement (ie you move the direction you face). These games do allow straf movement often by touching the left or right side of the touchpad. These options will calcuate your controller direction and use left or right touchpad values if your controllers direction is perpendicular to your HMD forward direction. 

@@ -897,6 +897,7 @@ Delete $INSTDIR\res\qml\StepDetectConfBox4.qml
 Delete $INSTDIR\res\qml\StepDetectGraphPage.qml
 Delete $INSTDIR\res\qml\StepDetectionPage.qml
 Delete $INSTDIR\res\thumbicon.png
+Delete $INSTDIR\res\OVRWIP.ico
 Delete $INSTDIR\res\Thumbs.db
 Delete $INSTDIR\res\transparent.png
 Delete $INSTDIR\startdesktopmode.bat

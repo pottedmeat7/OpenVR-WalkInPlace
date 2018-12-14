@@ -5,10 +5,10 @@ import QtQuick.Layouts 1.3
 GroupBox {
     property string boxTitle: "Virtual Input"
 
-    property double walkTouch : 0.17
+    property double walkTouch : 0.55
     property double jogTouch : 0.9
     property double runTouch : 1.0
-    property bool scaleTouch : false
+    property bool scaleTouch : true
     property bool useContDirForStraf: false
     property bool useContDirForRev: false
 

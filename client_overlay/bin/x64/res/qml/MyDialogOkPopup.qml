@@ -35,7 +35,7 @@ Popup {
             implicitHeight: dialogHeight
             anchors.centerIn: parent
             radius: 24
-            color: "#c0c0c0" // #0E5B36"
+            color: myPalette.mid //"#c0c0c0" // #0E5B36"
             border.color: "#000000"
             border.width: 2
             ColumnLayout {

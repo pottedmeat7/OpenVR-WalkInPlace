@@ -12,8 +12,8 @@ GroupBox {
     property bool useTrackers : false
     property bool disableHMD : false
     property double handWalk : 0.02
-    property double handJog : 1.1
-    property double handRun : 2.1
+    property double handJog : 1.7
+    property double handRun : 3.0
     property double stepTime : 0.2
 
     property double thresholdStep : 0.01
@@ -225,8 +225,8 @@ GroupBox {
                     if (!isNaN(val)) {
                         if (val < thresholdStep) {
                             val = thresholdStep
-                        } else if (val > 3.0) {
-                            val = 3.0
+                        } else if (val > 100.0) {
+                            val = 100.0
                         }
                         handJog = val
                         setHandJog(val)
@@ -240,8 +240,8 @@ GroupBox {
                 text: "+"
                 onClicked: {
                     var value = handJog + thresholdStep
-                    if (value > 3.0) {
-                        value = 3.0
+                    if (value > 100.0) {
+                        value = 100.0
                     }
                     handJog = value
                     setHandJog(value)
@@ -273,8 +273,8 @@ GroupBox {
                     if (!isNaN(val)) {
                         if (val < thresholdStep) {
                             val = thresholdStep
-                        } else if (val > 5.0) {
-                            val = 5.0
+                        } else if (val > 100.0) {
+                            val = 100.0
                         }
                         handRun = val
                         setHandRun(val)
@@ -288,8 +288,8 @@ GroupBox {
                 text: "+"
                 onClicked: {
                     var value = handRun + thresholdStep
-                    if (value > 5.0) {
-                        value = 5.0
+                    if (value > 100.0) {
+                        value = 100.0
                     }
                     handRun = value
                     setHandRun(value)
