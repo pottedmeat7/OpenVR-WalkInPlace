@@ -1245,9 +1245,11 @@ namespace walkinplace {
 				hasUnTouchedStepAxis = 2;
 				vr::VRControllerAxis_t axisState;
 				vr::HmdVector3_t hand1Vel = { 0,0,0 };
-				vr::HmdVector3_t hand2Vel = { 0,0,0 };
+				vr::HmdVector3_t hand2Vel = { 0,0,0 }; 
+				double handVelDT = 1.0 / 10.0 * 1000;
+				double tHandDiff = ((double)(now - timeLastHandVelTick));
 				if (moveButtonCheck) {
-					if (tdiff >= deltatime) {
+					if (tHandDiff >= handVelDT) {
 						if (controller1ID != vr::k_unTrackedDeviceIndexInvalid || controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
 							//check if first controller is running / jogging
 							if (controller1ID != vr::k_unTrackedDeviceIndexInvalid) {
@@ -1259,24 +1261,42 @@ namespace walkinplace {
 							if (contVelSampleTime > (stepFrequencyMin * 12)) {
 								if (contVelSamples.size() > 4) {
 									contVelSamples.erase(contVelSamples.begin() + 3.0, contVelSamples.end());
+									sortContVelSamples.clear();
+									sortContVelSamples.swap(contVelSamples);									
+									std::sort(sortContVelSamples.begin(), sortContVelSamples.end(), greater());
 								}
 								contVelSampleTime = 0;
 							}
 							else {
 								contVelSampleTime += tdiff;
 							}
-							contVelSamples.push_back(std::max(std::fabs(hand1Vel.v[1]), std::fabs(hand2Vel.v[1])));
-							std::vector<float> temp(contVelSamples);
-							std::sort(temp.begin(), temp.end(), greater());
-							totalContYVel = 0;
-							int count = 0;
-							for (int i = 0; i < 3; i++) {
-								if (temp.size() > i) {
-									totalContYVel = totalContYVel + temp.at(i);
-									count++;
+							float handVel = std::max(std::fabs(hand1Vel.v[1]), std::fabs(hand2Vel.v[1]));
+							if (sortContVelSamples.size() < 3) {
+								contVelSamples.push_back(handVel);
+								sortContVelSamples.push_back(handVel);
+								for (int i = 0; i < contVelSamples.size(); i++) {
+									totalContYVel = totalContYVel + contVelSamples.at(i);
+								}
+								avgContYVel = totalContYVel / contVelSamples.size();
+								if (avgContYVel > 0.5) {
+									avgContYVel = 0.5;
 								}
 							}
-							avgContYVel = totalContYVel / count;
+							else {
+								if (handVel > sortContVelSamples.at(0) || handVel > sortContVelSamples.at(1) || handVel > sortContVelSamples.at(2)) {
+									contVelSamples.push_back(handVel);
+									sortContVelSamples.push_back(handVel);
+									std::sort(sortContVelSamples.begin(), sortContVelSamples.end(), greater());
+									totalContYVel = sortContVelSamples.at(0) + sortContVelSamples.at(1) + sortContVelSamples.at(2);
+									avgContYVel = totalContYVel / 3;
+								}
+								else {
+									contVelSamples.push_back(handVel);
+									sortContVelSamples.push_back(handVel);
+									totalContYVel = sortContVelSamples.at(0) + sortContVelSamples.at(1) + sortContVelSamples.at(2);
+									avgContYVel = totalContYVel / 3;
+								}
+							}				
 							isRunning = controllerSwingCheck(avgContYVel, hand1Vel, handRunThreshold) || controllerSwingCheck(avgContYVel, hand2Vel, handRunThreshold);
 							if (isRunning) {
 								runIntegrateSteps = 0;
@@ -1303,6 +1323,9 @@ namespace walkinplace {
 								}
 							}
 						}
+						timeLastHandVelTick = now;
+					}
+					if (tdiff >= deltatime) {
 						timeLastTick = now;
 						stepIntegrateSteps += tdiff;
 					}
@@ -1318,6 +1341,7 @@ namespace walkinplace {
 					jogIntegrateSteps = 0.0;
 					runIntegrateSteps = 0.0;
 					contVelSamples.clear();
+					sortContVelSamples.clear();
 					totalContYVel = 0.0;
 					avgContYVel = 0.0;
 					contVelSampleTime = 0.0;

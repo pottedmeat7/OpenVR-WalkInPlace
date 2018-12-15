@@ -442,7 +442,7 @@ MyMainViewPage {
         Component.onCompleted: {   
             if ( !initialLoaded ) { 
                 //updateInfo()
-                reloadWalkInPlaceProfiles()
+                initWalkInPlaceProfiles()
             }
             initialLoaded = true
         }
@@ -506,7 +506,7 @@ MyMainViewPage {
         }
     }
 
-    function reloadWalkInPlaceProfiles() {
+    function initWalkInPlaceProfiles() {
         var profiles = [""]
         var profileCount = WalkInPlaceTabController.getWalkInPlaceProfileCount()
         var defaultFound = -1
@@ -524,6 +524,17 @@ MyMainViewPage {
             walkInPlaceProfileComboBox.currentIndex = defaultFound+1
             updateInfo()
         }
+    }
+
+    function reloadWalkInPlaceProfiles() {
+        var profiles = [""]
+        var profileCount = WalkInPlaceTabController.getWalkInPlaceProfileCount()
+        for (var i = 0; i < profileCount; i++) {
+            var p_name = WalkInPlaceTabController.getWalkInPlaceProfileName(i)
+            profiles.push(p_name)
+        }
+        walkInPlaceProfileComboBox.model = profiles
+        walkInPlaceProfileComboBox.currentIndex = 0
     }
 
 }

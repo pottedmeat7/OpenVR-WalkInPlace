@@ -96,6 +96,7 @@ private:
 	vr::VROverlayHandle_t overlayHandle;
 
 	std::vector<float> contVelSamples;
+	std::vector<float> sortContVelSamples;
 	bool mappedControllerDriver1 = false;
 	bool mappedControllerDriver2 = false;
 	bool identifyControlTimerSet = true;
@@ -171,6 +172,7 @@ private:
 	double runIntegrateSteps = 0.0;
 	double stepIntegrateStepLimit = 500;
 	double timeLastTick = 0.0;
+	double timeLastHandVelTick = 0.0;
 	double velStepTime = 0.0;
 	double timeLastStepPeak = 0.0;
 	double timeLastTrackerStep = 0.0;

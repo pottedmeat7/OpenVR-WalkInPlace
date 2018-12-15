@@ -7,7 +7,7 @@ GroupBox {
 
     property double hmdXZ : 0.27
     property double hmdY : 0.12
-    property double trackerY : 0.10
+    property double trackerY : 0.06
     property double trackerXZ : 0.27
     property bool useTrackers : false
     property bool disableHMD : false
