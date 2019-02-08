@@ -18,9 +18,10 @@ QT = \
     gui \
     widgets \
     quick \
+    multimedia \
 
 LIBS = \
-    -L"$$PWD/lib_vrwalkinplace" -lVRWalkInPlace \
+    -L"$$PWD/lib_vrwalkinplace/lib" -lVRWalkInPlace \
     -L"$$PWD/openvr/lib/linux64" -lopenvr_api \
     -lrt
 

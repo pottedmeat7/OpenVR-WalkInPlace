@@ -11,7 +11,7 @@ client_overlay/CMakeFiles/*
 driver_vrwalkinplace/CMakeFiles/*
 driver_vrwalkinplace/bin/x64/*
 lib_vrwalkinplace/CMakeFiles/*
-openvr/*
+lib_vrwalkinplace/lib/*
 *.cmake
 *.qmake*
 moc_*
