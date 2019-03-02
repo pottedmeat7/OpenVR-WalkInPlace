@@ -8,11 +8,19 @@
     <ClCompile Include="src\tabcontrollers\WalkInPlaceTabController.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\overlaycontroller.cpp" />
+    <ClCompile Include="src\TrainedModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementTracker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\logging.h" />
+    <ClInclude Include="src\TrainedModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

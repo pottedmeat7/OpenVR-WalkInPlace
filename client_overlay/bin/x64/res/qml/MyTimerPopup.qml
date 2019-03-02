@@ -36,7 +36,7 @@ Popup {
 
     background: Rectangle {
         color: "black"
-        opacity: 0.8
+        opacity: 0.45
      }
 
     contentItem: Item {
