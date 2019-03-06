@@ -82,8 +82,9 @@ namespace walkinplace {
 		vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
 
 		arma::mat dataModel;
+		arma::mat dataSample;
 
-		TrainedModel trModel;
+		TrainedModel trModel;		
 
 		std::string currentProfileName = "";
 

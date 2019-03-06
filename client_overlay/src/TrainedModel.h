@@ -10,6 +10,9 @@ private:
 	int initTrainStep = 0;
 	std::vector<float> cntrlPeaks;
 
+	int samplePerSec = 30.0;
+	float dT = 1.0 / (float)samplePerSec;
+
 	float lastHMDVelY = 0;
 	float lastHMDACCY = 9999;
 	float lastCNTRL1VelY = 0;
@@ -22,6 +25,11 @@ private:
 	float minCNTRLY_medium = 9999;
 	float minCNTRLY_fast = 9999;
 
+	std::vector<float> maxHMDVariance;
+	std::vector<float> maxCNTRLVariance;
+	std::vector<float> minHMDVariance;
+	std::vector<float> minCNTRLVariance;
+
 	double lastHMDPeak = 0;
 	double lastCNTRL1Peak = 0;
 	double lastCNTRL2Peak = 0;
@@ -29,8 +37,16 @@ private:
 	double maxCNTRLFRQ = 0;
 	double currentSampleTime = 0;
 
+	arma::mat hmdModel;
+	arma::mat cntrl1Model;
+	arma::mat cntrl2Model;
+	arma::mat trkr1Model;
+	arma::mat trkr2Model;
+
 public:
-	void train(arma::mat model);
+	void train(arma::mat model, int kV);
+	float computeDelta(arma::mat sample, int kV);
+
 	int isHMDPeak(float hmdY, double dT);
 	float isCNTRL1Peak(float cntrl1Y, double dT);
 	float isCNTRL2Peak(float cntrl2Y, double dT);

@@ -5,6 +5,101 @@ TrainedModel::TrainedModel() {
 
 //TrainedModel::~TrainedModel() {
 //}
+float TrainedModel::computeDelta(arma::mat sample, int kV) {
+	int kV_set = sample.n_rows > kV ? sample.n_rows - 1 : kV;
+	arma::rowvec mN = hmdModel.cols(0, 0);
+	arma::rowvec sN = sample.cols(0, 0);
+	int mNk = std::floor(mN.n_rows / kV_set);
+	int sNk = std::floor(sN.n_rows / kV_set);
+	arma::mat dS(sNk,2);
+	for (int ki = 0; ki < sNk; ki++) {
+		arma::rowvec sKi = sN.rows(ki*kV_set, (ki*kV_set) + sNk - 1);
+		for (int mi = 0; mi < mNk; mi++) {
+			arma::rowvec mKi = mN.rows((mi*kV_set), (mi*kV_set) + mNk - 1);
+			arma::vec dKi = arma::abs(mKi - sKi);
+			float dK_i = arma::sum(dKi*dKi);
+			if (dK_i < dS(ki,0) ) {
+				dS(ki) = (dK_i, (mi*kV_set));
+			}
+		}
+	}
+	float dKN = arma::sum(dS.cols(0, 0).each_row);
+	arma::rowvec dKN1 = dS.shed_row.cols(0, 1);
+	float dKidx = arma::sum(dKN1-dS.shed_rows(dS.n_rows-1,1).cols(0, 1));
+	return ((float)sample.n_rows / ((float)delta);
+}
+
+void TrainedModel::train(arma::mat dataModel, int kV) {
+	int kV_set = kV < 1 ? 1 : kV;
+	std::vector<float> stepHMDVari;
+	std::vector<float> stepCNTRL1Vari;
+	std::vector<float> stepCNTRL2Vari;
+	for (int i = 0; i < dataModel.n_rows; i++) {
+		float dT = (1.0 / samplePerSec);
+		float currentScale = dataModel(i, dataModel.n_cols - 2);
+		float hmdY = dataModel(i, 0);
+		float cntrl1Y = dataModel(i, 1);
+		float cntrl2Y = dataModel(i, 2);
+		stepHMDVari.push_back(hmdY);
+		stepCNTRL1Vari.push_back(cntrl1Y);
+		stepCNTRL2Vari.push_back(cntrl2Y);
+		if (i >= kV_set) {
+			for (int k = kV_set; k > 0; k--) {
+				if (std::abs(hmdY - stepHMDVari.at(kV_set - k)) > maxHMDVariance.at(kV_set - k)) {
+					maxHMDVariance.at(kV_set - k) = std::abs(hmdY - stepHMDVari.at(kV_set - k));
+				}
+				if (std::abs(cntrl1Y - stepCNTRL1Vari.at(kV_set - k)) > maxCNTRLVariance.at(kV_set - k)) {
+					maxCNTRLVariance.at(kV_set - k) = std::abs(cntrl1Y - stepCNTRL1Vari.at(kV_set - k));
+				}
+				if (std::abs(cntrl2Y - stepCNTRL2Vari.at(kV_set - k)) < maxCNTRLVariance.at(kV_set - k)) {
+					maxCNTRLVariance.at(kV_set - k) = std::abs(cntrl2Y - stepCNTRL2Vari.at(kV_set - k));
+				}
+				if (std::abs(hmdY - stepHMDVari.at(kV_set - k)) < minHMDVariance.at(kV_set - k)) {
+					minHMDVariance.at(kV_set - k) = std::abs(hmdY - stepHMDVari.at(kV_set - k));
+				}
+				if (std::abs(cntrl1Y - stepCNTRL1Vari.at(kV_set - k)) < minCNTRLVariance.at(kV_set - k)) {
+					minCNTRLVariance.at(kV_set - k) = std::abs(cntrl1Y - stepCNTRL1Vari.at(kV_set - k));
+				}
+				if (std::abs(cntrl2Y - stepCNTRL2Vari.at(kV_set - k)) < minCNTRLVariance.at(kV_set - k)) {
+					minCNTRLVariance.at(kV_set - k) = std::abs(cntrl2Y - stepCNTRL2Vari.at(kV_set - k));
+				}
+			}
+			stepHMDVari.push_back(hmdY);
+			stepCNTRL1Vari.push_back(cntrl1Y);
+			stepCNTRL2Vari.push_back(cntrl2Y);
+			stepHMDVari.erase(stepHMDVari.begin());
+			stepCNTRL1Vari.erase(stepCNTRL1Vari.begin());
+			stepCNTRL2Vari.erase(stepCNTRL2Vari.begin());
+		}
+		else {
+			stepHMDVari.push_back(hmdY);
+			stepCNTRL1Vari.push_back(cntrl1Y);
+			stepCNTRL2Vari.push_back(cntrl2Y);
+			maxHMDVariance.push_back(0);
+			minHMDVariance.push_back(9999);
+			maxCNTRLVariance.push_back(0);
+			minCNTRLVariance.push_back(9999);
+		}
+		saveHMDSample(hmdY, currentSampleTime);
+		saveCNTRLSample(cntrl1Y, cntrl2Y, currentSampleTime, (currentScale < 0.5 ? 0 : (currentScale < 1.0 ? 1 : 2)));
+		currentSampleTime += dT;
+		hmdModel(i, 0) = dataModel(i, 0);
+		hmdModel(i, 1) = dataModel(i, dataModel.n_cols - 1);
+		cntrl1Model(i, 0) = dataModel(i, 1);
+		cntrl1Model(i, 1) = dataModel(i, dataModel.n_cols - 1);
+		cntrl2Model(i, 0) = dataModel(i, 2);
+		cntrl2Model(i, 1) = dataModel(i, dataModel.n_cols - 1);
+		trkr1Model(i, 0) = dataModel(i, 3);
+		trkr1Model(i, 1) = dataModel(i, dataModel.n_cols - 1);
+		trkr2Model(i, 0) = dataModel(i, 4);
+		trkr2Model(i, 1) = dataModel(i, dataModel.n_cols - 1);
+	}
+	/*hmdModel = arma::sort(hmdModel, "ascend", 0);
+	cntrl1Model = arma::sort(cntrl1Model, "ascend", 0);
+	cntrl2Model = arma::sort(cntrl2Model, "ascend", 0);
+	trkr1Model = arma::sort(trkr1Model, "ascend", 0);
+	trkr2Model = arma::sort(trkr2Model, "ascend", 0);*/
+}
 
 int TrainedModel::isHMDPeak(float hmdY, double now) {
 	int mode = -1;
@@ -46,21 +141,6 @@ float TrainedModel::isCNTRL1Peak(float cntrlY, double now) {
 	lastCNTRL1VelY = cntrlY;
 	lastCNTRL1ACCY = cntrlACC;
 	return mode;
-}
-
-void TrainedModel::train(arma::mat dataModel) {
-	for (int i = 0; i < dataModel.n_rows; i++) {
-		float dT = (1.0 / 20.0);
-		for (int j = 0; j < dataModel.n_cols; j++) {
-			float currentScale = dataModel(i, dataModel.n_cols - 2);
-			float hmdY = dataModel(i, 0);
-			float cntrl1Y = dataModel(i, 1);
-			float cntrl2Y = dataModel(i, 2);
-			saveHMDSample(hmdY, currentSampleTime);
-			saveCNTRLSample(cntrl1Y, cntrl2Y, currentSampleTime, (currentScale < 0.5 ? 0 : (currentScale < 1.0 ? 1 : 2)));
-			currentSampleTime += dT;
-		}
-	}
 }
 
 void TrainedModel::saveHMDSample(float hmdY, double dT) {

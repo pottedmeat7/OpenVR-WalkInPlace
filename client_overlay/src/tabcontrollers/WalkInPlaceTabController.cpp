@@ -549,7 +549,7 @@ namespace walkinplace {
 				dataModel.insert_rows(0, 1);
 			}
 			if (!initializedDataRows) {
-				dataModel.insert_cols(0, 16);
+				dataModel.insert_cols(0, 5);
 			}
 			//dataModel(n, 0) = hmdVel.v[0];
 			dataModel(n, 0) = hmdVel.v[1];
@@ -558,7 +558,7 @@ namespace walkinplace {
 			dataModel(n, 2) = cont2Vel.v[1];
 			dataModel(n, 3) = tracker1Vel.v[1];
 			dataModel(n, 4) = tracker2Vel.v[1];
-			dataModel(n, 5) = scaleSpeed;
+			dataModel(n, 5) = n+1;// scaleSpeed;
 		}
 		catch (std::exception& e) {
 			LOG(INFO) << "Exception caught while building data model: " << e.what();
@@ -1156,7 +1156,7 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::applyStepPoseDetect() {
 		if (controller1ID != vr::k_unTrackedDeviceIndexInvalid && controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-			double deltatime = 1.0 / 60.0 * 1000;
+			double deltatime = 1.0 / 30.0 * 1000;
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			double tdiff = ((double)(now - timeLastTick));
 			bool hmdStep = false;
@@ -1321,7 +1321,31 @@ namespace walkinplace {
 				}
 				try {
 
+					int n = dataSample.n_rows;
+					if (n > 0) {
+						if ( n > 15 ) {
+							dataSample.shed_row(0);
+						}
+						arma::rowvec lastRow = dataSample.row(n - 1);
+						dataSample.insert_rows(n, 1);
+						dataSample.row(n - 1) = lastRow;
+					}
+					else {
+						dataSample.insert_rows(0, 1);
+					}
+					if (dataSample.n_cols < 4) {
+						dataSample.insert_cols(0, 5);
+					}
+					//dataModel(n, 0) = hmdVel.v[0];
+					dataSample(n, 0) = hmdVel.v[1];
+					//dataModel(n, 2) = hmdVel.v[2];
+					dataSample(n, 1) = cont1Vel.v[1];
+					dataSample(n, 2) = cont2Vel.v[1];
+					dataSample(n, 3) = tracker1Vel.v[1];
+					dataSample(n, 4) = tracker2Vel.v[1];
+
 					// detect fit between parameters of MovementTracker (? or not) (values above) to TrainedModel
+					bool valid = trModel.isWithinDelta(dataSample);
 
 					if ( false && buttonStatus()) {
 						stepPoseDetected = true;
