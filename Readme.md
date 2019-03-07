@@ -30,20 +30,17 @@ also activate teleport if you'd like.
 - Auto Configuration for best settings
 - Tracker support (for feet)
 - Configuration for "Arm Swinging" Locomotion
-- Profiles saving
-- Device movemnt Graph
+- Save profiles
+- Device movement Graph
 
 # Upcoming
 
-- Options for emulating other input methods
 - HMD Relative Direction Override to Controller Relative Direction
 - Any Relative Direction to Tracker Relative Direction
  
 ## Installer
 
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
-
-If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-driver.exe' installer.
 
 # Documentation
 
@@ -85,7 +82,7 @@ There are a few different methods of inputs used by games
 - Anything else such as Teleport games just generating a click with "click to sprint" is the best option
 
 ### Controller selection
-All input now goes into the OVRWIP Custom Controller you can also rebind the input from the OVRWIP controller to other controllers.
+All input now goes into the OVRWIP Custom Controller you can also rebind the input from the OVRWIP controller to other controllers using the SteamVR Input Bindings.
 
 ### buttons to disable/enable WIP
 These options can be used to disable/enable virtual movement when your holding or not holding the button selected.
@@ -174,6 +171,12 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 2. Download Qt 5.9.0 (Either windows .exe or linux .run file)
 3. Run the Qt installer (I installed it to `c:\Qt` or `/home/<user>/` on linux)
 
+### OpenBlas
+- WINDOWS
+	1. Open the NuGet packages manager (Tools > NuGet Package Manager > Manage NuGet Packages for Solution...)
+	2. Click on the “Browse” tab and search for “openblas”
+	3. Click on OpenBlas and check the mlpack project, then click Install
+	4. Once it has finished installing, close Visual Studio
 
 ## Building
 - WINDOWS

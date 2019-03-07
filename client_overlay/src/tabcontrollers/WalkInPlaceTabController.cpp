@@ -16,12 +16,15 @@ namespace walkinplace {
 		if (identifyThread.joinable()) {
 			identifyThread.join();
 		}
+		linStat = LinearAnalyzer();
 	}
 
 
 	void WalkInPlaceTabController::initStage1() {
 		reloadWalkInPlaceProfiles();
 		reloadWalkInPlaceSettings();
+		dataModel.insert_rows(0, 1);
+		dataModel.insert_cols(0, 6);
 	}
 
 
@@ -105,10 +108,9 @@ namespace walkinplace {
 					bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + "_hmd" + lr_file_type);
 					if (loaded) {
 						dataModel = dataModel.t();
-						trModel = TrainedModel();
-						trModel.train(dataModel);
 						initializedDataModel = true;
 						dataTrainingRequired = false;
+						LOG(INFO) << " loaded model file on tick";
 					}
 					else {
 						dataTrainingRequired = true;
@@ -337,8 +339,7 @@ namespace walkinplace {
 				bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + "_hmd" + lr_file_type);
 				if (loaded) {
 					dataModel = dataModel.t();
-					trModel = TrainedModel();
-					trModel.train(dataModel);
+					LOG(INFO) << " loaded model file on display model";
 					initializedDataModel = true;
 					dataTrainingRequired = false;
 				}
@@ -376,8 +377,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::completeLRTraining() {
 		try {
 			mlpack::data::Save(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + lr_file_type, dataModel);
-			dataModel.clear();
-			initializedDataRows = false;
+			dataModel.zeros();
 			initializedDataModel = false;
 			dataTrainingRequired = false;
 			addWalkInPlaceProfile(QString(currentProfileName.c_str()));
@@ -540,17 +540,7 @@ namespace walkinplace {
 		}
 		try {
 			int n = dataModel.n_rows;
-			if (n > 0) {
-				arma::rowvec lastRow = dataModel.row(n - 1);
-				dataModel.insert_rows(n, 1);
-				dataModel.row(n-1) = lastRow;
-			}
-			else {
-				dataModel.insert_rows(0, 1);
-			}
-			if (!initializedDataRows) {
-				dataModel.insert_cols(0, 5);
-			}
+			dataModel.insert_rows(0, 1);
 			//dataModel(n, 0) = hmdVel.v[0];
 			dataModel(n, 0) = hmdVel.v[1];
 			//dataModel(n, 2) = hmdVel.v[2];
@@ -558,7 +548,8 @@ namespace walkinplace {
 			dataModel(n, 2) = cont2Vel.v[1];
 			dataModel(n, 3) = tracker1Vel.v[1];
 			dataModel(n, 4) = tracker2Vel.v[1];
-			dataModel(n, 5) = n+1;// scaleSpeed;
+			dataModel(n, 5) = scaleSpeed;
+			LOG(INFO) << "sample row: " << n;
 		}
 		catch (std::exception& e) {
 			LOG(INFO) << "Exception caught while building data model: " << e.what();
@@ -1344,15 +1335,21 @@ namespace walkinplace {
 					dataSample(n, 3) = tracker1Vel.v[1];
 					dataSample(n, 4) = tracker2Vel.v[1];
 
-					// detect fit between parameters of MovementTracker (? or not) (values above) to TrainedModel
-					bool valid = trModel.isWithinDelta(dataSample);
+					try {
+						arma::mat dS = linStat.computeDelta(dataSample, dataModel, 4);
+						LOG(INFO) << "dS: " << dS;
+					}
+					catch (std::exception& e) {
+						LOG(INFO) << "Exception caught while computing delta error: " << e.what();
+					}
+
 
 					if ( false && buttonStatus()) {
 						stepPoseDetected = true;
 					}
 					else {
 						stepPoseDetected = false;
-						stopMovement(0);
+						//stopMovement(0);
 					}
 					LOG(INFO) << "after compute error";
 				}

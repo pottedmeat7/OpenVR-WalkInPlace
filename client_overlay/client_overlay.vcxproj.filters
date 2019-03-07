@@ -5,28 +5,34 @@
     <ClCompile Include="Debug\moc_WalkInPlaceTabController.cpp" />
     <ClCompile Include="Release\moc_overlaycontroller.cpp" />
     <ClCompile Include="Release\moc_WalkInPlaceTabController.cpp" />
-    <ClCompile Include="src\tabcontrollers\WalkInPlaceTabController.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\overlaycontroller.cpp" />
-    <ClCompile Include="src\TrainedModel.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MovementTracker.cpp">
+    <ClCompile Include="src\overlaycontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tabcontrollers\WalkInPlaceTabController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LinearAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\logging.h" />
-    <ClInclude Include="src\TrainedModel.h">
+    <ClInclude Include="src\logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MovementTracker.h">
+    <ClInclude Include="src\LinearAnalyzer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\tabcontrollers\WalkInPlaceTabController.h" />
-    <CustomBuild Include="src\overlaycontroller.h" />
+    <CustomBuild Include="src\overlaycontroller.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\tabcontrollers\WalkInPlaceTabController.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -39,5 +45,8 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

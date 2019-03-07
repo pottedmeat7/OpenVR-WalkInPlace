@@ -8,10 +8,9 @@
 #include <vrwalkinplace.h>
 #include <fstream>
 
+#include "../LinearAnalyzer.h"
+
 #include <mlpack/core.hpp>
-
-#include "../TrainedModel.h"
-
 
 class QQuickWindow;
 
@@ -84,11 +83,11 @@ namespace walkinplace {
 		arma::mat dataModel;
 		arma::mat dataSample;
 
-		TrainedModel trModel;		
+		LinearAnalyzer linStat;		
 
 		std::string currentProfileName = "";
 
-		std::string lr_file_type = ".bin";
+		std::string lr_file_type = ".csv";
 		std::string lr_file_name = "default";
 
 		vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
@@ -109,7 +108,6 @@ namespace walkinplace {
 		bool stepPoseDetected = false;
 		bool initializedDriver = false;
 		bool initializedDataModel = false;
-		bool initializedDataRows = false;
 		bool initializedModelSpace = false;
 		bool dataTrainingRequired = false;
 		bool identifyControlTimerSet = true;

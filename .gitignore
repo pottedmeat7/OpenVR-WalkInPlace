@@ -1,6 +1,7 @@
 third-party/boost_1_65_1/*
 third-party/boost_1_67_0/*
 third-party/LeapSDK/*
+third-party/armadillo/*
 build*
 build/*
 Release/*
