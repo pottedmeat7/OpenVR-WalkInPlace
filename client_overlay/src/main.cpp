@@ -308,13 +308,3 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-/*
-namespace walkinplace {
-	BOOST_PYTHON_MODULE(ovrwip_py)
-	{
-		boost::python::def("applyProfile", &WalkInPlaceTabController::applyWalkInPlaceProfile, boost::python::args("p"));
-		boost::python::def("axisEvent", &WalkInPlaceTabController::axisEvent, boost::python::args("dId","aId","x","y"));
-		boost::python::def("buttonEvent", &WalkInPlaceTabController::buttonEvent, boost::python::args("dId","bId","bState"));
-	}
-}
-*/

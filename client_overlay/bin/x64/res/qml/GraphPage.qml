@@ -667,7 +667,7 @@ MyStackViewPage {
                     } else if ( currentSampleTime >= (totalSampleTime - (totalSampleTime/5.0)*4.0) ) {
                         scaleSpeed = (currentSampleTime / totalSampleTime)
                     } // else slowest scale at walking pace is zero scale
-                    velVals = WalkInPlaceTabController.lrTrainingDataSample(scaleSpeed, timerInterval);
+                    velVals = WalkInPlaceTabController.trainingDataSample(scaleSpeed, timerInterval);
                 }
                 if ( velVals.length >= 3 ) {
                     var velX = parseFloat(velVals[0]).toFixed(4);
@@ -942,7 +942,7 @@ MyStackViewPage {
                             autoConfigPopup.setTitle("Walking Pace Config")
                             autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
                             autoConfigPopup.setTimeout(5)
-                            WalkInPlaceTabController.completeLRTraining()
+                            WalkInPlaceTabController.completeTraining()
                             var page = mainView.pop()
                         }                       
                     }

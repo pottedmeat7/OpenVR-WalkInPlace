@@ -14,15 +14,9 @@
     <ClCompile Include="src\tabcontrollers\WalkInPlaceTabController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\LinearAnalyzer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\logging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LinearAnalyzer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

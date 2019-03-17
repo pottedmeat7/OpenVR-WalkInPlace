@@ -12,7 +12,7 @@ MyMainViewPage {
     function updateInfo() {  
         useContDirForStrafCheck.checked = WalkInPlaceTabController.getUseContDirForStraf()
         useContDirForRevCheck.checked = WalkInPlaceTabController.getUseContDirForRev()
-        wipEnableToggle.checked = WalkInPlaceTabController.isStepDetectionEnabled()
+        wipEnableToggle.checked = WalkInPlaceTabController.isWIPEnabled()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType()
         hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
         buttonMode.currentIndex = WalkInPlaceTabController.getButtonEnables() ? 1 : 0
@@ -28,8 +28,8 @@ MyMainViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: myPalette.base // "#c0c0c0" // "#277650"
-                border.color: myPalette.base // "#dddddd"
+                color: myPalette.base
+                border.color: myPalette.base
                 radius: 1
             }
 
@@ -54,8 +54,8 @@ MyMainViewPage {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: myPalette.mid //  "#c0c0c0" // "#277650"
-                border.color: myPalette.mid // "#000000"
+                color: myPalette.mid
+                border.color: myPalette.mid
                 radius: 1
             }
 
@@ -68,13 +68,13 @@ MyMainViewPage {
 
                     MyToggleButton {
                         id: wipEnableToggle
-                        text: "Enable WIP"
+                        text: "Enable Input"
                         Layout.maximumWidth: 200
                         Layout.minimumWidth: 200
                         Layout.preferredWidth: 200
                         Layout.fillWidth: true
                         onCheckedChanged: {
-                            WalkInPlaceTabController.enableStepDetection(checked)
+                            WalkInPlaceTabController.enableWIP(checked)
                         }
                     }
 
@@ -103,7 +103,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 400
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)","hold grip"]
+                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)","hold grip","Keyboard (WASD)","Keyboard (Arrows)"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setGameStepType(currentIndex)                            
@@ -196,7 +196,6 @@ MyMainViewPage {
             }
         }
 
-
         ColumnLayout {
             spacing: 18
             Layout.alignment: Qt.AlignHCenter
@@ -207,55 +206,8 @@ MyMainViewPage {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: myPalette.mid // "#c0c0c0" // "#277650"
-                    border.color: myPalette.mid // "#000000"
-                    radius: 1
-                }
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    Layout.alignment: Qt.AlignHCenter
-
-                    GridLayout {
-                        columns: 2
-
-                        MyToggleButton {
-                            id: useContDirForStrafCheck
-                            text: "Controller Direction For Straffing?"
-                            Layout.fillWidth: false
-                            Layout.preferredWidth: 550
-                            onCheckedChanged: {                
-                                WalkInPlaceTabController.setUseContDirForStraf(val)
-                            }
-                        }
-
-                        MyToggleButton {
-                            id: useContDirForRevCheck
-                            text: "Controller Direction For Reverse?"
-                            Layout.fillWidth: false
-                            Layout.preferredWidth: 550
-                            onCheckedChanged: {
-                                WalkInPlaceTabController.setUseContDirForRev(val)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        ColumnLayout {
-            spacing: 18
-            Layout.alignment: Qt.AlignHCenter
-
-            GroupBox {
-
-                height: 200
-                Layout.fillWidth: true
-                
-                background: Rectangle {
-                    color: myPalette.mid // "#c0c0c0" // "#277650"
-                    border.color: myPalette.mid // "#000000"
+                    color: myPalette.mid
+                    border.color: myPalette.mid
                     radius: 1
                 }
 

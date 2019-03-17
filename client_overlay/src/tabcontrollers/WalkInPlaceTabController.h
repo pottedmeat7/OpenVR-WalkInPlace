@@ -8,8 +8,6 @@
 #include <vrwalkinplace.h>
 #include <fstream>
 
-#include "../LinearAnalyzer.h"
-
 #include <mlpack/core.hpp>
 
 class QQuickWindow;
@@ -28,11 +26,9 @@ namespace walkinplace {
 
 	struct WalkInPlaceProfile {
 		std::string profileName;
-		std::string modelFile = "lr_model.bin";
+		std::string modelFile = "temp.bin";
 
-		int modelRowCount = 0;
-		int modelColCount = 0;
-		bool stepDetectionEnabled = false;
+		bool wipEnabled = false;
 		bool useTrackers = false;
 		bool disableHMD = false;
 		bool useContDirForStraf = false;
@@ -43,10 +39,10 @@ namespace walkinplace {
 		int buttonControlSelect = 0;
 		int disableButton = 0;
 		bool buttonAsToggle = false;
-		float walkTouch = 0.35;
-		float jogTouch = 1.0;
-		float runTouch = 1.0;
-		double stepTime = 0.5;
+		float minTouch = 0.35;
+		float midTouch = 1.0;
+		float maxTouch = 1.0;
+		double minInputTime = 0.25;
 	};
 
 
@@ -83,12 +79,10 @@ namespace walkinplace {
 		arma::mat dataModel;
 		arma::mat dataSample;
 
-		LinearAnalyzer linStat;		
-
 		std::string currentProfileName = "";
 
 		std::string lr_file_type = ".csv";
-		std::string lr_file_name = "default";
+		std::string lr_file_name = "temp";
 
 		vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
 		vr::HmdVector3d_t lastHmdRot = { 0, 0, 0 };
@@ -104,21 +98,20 @@ namespace walkinplace {
 
 		vr::VROverlayHandle_t overlayHandle;
 
-		bool stepDetectEnabled = false;
-		bool stepPoseDetected = false;
+		bool wipEnabled = false;
+		bool validSample = false;
 		bool initializedDriver = false;
 		bool initializedDataModel = false;
 		bool initializedModelSpace = false;
 		bool dataTrainingRequired = false;
 		bool identifyControlTimerSet = true;
 
-		//deprecated
 		bool buttonAsToggle = false;
 		bool buttonEnables = false;
 		bool holdingButton = false;
 		bool useTrackers = false;
 		bool disableHMD = false;
-		bool trackerStepDetected = false;
+		bool validTRKRSample = false;
 		bool useContDirForStraf = false;
 		bool useContDirForRev = false;
 		bool pressedFlag = false;
@@ -130,8 +123,6 @@ namespace walkinplace {
 		int vive_controller_model_index = -1;
 		int disableButton = -1;
 		int unnTouchedCount = 0;
-		int modelRowCount = 0;
-		int modelColCount = 0;
 
 		uint64_t controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t controller2ID = vr::k_unTrackedDeviceIndexInvalid;
@@ -141,15 +132,19 @@ namespace walkinplace {
 		uint64_t tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t vrLocoContID = vr::k_unTrackedDeviceIndexInvalid;
 
+		float haltHMDVariance = 0.9;
+		float beginHMDVariance = 0.4;
+		float haltTRKRVariance = 0.9;
+		float beginTRKRVariance = 0.4;
+		float minTouch = 0.35;
+		float midTouch = 0.9;
+		float maxTouch = 1.0;
+		float touchX = 0;
+		float touchY = 0;
 		float hmdYaw = 0;
 		float contYaw = 0;
 		float contRoll = 0;
 		float contPitch = 0;
-		float touchX = 0;
-		float touchY = 0;
-		float walkTouch = 0.35;
-		float jogTouch = 1.0;
-		float runTouch = 1.0;
 
 		double timeLastTick = 0.0;
 		double identifyControlLastTime = 99999;
@@ -182,14 +177,14 @@ namespace walkinplace {
 		Q_INVOKABLE float getRunTouch();
 		Q_INVOKABLE bool getUseButtonAsToggle();
 		Q_INVOKABLE bool getButtonEnables();
-		Q_INVOKABLE bool isStepDetectionEnabled();
+		Q_INVOKABLE bool getDeviceEnabled(int devClass, int devIdx, int mode);
+		Q_INVOKABLE bool isWIPEnabled();
 		Q_INVOKABLE bool isStepDetected();
 		Q_INVOKABLE QList<qreal> getGraphPoses();
 		Q_INVOKABLE void applyVirtualStep();
-		Q_INVOKABLE void setupStepGraph();
 		Q_INVOKABLE QList<qreal> getModelData();
-		Q_INVOKABLE QList<qreal> lrTrainingDataSample(float scaleSpeed, double tdiff);
-		Q_INVOKABLE void completeLRTraining();
+		Q_INVOKABLE QList<qreal> trainingDataSample(float scaleSpeed, double tdiff);
+		Q_INVOKABLE void completeTraining();
 
 		void reloadWalkInPlaceSettings();
 		void reloadWalkInPlaceProfiles();
@@ -200,22 +195,21 @@ namespace walkinplace {
 		Q_INVOKABLE QString getWalkInPlaceProfileName(unsigned index);
 
 	public slots:
-		void enableStepDetection(bool enable);
-		void setStepTime(double value);
-		void setUseTrackers(bool val);
+		void enableWIP(bool enable);
+		void setMinInputTime(double value);
 		void setDisableHMD(bool val);
+		void setDirectionDevice(int choice);
+		void enableDevice(int deviceClass, int devIdx, bool enable, int mode);
 		void setDisableButton(int buttonId);
 		void setButtonAsToggle(bool val);
 		void setButtonEnables(bool val);
-		void setWalkTouch(float value);
-		void setJogTouch(float value);
-		void setRunTouch(float value);
+		void setMinTouch(float value);
+		void setMidTouch(float value);
+		void setMaxTouch(float value);
 		void setUseContDirForStraf(bool val);
 		void setUseContDirForRev(bool val);
 		void setGameStepType(int gameType);
 		void setHMDType(int gameType);
-		void disableController(bool val, int control);
-		void disableTracker(bool val, int control);
 		void setButtonControlSelect(int control);
 		void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);
 		void applyStepPoseDetect();
@@ -227,8 +221,6 @@ namespace walkinplace {
 		void applyAxisMovement(uint32_t deviceId, vr::VRControllerAxis_t axisState);
 		void applyClickMovement(uint32_t deviceId);
 		void applyGripMovement(uint32_t deviceId);
-		//void axisEvent(int deviceId, int axisId, float x, float y);
-		//void buttonEvent(int deviceId, int buttonId, int buttonState);
 
 		void updateButtonState(uint32_t deviceId, bool firstController);
 
