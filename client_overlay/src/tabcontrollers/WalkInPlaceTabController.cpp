@@ -23,8 +23,6 @@ namespace walkinplace {
 	void WalkInPlaceTabController::initStage1() {
 		reloadWalkInPlaceProfiles();
 		reloadWalkInPlaceSettings();
-		dataModel.insert_rows(0, 1);
-		dataModel.insert_cols(0, 6);
 	}
 
 
@@ -64,7 +62,7 @@ namespace walkinplace {
 							}
 						}
 						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-							if (info->serial.find("ovrwip_") == std::string::npos) {
+							if (info->serial.find("ovrwip") == std::string::npos) {
 								if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
 									controller1ID = info->openvrId;
 									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
@@ -105,15 +103,20 @@ namespace walkinplace {
 		if (!initializedDataModel) {
 			if (!dataTrainingRequired) {
 				try {
-					bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + "_hmd" + lr_file_type);
+					bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + lr_file_type);
 					if (loaded) {
-						dataModel = dataModel.t();
+						//dataModel = dataModel.t();
 						initializedDataModel = true;
 						dataTrainingRequired = false;
 						LOG(INFO) << " loaded model file on tick";
 					}
 					else {
 						dataTrainingRequired = true;
+						dataModel.insert_cols(0, 1);
+						dataModel.insert_rows(0, 6);
+						dataSample.insert_cols(0, 1);
+						dataSample.insert_rows(0, 6);
+						LOG(INFO) << "unable to load model file on tick";
 					}
 				}
 				catch (std::exception& e) {
@@ -194,7 +197,7 @@ namespace walkinplace {
 								}
 							}
 							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								if (info->serial.find("ovrwip_") == std::string::npos) {
+								if (info->serial.find("ovrwip") == std::string::npos) {
 									if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
 										controller1ID = info->openvrId;
 										LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
@@ -336,15 +339,20 @@ namespace walkinplace {
 		bool loaded = initializedDataModel;
 		if (!initializedDataModel) {
 			try {
-				bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + "_hmd" + lr_file_type);
+				bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + lr_file_type);
 				if (loaded) {
-					dataModel = dataModel.t();
+					//dataModel = dataModel.t();
 					LOG(INFO) << " loaded model file on display model";
 					initializedDataModel = true;
 					dataTrainingRequired = false;
 				}
 				else {
 					dataTrainingRequired = true;
+					dataModel.insert_cols(0, 1);
+					dataModel.insert_rows(0, 6);
+					dataSample.insert_cols(0, 1);
+					dataSample.insert_rows(0, 6);
+					LOG(INFO) << "unable to load model file on display model";
 				}
 			}
 			catch (std::exception& e) {
@@ -357,13 +365,13 @@ namespace walkinplace {
 		QList<qreal> vals;
 		if (loaded) {
 			try {
-				for (int i = 0; i < dataModel.n_rows; i++) {
+				for (int i = 0; i < dataModel.n_cols; i++) {
 					for (int j = 0; j < 5; j++) { // just the hmd, cntrl, tracker Y vel
-						if (j < dataModel.n_cols) {
-							vals.push_back(dataModel(i, j));
+						if (j < dataModel.n_rows) {
+							vals.push_back((float)dataModel(j, i));
 						}
 					}
-					vals.push_back(dataModel(i, dataModel.n_cols - 1)); //touch val last val in all models
+					vals.push_back(dataModel(dataModel.n_rows - 1, i)); //touch val last val in all models
 				}
 			}
 			catch (std::exception& e) {
@@ -376,8 +384,9 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::completeLRTraining() {
 		try {
+			dataModel = dataModel.t();
 			mlpack::data::Save(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + lr_file_name + lr_file_type, dataModel);
-			dataModel.zeros();
+			dataModel.clear();
 			initializedDataModel = false;
 			dataTrainingRequired = false;
 			addWalkInPlaceProfile(QString(currentProfileName.c_str()));
@@ -393,7 +402,7 @@ namespace walkinplace {
 		vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 		bool firstController = true;
 		bool firstTracker = true;
-		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };				
+		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
 		vr::HmdVector3d_t hmdAcc = { 0, 0, 0 };
 		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
 		vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
@@ -539,17 +548,16 @@ namespace walkinplace {
 			}
 		}
 		try {
-			int n = dataModel.n_rows;
-			dataModel.insert_rows(0, 1);
-			//dataModel(n, 0) = hmdVel.v[0];
-			dataModel(n, 0) = hmdVel.v[1];
-			//dataModel(n, 2) = hmdVel.v[2];
-			dataModel(n, 1) = cont1Vel.v[1];
-			dataModel(n, 2) = cont2Vel.v[1];
-			dataModel(n, 3) = tracker1Vel.v[1];
-			dataModel(n, 4) = tracker2Vel.v[1];
-			dataModel(n, 5) = scaleSpeed;
-			LOG(INFO) << "sample row: " << n;
+			int n = dataModel.n_cols;
+			dataModel.insert_cols(n, 1);
+			//dataModel(0, n) = hmdVel.v[0];
+			dataModel(0, n) = hmdVel.v[1];
+			//dataModel(2, n) = hmdVel.v[2];
+			dataModel(1, n) = cont1Vel.v[1];
+			dataModel(2, n) = cont2Vel.v[1];
+			dataModel(3, n) = tracker1Vel.v[1];
+			dataModel(4, n) = tracker2Vel.v[1];
+			dataModel(5, n) = scaleSpeed;
 		}
 		catch (std::exception& e) {
 			LOG(INFO) << "Exception caught while building data model: " << e.what();
@@ -779,7 +787,7 @@ namespace walkinplace {
 			entry.runTouch = settings->value("runTouch", 1).toFloat();
 			entry.buttonAsToggle = settings->value("buttonAsToggle", false).toBool();
 			entry.buttonEnables = settings->value("buttonEnables", false).toBool();
-			entry.modelFile = settings->value("modelFile", "lr_model.bin").toString().toStdString();
+			entry.modelFile = settings->value("modelFile", QString((lr_file_name + lr_file_type).c_str())).toString().toStdString();
 		}
 		settings->endArray();
 		settings->endGroup();
@@ -879,8 +887,10 @@ namespace walkinplace {
 	void WalkInPlaceTabController::applyWalkInPlaceProfile(unsigned index) {
 		if (index < walkInPlaceProfiles.size()) {
 			auto& profile = walkInPlaceProfiles[index];
-			lr_file_name = profile.profileName + lr_file_type;
+			lr_file_name = profile.profileName;
+			dataModel.clear();
 			dataTrainingRequired = false;
+			initializedDataModel = false;
 			gameType = profile.gameType;
 			hmdType = profile.hmdType;
 			buttonControlSelect = profile.buttonControlSelect;
@@ -1147,7 +1157,8 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::applyStepPoseDetect() {
 		if (controller1ID != vr::k_unTrackedDeviceIndexInvalid && controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-			double deltatime = 1.0 / 30.0 * 1000;
+			float samplePerSec = 45.0;
+			double deltatime = 1.0 / samplePerSec * 1000;
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			double tdiff = ((double)(now - timeLastTick));
 			bool hmdStep = false;
@@ -1165,7 +1176,7 @@ namespace walkinplace {
 				}
 
 				vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-				vr::HmdVector3d_t hmdVel = { 0, 0, 0 };				
+				vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
 				vr::HmdVector3d_t hmdAcc = { 0, 0, 0 };
 				vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
 				vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
@@ -1312,50 +1323,80 @@ namespace walkinplace {
 				}
 				try {
 
-					int n = dataSample.n_rows;
-					if (n > 0) {
-						if ( n > 15 ) {
-							dataSample.shed_row(0);
+					int kV_set = 3;
+					int n = dataSample.n_cols;
+					dataSample.insert_cols(n, 1);
+					if (n > (samplePerSec/kV_set)*2) {
+						dataSample.shed_col(0);
+						n = n - 1;
+					}
+					//dataModel(0, n) = hmdVel.v[0];
+					dataSample(0, n) = hmdVel.v[1];
+					//dataModel(2, n) = hmdVel.v[2];
+					dataSample(1, n) = cont1Vel.v[1];
+					dataSample(2, n) = cont2Vel.v[1];
+					dataSample(3, n) = tracker1Vel.v[1];
+					dataSample(4, n) = tracker2Vel.v[1];
+
+					if (dataSample.n_cols > samplePerSec/kV_set) {
+						try {
+							//arma::mat dS = linStat.computeDelta(dataSample, dataModel, 4);
+							int kV_set = 3;
+							arma::rowvec mN = dataModel.row(0);
+							arma::rowvec sN = dataSample.row(0);
+							//LOG(INFO) << "sN: " << sN.n_cols;
+							//LOG(INFO) << "mN: " << mN.n_cols;
+							int sNk = std::floor((sN.n_cols - 1) / kV_set);
+							//LOG(INFO) << "sNk: " << sNk;
+							arma::mat dS = arma::mat(2, kV_set);
+							dS.fill(9999);
+							for (int ki = 1; ki < sN.n_cols; ki += sNk) {
+								//LOG(INFO) << "ki: " << ki;
+								arma::rowvec sKi = sN.cols(ki, std::min((ki + sNk), (int)sN.n_cols - 1));
+								//LOG(INFO) << "sKi: " << sKi.n_cols;
+								for (int mi = 1; mi < mN.n_cols; mi += sNk) {
+									if ((mi + ((int)sKi.n_cols - 1)) < mN.n_cols) {
+										//LOG(INFO) << "mi: " << mi;
+										arma::rowvec mKi = mN.cols(mi, mi + ((int)sKi.n_cols - 1));
+										arma::rowvec dKi = arma::abs(mKi) - arma::abs(sKi);
+										//LOG(INFO) << "dKi: " << std::floor(ki / sNk);
+										float dK_i = std::abs(arma::max(dKi));
+										if (dK_i < dS(0, std::floor(ki / sNk))) {
+											dS(0, std::floor(ki / sNk)) = (dK_i);
+											dS(1, std::floor(ki / sNk)) = (mi);
+										}
+									}
+								}
+							}
+
+							//LOG(INFO) << "dS cols: " << dS.n_cols;
+							//LOG(INFO) << "dS rows: " << dS.n_rows;
+							//LOG(INFO) << "dS0: " << dS.row(0);
+							//LOG(INFO) << "dS1: " << dS.row(1);
+
+							arma::rowvec vals = dS.row(0);
+							LOG(INFO) << " dS min: " << (float)vals.min();
+
+							float min = arma::min(vals);
+							float lastQrtSecMin = 0;// arma::min(vals.tail_cols(std::max(0, (int)(vals.n_cols - (sNk)))));
+							if (min < 0.04 && lastQrtSecMin < 0.9 && buttonStatus()) {
+								stepPoseDetected = true;
+							}
+							else if (min >= 0.08 || lastQrtSecMin >= 0.13) {
+								stepPoseDetected = false;
+								stopMovement(0);
+							}
 						}
-						arma::rowvec lastRow = dataSample.row(n - 1);
-						dataSample.insert_rows(n, 1);
-						dataSample.row(n - 1) = lastRow;
+						catch (std::exception& e) {
+							LOG(INFO) << "Exception caught while computing delta error: " << e.what();
+						}
 					}
-					else {
-						dataSample.insert_rows(0, 1);
-					}
-					if (dataSample.n_cols < 4) {
-						dataSample.insert_cols(0, 5);
-					}
-					//dataModel(n, 0) = hmdVel.v[0];
-					dataSample(n, 0) = hmdVel.v[1];
-					//dataModel(n, 2) = hmdVel.v[2];
-					dataSample(n, 1) = cont1Vel.v[1];
-					dataSample(n, 2) = cont2Vel.v[1];
-					dataSample(n, 3) = tracker1Vel.v[1];
-					dataSample(n, 4) = tracker2Vel.v[1];
-
-					try {
-						arma::mat dS = linStat.computeDelta(dataSample, dataModel, 4);
-						LOG(INFO) << "dS: " << dS;
-					}
-					catch (std::exception& e) {
-						LOG(INFO) << "Exception caught while computing delta error: " << e.what();
-					}
-
-
-					if ( false && buttonStatus()) {
-						stepPoseDetected = true;
-					}
-					else {
-						stepPoseDetected = false;
-						//stopMovement(0);
-					}
-					LOG(INFO) << "after compute error";
 				}
 				catch (std::exception& e) {
 					LOG(INFO) << "Exception caught while predicting data: " << e.what();
 				}
+
+				timeLastTick = now;
 			}
 		}
 		if (stepPoseDetected) {

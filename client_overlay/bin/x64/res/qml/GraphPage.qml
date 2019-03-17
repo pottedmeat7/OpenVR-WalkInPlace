@@ -10,7 +10,7 @@ MyStackViewPage {
 
     property bool stepDetected : false
 
-    property real timerInterval     : 1 / 20 * 1000 // 20 Hz
+    property real timerInterval     : 1 / 45 * 1000
     property var stepDetects : []
 
     property var hmdXPoints : []
