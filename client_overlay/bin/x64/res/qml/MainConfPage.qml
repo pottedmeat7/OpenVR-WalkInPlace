@@ -68,7 +68,7 @@ MyMainViewPage {
 
                     MyToggleButton {
                         id: wipEnableToggle
-                        text: "Enable Input"
+                        text: "Enable WIP"
                         Layout.maximumWidth: 200
                         Layout.minimumWidth: 200
                         Layout.preferredWidth: 200
@@ -218,7 +218,7 @@ MyMainViewPage {
                         spacing: 18
 
                         MyComboBox {
-                            id: walkInPlaceProfileComboBox
+                            id: dataModelComboBox
                             Layout.maximumWidth: 310
                             Layout.minimumWidth: 310
                             Layout.preferredWidth: 310
@@ -226,38 +226,37 @@ MyMainViewPage {
                             model: [""]
                             onCurrentIndexChanged: {
                                 if (currentIndex > 0) {
-                                    walkInPlaceApplyProfileButton.enabled = true
-                                    walkInPlaceDeleteProfileButton.enabled = true
+                                    applyDataModelButton.enabled = true
+                                    deleteDataModelButton.enabled = true
                                 } else {
-                                    walkInPlaceApplyProfileButton.enabled = false
-                                    walkInPlaceDeleteProfileButton.enabled = false
+                                    applyDataModelButton.enabled = false
+                                    deleteDataModelButton.enabled = false
                                     showDataModelButton.enabled = false
                                 }
                             }
                         }
 
                         MyPushButton {
-                            id: walkInPlaceApplyProfileButton
+                            id: applyDataModelButton
                             Layout.topMargin: 10
                             enabled: false
                             Layout.preferredWidth: 150
                             text: "Apply"
                             onClicked: {
-                                if (walkInPlaceProfileComboBox.currentIndex > 0) {
-                                    WalkInPlaceTabController.applyWalkInPlaceProfile(walkInPlaceProfileComboBox.currentIndex - 1);
-                                    updateInfo()
+                                if (dataModelComboBox.currentIndex > 0) {
+                                    WalkInPlaceTabController.applyDataModel(dataModelComboBox.currentText);
                                     showDataModelButton.enabled = true
                                 }
                             }
                         }
 
                         MyPushButton {
-                            id: walkInPlaceNewProfileButton
+                            id: newDataModelButton
                             Layout.preferredWidth: 250
                             Layout.topMargin: 10
                             text: "New Data Model"
                             onClicked: {
-                                walkInPlaceNewProfileDialog.openPopup()
+                                newDataModelDialog.openPopup()
                             }
                         }
 
@@ -267,7 +266,7 @@ MyMainViewPage {
                             Layout.topMargin: 10
                             text: "Show Data Model"
                             onClicked: {
-                                if (walkInPlaceProfileComboBox.currentIndex > 0) {
+                                if (dataModelComboBox.currentIndex > 0) {
                                     var res = mainView.push(dataModelPage)
                                     mainView.startTimer()
                                 }
@@ -279,17 +278,141 @@ MyMainViewPage {
                         spacing: 18
 
                         MyPushButton {
-                            id: walkInPlaceDeleteProfileButton
+                            id: deleteDataModelButton
                             enabled: false
                             Layout.preferredWidth: 270
                             Layout.topMargin: 10
                             text: "Delete Data Model"
                             onClicked: {
-                                if (walkInPlaceProfileComboBox.currentIndex > 0) {
-                                    walkInPlaceDeleteProfileDialog.profileIndex = walkInPlaceProfileComboBox.currentIndex - 1
-                                    walkInPlaceDeleteProfileDialog.open()
+                                if (dataModelComboBox.currentIndex > 0) {
+                                    deleteDataModelDialog.open()
                                 }
                                 showDataModelButton.enabled = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            spacing: 18
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+
+                height: 200
+                Layout.fillWidth: true
+                
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 18
+
+                        MyPushButton {
+                            Layout.preferredWidth: 250
+                            Layout.topMargin: 10
+                            text: "Choose Devices"
+                            onClicked: {
+                                var res = mainView.push(disableDevicePage)
+                            }
+                        }
+
+                        MyPushButton {
+                            Layout.preferredWidth: 250
+                            Layout.topMargin: 10
+                            text: "Show Tracking Graph"
+                            onClicked: {
+                                var res = mainView.push(graphPage)
+                                mainView.startTimer()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            spacing: 18
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+
+                height: 200
+                Layout.fillWidth: true
+                
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 18
+
+                        MyComboBox {
+                            id: profileComboBox
+                            Layout.maximumWidth: 290
+                            Layout.minimumWidth: 290
+                            Layout.preferredWidth: 290
+                            Layout.fillWidth: true
+                            model: [""]
+                            onCurrentIndexChanged: {
+                                if (currentIndex > 0) {
+                                    applyProfileButton.enabled = true
+                                    deleteProfileButton.enabled = true
+                                } else {
+                                    applyProfileButton.enabled = false
+                                    deleteProfileButton.enabled = false
+                                }
+                            }
+                        }
+
+                        MyPushButton {
+                            id: applyProfileButton
+                            Layout.topMargin: 10
+                            enabled: false
+                            Layout.preferredWidth: 150
+                            text: "Apply"
+                            onClicked: {
+                                if (profileComboBox.currentIndex > 0) {
+                                    WalkInPlaceTabController.applyProfile(profileComboBox.currentIndex - 1);
+                                    updateInfo()
+                                }
+                            }
+                        }
+
+                        MyPushButton {
+                            id: newProfileButton
+                            Layout.preferredWidth: 240
+                            Layout.topMargin: 10
+                            text: "New Profile"
+                            onClicked: {
+                                newProfileDialog.openPopup()
+                            }
+                        }
+
+                        MyPushButton {
+                            id: deleteProfileButton
+                            enabled: false
+                            Layout.preferredWidth: 260
+                            Layout.topMargin: 10
+                            text: "Delete Profile"
+                            onClicked: {
+                                if (profileComboBox.currentIndex > 0) {
+                                    deleteProfileDialog.profileIndex = profileComboBox.currentIndex - 1
+                                    deleteProfileDialog.open()
+                                }
                             }
                         }
                     }
@@ -300,34 +423,80 @@ MyMainViewPage {
         Component.onCompleted: {   
             if ( !initialLoaded ) { 
                 //updateInfo()
-                initWalkInPlaceProfiles()
+                initProfiles()
             }
             initialLoaded = true
-        }
-
-        Connections {
-            target: WalkInPlaceTabController
-            onWalkInPlaceProfilesChanged: {
-                reloadWalkInPlaceProfiles()
-            }
         }
 
     }
 
     MyDialogOkCancelPopup {
-        id: walkInPlaceDeleteProfileDialog
+        id: deleteDataModelDialog
+        property int modelIndex: -1
+        dialogTitle: "Delete Data Model"
+        dialogText: "Do you really want to delete this data model?"
+        onClosed: {
+            if (okClicked) {
+                WalkInPlaceTabController.deleteDataModel(dataModelComboBox.currentText)
+            }
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: newDataModelDialog
+        dialogTitle: "Create New Data Model"
+        dialogWidth: 600
+        dialogHeight: 400
+        dialogContentItem: ColumnLayout {
+            RowLayout {
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                MyText {
+                    text: "Name: "
+                }
+                MyTextField {
+                    id: newDataModelName
+                    text: ""
+                    Layout.fillWidth: true
+                    function onInputEvent(input) {
+                        text = input
+                    }
+                }
+            }
+        }
+        onClosed: {
+            if (okClicked) {
+                if (newDataModelName.text == "") {
+                    //messageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
+                } else {
+                    WalkInPlaceTabController.addDataModel(newDataModelName.text)
+                    var res = mainView.push(graphPage)
+                    mainView.startTimer()
+                    mainView.startAutoConf()
+                }
+            }
+        }
+        function openPopup() {
+            newProfileName.text = ""
+            open()
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: deleteProfileDialog
         property int profileIndex: -1
         dialogTitle: "Delete Data Model"
         dialogText: "Do you really want to delete this data model?"
         onClosed: {
             if (okClicked) {
-                WalkInPlaceTabController.deleteWalkInPlaceProfile(profileIndex)
+                WalkInPlaceTabController.deleteProfile(profileIndex)
             }
         }
     }
 
     MyDialogOkCancelPopup {
-        id: walkInPlaceNewProfileDialog
+        id: newProfileDialog
         dialogTitle: "Create New Profile"
         dialogWidth: 600
         dialogHeight: 400
@@ -340,7 +509,7 @@ MyMainViewPage {
                     text: "Name: "
                 }
                 MyTextField {
-                    id: walkInPlaceNewProfileName
+                    id: newProfileName
                     text: ""
                     Layout.fillWidth: true
                     function onInputEvent(input) {
@@ -351,50 +520,87 @@ MyMainViewPage {
         }
         onClosed: {
             if (okClicked) {
-                if (walkInPlaceNewProfileName.text == "") {
-                    walkInPlaceMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
+                if (newProfileName.text == "") {
+                    //messageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
                 } else {
-                    WalkInPlaceTabController.addWalkInPlaceProfile(walkInPlaceNewProfileName.text)
-                    var res = mainView.push(graphPage)
-                    mainView.startTimer()
+                    WalkInPlaceTabController.addProfile(newProfileName.text)
                 }
             }
         }
         function openPopup() {
-            walkInPlaceNewProfileName.text = ""
+            newProfileName.text = ""
             open()
         }
     }
 
-    function initWalkInPlaceProfiles() {
-        var profiles = [""]
-        var profileCount = WalkInPlaceTabController.getWalkInPlaceProfileCount()
+    function initProfiles() {
+        //load data models
         var defaultFound = -1
+        var dataModels = [""]
+        var temp = WalkInPlaceTabController.getDataModelNames()
+        for (var i = 0; i < temp.length; i++) {
+            dataModels.push(temp[i].replace(".csv",""))
+            if ( dataModels[i] == "default" ) {
+                defaultFound = i
+            }
+        }
+        dataModelComboBox.model = dataModels
+        if ( defaultFound >= 0 ) {
+            dataModelComboBox.currentIndex = defaultFound
+        } else {
+            dataModelComboBox.currentIndex = 0
+        }
+        //load profiles
+        var profiles = [""]
+        var profileCount = WalkInPlaceTabController.getProfileCount()
+        defaultFound = -1
         for (var i = 0; i < profileCount; i++) {
-            var p_name = WalkInPlaceTabController.getWalkInPlaceProfileName(i)
+            var p_name = WalkInPlaceTabController.getProfileName(i)
             if ( p_name == "default" ) {
                 defaultFound = i
             }
             profiles.push(p_name)
         }
-        walkInPlaceProfileComboBox.model = profiles
-        walkInPlaceProfileComboBox.currentIndex = 0
+        profileComboBox.model = profiles
+        profileComboBox.currentIndex = 0
         if ( defaultFound >= 0 ) {
-            WalkInPlaceTabController.applyWalkInPlaceProfile(defaultFound);
-            walkInPlaceProfileComboBox.currentIndex = defaultFound+1
+            WalkInPlaceTabController.applyProfile(defaultFound);
+            profileComboBox.currentIndex = defaultFound+1
             updateInfo()
         }
     }
 
-    function reloadWalkInPlaceProfiles() {
+    function reloadProfiles() {
+        //load data models
+        var defaultFound = -1
+        var dataModels = [""]
+        var temp = WalkInPlaceTabController.getDataModelNames()
+        for (var i = 0; i < temp.length; i++) {
+            dataModels.push(temp[i].replace(".csv",""))
+            if ( dataModels[i] == "default" ) {
+                defaultFound = i
+            }
+        }
+        dataModelComboBox.model = dataModels
+        if ( defaultFound >= 0 ) {
+            dataModelComboBox.currentIndex = defaultFound
+        } else {
+            dataModelComboBox.currentIndex = 0
+        }
+        //load profiles
         var profiles = [""]
-        var profileCount = WalkInPlaceTabController.getWalkInPlaceProfileCount()
+        var profileCount = WalkInPlaceTabController.getProfileCount()
         for (var i = 0; i < profileCount; i++) {
-            var p_name = WalkInPlaceTabController.getWalkInPlaceProfileName(i)
+            var p_name = WalkInPlaceTabController.getProfileName(i)
             profiles.push(p_name)
         }
-        walkInPlaceProfileComboBox.model = profiles
-        walkInPlaceProfileComboBox.currentIndex = 0
+        profileComboBox.model = profiles
+        profileComboBox.currentIndex = 0
+    }
+
+    function completeTraining() {
+        WalkInPlaceTabController.completeTraining()
+        reloadProfiles()
     }
 
 }

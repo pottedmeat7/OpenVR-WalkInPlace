@@ -88,17 +88,26 @@ MyStackViewPage {
             }
         }
 
-        GroupBox {
-            boxTitle: "WIP Devices"
-            anchors.top: parent.top
-            anchors.topMargin: 55
-
+        GroupBox {            
             Layout.fillWidth: true
             
+            label: MyText {
+                leftPadding: 10
+                text: "WIP Devices"
+                bottomPadding: -10
+            }
+
             background: Rectangle {
                 color: myPalette.mid
                 border.color: myPalette.mid
                 radius: 1
+            }
+
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
             }
 
             ColumnLayout {
@@ -106,7 +115,7 @@ MyStackViewPage {
                 Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 6
+                    columns: 1
 
                     MyToggleButton {
                         id: hmd1
@@ -122,30 +131,36 @@ MyStackViewPage {
                     }
                 }
             }
+        }
 
-            ColumnLayout {
-                anchors.fill: parent
-                Layout.alignment: Qt.AlignHCenter
-
-                GridLayout {
-                    columns: 1
-
-                    MyText {
-                        text: "Controllers in Hands"
-                        Layout.maximumWidth: 250
-                        Layout.minimumWidth: 250
-                        Layout.preferredWidth: 250
-                        Layout.fillWidth: true
-                    }
-                }
+        GroupBox {            
+            Layout.fillWidth: true
+            
+            label: MyText {
+                leftPadding: 10
+                text: "Controllers in Hands"
+                bottomPadding: -10
             }
 
+            background: Rectangle {
+                color: myPalette.mid
+                border.color: myPalette.mid
+                radius: 1
+            }
+
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
+            }
+        
             ColumnLayout {
                 anchors.fill: parent
                 Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 6
+                    columns: 4
 
                     MyToggleButton {
                         id: cntrlHands1
@@ -200,22 +215,28 @@ MyStackViewPage {
                     }
                 }
             }
+        }
+        
+        GroupBox {            
+            Layout.fillWidth: true
+            
+            label: MyText {
+                leftPadding: 10
+                text: "Controllers on Feet"
+                bottomPadding: -10
+            }
 
-            ColumnLayout {
-                anchors.fill: parent
-                Layout.alignment: Qt.AlignHCenter
+            background: Rectangle {
+                color: myPalette.mid
+                border.color: myPalette.mid
+                radius: 1
+            }
 
-                GridLayout {
-                    columns: 1
-
-                    MyText {
-                        text: "Controllers on Feet"
-                        Layout.maximumWidth: 250
-                        Layout.minimumWidth: 250
-                        Layout.preferredWidth: 250
-                        Layout.fillWidth: true
-                    }
-                }
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
             }
 
             ColumnLayout {
@@ -223,7 +244,7 @@ MyStackViewPage {
                 Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 6
+                    columns: 4
 
                     MyToggleButton {
                         id: cntrlFeet1
@@ -278,6 +299,29 @@ MyStackViewPage {
                     }
                 }
             }
+        }
+        
+        GroupBox {            
+            Layout.fillWidth: true
+            
+            label: MyText {
+                leftPadding: 10
+                text: "WIP Devices"
+                bottomPadding: -10
+            }
+
+            background: Rectangle {
+                color: myPalette.mid
+                border.color: myPalette.mid
+                radius: 1
+            }
+
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
+            }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -295,13 +339,36 @@ MyStackViewPage {
                     }
                 }
             }
+        }
+        
+        GroupBox {            
+            Layout.fillWidth: true
+            
+            label: MyText {
+                leftPadding: 10
+                text: "WIP Devices"
+                bottomPadding: -10
+            }
+
+            background: Rectangle {
+                color: myPalette.mid
+                border.color: myPalette.mid
+                radius: 1
+            }
+
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
+            }
 
             ColumnLayout {
                 anchors.fill: parent
                 Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 6
+                    columns: 4
 
                     MyToggleButton {
                         id: trkrFeet1
@@ -356,21 +423,28 @@ MyStackViewPage {
                     }
                 }
             }
-            ColumnLayout {
-                anchors.fill: parent
-                Layout.alignment: Qt.AlignHCenter
+        }
+        
+        GroupBox {            
+            Layout.fillWidth: true
+            
+            label: MyText {
+                leftPadding: 10
+                text: "Trackers on Hands"
+                bottomPadding: -10
+            }
 
-                GridLayout {
-                    columns: 1
+            background: Rectangle {
+                color: myPalette.mid
+                border.color: myPalette.mid
+                radius: 1
+            }
 
-                    MyText {
-                        text: "Trackers on Hands"
-                        Layout.maximumWidth: 250
-                        Layout.minimumWidth: 250
-                        Layout.preferredWidth: 250
-                        Layout.fillWidth: true
-                    }
-                }
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
+                Layout.fillWidth: true
+                Layout.bottomMargin: 5
             }
 
             ColumnLayout {
@@ -378,7 +452,7 @@ MyStackViewPage {
                 Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 6
+                    columns: 4
 
                     MyToggleButton {
                         id: trkrHands1
@@ -434,60 +508,48 @@ MyStackViewPage {
                 }
             }
         }
+        
+        GroupBox {            
+            Layout.fillWidth: true
+            
+            label: MyText {
+                leftPadding: 10
+                text: "Device that controls Direction"
+                bottomPadding: -10
+            }
 
-        ColumnLayout {
-            spacing: 18
-            Layout.alignment: Qt.AlignHCenter
+            background: Rectangle {
+                color: myPalette.mid
+                border.color: myPalette.mid
+                radius: 1
+            }
 
-            GroupBox {
-                boxTitle: "Direction"
-
-                height: 200
+            Rectangle {
+                color: "#AAAAAA"
+                height: 1
                 Layout.fillWidth: true
-                
-                background: Rectangle {
-                    color: myPalette.mid
-                    border.color: myPalette.mid
-                    radius: 1
-                }
+                Layout.bottomMargin: 5
+            }
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    Layout.alignment: Qt.AlignHCenter
+            ColumnLayout {
+                anchors.fill: parent
+                Layout.alignment: Qt.AlignHCenter
 
-                    GridLayout {
-                        columns: 1
-
-                        MyText {
-                            text: "Device that controls Direction"
-                            Layout.maximumWidth: 400
-                            Layout.minimumWidth: 400
-                            Layout.preferredWidth: 400
-                        }
-                    }
-                }
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    Layout.alignment: Qt.AlignHCenter
-
-                    GridLayout {
-                        columns: 1
-
-                        MyComboBox {
-                            id: directionDevice 
-                            currentIndex: 0
-                            Layout.maximumWidth: 400
-                            Layout.minimumWidth: 400
-                            Layout.preferredWidth: 400
-                            Layout.fillWidth: true
-                            displayText: currentText
-                            model: ["None, Use Game Default","1st controller", "2nd controller", "1st tracker", "2nd tracker", "3rd controller", "4th controller", "3rd tracker", "4th tracker"]
-                            onCurrentIndexChanged: {
-                                if (currentIndex >= 0) { 
-                                   WalkInPlaceTabController.setDirectionDevice(currentIndex)                        
-                                } 
-                            }
+                GridLayout {
+                    columns: 1
+                    MyComboBox {
+                        id: directionDevice 
+                        currentIndex: 0
+                        Layout.maximumWidth: 400
+                        Layout.minimumWidth: 400
+                        Layout.preferredWidth: 400
+                        Layout.fillWidth: true
+                        displayText: currentText
+                        model: ["None, Use Game Default","1st controller", "2nd controller", "1st tracker", "2nd tracker", "3rd controller", "4th controller", "3rd tracker", "4th tracker"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex >= 0) { 
+                               WalkInPlaceTabController.setDirectionDevice(currentIndex)                        
+                            } 
                         }
                     }
                 }
@@ -503,4 +565,7 @@ MyStackViewPage {
 
     }
 
+    function stopTimer() {
+
+    }
 }

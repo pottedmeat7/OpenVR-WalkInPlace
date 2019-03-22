@@ -8,12 +8,18 @@ MyStackViewPage {
     id: dataModelPage
     name: "dataModelPage"
 
+    property real timerInterval     : 1 / 4 * 1000
+
     property var hmdYPoints : []
-    property var cont1YPoints : []
-    property var cont2YPoints : []
+    property var cntrl1YPoints : []
+    property var cntrl2YPoints : []
     property var tracker1YPoints : []
     property var tracker2YPoints : []
-    property var touchPoints : []    
+    property var touchPoints : []   
+
+    property var hmdSample : [0,0]
+    property var cntrlSample : [0,0]
+    property var trkrSample : [0,0]
 
     property real canvasPlotMaxPoint : 0.6
     property real canvasPlotMinPoint : -0.6
@@ -25,12 +31,15 @@ MyStackViewPage {
 
     property var startTimer: function() {
         getModelData()
+        if ( WalkInPlaceTabController.isWIPEnabled() ) {
+            refreshTimer.start()
+        }
     }
 
     property var stopTimer: function() {
         hmdYPoints = []
-        cont1YPoints = []
-        cont2YPoints = []
+        cntrl1YPoints = []
+        cntrl2YPoints = []
         tracker1YPoints = []
         tracker2YPoints = []
         touchPoints = []
@@ -40,7 +49,7 @@ MyStackViewPage {
     }
 
     content: Item {
-        id:container
+        id:cntrlainer
 
         GroupBox {
             Layout.fillWidth: true
@@ -351,7 +360,7 @@ MyStackViewPage {
         Column {
             spacing: 6 
             anchors.fill: parent
-            topPadding: 100
+            topPadding: 130
 
             GridLayout {
                 columns: 1
@@ -418,28 +427,43 @@ MyStackViewPage {
                             }
                         }
                         if ( showControllers.checked ) {
-                            var lastcont1YPoint = rectHeight/2 + topY
-                            var lastcont2YPoint = rectHeight/2 + topY
-                            var lastX = 50;
-                            for(var x=0; x<cont1YPoints.length; x++) {
+                            var lastcntrl1YPoint = rectHeight/2 + topY
+                            var lastcntrl2YPoint = rectHeight/2 + topY
+                            var lastcntrlSNYPoint = rectHeight/2 + topY
+                            var lastX = 50
+                            var lastSNX = 50
+                            var validSNMki = cntrlSample[1]
+                            for(var x=0; x<cntrl1YPoints.length; x++) {
                                 ctx.beginPath();  
                                 ctx.strokeStyle = "#DDDD00";
                                 ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont1YPoint);
-                                var val = cont1YPoints[x];
+                                ctx.moveTo(lastX,lastcntrl1YPoint);
+                                var val = cntrl1YPoints[x];
                                 ctx.lineTo(lastX+graphXScale,val+topY);
-                                lastcont1YPoint = val+topY;
+                                lastcntrl1YPoint = val+topY;
                                 ctx.stroke();
                                 ctx.closePath();
                                 ctx.beginPath();  
                                 ctx.strokeStyle = "#00DDDD";
                                 ctx.lineWidth = 1;
-                                ctx.moveTo(lastX,lastcont2YPoint);
-                                var val = cont2YPoints[x];
+                                ctx.moveTo(lastX,lastcntrl2YPoint);
+                                var val = cntrl2YPoints[x];
                                 ctx.lineTo(lastX+graphXScale,val+topY);
-                                lastcont2YPoint = val+topY;
+                                lastcntrl2YPoint = val+topY;
                                 ctx.stroke();
                                 ctx.closePath();
+                                if ( x == validSNMki && x < cntrlSample.length-2) {
+                                    ctx.beginPath();  
+                                    ctx.strokeStyle = "#DDDDDD";
+                                    ctx.lineWidth = 2;
+                                    ctx.moveTo(lastSNX,lastcntrlSNYPoint);
+                                    var val = cntrlSample[x+2];
+                                    ctx.lineTo(lastSNX+graphXScale,val+topY);
+                                    lastcntrlSNYPoint = val+topY;
+                                    ctx.stroke();
+                                    ctx.closePath();                          
+                                    lastSNX = lastSNX + graphXScale;
+                                }
                                 lastX = lastX + graphXScale;
                             }
                         }
@@ -496,9 +520,8 @@ MyStackViewPage {
         try {
             var velVals = WalkInPlaceTabController.getModelData();
             var i = 0;
-            var offset = 1;
             while(i<velVals.length) {
-                var velY = parseFloat(velVals[i+0]).toFixed(6);
+                var velY = parseFloat(velVals[i]).toFixed(4);
                 if ( Math.abs(velY) > canvasPlotMaxPoint ) {
                     canvasPlotMaxPoint = Math.abs(velY);
                     canvasPlotMinPoint = -canvasPlotMaxPoint;
@@ -508,7 +531,7 @@ MyStackViewPage {
                 velY = (((velY - canvasPlotMinPoint) * g) / r)
                 hmdYPoints.push(velY);
 
-                velY = parseFloat(velVals[i+1]).toFixed(6);
+                velY = parseFloat(velVals[i+1]).toFixed(4);
                 if ( Math.abs(velY) > canvasPlotMaxPoint ) {
                     canvasPlotMaxPoint = Math.abs(velY);
                     canvasPlotMinPoint = -canvasPlotMaxPoint;
@@ -516,9 +539,9 @@ MyStackViewPage {
                 var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
                 var g = (modelCanvas.rectHeight)
                 velY = (((velY - canvasPlotMinPoint) * g) / r)
-                cont1YPoints.push(velY);
+                cntrl1YPoints.push(velY);
 
-                velY = parseFloat(velVals[i+2]).toFixed(6);
+                velY = parseFloat(velVals[i+2]).toFixed(4);
                 if ( Math.abs(velY) > canvasPlotMaxPoint ) {
                     canvasPlotMaxPoint = Math.abs(velY);
                     canvasPlotMinPoint = -canvasPlotMaxPoint;
@@ -526,9 +549,9 @@ MyStackViewPage {
                 var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
                 var g = (modelCanvas.rectHeight)
                 velY = (((velY - canvasPlotMinPoint) * g) / r)
-                cont2YPoints.push(velY);
+                cntrl2YPoints.push(velY);
 
-                velY = parseFloat(velVals[i+3]).toFixed(6);
+                velY = parseFloat(velVals[i+3]).toFixed(4);
                 if ( Math.abs(velY) > canvasPlotMaxPoint ) {
                     canvasPlotMaxPoint = Math.abs(velY);
                     canvasPlotMinPoint = -canvasPlotMaxPoint;
@@ -538,7 +561,7 @@ MyStackViewPage {
                 velY = (((velY - canvasPlotMinPoint) * g) / r)
                 tracker1YPoints.push(velY);
 
-                velY = parseFloat(velVals[i+4]).toFixed(6);
+                velY = parseFloat(velVals[i+4]).toFixed(4);
                 if ( Math.abs(velY) > canvasPlotMaxPoint ) {
                     canvasPlotMaxPoint = Math.abs(velY);
                     canvasPlotMinPoint = -canvasPlotMaxPoint;
@@ -546,19 +569,36 @@ MyStackViewPage {
                 var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
                 var g = (modelCanvas.rectHeight)
                 velY = (((velY - canvasPlotMinPoint) * g) / r)
-                velZ = (((velZ - canvasPlotMinPoint) * g) / r)
                 tracker2YPoints.push(velY);
 
                 var graphPoint = velVals[i+5] * canvasPlotMaxPoint;
                 var finalPoint = (((graphPoint - canvasPlotMinPoint) * g) / r)
-                touchPoints.push(finalPoint)
+                touchPoints.push(-1*finalPoint)
 
                 i = i + 6;
             }
 
             modelCanvas.requestPaint ();
 
-        } catch (error) {            
+        } catch (error) {         
+            console.info(error.message)   
         }
     }
+
+    Timer {
+        id: refreshTimer
+        interval: timerInterval
+        running: false
+        repeat: true
+        onTriggered: {
+            try {
+                cntrlSample = WalkInPlaceTabController.getValidCNTRLSample()
+                //console.info(cntrlSample);
+                modelCanvas.requestPaint ();
+            } catch (error) {         
+                console.info(error.message)   
+            }
+        }
+    }
+
 }

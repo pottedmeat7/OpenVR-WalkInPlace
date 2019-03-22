@@ -8,10 +8,7 @@ MyStackViewPage {
     id: graphPage
     name: "graphPage"
 
-    property bool stepDetected : false
-
-    property real timerInterval     : 1 / 45 * 1000
-    property var stepDetects : []
+    property real timerInterval     : 1 / 40 * 1000
 
     property var hmdXPoints : []
     property var hmdYPoints : []
@@ -78,8 +75,6 @@ MyStackViewPage {
         tracker2YPoints = []
         tracker2ZPoints = []
 
-        stepDetects = []
-
         hmdPlotMaxPoint = 0.6
         hmdPlotMinPoint = -0.6
 
@@ -98,7 +93,6 @@ MyStackViewPage {
             hmdXPoints.push(velRes);
             hmdYPoints.push(velRes);
             hmdZPoints.push(velRes);
-            stepDetects.push(velRes);
         }
         var r = (contPlotMaxPoint - contPlotMinPoint)  
         var g = (contCanvas.rectHeight)
@@ -292,35 +286,6 @@ MyStackViewPage {
                         var lastHMDZPoint = rectHeight/2 + topY
                         var lastX = topX;
                         for(var x=topX; x<rectWidth; x+=period) {
-                            if ( autoConfMode < 0 && stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] == 1) {
-                                ctx.beginPath();  
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
-                                    ctx.fillStyle = "#DDDD00";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
-                                    ctx.fillStyle = "#FFBB00";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
-                                    ctx.fillStyle = "#FF3300";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
-                                    ctx.fillStyle = "#CCCCCC";
-                                }
-                                ctx.lineWidth = 1;
-                                ctx.globalAlpha = 0.5;
-                                ctx.fillRect(lastX,lastHMDYPoint-circleRad,circleRad,circleRad);
-                                ctx.stroke();
-                                ctx.closePath();                      
-                                ctx.globalAlpha = 1;
-                            } else if ( (x-topX) % (rectWidth/period) == 0 ) {
-                                //ctx.beginPath();  
-                                //ctx.strokeStyle = "#CCCCCC";
-                                //ctx.lineWidth = 1;
-                                //ctx.moveTo(lastX,topY);
-                                //ctx.lineTo(x,rectHeight+topY);
-                                //ctx.stroke();
-                                //ctx.closePath();
-                            }
                             if ( hmdXPoints.length-1 > (x-topX)/period) {
                                 ctx.beginPath();                
                                 ctx.strokeStyle = "#DD0000";
@@ -412,37 +377,6 @@ MyStackViewPage {
                         var lastcont2ZPoint = rectHeight/2 + topY
                         var lastX = topX;
                         for(var x=topX; x<rectWidth; x+=period) {
-                            if ( false && autoConfMode < 0 && stepDetects.length-1 > (x-topX)/period && stepDetects[Math.floor((x-topX)/period)] >= 2) {
-                                ctx.beginPath();  
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 1 ) {
-                                    ctx.fillStyle = "#DDDD00";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 2 ) {
-                                    ctx.fillStyle = "#FFBB00";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 3 ) {
-                                    ctx.fillStyle = "#FF3300";
-                                }
-                                if ( stepDetects[Math.floor((x-topX)/period)] == 4 ) {
-                                    ctx.fillStyle = "#CCCCCC";
-                                }
-                                ctx.lineWidth = 1;
-                                ctx.globalAlpha = 0.5;
-                                ctx.fillRect(lastX,lastcont1YPoint-circleRad,circleRad,circleRad);
-                                ctx.stroke();
-                                ctx.fillRect(lastX,lastcont2YPoint-circleRad,circleRad,circleRad);
-                                ctx.stroke();
-                                ctx.closePath();                      
-                                ctx.globalAlpha = 1;
-                            } else if ( (x-topX) % (rectWidth/period) == 0 ) {
-                                //ctx.beginPath();  
-                                //ctx.strokeStyle = "#CCCCCC";
-                                //ctx.lineWidth = 1;
-                                //ctx.moveTo(lastX,topY);
-                                //ctx.lineTo(x,rectHeight+topY);
-                                //ctx.stroke();
-                                //ctx.closePath();
-                            }
                             if ( cont1XPoints.length-1 > (x-topX)/period) {
                                 ctx.beginPath();                
                                 ctx.strokeStyle = "#DD0000";
@@ -893,16 +827,6 @@ MyStackViewPage {
                     tracker2YPoints.push(velY);
                     tracker2ZPoints.push(velZ);
                 }
-                if ( velVals.length >= 17 ) {
-                    if ( autoConfMode < 0 ) {
-                        stepDetects.push(velVals[15]);
-
-                        if ( stepDetects.length > hmdCanvas.seconds*hmdCanvas.sections ) {
-                            stepDetects.shift();
-                        }
-                    }
-                }
-
 
                 if ( autoConfMode >= 0 ) {
                     if ( sampleTime >= sampleLimit ) {
@@ -942,8 +866,8 @@ MyStackViewPage {
                             autoConfigPopup.setTitle("Walking Pace Config")
                             autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
                             autoConfigPopup.setTimeout(5)
-                            WalkInPlaceTabController.completeTraining()
                             var page = mainView.pop()
+                            mainView.completeTraining()                            
                         }                       
                     }
                 }
@@ -990,5 +914,14 @@ MyStackViewPage {
         function setTimeout(v) {
             dialogTO = v
         }
+    }
+
+    function startAutoConf() {
+        stopTimer()
+        resetGraph()
+        autoConfigPopup.openPopup()
+        autoConfMode = 0
+        sampleTime = 0
+        currentSampleTime = 0
     }
 }

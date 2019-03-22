@@ -6,11 +6,13 @@
 #include <openvr.h>
 #include <vector>
 #include <vrwalkinplace.h>
-#include <fstream>
-
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <mlpack/core.hpp>
 
 class QQuickWindow;
+
+namespace fs = boost::filesystem;
 
 // application namespace
 namespace walkinplace {
@@ -77,12 +79,14 @@ namespace walkinplace {
 		vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
 
 		arma::mat dataModel;
-		arma::mat dataSample;
+		arma::mat hmdSample;
+		arma::mat cntrlSample;
+		arma::mat trkrSample;
 
 		std::string currentProfileName = "";
 
-		std::string lr_file_type = ".csv";
-		std::string lr_file_name = "temp";
+		std::string model_file_type = ".csv";
+		std::string model_file_name = "temp";
 
 		vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
 		vr::HmdVector3d_t lastHmdRot = { 0, 0, 0 };
@@ -123,6 +127,9 @@ namespace walkinplace {
 		int vive_controller_model_index = -1;
 		int disableButton = -1;
 		int unnTouchedCount = 0;
+		int lastValidHMDSampleMKi = 0;
+		int lastValidCNTRLSampleMKi = 0;
+		int lastValidTRKRSampleMKi = 0;
 
 		uint64_t controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t controller2ID = vr::k_unTrackedDeviceIndexInvalid;
@@ -132,10 +139,13 @@ namespace walkinplace {
 		uint64_t tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t vrLocoContID = vr::k_unTrackedDeviceIndexInvalid;
 
-		float haltHMDVariance = 0.9;
-		float beginHMDVariance = 0.4;
-		float haltTRKRVariance = 0.9;
-		float beginTRKRVariance = 0.4;
+		float haltHMDVariance = 0.09;
+		float beginHMDVariance = 0.05;
+		float haltHMDRotVariance = 0.09;
+		float beginHMDRotVariance = 0.04;
+		float haltTRKRVariance = 0.09;
+		float beginTRKRVariance = 0.05;
+		float sNValidTouch = 0;
 		float minTouch = 0.35;
 		float midTouch = 0.9;
 		float maxTouch = 1.0;
@@ -147,9 +157,13 @@ namespace walkinplace {
 		float contPitch = 0;
 
 		double timeLastTick = 0.0;
+		double timeLastCNTRLSN = 0.0;
 		double identifyControlLastTime = 99999;
 		double identifyControlTimeOut = 6000;
 		double timeLastGraphPoint = 0.0;
+
+		std::pair<float, int> computeSNDelta(arma::mat sN, arma::mat mN);
+		arma::mat computeKVDelta(arma::mat sN, arma::mat mN, int kV);
 
 	public:
 		~WalkInPlaceTabController();
@@ -181,18 +195,18 @@ namespace walkinplace {
 		Q_INVOKABLE bool isWIPEnabled();
 		Q_INVOKABLE bool isStepDetected();
 		Q_INVOKABLE QList<qreal> getGraphPoses();
+		Q_INVOKABLE QList<qreal> getValidHMDSample();
+		Q_INVOKABLE QList<qreal> getValidCNTRLSample(); 
+		Q_INVOKABLE QList<qreal> getValidTRKRSample();
 		Q_INVOKABLE void applyVirtualStep();
 		Q_INVOKABLE QList<qreal> getModelData();
 		Q_INVOKABLE QList<qreal> trainingDataSample(float scaleSpeed, double tdiff);
 		Q_INVOKABLE void completeTraining();
 
-		void reloadWalkInPlaceSettings();
-		void reloadWalkInPlaceProfiles();
-		void saveWalkInPlaceSettings();
-		void saveWalkInPlaceProfiles();
+		Q_INVOKABLE unsigned getProfileCount();
+		Q_INVOKABLE QString getProfileName(unsigned index);
 
-		Q_INVOKABLE unsigned getWalkInPlaceProfileCount();
-		Q_INVOKABLE QString getWalkInPlaceProfileName(unsigned index);
+		Q_INVOKABLE QList<QString> getDataModelNames();
 
 	public slots:
 		void enableWIP(bool enable);
@@ -224,15 +238,19 @@ namespace walkinplace {
 
 		void updateButtonState(uint32_t deviceId, bool firstController);
 
-		void addWalkInPlaceProfile(QString name);
-		void applyWalkInPlaceProfile(unsigned index);
-		void deleteWalkInPlaceProfile(unsigned index);
+		void addProfile(QString name);
+		void applyProfile(unsigned index);
+		void deleteProfile(unsigned index);
 
+		void reloadSettings();
+		void reloadProfiles();
+		void saveSettings();
+		void saveProfiles();
 
-	signals:
-		void deviceCountChanged(unsigned deviceCount);
-		void deviceInfoChanged(unsigned index);
-		void walkInPlaceProfilesChanged();
+		void addDataModel(QString name);
+		void applyDataModel(QString name);
+		void deleteDataModel(QString name);
+
 	};
 
 } // namespace walkinplace

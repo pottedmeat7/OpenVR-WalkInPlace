@@ -7,7 +7,7 @@ Rectangle {
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
 
     id: root
-    color: myPalette.base // "transparent"
+    color: myPalette.base
     width: 1200
     height: 800
 
@@ -23,6 +23,10 @@ Rectangle {
         stackView: mainView
     }
 
+    property DisableDevicePage disableDevicePage:  DisableDevicePage {
+        stackView: mainView
+    }
+
     StackView {
         id: mainView
         anchors.fill: parent
@@ -32,6 +36,14 @@ Rectangle {
         }
         function stopTimer() {
         	currentItem.stopTimer()
+        }
+
+        function completeTraining() {
+        	mainConfPage.completeTraining()
+        }
+
+        function startAutoConf() {
+        	graphPage.startAutoConf()
         }
         
 		pushEnter: Transition {
