@@ -22,7 +22,9 @@ MyMainViewPage {
 
     content: ColumnLayout {
         anchors.top: parent.top
+        anchors.bottom: parent.bottom
         spacing: 7
+        Layout.fillHeight: true
 
         GroupBox {
             Layout.fillWidth: true
@@ -38,18 +40,61 @@ MyMainViewPage {
                 Layout.alignment: Qt.AlignHCenter
 
                 RowLayout {
+                    spacing: 0
+
                     MyText {
                         id: headerTitle
                         text: "OpenVR-WalkInPlace"
                         font.pointSize: 22
+                    }
+
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 165
+                    }  
+
+                    Rectangle {
+                        color: "#AAAAAA"
+                        height: 50
+                        width: 2
+                        Layout.topMargin: 5
+                        Layout.bottomMargin: 10
+                    }
+
+                    MyTab {
+                        Layout.preferredWidth: 300
+                        Layout.preferredHeight: 60
+                        text: "   Choose Tracked Devices "
+                        onClicked: {
+                            var res = mainView.push(disableDevicePage)
+                        }
+                    }
+
+                    Rectangle {
+                        color: "#AAAAAA"
+                        height: 50
+                        width: 2
+                        Layout.topMargin: 5
+                        Layout.bottomMargin: 10
+                    }
+
+                    MyTab {
+                        Layout.preferredWidth: 300
+                        Layout.preferredHeight: 60
+                        text: "   Show Tracking Graph"
+                        onClicked: {
+                            var res = mainView.push(graphPage)
+                            mainView.startTimer()
+                        }
                     }
                 }
             }
         }
 
         GroupBox {
+            id: mainConfigBox
             anchors.top: parent.top
-            anchors.topMargin: 55
+            anchors.topMargin: 70
 
             Layout.fillWidth: true
             
@@ -77,7 +122,6 @@ MyMainViewPage {
                             WalkInPlaceTabController.enableWIP(checked)
                         }
                     }
-
 
                     MyComboBox {
                         id: hmdTypeDialog 
@@ -197,11 +241,12 @@ MyMainViewPage {
         }
 
         ColumnLayout {
-            spacing: 18
-            Layout.alignment: Qt.AlignHCenter
+            id: dataModelColumnLYO
+            anchors.top: mainConfigBox.bottom
+            anchors.topMargin: 350
+            spacing: 7
 
             GroupBox {
-
                 height: 200
                 Layout.fillWidth: true
                 
@@ -296,52 +341,10 @@ MyMainViewPage {
         }
 
         ColumnLayout {
+            id: profileColumnLYO
             spacing: 18
-            Layout.alignment: Qt.AlignHCenter
-
-            GroupBox {
-
-                height: 200
-                Layout.fillWidth: true
-                
-                background: Rectangle {
-                    color: myPalette.mid
-                    border.color: myPalette.mid
-                    radius: 1
-                }
-
-                ColumnLayout {
-                    anchors.fill: parent
-
-                    RowLayout {
-                        spacing: 18
-
-                        MyPushButton {
-                            Layout.preferredWidth: 250
-                            Layout.topMargin: 10
-                            text: "Choose Devices"
-                            onClicked: {
-                                var res = mainView.push(disableDevicePage)
-                            }
-                        }
-
-                        MyPushButton {
-                            Layout.preferredWidth: 250
-                            Layout.topMargin: 10
-                            text: "Show Tracking Graph"
-                            onClicked: {
-                                var res = mainView.push(graphPage)
-                                mainView.startTimer()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        ColumnLayout {
-            spacing: 18
-            Layout.alignment: Qt.AlignHCenter
+            anchors.top: dataModelColumnLYO.bottom
+            anchors.topMargin: 20
 
             GroupBox {
 
@@ -438,6 +441,7 @@ MyMainViewPage {
         onClosed: {
             if (okClicked) {
                 WalkInPlaceTabController.deleteDataModel(dataModelComboBox.currentText)
+                reloadProfiles()
             }
         }
     }

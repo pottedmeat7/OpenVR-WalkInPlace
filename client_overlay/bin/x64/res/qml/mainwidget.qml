@@ -7,8 +7,9 @@ Rectangle {
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
 
     id: root
-    color: myPalette.base
-    width: 1200
+    color: "transparent"
+
+    width: 1500
     height: 800
 
     property MainConfPage mainConfPage:  MainConfPage {

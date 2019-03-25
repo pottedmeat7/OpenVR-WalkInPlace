@@ -73,7 +73,7 @@ namespace walkinplace {
 							}
 							else {
 								LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								vrLocoContID = info->openvrId;
+								ovrwipCNTRLID = info->openvrId;
 							}
 						}
 						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
@@ -100,32 +100,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::eventLoopTick() {
 		if (!initializedDataModel) {
 			if (!dataTrainingRequired) {
-				try {
-					bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type);
-					if (loaded) {
-						//dataModel = dataModel.t();
-						initializedDataModel = true;
-						dataTrainingRequired = false;
-						LOG(INFO) << " loaded model file on event loop";
-					}
-					else {
-						dataTrainingRequired = true;
-						dataModel.insert_cols(0, 1);
-						dataModel.insert_rows(0, 7); // 7 rows - hmd Y vel, cntrl1 Y Vel, cntrl2 Y Vel, trkr1 Y Vel, trkr2 Y Vel, hmd Pitch rot vel, touch val
-						hmdSample.insert_cols(0, 1);
-						hmdSample.insert_rows(0, 2); // two rows - Y vel,Pitch Rot Vel
-						cntrlSample.insert_cols(0, 1);
-						cntrlSample.insert_rows(0, 2); // two rows - cntrl1 Y Vel, cntrl2 Y Vel
-						trkrSample.insert_cols(0, 1);
-						trkrSample.insert_rows(0, 2); // two rows - trkr1 Y Vel, trkr2 Y Vel
-						LOG(INFO) << " unable to load model file on event loop at: " << QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type;
-					}
-				}
-				catch (std::exception& e) {
-					initializedDataModel = false;
-					dataTrainingRequired = true;
-					LOG(INFO) << "Exception caught while loading data model: " << e.what();
-				}
+				loadDataModel();
 			}
 		}
 		else if (wipEnabled) {
@@ -143,7 +118,7 @@ namespace walkinplace {
 				}
 			}
 			else {
-				applyStepPoseDetect();
+				runSampleOnModel();
 			}
 		}
 		if (identifyControlTimerSet) {
@@ -166,7 +141,7 @@ namespace walkinplace {
 				catch (std::exception& e) {
 					LOG(INFO) << "Exception caught while finding vive controller model: " << e.what();
 				}
-				setDeviceRenderModel(controlSelectOverlayHandle, vive_controller_model_index, 1, 1, 1, 1, 1, 1);
+				setDeviceRenderModel(controlSelectOverlayHandle, 0, 1, 1, 1, 1, 1, 1);
 			}
 		}
 		if (settingsUpdateCounter >= 45) {
@@ -211,7 +186,7 @@ namespace walkinplace {
 								}
 								else {
 									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-									vrLocoContID = info->openvrId;
+									ovrwipCNTRLID = info->openvrId;
 								}
 							}
 							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
@@ -310,7 +285,7 @@ namespace walkinplace {
 	}
 
 	bool WalkInPlaceTabController::getDisableHMD() {
-		return disableHMD;
+		return trackHMDVel;
 	}
 
 	float WalkInPlaceTabController::getWalkTouch() {
@@ -333,38 +308,59 @@ namespace walkinplace {
 		return useContDirForRev;
 	}
 
+	void WalkInPlaceTabController::clearSamplesAndModel() {
+		dataModel.clear();
+		hmdSample.clear();
+		cntrlSample.clear();
+		trkrSample.clear();
+		dataModel.insert_cols(0, 1);
+		dataModel.insert_rows(0, 10);
+		hmdSample.insert_cols(0, 1);
+		hmdSample.insert_rows(0, 1);
+		cntrlSample.insert_cols(0, 1);
+		cntrlSample.insert_rows(0, 2);
+		trkrSample.insert_cols(0, 1);
+		trkrSample.insert_rows(0, 2);
+	}
+	void WalkInPlaceTabController::loadDataModel() {
+		try {
+			bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type);
+			if (loaded) {
+				//dataModel = dataModel.t();
+				initializedDataModel = true;
+				dataTrainingRequired = false;
+				hmdMaxPROTVel = arma::abs(dataModel.row(HMD_PITCH_VEL_IDX)).max();
+				hmdMaxYROTVel = arma::abs(dataModel.row(HMD_YAW_VEL_IDX)).max();
+				hmdMaxXVel = arma::abs(dataModel.row(HMD_X_VEL_IDX)).max();
+				hmdMaxZVel = arma::abs(dataModel.row(HMD_Z_VEL_IDX)).max();
+				arma::rowvec mCNTRL1 = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
+				arma::rowvec mCNTRL2 = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
+				mKAVGCNTRL.clear();
+				for (int k = 0; k < mCNTRL1.n_cols-1; k+=reqSNCNTRL) {
+					arma::rowvec mK1 = mCNTRL1.cols(k, std::min(k + reqSNCNTRL, (int)mCNTRL1.n_cols - 1));
+					arma::rowvec mK2 = mCNTRL2.cols(k, std::min(k + reqSNCNTRL, (int)mCNTRL2.n_cols - 1));
+					mKAVGCNTRL.insert_cols(0,1);
+					mKAVGCNTRL(k) = (arma::mean(mK1) + arma::mean(mK1)) / 2.0;
+				}
+			}
+			else {
+				dataTrainingRequired = true;
+				clearSamplesAndModel();
+				LOG(INFO) << "unable to load data model at: " << QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type;
+			}
+		}
+		catch (std::exception& e) {
+			initializedDataModel = false;
+			dataTrainingRequired = true;
+			LOG(INFO) << "Exception caught while loading data model: " << e.what();
+		}
+	}
 
 	QList<qreal> WalkInPlaceTabController::getModelData() {
 		bool loaded = initializedDataModel;
 		if (!initializedDataModel) {
-			try {
-				bool loaded = dataModel.load(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type);
-				if (loaded) {
-					//dataModel = dataModel.t();
-					LOG(INFO) << " loaded model file on show model";
-					initializedDataModel = true;
-					dataTrainingRequired = false;
-				}
-				else {
-					dataTrainingRequired = true;
-					dataModel.insert_cols(0, 1);
-					dataModel.insert_rows(0, 7); // 7 rows - hmd Y vel, cntrl1 Y Vel, cntrl2 Y Vel, trkr1 Y Vel, trkr2 Y Vel, hmd Pitch rot vel, touch val
-					hmdSample.insert_cols(0, 1);
-					hmdSample.insert_rows(0, 2); // two rows - Y vel,Pitch Rot Vel
-					cntrlSample.insert_cols(0, 1);
-					cntrlSample.insert_rows(0, 2); // two rows - cntrl1 Y Vel, cntrl2 Y Vel
-					trkrSample.insert_cols(0, 1);
-					trkrSample.insert_rows(0, 2); // two rows - trkr1 Y Vel, trkr2 Y Vel
-					LOG(INFO) << "unable to load model file on show model at: " << QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type;
-				}
-			}
-			catch (std::exception& e) {
-				initializedDataModel = false;
-				dataTrainingRequired = true;
-				LOG(INFO) << "Exception caught while loading data model: " << e.what();
-			}
+			loadDataModel();
 		}
-
 		QList<qreal> vals;
 		if (loaded) {
 			try {
@@ -374,7 +370,7 @@ namespace walkinplace {
 							vals.push_back((float)dataModel(j, i));
 						}
 					}
-					vals.push_back((float)dataModel(dataModel.n_rows - 1, i)); //graph x progress val 2nd last val in model
+					vals.push_back((float)dataModel(TOUCH_VAL_IDX, i));
 				}
 			}
 			catch (std::exception& e) {
@@ -388,7 +384,7 @@ namespace walkinplace {
 		try {
 			dataModel = dataModel.t();
 			mlpack::data::Save(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type, dataModel);
-			dataModel.clear();
+			clearSamplesAndModel();
 			initializedDataModel = false;
 			dataTrainingRequired = false;
 			//addDataModel(QString(currentProfileName.c_str()));
@@ -398,7 +394,7 @@ namespace walkinplace {
 		}
 	}
 
-	QList<qreal> WalkInPlaceTabController::getValidHMDSample() {
+	QList<qreal> WalkInPlaceTabController::getHMDSample() {
 		QList<qreal> vals;
 		if (wipEnabled) {
 			try {
@@ -406,22 +402,23 @@ namespace walkinplace {
 				vals.push_back(lastValidHMDSampleMKi);
 				for (int i = 0; i < hmdSample.n_cols; i++) {
 					vals.push_back((float)hmdSample(0, i));
+					//vals.push_back((float)hmdSample(1, i));
+					//vals.push_back((float)hmdSample(2, i));
 				}
 			}
 			catch (std::exception& e) {
 				LOG(INFO) << "Exception caught while getting the hmd sample: " << e.what();
 			}
 		}
-
 		return vals;
 	}
 
-	QList<qreal> WalkInPlaceTabController::getValidCNTRLSample() {
+	QList<qreal> WalkInPlaceTabController::getCNTRLSample() {
 		QList<qreal> vals;
 		if (wipEnabled) {
 			try {
 				vals.push_back(validSample ? 1 : 0);
-				vals.push_back(lastValidCNTRLSampleMKi);
+				vals.push_back(lastCNTRLSampleMKi);
 				for (int i = 0; i < cntrlSample.n_cols; i++) {
 					vals.push_back((float)cntrlSample(0, i));
 					vals.push_back((float)cntrlSample(1, i));
@@ -435,7 +432,7 @@ namespace walkinplace {
 		return vals;
 	}
 
-	QList<qreal> WalkInPlaceTabController::getValidTRKRSample() {
+	QList<qreal> WalkInPlaceTabController::getTRKRSample() {
 		QList<qreal> vals;
 		if (wipEnabled) {
 			try {
@@ -450,7 +447,6 @@ namespace walkinplace {
 				LOG(INFO) << "Exception caught while getting the tracker sample: " << e.what();
 			}
 		}
-
 		return vals;
 	}
 
@@ -461,20 +457,155 @@ namespace walkinplace {
 		bool firstController = true;
 		bool firstTracker = true;
 		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
-		vr::HmdVector3d_t hmdAcc = { 0, 0, 0 };
 		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
 		vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont1Acc = { 0, 0, 0 };
-		vr::HmdVector3d_t cont1RotVel = { 0, 0, 0 };
 		vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont2Acc = { 0, 0, 0 };
-		vr::HmdVector3d_t cont2RotVel = { 0, 0, 0 };
 		vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker1Acc = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker1RotVel = { 0, 0, 0 };
 		vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker2Acc = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker2RotVel = { 0, 0, 0 };
+		if (hmdType != 0) {
+			auto m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
+
+			hmdVel.v[0] = (m[0][3] - lastHmdPos.v[0]) / tdiff;
+			hmdVel.v[1] = (m[1][3] - lastHmdPos.v[1]) / tdiff;
+			hmdVel.v[2] = (m[2][3] - lastHmdPos.v[2]) / tdiff;
+
+			lastHmdPos.v[0] = m[0][3];
+			lastHmdPos.v[1] = m[1][3];
+			lastHmdPos.v[2] = m[2][3];
+
+		}
+		else {
+			hmdVel.v[0] = latestDevicePoses[hmdID].vVelocity.v[0];
+			hmdVel.v[1] = latestDevicePoses[hmdID].vVelocity.v[1];
+			hmdVel.v[2] = latestDevicePoses[hmdID].vVelocity.v[2];
+		}
+
+		vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
+		vr::HmdVector3d_t forward = { 0,0,-1 };
+		vr::HmdVector3d_t right = { 1,0,0 };
+		vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(qRotation, forward);
+		vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+		//hmdVel = vrmath::quaternionRotateVector(qRotation, hmdVel);
+
+		double devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+		double devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+		double devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+
+		if (dataModel.n_cols > 5) {
+			hmdRotVel.v[0] = (devYaw - lastHmdRot.v[0]) / tdiff;
+			hmdRotVel.v[1] = (devPitch - lastHmdRot.v[1]) / tdiff;
+			hmdRotVel.v[2] = (devRoll - lastHmdRot.v[2]) / tdiff;
+		}
+
+		lastHmdRot.v[0] = devYaw;
+		lastHmdRot.v[1] = devPitch;
+		lastHmdRot.v[2] = devRoll;
+
+		cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
+		cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
+		cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
+		qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
+		devForward = vrmath::quaternionRotateVector(qRotation, forward);
+		devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+		//cont1Vel = vrmath::quaternionRotateVector(qRotation, cont1Vel);
+
+		devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+		devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+		devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+
+		if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
+			cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
+			cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
+			cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
+			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller2ID].mDeviceToAbsoluteTracking);
+			devForward = vrmath::quaternionRotateVector(qRotation, forward);
+			devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+			//cont2Vel = vrmath::quaternionRotateVector(qRotation, cont2Vel);
+
+			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+		}
+
+		if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
+			tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
+			tracker1Vel.v[1] = latestDevicePoses[tracker1ID].vVelocity.v[1];
+			tracker1Vel.v[2] = latestDevicePoses[tracker1ID].vVelocity.v[2];
+			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker1ID].mDeviceToAbsoluteTracking);
+			devForward = vrmath::quaternionRotateVector(qRotation, forward);
+			devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+			//tracker1Vel = vrmath::quaternionRotateVector(qRotation, tracker1Vel);
+
+			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+
+			if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
+				tracker2Vel.v[0] = latestDevicePoses[tracker2ID].vVelocity.v[0];
+				tracker2Vel.v[1] = latestDevicePoses[tracker2ID].vVelocity.v[1];
+				tracker2Vel.v[2] = latestDevicePoses[tracker2ID].vVelocity.v[2];
+				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker2ID].mDeviceToAbsoluteTracking);
+				devForward = vrmath::quaternionRotateVector(qRotation, forward);
+				devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+				//tracker2Vel = vrmath::quaternionRotateVector(qRotation, tracker2Vel);
+
+				devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+				devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+				devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+			}
+		}
+		try {
+			int n = dataModel.n_cols;
+			dataModel.insert_cols(n, 1);
+
+			dataModel(HMD_X_VEL_IDX, n) = hmdVel.v[0];
+			dataModel(HMD_Y_VEL_IDX, n) = hmdVel.v[1];
+			dataModel(HMD_Z_VEL_IDX, n) = hmdVel.v[2];
+			dataModel(CNTRL1_Y_VEL_IDX, n) = cont1Vel.v[1];
+			dataModel(CNTRL2_Y_VEL_IDX, n) = cont2Vel.v[1];
+			dataModel(TRKR1_Y_VEL_IDX, n) = tracker1Vel.v[1];
+			dataModel(TRKR2_Y_VEL_IDX, n) = tracker2Vel.v[1];
+			dataModel(HMD_YAW_VEL_IDX, n) = hmdRotVel.v[0]; // yaw rotational velocity
+			dataModel(HMD_PITCH_VEL_IDX, n) = hmdRotVel.v[1]; // pitch rotational velocity
+			dataModel(TOUCH_VAL_IDX, n) = scaleSpeed;
+		}
+		catch (std::exception& e) {
+			LOG(INFO) << "Exception caught while building data model: " << e.what();
+		}
+
+		QList<qreal> vals;
+		vals.push_back(hmdRotVel.v[0]);// hmdVel.v[0]); // yaw vel
+		vals.push_back(hmdVel.v[1]);
+		vals.push_back(hmdRotVel.v[1]);//hmdVel.v[2]); // pitch vel
+
+		vals.push_back(cont1Vel.v[1]);
+		vals.push_back(cont2Vel.v[1]);
+
+		vals.push_back(tracker1Vel.v[1]);
+		vals.push_back(tracker2Vel.v[1]);
+		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];	
+
+		return vals;
+	}
+
+	QList<qreal> WalkInPlaceTabController::getGraphPoses(double tdiff) {
+		if (!wipEnabled) {
+			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
+		}
+		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		bool firstController = true;
+		bool firstTracker = true;
+		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
+		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
+		vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
+		vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
+		vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
+		vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
 		if (hmdType != 0) {
 			auto m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
 
@@ -509,13 +640,9 @@ namespace walkinplace {
 		hmdRotVel.v[1] = (devPitch - lastHmdRot.v[1]) / tdiff;
 		hmdRotVel.v[2] = (devRoll - lastHmdRot.v[2]) / tdiff;
 
-		hmdAcc.v[0] = (hmdVel.v[0] - lastHmdVel.v[0]) / tdiff;
-		hmdAcc.v[1] = (hmdVel.v[1] - lastHmdVel.v[1]) / tdiff;
-		hmdAcc.v[2] = (hmdVel.v[2] - lastHmdVel.v[2]) / tdiff;
-
-		lastHmdVel.v[0] = hmdVel.v[0];
-		lastHmdVel.v[1] = hmdVel.v[1];
-		lastHmdVel.v[2] = hmdVel.v[2];
+		lastHmdRot.v[0] = devYaw;
+		lastHmdRot.v[1] = devPitch;
+		lastHmdRot.v[2] = devRoll;
 
 		cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
 		cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
@@ -530,18 +657,6 @@ namespace walkinplace {
 		devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
 		devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
 
-		cont1RotVel.v[0] = (devYaw - lastCont1Rot.v[0]) / tdiff;
-		cont1RotVel.v[1] = (devPitch - lastCont1Rot.v[1]) / tdiff;
-		cont1RotVel.v[2] = (devRoll - lastCont1Rot.v[2]) / tdiff;
-
-		cont1Acc.v[0] = (cont1Vel.v[0] - lastCont1Vel.v[0]) / tdiff;
-		cont1Acc.v[1] = (cont1Vel.v[1] - lastCont1Vel.v[1]) / tdiff;
-		cont1Acc.v[2] = (cont1Vel.v[2] - lastCont1Vel.v[2]) / tdiff;
-
-		lastCont1Vel.v[0] = cont1Vel.v[0];
-		lastCont1Vel.v[1] = cont1Vel.v[1];
-		lastCont1Vel.v[2] = cont1Vel.v[2];
-
 		if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
 			cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
 			cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
@@ -555,217 +670,48 @@ namespace walkinplace {
 			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
 			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
 			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-			cont2RotVel.v[0] = (devYaw - lastCont2Rot.v[0]) / tdiff;
-			cont2RotVel.v[1] = (devPitch - lastCont2Rot.v[1]) / tdiff;
-			cont2RotVel.v[2] = (devRoll - lastCont2Rot.v[2]) / tdiff;
-
-			cont2Acc.v[0] = (cont2Vel.v[0] - lastCont2Vel.v[0]) / tdiff;
-			cont2Acc.v[1] = (cont2Vel.v[1] - lastCont2Vel.v[1]) / tdiff;
-			cont2Acc.v[2] = (cont2Vel.v[2] - lastCont2Vel.v[2]) / tdiff;
-
-			lastCont2Vel.v[0] = cont2Vel.v[0];
-			lastCont2Vel.v[1] = cont2Vel.v[1];
-			lastCont2Vel.v[2] = cont2Vel.v[2];
 		}
 
-		if (useTrackers) {
-			if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
-				tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
-				tracker1Vel.v[1] = latestDevicePoses[tracker1ID].vVelocity.v[1];
-				tracker1Vel.v[2] = latestDevicePoses[tracker1ID].vVelocity.v[2];
-				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker1ID].mDeviceToAbsoluteTracking);
+		if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
+			tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
+			tracker1Vel.v[1] = latestDevicePoses[tracker1ID].vVelocity.v[1];
+			tracker1Vel.v[2] = latestDevicePoses[tracker1ID].vVelocity.v[2];
+			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker1ID].mDeviceToAbsoluteTracking);
+			devForward = vrmath::quaternionRotateVector(qRotation, forward);
+			devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+			//tracker1Vel = vrmath::quaternionRotateVector(qRotation, tracker1Vel);
+
+			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+
+			if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
+				tracker2Vel.v[0] = latestDevicePoses[tracker2ID].vVelocity.v[0];
+				tracker2Vel.v[1] = latestDevicePoses[tracker2ID].vVelocity.v[1];
+				tracker2Vel.v[2] = latestDevicePoses[tracker2ID].vVelocity.v[2];
+				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker2ID].mDeviceToAbsoluteTracking);
 				devForward = vrmath::quaternionRotateVector(qRotation, forward);
 				devRight = vrmath::quaternionRotateVector(qRotation, right);
 
-				//tracker1Vel = vrmath::quaternionRotateVector(qRotation, tracker1Vel);
+				//tracker2Vel = vrmath::quaternionRotateVector(qRotation, tracker2Vel);
 
 				devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
 				devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
 				devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-				tracker1RotVel.v[0] = (devYaw - lastTracker1Rot.v[0]) / tdiff;
-				tracker1RotVel.v[1] = (devPitch - lastTracker1Rot.v[1]) / tdiff;
-				tracker1RotVel.v[2] = (devRoll - lastTracker1Rot.v[2]) / tdiff;
-
-				if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
-					tracker2Vel.v[0] = latestDevicePoses[tracker2ID].vVelocity.v[0];
-					tracker2Vel.v[1] = latestDevicePoses[tracker2ID].vVelocity.v[1];
-					tracker2Vel.v[2] = latestDevicePoses[tracker2ID].vVelocity.v[2];
-					qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker2ID].mDeviceToAbsoluteTracking);
-					devForward = vrmath::quaternionRotateVector(qRotation, forward);
-					devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-					//tracker2Vel = vrmath::quaternionRotateVector(qRotation, tracker2Vel);
-
-					devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-					devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-					devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-					tracker2RotVel.v[0] = (devYaw - lastTracker2Rot.v[0]) / tdiff;
-					tracker2RotVel.v[0] = (devPitch - lastTracker2Rot.v[1]) / tdiff;
-					tracker2RotVel.v[0] = (devRoll - lastTracker2Rot.v[2]) / tdiff;
-				}
 			}
-		}
-		try {
-			int n = dataModel.n_cols;
-			dataModel.insert_cols(n, 1);
-			//dataModel(0, n) = hmdVel.v[0];
-			dataModel(0, n) = hmdVel.v[1];
-			//dataModel(2, n) = hmdVel.v[2];
-			dataModel(1, n) = cont1Vel.v[1];
-			dataModel(2, n) = cont2Vel.v[1];
-			dataModel(3, n) = tracker1Vel.v[1];
-			dataModel(4, n) = tracker2Vel.v[1];
-			dataModel(5, n) = hmdRotVel.v[1]; // save pitch rotational velocity
-			dataModel(6, n) = scaleSpeed;
-		}
-		catch (std::exception& e) {
-			LOG(INFO) << "Exception caught while building data model: " << e.what();
 		}
 
 		QList<qreal> vals;
-		vals.push_back(hmdVel.v[0]);
+		vals.push_back(hmdRotVel.v[0]);//hmdVel.v[0]); // yaw vel
 		vals.push_back(hmdVel.v[1]);
-		vals.push_back(hmdVel.v[2]);
+		vals.push_back(hmdRotVel.v[1]);//hmdVel.v[2]); // pitch vel
 
-		vals.push_back(cont1Vel.v[0]);
 		vals.push_back(cont1Vel.v[1]);
-		vals.push_back(cont1Vel.v[2]);
-		//vals.push_back(hmdPitchAngVel);
-
-		vals.push_back(cont2Vel.v[0]);
 		vals.push_back(cont2Vel.v[1]);
-		vals.push_back(cont2Vel.v[2]);
 
-		vals.push_back(tracker1Vel.v[0]);
 		vals.push_back(tracker1Vel.v[1]);
-		vals.push_back(tracker1Vel.v[2]);
-
-		vals.push_back(tracker2Vel.v[0]);
 		vals.push_back(tracker2Vel.v[1]);
-		vals.push_back(tracker2Vel.v[2]);
-		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];	
-
-		return vals;
-	}
-
-	QList<qreal> WalkInPlaceTabController::getGraphPoses() {
-		if (!wipEnabled) {
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-		}
-		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		bool firstController = true;
-		bool firstTracker = true;
-		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
-		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker1RotVel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker2RotVel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont1RotVel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont2RotVel = { 0, 0, 0 };
-		for (auto info : deviceInfos) {
-			if (latestDevicePoses[info->openvrId].bPoseIsValid) {
-				if (info->deviceClass == vr::TrackedDeviceClass_HMD) {
-					if (hmdType != 0) {
-						auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-						double tdiff = ((double)(now - timeLastTick)) / 1000.0;
-						timeLastTick = now;
-						auto m = latestDevicePoses[info->openvrId].mDeviceToAbsoluteTracking.m;
-
-						hmdVel.v[0] = (m[0][3] - lastHmdPos.v[0]) / tdiff;
-						hmdVel.v[1] = (m[1][3] - lastHmdPos.v[1]) / tdiff;
-						hmdVel.v[2] = (m[2][3] - lastHmdPos.v[2]) / tdiff;
-
-						lastHmdPos.v[0] = m[0][3];
-						lastHmdPos.v[1] = m[1][3];
-						lastHmdPos.v[2] = m[2][3];
-
-					}
-					else {
-						hmdVel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-						hmdVel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-						hmdVel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-					}
-
-					/*vr::HmdQuaternion_t tmpConj = vrmath::quaternionConjugate(pose.qWorldFromDriverRotation);
-					auto poseWorldRot = tmpConj * pose.qRotation;
-
-					double zsqr = poseWorldRot.z * poseWorldRot.z;
-
-					// roll (x-axis rotation)
-					double t0 = +2.0 * (poseWorldRot.w * poseWorldRot.x + poseWorldRot.z * poseWorldRot.y);
-					double t1 = +1.0 - 2.0 * (poseWorldRot.x * poseWorldRot.x + zsqr);
-					double roll = (180 * std::atan2(t0, t1)) / M_PI;
-
-					// pitch (z-axis rotation)
-					double t2 = +2.0 * (poseWorldRot.w * poseWorldRot.z - poseWorldRot.y * poseWorldRot.x);
-					double pitch;
-					if (std::fabs(t2) >= 1) {
-					pitch = 90;
-					}
-					else {
-					pitch = (180 * std::asin(t2)) / M_PI;
-					}
-
-					double t3 = +2.0 * (poseWorldRot.w * poseWorldRot.y + poseWorldRot.x * poseWorldRot.z);
-					double t4 = +1.0 - 2.0 * (zsqr + poseWorldRot.y * poseWorldRot.y);
-					double yaw = (180 * std::atan2(t3, t4)) / M_PI;*/
-				}
-				else if (info->deviceClass == vr::TrackedDeviceClass_Controller) {
-					if (info->serial.find("ovrwip") == std::string::npos) {
-						if (firstController) {
-							cont1Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-							cont1Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-							cont1Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-							firstController = false;
-						}
-						else {
-							cont2Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-							cont2Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-							cont2Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-						}
-					}
-				}
-				else if (info->deviceClass == vr::TrackedDeviceClass_GenericTracker) {
-					if (firstTracker) {
-						tracker1Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-						tracker1Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-						tracker1Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-						firstTracker = false;
-					}
-					else {
-						tracker2Vel.v[0] = latestDevicePoses[info->openvrId].vVelocity.v[0];
-						tracker2Vel.v[1] = latestDevicePoses[info->openvrId].vVelocity.v[1];
-						tracker2Vel.v[2] = latestDevicePoses[info->openvrId].vVelocity.v[2];
-					}
-				}
-			}
-		}
-		QList<qreal> vals;
-		vals.push_back(hmdVel.v[0]);
-		vals.push_back(hmdVel.v[1]);
-		vals.push_back(hmdVel.v[2]);
-
-		vals.push_back(cont1Vel.v[0]);
-		vals.push_back(cont1Vel.v[1]);
-		vals.push_back(cont1Vel.v[2]);
-
-		vals.push_back(cont2Vel.v[0]);
-		vals.push_back(cont2Vel.v[1]);
-		vals.push_back(cont2Vel.v[2]);
-
-		vals.push_back(tracker1Vel.v[0]);
-		vals.push_back(tracker1Vel.v[1]);
-		vals.push_back(tracker1Vel.v[2]);
-
-		vals.push_back(tracker2Vel.v[0]);
-		vals.push_back(tracker2Vel.v[1]);
-		vals.push_back(tracker2Vel.v[2]);
 		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];	
 
 		return vals;
@@ -801,11 +747,12 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::addDataModel(QString name) {
 		model_file_name = name.toStdString();
+		clearSamplesAndModel();
 	}
 
 	void WalkInPlaceTabController::applyDataModel(QString name) {
 		model_file_name = name.toStdString();
-		dataModel.clear();
+		clearSamplesAndModel();
 		initializedDataModel = false;
 		dataTrainingRequired = false;
 	}
@@ -815,6 +762,7 @@ namespace walkinplace {
 		if (std::remove(model_loc.c_str()) != 0) {
 			LOG(INFO) << "could not delete, you can delete manually from: " << model_loc;
 		}
+		clearSamplesAndModel();
 	}
 
 	void WalkInPlaceTabController::reloadSettings() {
@@ -838,7 +786,8 @@ namespace walkinplace {
 			entry.hmdType = settings->value("hmdType", 0).toInt();
 			entry.buttonControlSelect = settings->value("buttonControlSelect", 0).toInt();
 			entry.useTrackers = settings->value("useTrackers", false).toBool();
-			entry.disableHMD = settings->value("disableHMD", false).toBool();
+			entry.trackHMDVel = settings->value("trackHMDVel", true).toBool();
+			entry.trackHMDRot = settings->value("trackHMDRot", true).toBool();
 			entry.useContDirForStraf = settings->value("useContDirForStraf", false).toBool();
 			entry.useContDirForRev = settings->value("useContDirForRev", false).toBool();
 			entry.minInputTime = settings->value("minInputTime", 0.25).toDouble();
@@ -875,7 +824,7 @@ namespace walkinplace {
 			settings->setValue("hmdType", p.hmdType);
 			settings->setValue("buttonControlSelect", p.buttonControlSelect);
 			settings->setValue("useTrackers", p.useTrackers);
-			settings->setValue("disableHMD", p.disableHMD);
+			settings->setValue("trackHMDVel", p.trackHMDVel);
 			settings->setValue("useContDirForStraf", p.useContDirForStraf);
 			settings->setValue("useContDirForRev", p.useContDirForRev);
 			settings->setValue("minInputTime", p.minInputTime);
@@ -925,8 +874,8 @@ namespace walkinplace {
 		profile->gameType = gameType;
 		profile->hmdType = hmdType;
 		profile->buttonControlSelect = buttonControlSelect;
-		profile->useTrackers = useTrackers || disableHMD;
-		profile->disableHMD = disableHMD;
+		profile->useTrackers = useTrackers || !trackHMDVel;
+		profile->trackHMDVel = trackHMDVel;
 		profile->useContDirForStraf = useContDirForStraf;
 		profile->useContDirForRev = useContDirForRev;
 		profile->disableButton = disableButton;
@@ -945,8 +894,8 @@ namespace walkinplace {
 			gameType = profile.gameType;
 			hmdType = profile.hmdType;
 			buttonControlSelect = profile.buttonControlSelect;
-			useTrackers = profile.useTrackers || profile.disableHMD;
-			disableHMD = profile.disableHMD;
+			useTrackers = profile.useTrackers || !profile.trackHMDVel;
+			trackHMDVel = profile.trackHMDVel;
 			useContDirForStraf = profile.useContDirForStraf;
 			useContDirForRev = profile.useContDirForRev;
 			disableButton = profile.disableButton;
@@ -960,8 +909,7 @@ namespace walkinplace {
 			setGameStepType(profile.gameType);
 			setHMDType(profile.hmdType);
 			setButtonControlSelect(profile.buttonControlSelect);
-			setDisableHMD(profile.disableHMD);
-			setDisableHMD(profile.disableHMD);
+			setTrackHMDVel(profile.trackHMDVel);
 			setUseContDirForStraf(profile.useContDirForStraf);
 			setUseContDirForRev(profile.useContDirForRev);
 			setMinInputTime(profile.minInputTime);
@@ -986,7 +934,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::enableWIP(bool enable) {
 		wipEnabled = enable;
 		if (!enable && initializedDriver) {
-			stopMovement(0);
+			stopMovement();
 		}
 	}
 
@@ -1014,11 +962,20 @@ namespace walkinplace {
 		useContDirForRev = val;
 	}
 
-	void WalkInPlaceTabController::setDisableHMD(bool value) {
-		disableHMD = value;
-		if (disableHMD && !useTrackers) {
+	void WalkInPlaceTabController::setTrackHMDVel(bool value) {
+		trackHMDVel = value;
+		if (!trackHMDVel && !useTrackers) {
 			useTrackers = true;
 		}
+	}
+
+	void WalkInPlaceTabController::setTrackHMDRot(bool value) {
+		trackHMDRot = value;
+	}
+
+	void WalkInPlaceTabController::setHMDMaxVari(float value) {
+		hmdVelVariance = value;
+
 	}
 
 	void WalkInPlaceTabController::setDisableButton(int buttonId) {
@@ -1031,29 +988,59 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::setDirectionDevice(int choice) {
-		//TODO customize direction choices
+		//["None, Use Game Default","1st controller", "2nd controller", "1st tracker", "2nd tracker", "3rd controller", "4th controller", "3rd tracker", "4th tracker"]
+		switch (choice) {
+		case 0:
+		case 1:
+			directionDevice = vr::k_unTrackedDeviceIndexInvalid;
+			break;
+		case 2:
+		case 6:
+			directionDevice = controller1ID;
+			break;
+		case 3:
+		case 7:
+			directionDevice = controller2ID;
+			break;
+		case 4:
+		case 8:
+			directionDevice = tracker1ID;
+			break;
+		case 5:
+		case 9:
+			directionDevice = tracker2ID;
+			break;
+		default:
+			break;
+		}
 	}
 
 	void WalkInPlaceTabController::enableDevice(int deviceClass, int devIdx, bool enable, int mode) {
-		int deviceI = 0;
+		int deviceClassI = 0;
+		int idx = 0;
+		int foundDevIdx = -1;
 		for (auto dev : deviceInfos) {
 			if (dev->deviceClass == deviceClass) {
-				if (deviceI == devIdx) {
+				if (deviceClassI == devIdx) {
 					if (mode == 0) {
 						if (enable) {
 							if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
 								controller1ID = dev->openvrId;
+								foundDevIdx = idx;
 							}
 							else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid) {
 								controller2ID = dev->openvrId;
+								foundDevIdx = idx;
 							}
 						}
 						else if (!enable) {
 							if (controller1ID == dev->openvrId) {
 								controller1ID = vr::k_unTrackedDeviceIndexInvalid;
+								foundDevIdx = idx;
 							}
 							if (controller2ID == dev->openvrId) {
 								controller2ID = vr::k_unTrackedDeviceIndexInvalid;
+								foundDevIdx = idx;
 							}
 						}
 					}
@@ -1062,26 +1049,40 @@ namespace walkinplace {
 							useTrackers = true;
 							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
 								tracker1ID = dev->openvrId;
+								foundDevIdx = idx;
 							}
 							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid) {
 								tracker2ID = dev->openvrId;
+								foundDevIdx = idx;
 							}
 						}
 						else if (!enable) {
 							if (tracker1ID == dev->openvrId) {
 								tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
+								foundDevIdx = idx;
 							}
 							if (tracker2ID == dev->openvrId) {
 								tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
+								foundDevIdx = idx;
 							}
 						}
 					}
 				}
-				deviceI++;
+				deviceClassI++;
 			}
+			idx++;
 		}
 		if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid && tracker2ID == vr::k_unTrackedDeviceIndexInvalid) {
 			useTrackers = false;
+		}
+		if (foundDevIdx >= 0) {
+			identifyControlTimerSet = true;
+			identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			if (enable) {
+				setDeviceRenderModel(foundDevIdx, vive_controller_model_index, 0, 1, 0, 1.1, 1.1, 1.1);
+			} else {
+				setDeviceRenderModel(foundDevIdx, vive_controller_model_index, 1, 0, 0, 1.1, 1.1, 1.1);
+			}
 		}
 	}
 
@@ -1245,10 +1246,8 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::applyStepPoseDetect() {
+	void WalkInPlaceTabController::runSampleOnModel() {
 		if (controller1ID != vr::k_unTrackedDeviceIndexInvalid) {
-			float samplePerSec = 30.0;
-			int sectionsPerSample = 3;
 			double deltatime = 1.0 / 40.0 * 1000;
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			double tdiff = ((double)(now - timeLastTick));
@@ -1263,12 +1262,10 @@ namespace walkinplace {
 						updateButtonState(controller2ID, false);
 					}
 				}
-
 				vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 				vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
-				vr::HmdVector3d_t hmdAcc = { 0, 0, 0 };
 				vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
-				if (!disableHMD) {
+				if (trackHMDVel) {
 					if (hmdType != 0) {
 						auto m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
 
@@ -1303,60 +1300,46 @@ namespace walkinplace {
 					hmdRotVel.v[1] = (devPitch - lastHmdRot.v[1]) / tdiff;
 					hmdRotVel.v[2] = (devRoll - lastHmdRot.v[2]) / tdiff;
 
-					hmdAcc.v[0] = (hmdVel.v[0] - lastHmdVel.v[0]) / tdiff;
-					hmdAcc.v[1] = (hmdVel.v[1] - lastHmdVel.v[1]) / tdiff;
-					hmdAcc.v[2] = (hmdVel.v[2] - lastHmdVel.v[2]) / tdiff;
-
-					lastHmdVel.v[0] = hmdVel.v[0];
-					lastHmdVel.v[1] = hmdVel.v[1];
-					lastHmdVel.v[2] = hmdVel.v[2];
+					lastHmdRot.v[0] = devYaw;
+					lastHmdRot.v[1] = devPitch;
+					lastHmdRot.v[2] = devRoll;
 
 					try {
-						int n = hmdSample.n_cols;
-						hmdSample.insert_cols(n, 1);
-						if (n > samplePerSec) {
-							hmdSample.shed_col(0);
-							n = n - 1;
+						bool hmdValidRot = !trackHMDRot || (std::abs(hmdRotVel.v[1]) < hmdMaxPROTVel && std::abs(hmdRotVel.v[0]) < hmdMaxYROTVel);
+						bool hmdValidXZVel = std::abs(hmdVel.v[0]) < hmdMaxXVel && std::abs(hmdVel.v[2]) < hmdMaxZVel;
+						if (!hmdValidRot && hmdValidXZVel) {
+							stopMovement();
 						}
-						hmdSample(0, n) = hmdVel.v[1];
-						hmdSample(1, n) = hmdRotVel.v[1];
-
-						if (hmdSample.n_cols >= samplePerSec / sectionsPerSample) {
-							arma::rowvec mN = dataModel.row(0);
-							arma::rowvec sN = hmdSample.row(0);
-							arma::mat dS = computeKVDelta(sN, mN, std::floor(sectionsPerSample / (samplePerSec / sN.n_cols)));
-							arma::rowvec vals = dS.row(0);
-							//LOG(INFO) << " dS min: " << (float)vals.min();
-							float min = arma::min(vals);
-							float lastQrtSecMin = vals.at(vals.n_cols - 1);
-							if (min < beginHMDVariance && lastQrtSecMin < haltHMDVariance && buttonStatus()) {
-								validSample = true;
-								if (hmdSample.n_cols >= (samplePerSec / sectionsPerSample)*2.0) {
-									hmdSample.shed_cols(0, hmdSample.n_cols - (samplePerSec / sectionsPerSample));
-								}
-								//lastValidSampleMKi = dS.row(1);								
+						else {
+							int n = hmdSample.n_cols;
+							hmdSample.insert_cols(n, 1);
+							if (n - 2 > maxSNHMD) {
+								hmdSample.shed_col(0);
+								n = n - 1;
 							}
-							else { //if (validSample && min >= haltHMDVariance) {
-								validSample = false;
-								stopMovement(0);
-								//cntrlSample.clear();
-							}
-							if ( validSample ) {
-								mN = dataModel.row(5); // hmd pitch rot vel
-								sN = hmdSample.row(1);
-								dS = computeKVDelta(sN, mN, std::floor(sectionsPerSample / (samplePerSec / sN.n_cols)));
-								vals = dS.row(0);
-								//LOG(INFO) << " dS min: " << (float)vals.min();
-								min = arma::min(vals);
-								float lastQrtSecMin = vals.at(vals.n_cols - 1);
-								if (min < haltHMDRotVariance && lastQrtSecMin < haltHMDRotVariance && buttonStatus()) {
-									validSample = true;
-									//lastValidSampleMKi = dS.row(1);
+							hmdSample(0, n) = hmdVel.v[1];
+							int sNk = validSample ? reqSNHMD : startSNHMD;
+							if (buttonStatus() && hmdSample.n_cols - 1 >= sNk) {
+								arma::rowvec mN = arma::abs(dataModel.row(HMD_Y_VEL_IDX));
+								arma::rowvec sN = arma::abs(hmdSample.row(0)); // Y VEL
+								arma::rowvec lastSN = arma::abs(sN.tail_cols(sNk));
+								float lastSN_Sum = arma::sum(lastSN);
+								std::pair<float, int> mDs = computeSNDelta(lastSN, mN);
+								if (lastSN_Sum <= mDs.first) {
+									if (validSample) {
+										stopMovement();
+									}
+									lastValidHMDSampleMKi = mDs.second;
 								}
-								else if (min >= haltHMDRotVariance) {
-									validSample = false;
-									stopMovement(0);
-									//cntrlSample.clear();
+								else {
+									if (!validSample) {
+										std::pair<int, int> mDv = computeSNDV(lastSN, mN);
+										if (mDv.first >= std::floor(hmdMinDVPerSN*sNk) && mDs.first < hmdVelVariance*sNk) {
+											validSample = true;
+											inputStateChanged = true;
+										}
+									}
+									lastValidHMDSampleMKi = mDs.second;
 								}
 							}
 						}
@@ -1365,77 +1348,59 @@ namespace walkinplace {
 						LOG(INFO) << "Exception caught while computing delta hmd: " << e.what();
 					}
 				}
-				useTrackers = true;
 				if (useTrackers && tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
 					vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
-					vr::HmdVector3d_t tracker1Acc = { 0, 0, 0 };
-					vr::HmdVector3d_t tracker1RotVel = { 0, 0, 0 };
 					vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
-					vr::HmdVector3d_t tracker2Acc = { 0, 0, 0 };
-					vr::HmdVector3d_t tracker2RotVel = { 0, 0, 0 };
 					tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
 					tracker1Vel.v[1] = latestDevicePoses[tracker1ID].vVelocity.v[1];
 					tracker1Vel.v[2] = latestDevicePoses[tracker1ID].vVelocity.v[2];
-					vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker1ID].mDeviceToAbsoluteTracking);
-					vr::HmdVector3d_t forward = { 0,0,-1 };
-					vr::HmdVector3d_t right = { 1,0,0 };
-					vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(qRotation, forward);
-					vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-					//tracker1Vel = vrmath::quaternionRotateVector(qRotation, tracker1Vel);
-
-					double devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-					double devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-					double devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-					tracker1RotVel.v[0] = (devYaw - lastTracker1Rot.v[0]) / tdiff;
-					tracker1RotVel.v[1] = (devPitch - lastTracker1Rot.v[1]) / tdiff;
-					tracker1RotVel.v[2] = (devRoll - lastTracker1Rot.v[2]) / tdiff;
 
 					if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 						tracker2Vel.v[0] = latestDevicePoses[tracker2ID].vVelocity.v[0];
 						tracker2Vel.v[1] = latestDevicePoses[tracker2ID].vVelocity.v[1];
 						tracker2Vel.v[2] = latestDevicePoses[tracker2ID].vVelocity.v[2];
-						qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker2ID].mDeviceToAbsoluteTracking);
-						devForward = vrmath::quaternionRotateVector(qRotation, forward);
-						devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-						//tracker2Vel = vrmath::quaternionRotateVector(qRotation, tracker2Vel);
-
-						devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-						devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-						devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-						tracker2RotVel.v[0] = (devYaw - lastTracker2Rot.v[0]) / tdiff;
-						tracker2RotVel.v[0] = (devPitch - lastTracker2Rot.v[1]) / tdiff;
-						tracker2RotVel.v[0] = (devRoll - lastTracker2Rot.v[2]) / tdiff;
 					}
 					try {
 						int n = trkrSample.n_cols;
 						trkrSample.insert_cols(n, 1);
-						if (n > samplePerSec) {
+						if (n > maxSNTRKR) {
 							trkrSample.shed_col(0);
 							n = n - 1;
 						}
 						trkrSample(0, n) = tracker1Vel.v[1];
 						trkrSample(1, n) = tracker2Vel.v[1];
-						if (trkrSample.n_cols >= samplePerSec / sectionsPerSample) {
-							arma::rowvec mN = dataModel.row(0);
-							arma::rowvec sN = trkrSample.row(0);
-							arma::mat dS = computeKVDelta(sN, mN, std::floor(sectionsPerSample / (samplePerSec / sN.n_cols)));
-							arma::rowvec vals = dS.row(0);
-							//LOG(INFO) << " dS min: " << (float)vals.min();
-							float min = arma::min(vals);
-							float lastQrtSecMin = vals.at(vals.n_cols - 1);
-							if (min < beginTRKRVariance && lastQrtSecMin < haltTRKRVariance && buttonStatus()) {
-								validSample = true;
-								if (trkrSample.n_cols >= (samplePerSec / sectionsPerSample)*2.0) {
-									trkrSample.shed_cols(0, trkrSample.n_cols - (samplePerSec / sectionsPerSample));
+						int sNk = validSample ? reqSNTRKR : startSNTRKR;
+						if (buttonStatus() && trkrSample.n_cols >= sNk) {
+							arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
+							arma::rowvec sN = arma::abs(trkrSample.row(0));
+							arma::rowvec lastSN = sN.tail_cols(sNk);
+							std::pair<float, int> mDs1 = computeSNDelta(lastSN, mN);
+							float lastSN_sum = arma::sum(lastSN);
+							if (lastSN_sum <= trkrVariance * 2) {
+								stopMovement();
+							}
+							else if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
+								sN = arma::abs(trkrSample.row(1)); // trkr 2
+								lastSN = sN.tail_cols(sNk);
+								std::pair<float, int> mDs2 = computeSNDelta(lastSN, mN);
+								float lastSN_sum = arma::sum(lastSN);
+								if (lastSN_sum <= trkrVariance * 2) {
+									stopMovement();
+								}
+								else if (mDs1.first < trkrVariance*sNk && mDs2.first < trkrVariance*sNk) {
+									if (!trackHMDVel && !validSample) {
+										validSample = true;
+										inputStateChanged = true;
+									}
+									lastValidTRKRSampleMKi = mDs1.first < mDs2.first ? mDs1.second : mDs2.second;
 								}
 							}
-							else { //if (validSample && min >= haltTRKRVariance) {
-								validSample = false;
-								stopMovement(0);
+							else if (mDs1.first < trkrVariance*sNk) {
+								if (!trackHMDVel && !validSample) {
+									validSample = true;
+									inputStateChanged = true;
+								}
+								lastValidTRKRSampleMKi = mDs1.second;							
 							}
 						}
 					}
@@ -1443,100 +1408,59 @@ namespace walkinplace {
 						LOG(INFO) << "Exception caught while computing delta error trackers: " << e.what();
 					}
 				}
-
 				timeLastTick = now;
+			}
+			if (validSample) {
+				vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
+				vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
 
-				if (validSample) {
-					vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
-					vr::HmdVector3d_t cont1Acc = { 0, 0, 0 };
-					vr::HmdVector3d_t cont1RotVel = { 0, 0, 0 };
-					vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
-					vr::HmdVector3d_t cont2Acc = { 0, 0, 0 };
-					vr::HmdVector3d_t cont2RotVel = { 0, 0, 0 };
+				cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
+				cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
+				cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
 
-					cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
-					cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
-					cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
-					vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
-					vr::HmdVector3d_t forward = { 0,0,-1 };
-					vr::HmdVector3d_t right = { 1,0,0 };
-					vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(qRotation, forward);
-					vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-					//cont1Vel = vrmath::quaternionRotateVector(qRotation, cont1Vel);
-
-					double devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-					double devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-					double devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-					cont1RotVel.v[0] = (devYaw - lastCont1Rot.v[0]) / tdiff;
-					cont1RotVel.v[1] = (devPitch - lastCont1Rot.v[1]) / tdiff;
-					cont1RotVel.v[2] = (devRoll - lastCont1Rot.v[2]) / tdiff;
-
-					cont1Acc.v[0] = (cont1Vel.v[0] - lastCont1Vel.v[0]) / tdiff;
-					cont1Acc.v[1] = (cont1Vel.v[1] - lastCont1Vel.v[1]) / tdiff;
-					cont1Acc.v[2] = (cont1Vel.v[2] - lastCont1Vel.v[2]) / tdiff;
-
-					lastCont1Vel.v[0] = cont1Vel.v[0];
-					lastCont1Vel.v[1] = cont1Vel.v[1];
-					lastCont1Vel.v[2] = cont1Vel.v[2];
-
-					if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-						cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
-						cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
-						cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
-						qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller2ID].mDeviceToAbsoluteTracking);
-						devForward = vrmath::quaternionRotateVector(qRotation, forward);
-						devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-						//cont2Vel = vrmath::quaternionRotateVector(qRotation, cont2Vel);
-
-						devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-						devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-						devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-						cont2RotVel.v[0] = (devYaw - lastCont2Rot.v[0]) / tdiff;
-						cont2RotVel.v[1] = (devPitch - lastCont2Rot.v[1]) / tdiff;
-						cont2RotVel.v[2] = (devRoll - lastCont2Rot.v[2]) / tdiff;
-
-						cont2Acc.v[0] = (cont2Vel.v[0] - lastCont2Vel.v[0]) / tdiff;
-						cont2Acc.v[1] = (cont2Vel.v[1] - lastCont2Vel.v[1]) / tdiff;
-						cont2Acc.v[2] = (cont2Vel.v[2] - lastCont2Vel.v[2]) / tdiff;
-
-						lastCont2Vel.v[0] = cont2Vel.v[0];
-						lastCont2Vel.v[1] = cont2Vel.v[1];
-						lastCont2Vel.v[2] = cont2Vel.v[2];
+				if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
+					cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
+					cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
+					cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
+				}
+				try {
+					int n = cntrlSample.n_cols;
+					cntrlSample.insert_cols(n, 1);
+					if (n > maxSNCNTRL) {
+						cntrlSample.shed_col(0);
+						n = n - 1;
 					}
-					try {
-						int n = cntrlSample.n_cols;
-						cntrlSample.insert_cols(n, 1);
-						if (n > samplePerSec) {
-							cntrlSample.shed_col(0);
-							n = n - 1;
-						}
-						cntrlSample(0, n) = cont1Vel.v[1];
-						cntrlSample(1, n) = cont2Vel.v[1];
+					cntrlSample(0, n) = cont1Vel.v[1];
+					cntrlSample(1, n) = cont2Vel.v[1];
 
-						if (sNValidTouch == 0 || ((now - timeLastCNTRLSN) > ((1.0 / 15.0) * 1000))) {
-							if (cntrlSample.n_cols >= samplePerSec) {
-								std::pair<float, int> mS1 = computeSNDelta(cntrlSample.row(0), dataModel.row(1));
-								std::pair<float, int> mS2 = computeSNDelta(cntrlSample.row(1), dataModel.row(2));
-								std::pair<float, int> mS3 = computeSNDelta(cntrlSample.row(0), dataModel.row(2));
-								std::pair<float, int> mS4 = computeSNDelta(cntrlSample.row(1), dataModel.row(1));
-								LOG(INFO) << "cntrl test 2";
+					if ((now)-timeLastCNTRLSN > (deltatime*8)) {
+						if (cntrlSample.n_cols >= reqSNCNTRL) {
+							arma::rowvec cntrl1 = arma::abs(cntrlSample.row(0));
+							arma::rowvec cntrl2 = arma::abs(cntrlSample.row(1));
+							int sM1Idx = computeDMean((arma::mean(cntrl1) + arma::mean(cntrl2)) / 2.0, mKAVGCNTRL);
+							//arma::rowvec modelCNTRL1 = arma::abs(dataModel.row(0));
+							//arma::rowvec modelCNTRL2 = arma::abs(dataModel.row(1));
+							//std::pair<float, int> mS1 = computeSNDelta(cntrl1, modelCNTRL1);
+							//std::pair<float, int> mS2 = computeSNDelta(cntrl2, modelCNTRL2);
+							//std::pair<float, int> mS3 = computeSNDelta(cntrl1, modelCNTRL2);
+							//std::pair<float, int> mS4 = computeSNDelta(cntrl2, modelCNTRL1);
+							//int temp = mS1.first < mS2.first ? mS1.second : mS2.second;
+							
+							lastCNTRLSampleMKi = sM1Idx;
 
-								lastValidCNTRLSampleMKi = std::max(std::max(mS1.second, mS2.second), std::max(mS3.second, mS4.second));
-								sNValidTouch = dataModel(dataModel.n_rows - 1, lastValidCNTRLSampleMKi);
-								LOG(INFO) << "cntrl test 3: " << sNValidTouch;
-							}
+							sNValidTouch = dataModel(TOUCH_VAL_IDX, lastCNTRLSampleMKi);
+							inputStateChanged = true;
+							timeLastCNTRLSN = now;
 						}
 					}
-					catch (std::exception& e) {
-						LOG(INFO) << "Exception caught while parsing controller sample: " << e.what();
-					}
+				}
+				catch (std::exception& e) {
+					LOG(INFO) << "Exception caught while parsing controller sample: " << e.what();
+				}
+				if (inputStateChanged) {
 					vr::VRControllerAxis_t axisState;
-					if (useContDirForStraf || useContDirForRev) {
-						vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
+					if (directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
+						vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[directionDevice].mDeviceToAbsoluteTracking);
 						vr::HmdVector3d_t forward = { 0,0,-1 };
 						vr::HmdVector3d_t right = { 1,0,0 };
 						vr::HmdVector3d_t forwardRot = vrmath::quaternionRotateVector(qRotation, forward);
@@ -1570,58 +1494,27 @@ namespace walkinplace {
 							touch = midTouch;
 						}
 						axisState.y = touch;
-						if (useContDirForStraf || useContDirForRev) {
+						if (directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
 							axisState.x = minTouch * touchX;
 							axisState.y = axisState.y * touchY;
 						}
 						try {
-							applyAxisMovement(0, axisState);
+							applyAxisMovement(axisState);
 						}
 						catch (std::exception& e) {
 							LOG(INFO) << "Exception caught while applying virtual step movement: " << e.what();
 						}
 					}
 					else if (gameType == 9999) {
-						applyClickMovement(0);
+						applyClickMovement();
 					}
 					else if (gameType == 3) {
-						applyGripMovement(0);
+						applyGripMovement();
 					}
-					if (gameType == 4) {
-						if (pressedFlag) {
-#if defined _WIN64 || defined _LP64
-							INPUT input[2];
-							input[0].type = INPUT_KEYBOARD;
-							input[0].ki.wVk = 0;
-							input[0].ki.wScan = MapVirtualKey(0x57, 0);
-							input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
-							input[0].ki.time = 0;
-							input[0].ki.dwExtraInfo = 0;
-							SendInput(1, input, sizeof(INPUT));
-#else
-#endif
-						}
-						pressedFlag = false;
+					if (gameType == 4 || gameType == 5) {
+						applyKeyMovement();
 					}
-					else if (gameType == 5) {
-						if (pressedFlag) {
-#if defined _WIN64 || defined _LP64
-							INPUT input[2];
-							input[0].type = INPUT_KEYBOARD;
-							input[0].ki.wVk = 0;
-							input[0].ki.wScan = MapVirtualKey(0x26, 0);
-							input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
-							input[0].ki.time = 0;
-							input[0].ki.dwExtraInfo = 0;
-							SendInput(1, input, sizeof(INPUT));
-#else
-#endif
-						}
-						pressedFlag = false;
-					}
-				}
-				else {
-					//stopMovement(0);
+					inputStateChanged = false;
 				}
 			}
 		}
@@ -1629,13 +1522,14 @@ namespace walkinplace {
 
 	std::pair<float, int> WalkInPlaceTabController::computeSNDelta(arma::mat sN, arma::mat mN) {
 		std::pair<float, int> mS;
-		mS.first = 0;
+		mS.first = 9999;
 		mS.second = 0;
-		for (int mi = 1; mi < mN.n_cols; mi += sN.n_cols) {
-			if ((mi + ((int)sN.n_cols - 1)) < mN.n_cols) {
-				arma::rowvec mKi = mN.cols(mi, mi + ((int)sN.n_cols - 1));
-				arma::rowvec dKi = arma::abs(mKi) - arma::abs(sN);
-				float dK_i = std::abs(arma::min(dKi));
+		for (int mi = 0; mi < mN.n_cols; mi += sN.n_cols) {
+			int sKl = (int)sN.n_cols - 1;
+			if ((mi + sKl) < mN.n_cols) {
+				arma::rowvec mKi = mN.cols(mi, mi + sKl);
+				arma::rowvec dKi = arma::abs(mKi - sN);
+				float dK_i = std::abs(arma::sum(dKi));
 				if (dK_i < mS.first) {
 					mS.first = dK_i;
 					mS.second = mi;
@@ -1645,100 +1539,132 @@ namespace walkinplace {
 		return mS;
 	}
 
-	arma::mat WalkInPlaceTabController::computeKVDelta(arma::mat sN, arma::mat mN, int kV) {
-		arma::mat dS = arma::mat(2, kV);
-		dS.fill(9999);
-		if (sN.n_cols > kV) {
-			int sNk = std::floor((sN.n_cols) / kV);
-			for (int ki = 1; ki < sN.n_cols; ki += sNk) {
-				arma::rowvec sKi = sN.cols(ki, std::min((ki + sNk), (int)sN.n_cols - 1));
-				for (int mi = 1; mi < mN.n_cols; mi += sNk) {
-					if ((mi + ((int)sKi.n_cols - 1)) < mN.n_cols) {
-						arma::rowvec mKi = mN.cols(mi, mi + ((int)sKi.n_cols - 1));
-						arma::rowvec dKi = arma::abs(mKi) - arma::abs(sKi);
-						float dK_i = std::abs(arma::min(dKi));
-						if (dK_i < dS(0, std::floor(ki / sNk))) {
-							dS(0, std::floor(ki / sNk)) = (dK_i);
-							dS(1, std::floor(ki / sNk)) = (mi);
-						}
+	std::pair<int, int> WalkInPlaceTabController::computeSNDV(arma::mat sN, arma::mat mN) {
+		std::pair<int, int> mS;
+		mS.first = 0;
+		mS.second = 0;
+		for (int mi = 0; mi < mN.n_cols; mi += sN.n_cols) {
+			int sKl = (int)sN.n_cols - 1;
+			if ((mi + sKl) < mN.n_cols) {
+				arma::rowvec mKi = mN.cols(mi, mi + sKl);
+				int dVk = 0;
+				for (int i = 1; i < sKl; i++) {
+					int sDv = (sN(i) - sN(i - 1)) > 0 ? 1 : -1;
+					int mDv = (mKi(i) - mKi(i - 1)) > 0 ? 1 : -1;
+					dVk = (sDv == mDv) ? dVk + 1 : dVk;
+					if (dVk > mS.first) {
+						mS.first = dVk;
+						mS.second = mi;
 					}
 				}
 			}
 		}
-		return dS;
+		return mS;
 	}
 
-	void WalkInPlaceTabController::stopMovement(uint32_t deviceIdOLD) {
-		uint32_t deviceId = vrLocoContID;
-		if (vrLocoContID == vr::k_unTrackedDeviceIndexInvalid) {
-			deviceId = deviceIdOLD;
+	int WalkInPlaceTabController::computeDMean(float sMean, arma::rowvec mM) {
+		int idx = 0;
+		float dM = 9999;
+		for (int i = 0; i < mM.n_cols; i++) {
+			float dMi = std::abs(sMean - mM(i));
+			if (dMi < dM) {
+				dM = dMi;
+				idx = i;
+			}
 		}
-		if (gameType == 0 || gameType == 1 || gameType == 2) {
-			vr::VRControllerAxis_t axisState;
-			axisState.x = 0;
-			axisState.y = 0;
-			try {
-				vrwalkinplace::VRWalkInPlace vrwalkinplace;
-				vrwalkinplace.connect();
-				if (gameType != 1) {
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+		return idx;
+	}
+
+	void WalkInPlaceTabController::stopMovement() {
+		try {
+			if (validSample) {
+				uint32_t deviceId = ovrwipCNTRLID;
+				if (gameType == 0 || gameType == 1 || gameType == 2) {
+					vr::VRControllerAxis_t axisState;
+					axisState.x = 0;
+					axisState.y = 0;
+					try {
+						vrwalkinplace::VRWalkInPlace vrwalkinplace;
+						vrwalkinplace.connect();
+						if (gameType != 1) {
+							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+						}
+						vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					}
+					catch (std::exception& e) {
+						//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+					}
 				}
-				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
-				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-			}
-			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
-			}
-		}
-		else if (gameType == 3) {
-			try {
-				vrwalkinplace::VRWalkInPlace vrwalkinplace;
-				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Grip, 0.0);
-			}
-			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while applying virtual grip movement: " << e.what();
-			}
-		}
-		else if (gameType == 9999) { //click only disabled atm
-			try {
-				vrwalkinplace::VRWalkInPlace vrwalkinplace;
-				vrwalkinplace.connect();
-				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-			}
-			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while stopping virtual teleport movement: " << e.what();
-			}
-		}
-		else if (gameType == 4) {
+				else if (gameType == 3) {
+					try {
+						vrwalkinplace::VRWalkInPlace vrwalkinplace;
+						vrwalkinplace.connect();
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Grip, 0.0);
+					}
+					catch (std::exception& e) {
+						//LOG(INFO) << "Exception caught while applying virtual grip movement: " << e.what();
+					}
+				}
+				else if (gameType == 9999) { //click only disabled atm
+					try {
+						vrwalkinplace::VRWalkInPlace vrwalkinplace;
+						vrwalkinplace.connect();
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					}
+					catch (std::exception& e) {
+						//LOG(INFO) << "Exception caught while stopping virtual teleport movement: " << e.what();
+					}
+				}
+				else if (gameType == 4) {
 #if defined _WIN64 || defined _LP64
-			INPUT input[2];
-			input[0].type = INPUT_KEYBOARD;
-			input[0].ki.wVk = 0;
-			input[0].ki.wScan = MapVirtualKey(0x57, 0);
-			input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-			input[0].ki.time = 0;
-			input[0].ki.dwExtraInfo = 0;
-			SendInput(2, input, sizeof(INPUT));
+					INPUT input[2];
+					input[0].type = INPUT_KEYBOARD;
+					input[0].ki.wVk = 0;
+					input[0].ki.wScan = MapVirtualKey(0x57, 0);
+					input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+					input[0].ki.time = 0;
+					input[0].ki.dwExtraInfo = 0;
+					SendInput(2, input, sizeof(INPUT));
 #else
 #endif
-		}
-		else if (gameType == 5) {
+				}
+				else if (gameType == 5) {
 #if defined _WIN64 || defined _LP64
-			INPUT input[2];
-			input[0].type = INPUT_KEYBOARD;
-			input[0].ki.wVk = 0;
-			input[0].ki.wScan = MapVirtualKey(0x26, 0);
-			input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-			input[0].ki.time = 0;
-			input[0].ki.dwExtraInfo = 0;
-			SendInput(2, input, sizeof(INPUT));
+					INPUT input[2];
+					input[0].type = INPUT_KEYBOARD;
+					input[0].ki.wVk = 0;
+					input[0].ki.wScan = MapVirtualKey(0x26, 0);
+					input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+					input[0].ki.time = 0;
+					input[0].ki.dwExtraInfo = 0;
+					SendInput(2, input, sizeof(INPUT));
 #else
 #endif
+				}
+			}
+			validSample = false;
+			if (trackHMDVel && hmdSample.n_cols > 1) {
+				hmdSample.shed_cols(0, hmdSample.n_cols - 1);
+			}
+			if (useTrackers && trkrSample.n_cols > 1) {
+				trkrSample.shed_cols(0, trkrSample.n_cols - 1);
+			}
+			if (cntrlSample.n_cols > 1) {
+				cntrlSample.shed_cols(0, cntrlSample.n_cols - 1);
+			}
+			lastValidHMDSampleMKi = 0;
+			lastValidTRKRSampleMKi = 0;
+			lastCNTRLSampleMKi = 0;
+			sNValidTouch = 0;
+		}
+		catch (std::exception &e) {
+			LOG(INFO) << "error when attempting to stop movement: " << e.what();
 		}
 	}
 
-	void WalkInPlaceTabController::stopClickMovement(uint32_t deviceId) {
+	void WalkInPlaceTabController::stopClickMovement() {
+		uint32_t deviceId = ovrwipCNTRLID;
 		if (gameType == 0) {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
@@ -1753,18 +1679,15 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::applyVirtualStep() {
-		uint32_t deviceId = vrLocoContID;
+		uint32_t deviceId = ovrwipCNTRLID;
 		vr::VRControllerAxis_t axisState;
 		axisState.x = 0;
 		axisState.y = 1;
-		applyAxisMovement(deviceId, axisState);
+		applyAxisMovement(axisState);
 	}
 
-	void WalkInPlaceTabController::applyAxisMovement(uint32_t deviceIdOLD, vr::VRControllerAxis_t axisState) {
-		uint32_t deviceId = vrLocoContID;
-		if (vrLocoContID == vr::k_unTrackedDeviceIndexInvalid) {
-			deviceId = deviceIdOLD;
-		}
+	void WalkInPlaceTabController::applyAxisMovement(vr::VRControllerAxis_t axisState) {
+		uint32_t deviceId = ovrwipCNTRLID;
 		try {
 			vrwalkinplace::VRWalkInPlace vrwalkinplace;
 			vrwalkinplace.connect();
@@ -1786,7 +1709,8 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::applyClickMovement(uint32_t deviceId) {
+	void WalkInPlaceTabController::applyClickMovement() {
+		uint32_t deviceId = ovrwipCNTRLID;
 		if (pressedFlag) {
 			try {
 				vrwalkinplace::VRWalkInPlace vrwalkinplace;
@@ -1812,7 +1736,8 @@ namespace walkinplace {
 		unnTouchedCount = 0;
 	}
 
-	void WalkInPlaceTabController::applyGripMovement(uint32_t deviceId) {
+	void WalkInPlaceTabController::applyGripMovement() {
+		uint32_t deviceId = ovrwipCNTRLID;
 		try {
 			vrwalkinplace::VRWalkInPlace vrwalkinplace;
 			vrwalkinplace.connect();
@@ -1822,6 +1747,41 @@ namespace walkinplace {
 			//LOG(INFO) << "Exception caught while applying virtual telport movement: " << e.what();
 		}
 		unnTouchedCount = 0;
+	}
+
+	void WalkInPlaceTabController::applyKeyMovement() {
+		if (gameType == 4) {
+			if (pressedFlag) {
+#if defined _WIN64 || defined _LP64
+				INPUT input[2];
+				input[0].type = INPUT_KEYBOARD;
+				input[0].ki.wVk = 0;
+				input[0].ki.wScan = MapVirtualKey(0x57, 0);
+				input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+				input[0].ki.time = 0;
+				input[0].ki.dwExtraInfo = 0;
+				SendInput(1, input, sizeof(INPUT));
+#else
+#endif
+			}
+			pressedFlag = false;
+		}
+		else if (gameType == 5) {
+			if (pressedFlag) {
+#if defined _WIN64 || defined _LP64
+				INPUT input[2];
+				input[0].type = INPUT_KEYBOARD;
+				input[0].ki.wVk = 0;
+				input[0].ki.wScan = MapVirtualKey(0x26, 0);
+				input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+				input[0].ki.time = 0;
+				input[0].ki.dwExtraInfo = 0;
+				SendInput(1, input, sizeof(INPUT));
+#else
+#endif
+			}
+			pressedFlag = false;
+		}
 	}
 
 

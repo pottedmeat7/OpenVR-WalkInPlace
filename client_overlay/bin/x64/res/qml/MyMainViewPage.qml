@@ -4,7 +4,9 @@ import QtQuick.Layouts 1.2
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 Rectangle {
-    color: "transparent" //#277650"
+    color: myPalette.base
+    anchors.left: parent.left
+    Layout.leftMargin : 150
     width: 1200
     height: 800
 
@@ -14,7 +16,7 @@ Rectangle {
 
     property Item content: Frame {
         background: Rectangle {
-            color: "transparent"
+            color: myPalette.base
         }
         MyText {
             text: "Content"
@@ -24,7 +26,6 @@ Rectangle {
     ColumnLayout {
         id: mainLayout
         spacing: 7
-        anchors.fill: parent
     }
 
     Component.onCompleted: {
