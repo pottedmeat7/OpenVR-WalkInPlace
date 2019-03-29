@@ -27,8 +27,8 @@ also activate teleport if you'd like.
 
 # Features
 
-- Auto Configuration for best settings
-- Tracker support (for feet)
+- Movement Data Model recording
+- Tracker support
 - Configuration for "Arm Swinging" Locomotion
 - Save profiles
 - Device movement Graph
@@ -65,10 +65,8 @@ Direction Control Example:
 ![Example Screenshot](docs/screenshots/wip_graph.png)
 *This is what the graph should look like when walking in place
 
-### Auto Conf
-You can detect ideal HMD Thresholds, Tracker Configuration, and Jog/Run Arm swing values with Auto Conf function on the Graph Page
 
-### WalkInPlace Overlay
+## WalkInPlace Overlay
 Check "Enable WIP" to activate the virtual input
 (also enable the "analog" locomotion in the games settings this is the input method that uses the touch-pad)
 
@@ -90,50 +88,43 @@ These options can be used to disable/enable virtual movement when your holding o
 - Then choose the button action that you'd prefer from the second drop down
 - Then choose which controller that you want the button action to be on
 
-### HMD Thresholds
-The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
-
-The XZ value is the Side to Side movement that will disable triggering a step (if over the threshold), in order to trigger a step the HMD values have to be less than the XZ threshold.
-
-The HMD Y values have to be greater then the HMD XZ values a in order to take a step as well as both Y and XZ meet the threshold.
-
-### Tracker Thresholds
-These values are functionality the same as the HMD values except from a tracker device. 
+## Enable / Disable Device page
 
 ### Use Trackers?
 Enables/Disable trackers. This will use both the HMD thresholds and tracker thresholds in order to trigger a step.
 
-### Disable HMD?
+### Track HMD Velocity? Track HMD Rotation?
 This will disable the tracking of the HMD movement, and will only utilize the thresholds of the tracker movement. 
-You must have both "Use Trackers?" Checked as well as "Disable HMD?" checked. 
 
-### Arm Swing Jog / Arm Swing Run
-These values are for the controller Up and Down movement of the arms. 
-The real time Controller values have to be greater then these values in order to Jog / Run.
+### Data Models
+You can record a data model of your HMD, tracker and controller movement rates to use to match the similar movement in real-time.
+You can Create, Apply, and Delete the data models. The current applied Data Model, will the one saved into a profile if you create one. You can also choose any pre-recorded data models without a profile as well.
 
-### Step Time
-This is how long each "step" lasts. If 1 step is detected it will last this amount of time in seconds. As you repeat steps this time is reset for every step detected. 
+## Data Model Recording
+Follow the on screen popups instructions when recording a new data model. The recording process is from slowest to fastest movement of all devices. There will be 5 steps in the following order, Slowest Pace (5 seconds), Slow Scaling up to Medium (5 Second), Medium Paced (5 Seconds), Medium Scaling up to Fast (5 Seconds), and Fastest Pace. 
 
-### Touch Options
+As you record the touch values are recorded in the following order Slow (0 touch value), Slow to medium (0-0.5 touch value), Medium (0.5 touch value), Medium to fast (0.5-1.0 touch value), and Fast (1.0 touch value)
+
+Mostly it will be your controller values that are used to determine where in the model to pick the corresponding touch value from.
+The HMD and trackers mainly determine if you are moving at all according to the model.
+
+If you find that you move to quickly to soon, try re-recording a model with more significant arm swinging.
+
+### Apply Data Model
+Make sure to "apply" the data model before Enabling WIP or trying to view the data model as well.
+
+## Show Data Model Page
+
+### Show HMD, Show Trackers, Show Controller, Show Touch Line
+These show the models of each device. The Touch Line is the values inserted from 0-1 of the progress during the recording. 
+The touch-line will be scaled to be between the values in the "Touch Pace Options". Ie. From Min-Max.
+
+### Touch Pace Options
 These values control the degree of movement applied in game.
 Some games will use the touchpad axis differntly, for slow games sometimes there is only 1 degree of movment.
 Some games use the entire axis from the center, 0, to 1
 
-If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "jog" or "run" touch value with the "arm swing" thresholds above.
-
-### Scale Touch with Swing?
-This will enable varying touch values between your set walk/run values the Hand Jog/Run values should be set much higher to make this feel smoother and get more variance in the movement. Even with no arm swing movement the walk touch will still be the minimum value. So if you want no movement without arm swinging, set Walk touch to 0.
-
-When using scale touch, I've changed the algorithm to use average arm swinging to make it smoother. 
-You can see the current average arm swing values in the graph.
-
-### Use Controller Direction for Straf?
-These are made for games that have HMD relative movement (ie you move the direction you face). These games do allow straf movement often by touching the left or right side of the touchpad. These options will calcuate your controller direction and use left or right touchpad values if your controllers direction is perpendicular to your HMD forward direction. 
-(These features currently have problems, and are having more conflicts when both options are used)
-
-### Use Controller Direction for Reverse?
-Some games also do not support controller direction for reverse, this option will determine if your controller is pointed backwards and apply negative values for the touchpad. 
-(These features currently have problems, and are having more conflicts when both options are used)
+If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "mid" or "max" touch value.
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
@@ -144,9 +135,6 @@ If you name a profile with the name "default" it will be the initially loaded pr
 ## Graph Page
 The graph page will show you realtime values from the HMD, controllers and trackers.
 If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.
-
-### Auto Configuration
-Just follow the on screen instructions and the auto configuration will make some approximations and set HMD, Tracker and Arm Swing thresholds for you.
 
 ## Any Issues Check out the Logs
 Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
