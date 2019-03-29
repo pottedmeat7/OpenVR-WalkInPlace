@@ -27,8 +27,12 @@ MyStackViewPage {
     property var showTRKR : false
     property var showCNTRL : false
 
-    property real canvasPlotMaxPoint : 0.6
-    property real canvasPlotMinPoint : -0.6
+    property real hmdPlotMaxPoint : 0.6
+    property real hmdPlotMinPoint : -0.6
+    property real cntrlPlotMaxPoint : 0.6
+    property real cntrlPlotMinPoint : -0.6
+    property real trkrPlotMaxPoint : 0.6
+    property real trkrPlotMinPoint : -0.6
 
     property var modelGRPHOffset : 1
 
@@ -60,8 +64,12 @@ MyStackViewPage {
         trkr1Sample = [0,0]
         trkr2Sample = [0,0]
 
-        canvasPlotMaxPoint = 0.6
-        canvasPlotMinPoint = -0.6
+        hmdPlotMaxPoint = 0.6
+        hmdPlotMinPoint = -0.6
+        cntrlPlotMaxPoint = 0.6
+        cntrlPlotMinPoint = -0.6
+        trkrPlotMaxPoint = 0.6
+        trkrPlotMinPoint = -0.6
 
         modelCanvas.requestPaint ();
         
@@ -445,9 +453,15 @@ MyStackViewPage {
                         try {
                             var ctx = getContext("2d");                        
                             ctx.clearRect(0,0,modelCanvas.width, modelCanvas.height);
-                            var yTicks = Math.ceil((canvasPlotMaxPoint-canvasPlotMinPoint)/vResolution);
-                            var crossedZeroLine = false
-                            var currentVal = canvasPlotMaxPoint
+                            var yTicks = Math.ceil((hmdPlotMaxPoint-hmdPlotMinPoint)/vResolution);
+                            var currentVal = hmdPlotMaxPoint
+                            if ( showControllers.checked ) {
+                                yTicks = Math.ceil((cntrlPlotMaxPoint-cntrlPlotMinPoint)/vResolution);
+                                currentVal = cntrlPlotMaxPoint
+                            } else if ( showTrackers.checked ) {
+                                yTicks = Math.ceil((trkrPlotMaxPoint-trkrPlotMinPoint)/vResolution);
+                                currentVal = trkrPlotMaxPoint
+                            }
                             var graphXScale = ((rectWidth-topX) > hmdYPoints.length ? ((rectWidth-topX)/hmdYPoints.length) : (hmdYPoints.length/(rectWidth-topX)));
                             ctx.fillStyle = "#FFFFFF"
                             ctx.lineWidth = 1;
@@ -473,24 +487,30 @@ MyStackViewPage {
                                 var lastHMDYPoint = rectHeight/2 + topY
                                 var lastX = 50;
                                 var lastHMDSNYPoint = rectHeight/2 + topY
-                                var lastX = 50
                                 var validSNMki = hmdSample[1]
+                                var r = (hmdPlotMaxPoint - hmdPlotMinPoint)  
+                                var g = (modelCanvas.rectHeight)
                                 for(var x=0; x<hmdYPoints.length; x++) {
                                     ctx.beginPath();  
                                     ctx.strokeStyle = "#DDDDDD";
                                     ctx.lineWidth = 1;
                                     ctx.moveTo(lastX,lastHMDYPoint);
                                     var val = hmdYPoints[x];
+                                    val = (((val - hmdPlotMinPoint) * g) / r)
                                     ctx.lineTo(lastX+graphXScale,val+topY);
                                     lastHMDYPoint = val+topY;
                                     ctx.stroke();
                                     ctx.closePath();
                                     if ( x >= validSNMki && x-validSNMki < hmdSample.length-2) {
                                         ctx.beginPath();  
-                                        ctx.strokeStyle = "#00DD00";
+                                        ctx.strokeStyle = "#DD0000";
+                                        if ( hmdSample[0] == 1 ) {
+                                            ctx.strokeStyle = "#00DD00";
+                                        }
                                         ctx.lineWidth = 2;
                                         ctx.moveTo(lastX,lastHMDSNYPoint);
                                         var val = hmdSample[x-validSNMki+2];
+                                        val = (((val - hmdPlotMinPoint) * g) / r)
                                         ctx.lineTo(lastX+graphXScale,val+topY);
                                         lastHMDSNYPoint = val+topY;
                                         ctx.stroke();
@@ -505,12 +525,15 @@ MyStackViewPage {
                                 var lastX = 50
                                 var lastcntrlSNYPoint = rectHeight/2 + topY
                                 var validSNMki = cntrl1Sample[1]
+                                var r = (cntrlPlotMaxPoint - cntrlPlotMinPoint)  
+                                var g = (modelCanvas.rectHeight)
                                 for(var x=0; x<cntrl1YPoints.length; x++) {
                                     ctx.beginPath();  
                                     ctx.strokeStyle = "#DDDDDD";
                                     ctx.lineWidth = 1;
                                     ctx.moveTo(lastX,lastcntrl1YPoint);
                                     var val = cntrl1YPoints[x];
+                                    val = (((val - cntrlPlotMinPoint) * g) / r)
                                     ctx.lineTo(lastX+graphXScale,val+topY);
                                     lastcntrl1YPoint = val+topY;
                                     ctx.stroke();
@@ -520,6 +543,7 @@ MyStackViewPage {
                                     ctx.lineWidth = 1;
                                     ctx.moveTo(lastX,lastcntrl2YPoint);
                                     var val = cntrl2YPoints[x];
+                                    val = (((val - cntrlPlotMinPoint) * g) / r)
                                     ctx.lineTo(lastX+graphXScale,val+topY);
                                     lastcntrl2YPoint = val+topY;
                                     ctx.stroke();
@@ -530,6 +554,7 @@ MyStackViewPage {
                                         ctx.lineWidth = 2;
                                         ctx.moveTo(lastX,lastcntrlSNYPoint);
                                         var val = cntrl1Sample[x-validSNMki+2];
+                                        val = (((val - cntrlPlotMinPoint) * g) / r)
                                         ctx.lineTo(lastX+graphXScale,val+topY);
                                         lastcntrlSNYPoint = val+topY;
                                         ctx.stroke();
@@ -544,12 +569,15 @@ MyStackViewPage {
                                 var lastX = 50;
                                 var lasttrkrSNYPoint = rectHeight/2 + topY
                                 var validSNMki = trkr1Sample[1]
+                                var r = (trkrPlotMaxPoint - trkrPlotMinPoint)  
+                                var g = (modelCanvas.rectHeight)
                                 for(var x=0; x<tracker1YPoints.length; x++) {
                                     ctx.beginPath();  
                                     ctx.strokeStyle = "#DDDDDD";
                                     ctx.lineWidth = 1;
                                     ctx.moveTo(lastX,lasttracker1YPoint);
                                     var val = tracker1YPoints[x];
+                                    val = (((val - trkrPlotMinPoint) * g) / r)
                                     ctx.lineTo(lastX+graphXScale,val+topY);
                                     lasttracker1YPoint = val+topY;
                                     ctx.stroke();
@@ -559,6 +587,7 @@ MyStackViewPage {
                                     ctx.lineWidth = 1;
                                     ctx.moveTo(lastX,lasttracker2YPoint);
                                     var val = tracker2YPoints[x];
+                                    val = (((val - trkrPlotMinPoint) * g) / r)
                                     ctx.lineTo(lastX+graphXScale,val+topY);
                                     lasttracker2YPoint = val+topY;
                                     ctx.stroke();
@@ -569,6 +598,7 @@ MyStackViewPage {
                                         ctx.lineWidth = 2;
                                         ctx.moveTo(lastX,lasttrkrSNYPoint);
                                         var val = trkr1Sample[x-validSNMki+2];
+                                        val = (((val - trkrPlotMinPoint) * g) / r)
                                         ctx.lineTo(lastX+graphXScale,val+topY);
                                         lasttrkrSNYPoint = val+topY;
                                         ctx.stroke();
@@ -580,15 +610,24 @@ MyStackViewPage {
                             if ( showTouchLine.checked ) {
                                 var lastTouchPoint = rectHeight/2 + topY;
                                 var lastX = 50;
-                                var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
+                                var gMax = hmdPlotMaxPoint
+                                var gMin = hmdPlotMinPoint
+                                if ( showControllers.checked ) {
+                                    gMax = cntrlPlotMaxPoint
+                                    gMin = cntrlPlotMinPoint
+                                } else if ( showTrackers.checked ) {
+                                    gMax = trkrPlotMaxPoint
+                                    gMin = trkrPlotMinPoint
+                                }
+                                var r = (gMax - gMin)  
                                 var g = (modelCanvas.rectHeight)
                                 for(var x=0; x<touchPoints.length; x++) {
                                     ctx.beginPath();                
                                     ctx.strokeStyle = "#DDDD00";
                                     ctx.lineWidth = 1;
                                     ctx.moveTo(lastX,lastTouchPoint);
-                                    var graphPoint = (-1*touchPoints[x]) * canvasPlotMaxPoint;
-                                    var finalPoint = (((graphPoint - canvasPlotMinPoint) * g) / r)
+                                    var graphPoint = (-1*touchPoints[x]) * gMax;
+                                    var finalPoint = (((graphPoint - gMin) * g) / r)
                                     var val = finalPoint;
                                     ctx.lineTo(lastX+graphXScale,val+topY);
                                     lastTouchPoint = val+topY;
@@ -631,70 +670,54 @@ MyStackViewPage {
         try {
             var velVals = WalkInPlaceTabController.getModelData()
             var i = 0
-            modelGRPHOffset = 1
-            if ( (velVals.length/6).toFixed(0) > modelCanvas.rectWidth ) {
-                modelGRPHOffset = 2
-            }
             while(i<velVals.length) {
                 var velY = parseFloat(velVals[i]).toFixed(4);
-                if ( Math.abs(velY) > canvasPlotMaxPoint ) {
-                    canvasPlotMaxPoint = Math.abs(velY);
-                    canvasPlotMinPoint = -canvasPlotMaxPoint;
+                if ( Math.abs(velY) > hmdPlotMaxPoint ) {
+                    hmdPlotMaxPoint = Math.abs(velY);
+                    hmdPlotMinPoint = -hmdPlotMaxPoint;
                 }
                 velY = parseFloat(velVals[i+1]).toFixed(4);
-                if ( Math.abs(velY) > canvasPlotMaxPoint ) {
-                    canvasPlotMaxPoint = Math.abs(velY);
-                    canvasPlotMinPoint = -canvasPlotMaxPoint;
+                if ( Math.abs(velY) > cntrlPlotMaxPoint ) {
+                    cntrlPlotMaxPoint = Math.abs(velY);
+                    cntrlPlotMinPoint = -cntrlPlotMaxPoint;
                 }
                 velY = parseFloat(velVals[i+2]).toFixed(4);
-                if ( Math.abs(velY) > canvasPlotMaxPoint ) {
-                    canvasPlotMaxPoint = Math.abs(velY);
-                    canvasPlotMinPoint = -canvasPlotMaxPoint;
+                if ( Math.abs(velY) > cntrlPlotMaxPoint ) {
+                    cntrlPlotMaxPoint = Math.abs(velY);
+                    cntrlPlotMinPoint = -cntrlPlotMaxPoint;
                 }
                 velY = parseFloat(velVals[i+3]).toFixed(4);
-                if ( Math.abs(velY) > canvasPlotMaxPoint ) {
-                    canvasPlotMaxPoint = Math.abs(velY);
-                    canvasPlotMinPoint = -canvasPlotMaxPoint;
+                if ( Math.abs(velY) > trkrPlotMaxPoint ) {
+                    trkrPlotMaxPoint = Math.abs(velY);
+                    trkrPlotMinPoint = -trkrPlotMaxPoint;
                 }
                 velY = parseFloat(velVals[i+4]).toFixed(4);
-                if ( Math.abs(velY) > canvasPlotMaxPoint ) {
-                    canvasPlotMaxPoint = Math.abs(velY);
-                    canvasPlotMinPoint = -canvasPlotMaxPoint;
+                if ( Math.abs(velY) > trkrPlotMaxPoint ) {
+                    trkrPlotMaxPoint = Math.abs(velY);
+                    trkrPlotMinPoint = -trkrPlotMaxPoint;
                 }
-                i = i+(6*modelGRPHOffset)
+                i = i+6
             }
             i = 0
             while(i<velVals.length) {
-                var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
-                var g = (modelCanvas.rectHeight)
-
                 var velY = parseFloat(velVals[i]).toFixed(4);
-                velY = (((velY - canvasPlotMinPoint) * g) / r)
                 hmdYPoints.push(velY);
 
                 velY = parseFloat(velVals[i+1]).toFixed(4);
-                velY = (((velY - canvasPlotMinPoint) * g) / r)
                 cntrl1YPoints.push(velY);
 
                 velY = parseFloat(velVals[i+2]).toFixed(4);
-                velY = (((velY - canvasPlotMinPoint) * g) / r)
                 cntrl2YPoints.push(velY);
 
                 velY = parseFloat(velVals[i+3]).toFixed(4);
-                velY = (((velY - canvasPlotMinPoint) * g) / r)
                 tracker1YPoints.push(velY);
 
                 velY = parseFloat(velVals[i+4]).toFixed(4);
-                velY = (((velY - canvasPlotMinPoint) * g) / r)
                 tracker2YPoints.push(velY);
-
-                //var hmdRot = velVals[i+5] * canvasPlotMaxPoint;
-                //hmdRot = (((hmdRot - canvasPlotMinPoint) * g) / r)
-                //hmdRotPoints.push(hmdRot)
 
                 touchPoints.push(velVals[i+5])
 
-                i = i + (6*modelGRPHOffset);
+                i = i + 6;
             }
 
             modelCanvas.requestPaint ();
@@ -714,15 +737,13 @@ MyStackViewPage {
                 if ( showHMDtoggle.checked ) {
                     var temp = WalkInPlaceTabController.getHMDSample()
                     hmdSample = []
-                    for(var i=0; i<temp.length; i+=modelGRPHOffset ) {
+                    for(var i=0; i<temp.length; i+=1 ) {
                         if ( i == 0 ) {
-                            hmdSample.push(temp[0])
-                            hmdSample.push((temp[1]/modelGRPHOffset).toFixed(0))
+                            hmdSample.push(temp[i].toFixed(0))
+                        } else if ( i == 1 ) {
+                            hmdSample.push((temp[i]).toFixed(0))
                         } else {
-                            var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
-                            var g = (modelCanvas.rectHeight)
-                            var gI = (((temp[i] - canvasPlotMinPoint) * g) / r)
-                            hmdSample.push(gI)
+                            hmdSample.push(temp[i].toFixed(4))
                         }
                     }
                 }
@@ -730,40 +751,33 @@ MyStackViewPage {
                     var temp = WalkInPlaceTabController.getCNTRLSample()
                     cntrl1Sample = []
                     cntrl2Sample = []
-                    for(var i=0; i<temp.length-1; i+=(2*modelGRPHOffset) ) {
-                        if ( i == 0 ) {
-                            cntrl1Sample.push(temp[0])
-                            cntrl2Sample.push(temp[0])
-                            cntrl1Sample.push((temp[1]/modelGRPHOffset).toFixed(0))
-                            cntrl2Sample.push((temp[1]/modelGRPHOffset).toFixed(0))
+                    for(var i=0; i<temp.length-1; i+=2 ) {
+                        if ( i < 2 ) {
+                            cntrl1Sample.push(temp[0].toFixed(0))
+                            cntrl2Sample.push(temp[0].toFixed(0))
+                            cntrl1Sample.push((temp[1]).toFixed(0))
+                            cntrl2Sample.push((temp[1]).toFixed(0))
                         } else {
-                            var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
-                            var g = (modelCanvas.rectHeight)
-                            var gI = (((temp[i] - canvasPlotMinPoint) * g) / r)
-                            var gIC2 = (((temp[i+1] - canvasPlotMinPoint) * g) / r)
-                            cntrl1Sample.push(gI)
-                            cntrl2Sample.push(gIC2)
+                            cntrl1Sample.push(temp[i].toFixed(4))
+                            cntrl2Sample.push(temp[i+1].toFixed(4))
                         }
                     }
-                    //console.info(cntrl1Sample);
                 }
                 else if ( showTrackers.checked ) {
                     var temp = WalkInPlaceTabController.getTRKRSample()
                     trkr1Sample = []
                     trkr2Sample = []
-                    for(var i=0; i<temp.length; i+=(2*modelGRPHOffset) ) {
-                        if ( i == 0 ) {
-                            trkr1Sample.push(temp[0])
-                            trkr2Sample.push(temp[0])
-                            trkr1Sample.push((temp[1]/modelGRPHOffset).toFixed(0))
-                            trkr2Sample.push((temp[1]/modelGRPHOffset).toFixed(0))
+                    for(var i=0; i<temp.length; i+=2 ) {
+                        if ( i < 2 ) {
+                            trkr1Sample.push(temp[0].toFixed(0))
+                            trkr2Sample.push(temp[0].toFixed(0))
+                            trkr1Sample.push((temp[1]).toFixed(0))
+                            trkr2Sample.push((temp[1]).toFixed(0))
                         } else {
                             var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
                             var g = (modelCanvas.rectHeight)
-                            var gI = (((temp[i] - canvasPlotMinPoint) * g) / r)
-                            var gIT2 = (((temp[i+1] - canvasPlotMinPoint) * g) / r)
-                            trkr1Sample.push(gI)
-                            trkr2Sample.push(gIT2)
+                            trkr1Sample.push(temp[i].toFixed(4))
+                            trkr2Sample.push(temp[i+1].toFixed(4))
                         }
                     }
                 }

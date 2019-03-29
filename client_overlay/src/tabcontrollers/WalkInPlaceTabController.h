@@ -83,7 +83,8 @@ namespace walkinplace {
 		arma::mat hmdSample;
 		arma::mat cntrlSample;
 		arma::mat trkrSample;
-		arma::rowvec zeroModel;
+		arma::rowvec modelCNTRL1;
+		arma::rowvec modelCNTRL2;
 
 		std::string currentProfileName = "";
 
@@ -140,11 +141,11 @@ namespace walkinplace {
 		int maxSNHMD = 16;
 		int startSNHMD = 12;
 		int reqSNHMD = 8;
-		int maxSNTRKR = 30;
+		int maxSNTRKR = 31;
 		int startSNTRKR = 30;
 		int reqSNTRKR = 10;
-		int maxSNCNTRL = 40;
-		int reqSNCNTRL = 40;
+		int maxSNCNTRL = 22;
+		int reqSNCNTRL = 20;
 
 		uint64_t controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t controller2ID = vr::k_unTrackedDeviceIndexInvalid;
@@ -158,6 +159,7 @@ namespace walkinplace {
 		float hmdVelVariance = 0.07;
 		float hmdMinDVPerSN = 0.75;
 		float trkrVariance = 0.07;
+		float cntrlVariance = 0.07;
 		float hmdMaxPROTVel = 0;
 		float hmdMaxYROTVel = 0;
 		float hmdMaxXVel = 0;
@@ -172,8 +174,9 @@ namespace walkinplace {
 		float contYaw = 0;
 		float contRoll = 0;
 		float contPitch = 0;
-		arma::rowvec mKAVGCNTRL;
 
+		double timeStep = 1.0 / 40.0;
+		double dT = timeStep * 1000;
 		double timeLastTick = 0.0;
 		double timeLastCNTRLSN = 0.0;
 		double identifyControlLastTime = 99999;
@@ -184,7 +187,7 @@ namespace walkinplace {
 
 		std::pair<float, int> computeSNDelta(arma::mat sN, arma::mat mN);
 		std::pair<int, int> computeSNDV(arma::mat sN, arma::mat mN);
-		int computeDMean(float sMean, arma::rowvec mN);
+		int findMNIdxGTS(float s, arma::mat mN);
 
 		void loadDataModel();
 		void clearSamplesAndModel();

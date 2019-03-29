@@ -333,15 +333,21 @@ namespace walkinplace {
 				hmdMaxYROTVel = arma::abs(dataModel.row(HMD_YAW_VEL_IDX)).max();
 				hmdMaxXVel = arma::abs(dataModel.row(HMD_X_VEL_IDX)).max();
 				hmdMaxZVel = arma::abs(dataModel.row(HMD_Z_VEL_IDX)).max();
-				arma::rowvec mCNTRL1 = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
-				arma::rowvec mCNTRL2 = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
+				modelCNTRL1 = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
+				modelCNTRL2 = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
+				/*
 				mKAVGCNTRL.clear();
-				for (int k = 0; k < mCNTRL1.n_cols-1; k+=reqSNCNTRL) {
-					arma::rowvec mK1 = mCNTRL1.cols(k, std::min(k + reqSNCNTRL, (int)mCNTRL1.n_cols - 1));
-					arma::rowvec mK2 = mCNTRL2.cols(k, std::min(k + reqSNCNTRL, (int)mCNTRL2.n_cols - 1));
-					mKAVGCNTRL.insert_cols(0,1);
-					mKAVGCNTRL(k) = (arma::mean(mK1) + arma::mean(mK1)) / 2.0;
-				}
+				mKAVGCNTRL.insert_rows(0, 2);
+				//mKAVGCNTRL.insert_cols(0, 1);
+				for (int k = 0; k < ((mCNTRL1.n_cols) / reqSNCNTRL); k++) {
+					if ((k + 1) * reqSNCNTRL < mCNTRL1.n_cols - 1 && (k + 1) * reqSNCNTRL < mCNTRL2.n_cols - 1) {
+						arma::rowvec mK1 = mCNTRL1.cols(k * reqSNCNTRL, (k + 1) * reqSNCNTRL);
+						arma::rowvec mK2 = mCNTRL2.cols(k * reqSNCNTRL, (k + 1) * reqSNCNTRL);
+						mKAVGCNTRL.insert_cols(0, 1);
+						mKAVGCNTRL(0, k) = (arma::mean(mK1) + arma::mean(mK2)) / 2.0;
+						mKAVGCNTRL(1, k) = std::floor((k * reqSNCNTRL) + (reqSNCNTRL / 2.0));
+					}
+				}*/
 			}
 			else {
 				dataTrainingRequired = true;
@@ -1080,7 +1086,8 @@ namespace walkinplace {
 			identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			if (enable) {
 				setDeviceRenderModel(foundDevIdx, vive_controller_model_index, 0, 1, 0, 1.1, 1.1, 1.1);
-			} else {
+			}
+			else {
 				setDeviceRenderModel(foundDevIdx, vive_controller_model_index, 1, 0, 0, 1.1, 1.1, 1.1);
 			}
 		}
@@ -1248,12 +1255,11 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::runSampleOnModel() {
 		if (controller1ID != vr::k_unTrackedDeviceIndexInvalid) {
-			double deltatime = 1.0 / 40.0 * 1000;
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			double tdiff = ((double)(now - timeLastTick));
 			bool hmdStep = false;
 			//LOG(INFO) << "DT: " << tdiff;
-			if (tdiff >= deltatime) {
+			if (tdiff >= dT) {
 				timeLastTick = now;
 				if (disableButton == 0 || disableButton == 1) {
 					holdingButton = false;
@@ -1325,7 +1331,7 @@ namespace walkinplace {
 								arma::rowvec lastSN = arma::abs(sN.tail_cols(sNk));
 								float lastSN_Sum = arma::sum(lastSN);
 								std::pair<float, int> mDs = computeSNDelta(lastSN, mN);
-								if (lastSN_Sum <= mDs.first) {
+								if (lastSN_Sum <= hmdVelVariance * sNk) {
 									if (validSample) {
 										stopMovement();
 									}
@@ -1400,7 +1406,7 @@ namespace walkinplace {
 									validSample = true;
 									inputStateChanged = true;
 								}
-								lastValidTRKRSampleMKi = mDs1.second;							
+								lastValidTRKRSampleMKi = mDs1.second;
 							}
 						}
 					}
@@ -1426,32 +1432,34 @@ namespace walkinplace {
 				try {
 					int n = cntrlSample.n_cols;
 					cntrlSample.insert_cols(n, 1);
-					if (n > maxSNCNTRL) {
+					if (n > maxSNCNTRL + 1) {
 						cntrlSample.shed_col(0);
 						n = n - 1;
 					}
 					cntrlSample(0, n) = cont1Vel.v[1];
 					cntrlSample(1, n) = cont2Vel.v[1];
 
-					if ((now)-timeLastCNTRLSN > (deltatime*8)) {
-						if (cntrlSample.n_cols >= reqSNCNTRL) {
-							arma::rowvec cntrl1 = arma::abs(cntrlSample.row(0));
-							arma::rowvec cntrl2 = arma::abs(cntrlSample.row(1));
-							int sM1Idx = computeDMean((arma::mean(cntrl1) + arma::mean(cntrl2)) / 2.0, mKAVGCNTRL);
-							//arma::rowvec modelCNTRL1 = arma::abs(dataModel.row(0));
-							//arma::rowvec modelCNTRL2 = arma::abs(dataModel.row(1));
-							//std::pair<float, int> mS1 = computeSNDelta(cntrl1, modelCNTRL1);
-							//std::pair<float, int> mS2 = computeSNDelta(cntrl2, modelCNTRL2);
-							//std::pair<float, int> mS3 = computeSNDelta(cntrl1, modelCNTRL2);
-							//std::pair<float, int> mS4 = computeSNDelta(cntrl2, modelCNTRL1);
-							//int temp = mS1.first < mS2.first ? mS1.second : mS2.second;
-							
-							lastCNTRLSampleMKi = sM1Idx;
-
-							sNValidTouch = dataModel(TOUCH_VAL_IDX, lastCNTRLSampleMKi);
-							inputStateChanged = true;
-							timeLastCNTRLSN = now;
+					if (cntrlSample.n_cols >= reqSNCNTRL) {
+						arma::rowvec cntrl1 = arma::abs(cntrlSample.row(0));
+						arma::rowvec cntrl2 = arma::abs(cntrlSample.row(1));
+						if (arma::sum(cntrl1) < cntrlVariance*cntrlSample.n_cols && arma::sum(cntrl2) < cntrlVariance*cntrlSample.n_cols) {
+							lastCNTRLSampleMKi = 0;
 						}
+						else {
+							float max = cntrl1.max();
+							float maxB = cntrl2.max();
+							int nextGTIdx_1 = findMNIdxGTS(max, modelCNTRL1);
+							int nextGTIdx_2 = findMNIdxGTS(maxB, modelCNTRL2);
+							lastCNTRLSampleMKi = nextGTIdx_1 < nextGTIdx_2 ? nextGTIdx_1 : nextGTIdx_2;
+						}
+					}
+					float nextTouch = dataModel(TOUCH_VAL_IDX, lastCNTRLSampleMKi);
+					float temp = sNValidTouch;
+					sNValidTouch = nextTouch;
+					sNValidTouch = sNValidTouch + (timeStep*(nextTouch - sNValidTouch));
+
+					if (temp != sNValidTouch) {
+						inputStateChanged = true;
 					}
 				}
 				catch (std::exception& e) {
@@ -1459,7 +1467,7 @@ namespace walkinplace {
 				}
 				if (inputStateChanged) {
 					vr::VRControllerAxis_t axisState;
-					if (directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
+					if (false && directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
 						vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[directionDevice].mDeviceToAbsoluteTracking);
 						vr::HmdVector3d_t forward = { 0,0,-1 };
 						vr::HmdVector3d_t right = { 1,0,0 };
@@ -1486,15 +1494,12 @@ namespace walkinplace {
 					}
 					if (gameType == 0 || gameType == 1 || gameType == 2) {
 						axisState.x = 0;
-						float touch = (maxTouch - minTouch) * sNValidTouch;
-						if (sNValidTouch < 0.001) {
-							touch = minTouch;
-						}
-						else if (sNValidTouch > 0.499 && sNValidTouch < 0.501) {
-							touch = midTouch;
+						float touch = (sNValidTouch * (maxTouch - midTouch)) + midTouch;
+						if (sNValidTouch < 0.501) {
+							touch = (sNValidTouch * (midTouch - minTouch)) + minTouch;
 						}
 						axisState.y = touch;
-						if (directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
+						if (false && directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
 							axisState.x = minTouch * touchX;
 							axisState.y = axisState.y * touchY;
 						}
@@ -1562,17 +1567,13 @@ namespace walkinplace {
 		return mS;
 	}
 
-	int WalkInPlaceTabController::computeDMean(float sMean, arma::rowvec mM) {
-		int idx = 0;
-		float dM = 9999;
-		for (int i = 0; i < mM.n_cols; i++) {
-			float dMi = std::abs(sMean - mM(i));
-			if (dMi < dM) {
-				dM = dMi;
-				idx = i;
+	int WalkInPlaceTabController::findMNIdxGTS(float s, arma::mat mN) {
+		for (int mi = 0; mi < mN.n_cols; mi++) {
+			if (mN(mi) > s) {
+				return mi;
 			}
 		}
-		return idx;
+		return mN.n_cols - 1;
 	}
 
 	void WalkInPlaceTabController::stopMovement() {
