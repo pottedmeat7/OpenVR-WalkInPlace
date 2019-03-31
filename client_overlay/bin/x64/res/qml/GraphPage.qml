@@ -29,7 +29,7 @@ MyStackViewPage {
     property real trkrPlotMaxPoint : 0.6
     property real trkrPlotMinPoint : -0.6
 
-    property int autoConfMode          : -1
+    property int autoConfMode          : -2
 
     property real totalSampleTime      : 25000
 
@@ -144,6 +144,13 @@ MyStackViewPage {
                         }
                         onClicked: {
                             mainView.stopTimer()
+                            stopTimer()
+                            resetGraph()
+                            autoConfMode = -1
+                            sampleTime = 0
+                            autoConfigPopup.setTitle("Walking Pace Config")
+                            autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
+                            autoConfigPopup.setTimeout(5)
                             var page = mainView.pop()
                         }
                     }
@@ -167,22 +174,7 @@ MyStackViewPage {
                         Layout.maximumWidth: 120
                         Layout.minimumWidth: 120
                         Layout.preferredWidth: 120
-                    }
-
-                    MyPushButton {
-                        text: "Generate Data Model"
-                        Layout.maximumWidth: 350
-                        Layout.minimumWidth: 350
-                        Layout.preferredWidth: 350
-                        onClicked: {
-                            stopTimer()
-                            resetGraph()
-                            autoConfigPopup.openPopup()
-                            autoConfMode = 0
-                            sampleTime = 0
-                            currentSampleTime = 0
-                        }
-                    }
+                    }                   
                 }
             }
         }
@@ -226,16 +218,16 @@ MyStackViewPage {
                             ctx.fillStyle = "#222222"
                             ctx.fillRect(0, topY, rectWidth, rectHeight);  
                             ctx.fillStyle = "#FFFFFF"
-                            ctx.fillText("HMD", 100, 35);
-                            ctx.fillText("Y_VEL", 250, 35);
-                            ctx.fillText("YAW", 350, 35);
-                            ctx.fillText("PITCH", 450, 35); 
+                            ctx.fillText("HMD", 92, 35);
+                            ctx.fillText("Y_VEL", 242, 35);
+                            ctx.fillText("YAW", 342, 35);
+                            ctx.fillText("PITCH", 442, 35); 
                             ctx.fillStyle = "#00DD00"
-                            ctx.fillRect(280,30,20,20);   
+                            ctx.fillRect(285,17,20,20);   
                             ctx.fillStyle = "#DD0000"
-                            ctx.fillRect(375,30,20,20);   
+                            ctx.fillRect(380,17,20,20);   
                             ctx.fillStyle = "#0000DD"
-                            ctx.fillRect(490,30,20,20);   
+                            ctx.fillRect(495,17,20,20);   
                             var yTicks = Math.ceil((hmdPlotMaxPoint-hmdPlotMinPoint)/resolution);
                             var currentVal = hmdPlotMaxPoint
                             ctx.fillStyle = "#FFFFFF"
@@ -683,13 +675,14 @@ MyStackViewPage {
             if ( autoConfMode == 0 ) {
                 startTimer()
             }
-            sampleTime = 0
             if (cancelClicked || autoConfMode < 0 ) {
+                resetGraph()
                 autoConfMode = -1
                 dialogTitle = "Walking Pace Config"
                 dialogText = "Begin Walking (slowest pace) IN PLACE in:"
-                sampleTime = 0
+                dialogTO = 5
             } 
+            sampleTime = 0
         }
         function openPopup() {
             startPopupTimer()
@@ -706,12 +699,36 @@ MyStackViewPage {
         }
     }
 
+
+    MyInfoPopup {
+        id: autoConfInfoPopup
+        property int modelIndex: -1
+        dialogTitle: ""
+        dialogText1: "The data model creation process takes ~25 seconds 5 seconds for each phase."
+        dialogText2: "In order from slowest to increasing to medium to medium to increasing to fast to fastest."
+        dialogText3: "You can always try it, delete, and recreate the model if you want."
+        onClosed: {
+            if (okClicked) {
+                autoConfigPopup.openPopup()
+                autoConfMode = 0
+                sampleTime = 0
+                currentSampleTime = 0
+            } else {
+                stopTimer()
+                resetGraph()
+                autoConfMode = -1
+                sampleTime = 0
+                autoConfigPopup.setTitle("Walking Pace Config")
+                autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
+                autoConfigPopup.setTimeout(5)
+                var page = mainView.pop()
+            }
+        }
+    }
+
     function startAutoConf() {
         stopTimer()
         resetGraph()
-        autoConfigPopup.openPopup()
-        autoConfMode = 0
-        sampleTime = 0
-        currentSampleTime = 0
+        autoConfInfoPopup.open()
     }
 }

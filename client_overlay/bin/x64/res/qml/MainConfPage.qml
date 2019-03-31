@@ -10,8 +10,6 @@ MyMainViewPage {
     property var initialLoaded: false
 
     function updateInfo() {  
-        useContDirForStrafCheck.checked = WalkInPlaceTabController.getUseContDirForStraf()
-        useContDirForRevCheck.checked = WalkInPlaceTabController.getUseContDirForRev()
         wipEnableToggle.checked = WalkInPlaceTabController.isWIPEnabled()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType()
         hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
@@ -52,41 +50,6 @@ MyMainViewPage {
                         text: " "
                         Layout.preferredWidth: 165
                     }  
-
-                    Rectangle {
-                        color: "#AAAAAA"
-                        height: 50
-                        width: 2
-                        Layout.topMargin: 5
-                        Layout.bottomMargin: 10
-                    }
-
-                    MyTab {
-                        Layout.preferredWidth: 300
-                        Layout.preferredHeight: 60
-                        text: "   Choose Tracked Devices "
-                        onClicked: {
-                            var res = mainView.push(disableDevicePage)
-                        }
-                    }
-
-                    Rectangle {
-                        color: "#AAAAAA"
-                        height: 50
-                        width: 2
-                        Layout.topMargin: 5
-                        Layout.bottomMargin: 10
-                    }
-
-                    MyTab {
-                        Layout.preferredWidth: 300
-                        Layout.preferredHeight: 60
-                        text: "   Show Tracking Graph"
-                        onClicked: {
-                            var res = mainView.push(graphPage)
-                            mainView.startTimer()
-                        }
-                    }
                 }
             }
         }
@@ -241,13 +204,133 @@ MyMainViewPage {
         }
 
         ColumnLayout {
-            id: dataModelColumnLYO
+            id: generalInfoColumnLYO
             anchors.top: mainConfigBox.bottom
-            anchors.topMargin: 350
+            anchors.topMargin: 37
             spacing: 7
 
             GroupBox {
-                height: 200
+                Layout.fillWidth: true
+                
+                background: Rectangle {
+                    color: myPalette.base
+                    border.color: myPalette.base
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 0
+                        MyText {
+                            text: "Start by creating a data model of your current tracked devices."
+                            Layout.preferredWidth: 800
+                            Layout.preferredHeight: 20
+                            Layout.maximumWidth: 800
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 0
+                        MyText {
+                            text: "The default devices used in the data model are the first 2 controllers and the first 2 trackers."
+                            Layout.preferredWidth: 800
+                            Layout.preferredHeight: 20
+                            Layout.maximumWidth: 800
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 0
+                        MyText {
+                            text: "You can change which devices create the data model with the 'tracked devices page' below."
+                            Layout.preferredWidth: 800
+                            Layout.preferredHeight: 20
+                            Layout.maximumWidth: 800
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 4
+                        MyText {
+                            text: "You can get an idea of the tracked data by looking at the 'tracking graph page' below."
+                            Layout.preferredWidth: 800
+                            Layout.preferredHeight: 27
+                            Layout.maximumWidth: 800
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            id: extraPagesColumnLYO
+            anchors.top: generalInfoColumnLYO.bottom
+            anchors.topMargin: 40
+            spacing: 7
+
+            GroupBox {
+                Layout.fillWidth: true
+                
+                background: Rectangle {
+                    color: myPalette.base
+                    border.color: myPalette.base
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 18
+
+                        Rectangle {
+                            color: "#AAAAAA"
+                            height: 50
+                            width: 2
+                            Layout.topMargin: 5
+                            Layout.bottomMargin: 10
+                        }
+
+                        MyTab {
+                            Layout.preferredWidth: 300
+                            Layout.preferredHeight: 60
+                            text: " --> Tracked Devices Page"
+                            onClicked: {
+                                var res = mainView.push(disableDevicePage)
+                            }
+                        }
+
+                        Rectangle {
+                            color: "#AAAAAA"
+                            height: 50
+                            width: 2
+                            Layout.topMargin: 5
+                            Layout.bottomMargin: 10
+                        }
+
+                        MyTab {
+                            Layout.preferredWidth: 300
+                            Layout.preferredHeight: 60
+                            text: " --> Tracking Graph Page"
+                            onClicked: {
+                                var res = mainView.push(graphPage)
+                                mainView.startTimer()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            id: dataModelColumnLYO
+            anchors.top: extraPagesColumnLYO.bottom
+            anchors.topMargin: 70
+            spacing: 7
+
+            GroupBox {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
@@ -348,7 +431,6 @@ MyMainViewPage {
 
             GroupBox {
 
-                height: 200
                 Layout.fillWidth: true
                 
                 background: Rectangle {
@@ -551,6 +633,8 @@ MyMainViewPage {
         dataModelComboBox.model = dataModels
         if ( defaultFound >= 0 ) {
             dataModelComboBox.currentIndex = defaultFound
+            WalkInPlaceTabController.applyDataModel(dataModelComboBox.currentText)
+            showDataModelButton.enabled = true
         } else {
             dataModelComboBox.currentIndex = 0
         }
@@ -588,6 +672,8 @@ MyMainViewPage {
         dataModelComboBox.model = dataModels
         if ( defaultFound >= 0 ) {
             dataModelComboBox.currentIndex = defaultFound
+            WalkInPlaceTabController.applyDataModel(dataModelComboBox.currentText)
+            showDataModelButton.enabled = true
         } else {
             dataModelComboBox.currentIndex = 0
         }

@@ -28,24 +28,28 @@ namespace walkinplace {
 
 	struct WalkInPlaceProfile {
 		std::string profileName;
-		std::string modelFile = "temp.bin";
+		std::string modelFile = "temp.csv";
 
 		bool wipEnabled = false;
 		bool useTrackers = false;
 		bool trackHMDVel = true;
 		bool trackHMDRot = true;
-		bool useContDirForStraf = false;
-		bool useContDirForRev = false;
 		int gameType = 0;
 		int hmdType = 0;
 		int buttonEnables = false;
 		int buttonControlSelect = 0;
 		int disableButton = 0;
-		bool buttonAsToggle = false;
 		float minTouch = 0.35;
-		float midTouch = 1.0;
+		float midTouch = 0.83;
 		float maxTouch = 1.0;
-		double minInputTime = 0.25;
+		int cntrl1Type = vr::TrackedDeviceClass::TrackedDeviceClass_Controller;
+		int cntrl2Type = vr::TrackedDeviceClass::TrackedDeviceClass_Controller;
+		int trkr1Type = vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker;
+		int trkr2Type = vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker;
+		int cntrl1Idx = -1;
+		int cntrl2Idx = -1;
+		int trkr1Idx = -1;
+		int trkr2Idx = -1;
 	};
 
 
@@ -53,10 +57,10 @@ namespace walkinplace {
 		std::string serial;
 		vr::ETrackedDeviceClass deviceClass = vr::TrackedDeviceClass_Invalid;
 		uint32_t openvrId = 0;
-		bool stepDetectionEnabled;
 		uint32_t renderModelIndex = 0;
 		vr::VROverlayHandle_t renderModelOverlay = vr::k_ulOverlayHandleInvalid;
 		std::string renderModelOverlayName;
+		bool isTracked = false;
 	};
 
 
@@ -86,10 +90,10 @@ namespace walkinplace {
 		arma::rowvec modelCNTRL1;
 		arma::rowvec modelCNTRL2;
 
-		std::string currentProfileName = "";
+		int currentProfileIdx = 0;
 
 		std::string model_file_type = ".csv";
-		std::string model_file_name = "temp";
+		std::string model_file_name = "default";
 
 		vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
 		vr::HmdVector3d_t lastHmdRot = { 0, 0, 0 };
@@ -142,7 +146,7 @@ namespace walkinplace {
 		int startSNHMD = 12;
 		int reqSNHMD = 8;
 		int maxSNTRKR = 31;
-		int startSNTRKR = 30;
+		int startSNTRKR = 20;
 		int reqSNTRKR = 10;
 		int maxSNCNTRL = 22;
 		int reqSNCNTRL = 20;
@@ -186,6 +190,7 @@ namespace walkinplace {
 		double currentRunTimeInSec = 0.0;
 
 		std::pair<float, int> computeSNDelta(arma::mat sN, arma::mat mN);
+		std::pair<float, int> computeSNDeltaOffset(arma::mat sN, arma::mat mN);
 		std::pair<int, int> computeSNDV(arma::mat sN, arma::mat mN);
 		int findMNIdxGTS(float s, arma::mat mN);
 
@@ -211,8 +216,7 @@ namespace walkinplace {
 		Q_INVOKABLE int getDisableButton();
 		Q_INVOKABLE bool getUseTrackers();
 		Q_INVOKABLE bool getDisableHMD();
-		Q_INVOKABLE bool getUseContDirForStraf();
-		Q_INVOKABLE bool getUseContDirForRev();
+		Q_INVOKABLE bool getTrackHMDRot();
 		Q_INVOKABLE float getWalkTouch();
 		Q_INVOKABLE float getJogTouch();
 		Q_INVOKABLE float getRunTouch();
@@ -237,20 +241,16 @@ namespace walkinplace {
 
 	public slots:
 		void enableWIP(bool enable);
-		void setMinInputTime(double value);
 		void setTrackHMDVel(bool val);
 		void setTrackHMDRot(bool val);
 		void setDirectionDevice(int choice);
 		void enableDevice(int deviceClass, int devIdx, bool enable, int mode);
 		void setDisableButton(int buttonId);
-		void setButtonAsToggle(bool val);
 		void setButtonEnables(bool val);
 		void setHMDMaxVari(float val);
 		void setMinTouch(float value);
 		void setMidTouch(float value);
 		void setMaxTouch(float value);
-		void setUseContDirForStraf(bool val);
-		void setUseContDirForRev(bool val);
 		void setGameStepType(int gameType);
 		void setHMDType(int gameType);
 		void setButtonControlSelect(int control);

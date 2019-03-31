@@ -121,7 +121,7 @@ MyStackViewPage {
                         }
                         onClicked: {
                             stopTimer()
-                            //mainView.stopTimer()
+                            mainView.stopTimer()
                             var page = mainView.pop()
                         }
                     }
@@ -774,7 +774,7 @@ MyStackViewPage {
                             trkr1Sample.push((temp[1]).toFixed(0))
                             trkr2Sample.push((temp[1]).toFixed(0))
                         } else {
-                            var r = (canvasPlotMaxPoint - canvasPlotMinPoint)  
+                            var r = (trkrPlotMaxPoint - trkrPlotMinPoint)  
                             var g = (modelCanvas.rectHeight)
                             trkr1Sample.push(temp[i].toFixed(4))
                             trkr2Sample.push(temp[i+1].toFixed(4))

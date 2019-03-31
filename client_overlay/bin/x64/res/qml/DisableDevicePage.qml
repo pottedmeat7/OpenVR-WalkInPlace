@@ -10,23 +10,24 @@ MyStackViewPage {
     property var initialLoaded: false
 
     function updateInfo() {  
-        //hmd1.checked = WalkInPlaceTabController.getDisableHMD()
-        //cntrlHands1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,0)
-        //cntrlHands2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,0)
-        //cntrlHands3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,0)
-        //cntrlHands4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,0)
-        //cntrlFeet1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,1)
-        //cntrlFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,1)
-        //cntrlFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,1)
-        //cntrlFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,1)
-        //trkrHands1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,0)
-        //trkrHands2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,0)
-        //trkrHands3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,0)
-        //trkrHands4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,0)
-        //trkrFeet1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,1)
-        //trkrFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,1)
-        //trkrFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,1)
-        //trkrFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,1)
+        hmd1.checked = WalkInPlaceTabController.getDisableHMD()
+        hmd2.checked = WalkInPlaceTabController.getTrackHMDRot()
+        cntrlHands1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,0)
+        cntrlHands2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,0)
+        cntrlHands3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,0)
+        cntrlHands4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,0)
+        cntrlFeet1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,1)
+        cntrlFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,1)
+        cntrlFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,1)
+        cntrlFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,1)
+        trkrHands1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,0)
+        trkrHands2.checked = WalkInPlaceTabController.getDeviceEnabled(3,1,0)
+        trkrHands3.checked = WalkInPlaceTabController.getDeviceEnabled(3,2,0)
+        trkrHands4.checked = WalkInPlaceTabController.getDeviceEnabled(3,3,0)
+        trkrFeet1.checked = WalkInPlaceTabController.getDeviceEnabled(3,0,1)
+        trkrFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(3,1,1)
+        trkrFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(3,2,1)
+        trkrFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(3,3,1)
     }
 
     content: ColumnLayout {
@@ -115,7 +116,7 @@ MyStackViewPage {
                         spacing: 7
                         MyToggleButton {
                             id: hmd1
-                            text: "Track HMD Velocity?"
+                            text: "Track HMD?"
                             checked: true
                             Layout.maximumWidth: 350
                             Layout.minimumWidth: 350
@@ -463,7 +464,7 @@ MyStackViewPage {
             }
         }
 
-        ColumnLayout {
+        /*ColumnLayout {
             spacing: 7
             Layout.alignment: Qt.AlignHCenter
 
@@ -505,7 +506,7 @@ MyStackViewPage {
                     }
                 }
             }
-        }
+        }*/
 
         Component.onCompleted: {   
             if ( !initialLoaded ) { 
