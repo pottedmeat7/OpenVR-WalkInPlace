@@ -41,6 +41,14 @@ MyStackViewPage {
     property var midTouch : 0.5
     property var maxTouch : 1.0
 
+    property var initialLoaded: false
+
+    function updateInfo() {  
+        setMinTouch(WalkInPlaceTabController.getMinTouch())
+        setMidTouch(WalkInPlaceTabController.getMidTouch())
+        setMaxTouch(WalkInPlaceTabController.getMaxTouch())
+    }
+
     property var startTimer: function() {
         getModelData()
         if ( WalkInPlaceTabController.isWIPEnabled() ) {
@@ -644,7 +652,13 @@ MyStackViewPage {
             }
         }
 
-        Component.onCompleted: {
+        
+
+        Component.onCompleted: {   
+            if ( !initialLoaded ) { 
+                updateInfo()
+            }
+            initialLoaded = true
         }
     }
 

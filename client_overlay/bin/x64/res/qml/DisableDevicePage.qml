@@ -20,7 +20,7 @@ MyStackViewPage {
         cntrlFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,1)
         cntrlFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,1)
         cntrlFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,1)
-        trkrHands1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,0)
+        trkrHands1.checked = WalkInPlaceTabController.getDeviceEnabled(3,0,0)
         trkrHands2.checked = WalkInPlaceTabController.getDeviceEnabled(3,1,0)
         trkrHands3.checked = WalkInPlaceTabController.getDeviceEnabled(3,2,0)
         trkrHands4.checked = WalkInPlaceTabController.getDeviceEnabled(3,3,0)

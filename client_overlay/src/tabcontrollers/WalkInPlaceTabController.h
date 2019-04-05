@@ -90,7 +90,7 @@ namespace walkinplace {
 		arma::rowvec modelCNTRL1;
 		arma::rowvec modelCNTRL2;
 
-		int currentProfileIdx = 0;
+		int currentProfileIdx = -1;
 
 		std::string model_file_type = ".csv";
 		std::string model_file_name = "default";
@@ -144,12 +144,12 @@ namespace walkinplace {
 
 		int maxSNHMD = 16;
 		int startSNHMD = 12;
-		int reqSNHMD = 8;
+		int reqSNHMD = 5;
 		int maxSNTRKR = 31;
 		int startSNTRKR = 20;
 		int reqSNTRKR = 10;
-		int maxSNCNTRL = 22;
-		int reqSNCNTRL = 20;
+		int maxSNCNTRL = 12;
+		int reqSNCNTRL = 10;
 
 		uint64_t controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t controller2ID = vr::k_unTrackedDeviceIndexInvalid;
@@ -217,9 +217,9 @@ namespace walkinplace {
 		Q_INVOKABLE bool getUseTrackers();
 		Q_INVOKABLE bool getDisableHMD();
 		Q_INVOKABLE bool getTrackHMDRot();
-		Q_INVOKABLE float getWalkTouch();
-		Q_INVOKABLE float getJogTouch();
-		Q_INVOKABLE float getRunTouch();
+		Q_INVOKABLE float getMinTouch();
+		Q_INVOKABLE float getMidTouch();
+		Q_INVOKABLE float getMaxTouch();
 		Q_INVOKABLE bool getUseButtonAsToggle();
 		Q_INVOKABLE bool getButtonEnables();
 		Q_INVOKABLE bool getDeviceEnabled(int devClass, int devIdx, int mode);
@@ -260,6 +260,7 @@ namespace walkinplace {
 		bool buttonStatus();
 
 		void stopMovement();
+		void clearClickedFlag();
 		void stopClickMovement();
 		void applyAxisMovement(vr::VRControllerAxis_t axisState);
 		void applyClickMovement();

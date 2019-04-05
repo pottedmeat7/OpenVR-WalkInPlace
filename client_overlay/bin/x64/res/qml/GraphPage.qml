@@ -208,7 +208,7 @@ MyStackViewPage {
                     property real resolution: 0.1
                     property int seconds : 5
                     property int sections : 5
-                    property int period : (rectWidth/(seconds*sections)) // width at 10 mHz for 10 seconds
+                    property int period : (rectWidth/(seconds*sections)) 
 
                     onPaint: {
                         try {
@@ -218,16 +218,16 @@ MyStackViewPage {
                             ctx.fillStyle = "#222222"
                             ctx.fillRect(0, topY, rectWidth, rectHeight);  
                             ctx.fillStyle = "#FFFFFF"
-                            ctx.fillText("HMD", 92, 35);
-                            ctx.fillText("Y_VEL", 242, 35);
+                            ctx.fillText("HMD", 90, 35);
+                            ctx.fillText("Y_VEL", 239, 35);
                             ctx.fillText("YAW", 342, 35);
                             ctx.fillText("PITCH", 442, 35); 
                             ctx.fillStyle = "#00DD00"
-                            ctx.fillRect(285,17,20,20);   
+                            ctx.fillRect(293,17,20,20);   
                             ctx.fillStyle = "#DD0000"
-                            ctx.fillRect(380,17,20,20);   
+                            ctx.fillRect(384,17,20,20);   
                             ctx.fillStyle = "#0000DD"
-                            ctx.fillRect(495,17,20,20);   
+                            ctx.fillRect(497,17,20,20);   
                             var yTicks = Math.ceil((hmdPlotMaxPoint-hmdPlotMinPoint)/resolution);
                             var currentVal = hmdPlotMaxPoint
                             ctx.fillStyle = "#FFFFFF"
@@ -705,8 +705,8 @@ MyStackViewPage {
         property int modelIndex: -1
         dialogTitle: ""
         dialogText1: "The data model creation process takes ~25 seconds 5 seconds for each phase."
-        dialogText2: "In order from slowest to increasing to medium to medium to increasing to fast to fastest."
-        dialogText3: "You can always try it, delete, and recreate the model if you want."
+        dialogText2: "The process starts with slowest to increasing to medium to medium to increasing to fast to fastest."
+        dialogText3: "You can always try it, delete, and recreate the model until you have what you'd like."
         onClosed: {
             if (okClicked) {
                 autoConfigPopup.openPopup()

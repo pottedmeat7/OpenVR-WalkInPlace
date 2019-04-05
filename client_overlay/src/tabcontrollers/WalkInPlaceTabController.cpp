@@ -1,4 +1,4 @@
-#include "WalkInPlaceTabController.h"
+﻿#include "WalkInPlaceTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
 #include <QtQuick/QQuickView>
@@ -53,37 +53,7 @@ namespace walkinplace {
 								info->isTracked = true;
 							}
 						}
-						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-							if (info->serial.find("ovrwip") == std::string::npos) {
-								if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
-									controller1ID = info->openvrId;
-									info->isTracked = true;
-									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								}
-								else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && info->openvrId != controller1ID) {
-									controller2ID = info->openvrId;
-									info->isTracked = true;
-									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								}
-							}
-							else {
-								LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								ovrwipCNTRLID = info->openvrId;
-								info->isTracked = false;
-							}
-						}
-						else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
-							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
-								tracker1ID = info->openvrId;
-								info->isTracked = true;
-								LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-							}
-							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && info->openvrId != tracker1ID) {
-								tracker2ID = info->openvrId;
-								info->isTracked = true;
-								LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-							}
-						}
+						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 					}
 					maxValidDeviceId = id;
 				}
@@ -113,7 +83,7 @@ namespace walkinplace {
 					catch (std::exception& e) {
 						LOG(INFO) << "Exception caught while adding initializing driver: " << e.what();
 					}
-				}
+				}	
 			}
 			else {
 				runSampleOnModel();
@@ -172,39 +142,79 @@ namespace walkinplace {
 									info->isTracked = true;
 								}
 							}
-							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
-								if (info->serial.find("ovrwip") == std::string::npos) {
-									if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
-										controller1ID = info->openvrId;
-										info->isTracked = true;
-										LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-									}
-									else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && info->openvrId != controller1ID) {
-										controller2ID = info->openvrId;
-										info->isTracked = true;
-										LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-									}
-								}
-								else {
-									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-									ovrwipCNTRLID = info->openvrId;
-									info->isTracked = false;
-								}
-							}
-							else if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
-								if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
-									tracker1ID = info->openvrId;
-									info->isTracked = true;
-									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								}
-								else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && info->openvrId != tracker1ID) {
-									tracker2ID = info->openvrId;
-									info->isTracked = true;
-									LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-								}
-							}
 						}
 						maxValidDeviceId = id;
+					}
+				}
+				int cntrlIdx = 0;
+				int trkrIdx = 0;
+				for (auto dev : deviceInfos) {
+					if (currentProfileIdx >= 0 && currentProfileIdx < walkInPlaceProfiles.size()) {
+						if (dev->serial.find("ovrwip") == std::string::npos) {
+							auto p = &walkInPlaceProfiles[currentProfileIdx];
+							if (controller1ID == vr::k_unTrackedDeviceIndexInvalid && p->cntrl1Idx >= 0) {
+								if (dev->deviceClass == p->cntrl1Type && cntrlIdx == p->cntrl1Idx) {
+									controller1ID = dev->openvrId;
+									dev->isTracked = true;
+								}
+							}
+							else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && p->cntrl2Idx >= 0) {
+								if (dev->deviceClass == p->cntrl2Type && cntrlIdx == p->cntrl2Idx) {
+									controller2ID = dev->openvrId;
+									dev->isTracked = true;
+								}
+							}
+							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid && p->trkr1Idx >= 0) {
+								if (dev->deviceClass == p->trkr1Type && cntrlIdx == p->trkr1Idx) {
+									tracker1ID = dev->openvrId;
+									dev->isTracked = true;
+								}
+							}
+							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && p->trkr2Idx >= 0) {
+								if (dev->deviceClass == p->trkr2Type && cntrlIdx == p->trkr2Idx) {
+									tracker2ID = dev->openvrId;
+									dev->isTracked = true;
+								}
+							}
+							if (dev->deviceClass == p->cntrl1Type || dev->deviceClass == p->cntrl2Type) {
+								cntrlIdx++;
+							}
+							else if (dev->deviceClass == p->trkr1Type || dev->deviceClass == p->trkr2Type) {
+								trkrIdx++;
+							}
+						}
+						else {
+							ovrwipCNTRLID = dev->openvrId;
+							dev->isTracked = false;
+						}
+					}
+					else {
+						if (dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+							if (dev->serial.find("ovrwip") == std::string::npos) {
+								if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
+									controller1ID = dev->openvrId;
+									dev->isTracked = true;
+								}
+								else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && dev->openvrId != controller1ID) {
+									controller2ID = dev->openvrId;
+									dev->isTracked = true;
+								}
+							}
+							else {
+								ovrwipCNTRLID = dev->openvrId;
+								dev->isTracked = false;
+							}
+						}
+						else if (useTrackers && dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
+							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
+								tracker1ID = dev->openvrId;
+								dev->isTracked = true;
+							}
+							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && dev->openvrId != tracker1ID) {
+								tracker2ID = dev->openvrId;
+								dev->isTracked = true;
+							}
+						}
 					}
 				}
 			}
@@ -296,15 +306,15 @@ namespace walkinplace {
 		return trackHMDRot;
 	}
 
-	float WalkInPlaceTabController::getWalkTouch() {
+	float WalkInPlaceTabController::getMinTouch() {
 		return minTouch;
 	}
 
-	float WalkInPlaceTabController::getJogTouch() {
+	float WalkInPlaceTabController::getMidTouch() {
 		return midTouch;
 	}
 
-	float WalkInPlaceTabController::getRunTouch() {
+	float WalkInPlaceTabController::getMaxTouch() {
 		return maxTouch;
 	}
 
@@ -507,32 +517,34 @@ namespace walkinplace {
 		lastHmdRot.v[1] = devPitch;
 		lastHmdRot.v[2] = devRoll;
 
-		cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
-		cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
-		cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
-		qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
-		devForward = vrmath::quaternionRotateVector(qRotation, forward);
-		devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-		//cont1Vel = vrmath::quaternionRotateVector(qRotation, cont1Vel);
-
-		devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-		devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-		devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-		if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-			cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
-			cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
-			cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
-			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller2ID].mDeviceToAbsoluteTracking);
+		if (controller1ID != vr::k_unTrackedDeviceIndexInvalid) {
+			cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
+			cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
+			cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
+			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
 			devForward = vrmath::quaternionRotateVector(qRotation, forward);
 			devRight = vrmath::quaternionRotateVector(qRotation, right);
 
-			//cont2Vel = vrmath::quaternionRotateVector(qRotation, cont2Vel);
+			//cont1Vel = vrmath::quaternionRotateVector(qRotation, cont1Vel);
 
 			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
 			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
 			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+
+			if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
+				cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
+				cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
+				cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
+				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller2ID].mDeviceToAbsoluteTracking);
+				devForward = vrmath::quaternionRotateVector(qRotation, forward);
+				devRight = vrmath::quaternionRotateVector(qRotation, right);
+
+				//cont2Vel = vrmath::quaternionRotateVector(qRotation, cont2Vel);
+
+				devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
+				devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
+				devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+			}
 		}
 
 		if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
@@ -599,9 +611,7 @@ namespace walkinplace {
 	}
 
 	QList<qreal> WalkInPlaceTabController::getGraphPoses(double tdiff) {
-		if (!wipEnabled) {
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-		}
+		vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
 		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		bool firstController = true;
 		bool firstTracker = true;
@@ -802,10 +812,10 @@ namespace walkinplace {
 			entry.cntrl2Idx = settings->value("cntrl2Idx", -1).toInt();
 			entry.trkr1Idx = settings->value("trkr1Idx", -1).toInt();
 			entry.trkr2Idx = settings->value("trkr21Idx", -1).toInt();
-			entry.cntrl1Idx = settings->value("cntrl1Type", vr::TrackedDeviceClass::TrackedDeviceClass_Controller).toInt();
-			entry.cntrl2Idx = settings->value("cntrl2Type", vr::TrackedDeviceClass::TrackedDeviceClass_Controller).toInt();
-			entry.trkr1Idx = settings->value("trkr1Type", vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker).toInt();
-			entry.trkr2Idx = settings->value("trkr2Type", vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker).toInt();
+			entry.cntrl1Type = settings->value("cntrl1Type", vr::TrackedDeviceClass::TrackedDeviceClass_Controller).toInt();
+			entry.cntrl2Type = settings->value("cntrl2Type", vr::TrackedDeviceClass::TrackedDeviceClass_Controller).toInt();
+			entry.trkr1Type = settings->value("trkr1Type", vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker).toInt();
+			entry.trkr2Type = settings->value("trkr2Type", vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker).toInt();
 		}
 		settings->endArray();
 		settings->endGroup();
@@ -897,25 +907,29 @@ namespace walkinplace {
 		int cntrlIdx = 0;
 		int trkrIdx = 0;
 		for (auto dev : deviceInfos) {
-			if (controller1ID == dev->openvrId) {
-				profile->cntrl1Idx = cntrlIdx;
-				profile->cntrl1Type = dev->deviceClass;
-			} else if (controller2ID == dev->openvrId) {
-				profile->cntrl2Idx = cntrlIdx;
-				profile->cntrl2Type = dev->deviceClass;
-			}
-			if (tracker1ID == dev->openvrId) {
-				profile->trkr1Idx = trkrIdx;
-				profile->trkr1Type = dev->deviceClass;
-			}
-			else if (tracker2ID == dev->openvrId) {
-				profile->trkr2Idx = trkrIdx;
-				profile->trkr2Type = dev->deviceClass;
-			}
-			if (dev->deviceClass == vr::TrackedDeviceClass::TrackedDeviceClass_Controller) {
-				cntrlIdx++;
-			} else if (dev->deviceClass == vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
-				trkrIdx++;
+			if (dev->serial.find("ovrwip") == std::string::npos) {
+				if (controller1ID == dev->openvrId) {
+					profile->cntrl1Idx = cntrlIdx;
+					profile->cntrl1Type = dev->deviceClass;
+				}
+				else if (controller2ID == dev->openvrId) {
+					profile->cntrl2Idx = cntrlIdx;
+					profile->cntrl2Type = dev->deviceClass;
+				}
+				if (tracker1ID == dev->openvrId) {
+					profile->trkr1Idx = trkrIdx;
+					profile->trkr1Type = dev->deviceClass;
+				}
+				else if (tracker2ID == dev->openvrId) {
+					profile->trkr2Idx = trkrIdx;
+					profile->trkr2Type = dev->deviceClass;
+				}
+				if (dev->deviceClass == vr::TrackedDeviceClass::TrackedDeviceClass_Controller) {
+					cntrlIdx++;
+				}
+				else if (dev->deviceClass == vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
+					trkrIdx++;
+				}
 			}
 		}
 		saveProfiles();
@@ -950,15 +964,19 @@ namespace walkinplace {
 			setMaxTouch(profile.maxTouch);
 
 			if (profile.cntrl1Idx >= 0) {
+				controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 				enableDevice(profile.cntrl1Type, profile.cntrl1Idx, true, 0);
 			}
 			if (profile.cntrl2Idx >= 0) {
+				controller2ID = vr::k_unTrackedDeviceIndexInvalid;
 				enableDevice(profile.cntrl2Type, profile.cntrl2Idx, true, 0);
 			}
 			if (profile.trkr1Idx >= 0) {
+				tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
 				enableDevice(profile.trkr1Type, profile.trkr1Idx, true, 0);
 			}
 			if (profile.trkr2Idx >= 0) {
+				tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 				enableDevice(profile.trkr2Type, profile.trkr2Idx, true, 0);
 			}
 		}
@@ -1012,24 +1030,20 @@ namespace walkinplace {
 	}
 
 	bool WalkInPlaceTabController::getDeviceEnabled(int devClass, int devIdx, int mode) {
-		int devClassIdx = 0;
-		for (auto dev : deviceInfos) {
-			if (dev->deviceClass == devClass) {
-				if (devClassIdx == devIdx) {
-					int ovr_id = dev->openvrId;
-					if (currentProfileIdx >= 0 && currentProfileIdx < walkInPlaceProfiles.size() ) {
-						WalkInPlaceProfile* profile = &walkInPlaceProfiles[currentProfileIdx]; 
-						if ((mode == 0 && (ovr_id == profile->cntrl1Idx || ovr_id == profile->cntrl2Idx))
-							|| (mode == 1 && (ovr_id == profile->trkr1Idx || ovr_id == profile->trkr2Idx))) {
-							return true;
-						}
-					}
-					else if ( ( mode == 0 && (devIdx == 0 || devIdx == 1) ) ) {
-						return true;
-					}
-				}
-				devClassIdx++;
+		if (currentProfileIdx >= 0 && currentProfileIdx < walkInPlaceProfiles.size()) {
+			WalkInPlaceProfile* profile = &walkInPlaceProfiles[currentProfileIdx];
+			if (mode == 0 && ((profile->cntrl1Idx < 0 && devIdx == 0) || (profile->cntrl2Idx < 0 && devIdx == 1))) {
+				return true;
 			}
+			else if ((mode == 0 && ((devIdx == profile->cntrl1Idx && devClass == profile->cntrl1Type) 
+								|| (devIdx == profile->cntrl2Idx && devClass == profile->cntrl2Type)))
+				|| (mode == 1 && ((devIdx == profile->trkr1Idx && devClass == profile->trkr1Type) 
+								|| (devIdx == profile->trkr2Idx && devClass == profile->trkr2Type)))) {
+				return true;
+			}
+		}
+		else if ((mode == 0 && (devIdx == 0 || devIdx == 1))) {
+			return true;
 		}
 		return false;
 	}
@@ -1516,8 +1530,13 @@ namespace walkinplace {
 					}
 					float nextTouch = dataModel(TOUCH_VAL_IDX, lastCNTRLSampleMKi);
 					float temp = sNValidTouch;
-					sNValidTouch = nextTouch;
-					sNValidTouch = sNValidTouch + (timeStep*(nextTouch - sNValidTouch));
+					//sNValidTouch = nextTouch;
+					if (nextTouch >= sNValidTouch) {
+						sNValidTouch = sNValidTouch + (timeStep*(nextTouch - sNValidTouch));
+					}
+					else {
+						sNValidTouch = sNValidTouch - (timeStep*(sNValidTouch - nextTouch)*6.0);
+					}
 
 					if (temp != sNValidTouch) {
 						inputStateChanged = true;
@@ -1555,9 +1574,14 @@ namespace walkinplace {
 					}
 					if (gameType == 0 || gameType == 1 || gameType == 2) {
 						axisState.x = 0;
-						float touch = (sNValidTouch * (maxTouch - midTouch)) + midTouch;
-						if (sNValidTouch < 0.501) {
-							touch = ((sNValidTouch+0.5) * (midTouch - minTouch)) + minTouch;
+						float touch = 0;
+						if (sNValidTouch > 0.5) {
+							float normTouch = (sNValidTouch - 0.5) / 0.5;
+							touch = (normTouch * (maxTouch - midTouch)) + midTouch;
+						}
+						else if (sNValidTouch < 0.501) {
+							float normTouch = (sNValidTouch / 0.5);
+							touch = (normTouch * (midTouch - minTouch)) + minTouch;
 						}
 						axisState.y = touch;
 						if (false && directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
@@ -1565,9 +1589,14 @@ namespace walkinplace {
 							axisState.y = axisState.y * touchY;
 						}
 						try {
-							if (gameType == 0 && axisState.y > 0.999) {
-								pressedFlag = true;
-							}
+							if (gameType == 0 ) {
+								if (dataModel(TOUCH_VAL_IDX, lastCNTRLSampleMKi) > 0.999) {
+									pressedFlag = true;
+								}
+								else {
+									pressedFlag = false;
+								}
+							} 
 							applyAxisMovement(axisState);
 						}
 						catch (std::exception& e) {
@@ -1662,6 +1691,31 @@ namespace walkinplace {
 		return mN.n_cols - 1;
 	}
 
+	void WalkInPlaceTabController::clearClickedFlag() {
+		uint32_t deviceId = ovrwipCNTRLID;
+		try {
+			if (gameType == 0 || gameType == 1 || gameType == 2) {
+				vr::VRControllerAxis_t axisState;
+				axisState.x = 0;
+				axisState.y = 0;
+				try {
+					vrwalkinplace::VRWalkInPlace vrwalkinplace;
+					vrwalkinplace.connect();
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					pressedFlag = false;
+					vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
+					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+				}
+				catch (std::exception& e) {
+					//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+				}
+			}
+		}
+		catch (std::exception& e) {
+			//LOG(INFO) << "Exception caught while applying virtual axis movement: " << e.what();
+		}
+	}
+
 	void WalkInPlaceTabController::stopMovement() {
 		try {
 			if (validSample) {
@@ -1675,6 +1729,7 @@ namespace walkinplace {
 						vrwalkinplace.connect();
 						if (gameType != 1) {
 							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+							pressedFlag = false;
 						}
 						vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
 						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);

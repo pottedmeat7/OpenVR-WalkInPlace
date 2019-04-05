@@ -12,8 +12,8 @@ Popup {
     property string dialogText1: ""
     property string dialogText2: ""
     property string dialogText3: ""
-    property int dialogWidth: 900
-    property int dialogHeight: 700
+    property int dialogWidth: 1150
+    property int dialogHeight: 450
 
     property Item dialogContentItem1: MyText {
         text: dialogText1
