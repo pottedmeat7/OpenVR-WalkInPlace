@@ -755,6 +755,7 @@ Delete $INSTDIR\res\qml\mainwidget.qml
 Delete $INSTDIR\res\qml\MyComboBox.qml
 Delete $INSTDIR\res\qml\MyDialogOkCancelPopup.qml
 Delete $INSTDIR\res\qml\MyDialogOkPopup.qml
+Delete $INSTDIR\res\qml\MyInfoPopup.qml
 Delete $INSTDIR\res\qml\MyMainViewPage.qml
 Delete $INSTDIR\res\qml\MyPushButton.qml
 Delete $INSTDIR\res\qml\MyStackViewPage.qml

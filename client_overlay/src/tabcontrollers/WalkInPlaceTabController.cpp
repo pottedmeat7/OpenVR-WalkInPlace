@@ -1532,7 +1532,7 @@ namespace walkinplace {
 					float temp = sNValidTouch;
 					//sNValidTouch = nextTouch;
 					if (nextTouch >= sNValidTouch) {
-						sNValidTouch = sNValidTouch + (timeStep*(nextTouch - sNValidTouch));
+						sNValidTouch = sNValidTouch + (timeStep*(nextTouch - sNValidTouch)*2.0);
 					}
 					else {
 						sNValidTouch = sNValidTouch - (timeStep*(sNValidTouch - nextTouch)*6.0);
