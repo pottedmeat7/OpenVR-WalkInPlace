@@ -12,8 +12,10 @@ Popup {
     property string dialogText1: ""
     property string dialogText2: ""
     property string dialogText3: ""
+    property string dialogText4: ""
+    property string dialogText5: ""
     property int dialogWidth: 1150
-    property int dialogHeight: 450
+    property int dialogHeight: 650
 
     property Item dialogContentItem1: MyText {
         text: dialogText1
@@ -31,6 +33,20 @@ Popup {
 
     property Item dialogContentItem3: MyText {
         text: dialogText3
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        Layout.fillWidth: true
+    }
+
+    property Item dialogContentItem4: MyText {
+        text: dialogText4
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        Layout.fillWidth: true
+    }
+
+    property Item dialogContentItem5: MyText {
+        text: dialogText5
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         Layout.fillWidth: true
@@ -111,5 +127,6 @@ Popup {
         dialogContentItem1.parent = dialogContent
         dialogContentItem2.parent = dialogContent
         dialogContentItem3.parent = dialogContent
+        dialogContentItem4.parent = dialogContent
     }
 }

@@ -87,6 +87,8 @@ namespace walkinplace {
 		arma::mat hmdSample;
 		arma::mat cntrlSample;
 		arma::mat trkrSample;
+		arma::rowvec hmdVels;
+		arma::rowvec trkrVels;
 		arma::rowvec modelCNTRL1;
 		arma::rowvec modelCNTRL2;
 
@@ -130,6 +132,7 @@ namespace walkinplace {
 		int lastValidHMDSampleMKi = 0;
 		int lastCNTRLSampleMKi = 0;
 		int lastValidTRKRSampleMKi = 0;
+		int stopCallCount = 0;
 
 		static const int HMD_Y_VEL_IDX = 0;
 		static const int CNTRL1_Y_VEL_IDX = 1;
@@ -144,10 +147,12 @@ namespace walkinplace {
 
 		int maxSNHMD = 16;
 		int startSNHMD = 12;
-		int reqSNHMD = 5;
+		int reqSNHMD = 6;
+		int stopSNHMD = 4;
 		int maxSNTRKR = 31;
-		int startSNTRKR = 20;
+		int startSNTRKR = 12;
 		int reqSNTRKR = 10;
+		int stopSNTRKR = 5;
 		int maxSNCNTRL = 12;
 		int reqSNCNTRL = 10;
 
@@ -168,6 +173,8 @@ namespace walkinplace {
 		float hmdMaxYROTVel = 0;
 		float hmdMaxXVel = 0;
 		float hmdMaxZVel = 0;
+		float minHMDPeakVal = 0.0;
+		float minTRKRPeakVal = 0.0;
 		float sNValidTouch = 0;
 		float minTouch = 0.35;
 		float midTouch = 0.7;
@@ -182,6 +189,7 @@ namespace walkinplace {
 		double timeStep = 1.0 / 40.0;
 		double dT = timeStep * 1000;
 		double timeLastTick = 0.0;
+		double timeLastVelTick = 0.0;
 		double timeLastCNTRLSN = 0.0;
 		double identifyControlLastTime = 99999;
 		double identifyControlTimeOut = 6000;
@@ -193,6 +201,7 @@ namespace walkinplace {
 		std::pair<float, int> computeSNDeltaOffset(arma::mat sN, arma::mat mN);
 		std::pair<int, int> computeSNDV(arma::mat sN, arma::mat mN);
 		int findMNIdxGTS(float s, arma::mat mN);
+		float findMinPeakMN(int startERR, arma::rowvec mN);
 
 		void loadDataModel();
 		void clearSamplesAndModel();

@@ -166,7 +166,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 401
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["by holding grip", "by holding trigger", "by touching touchpad", "only with data model"]
+                        model: ["by holding grip", "by holding trigger", "only with data model"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setDisableButton(currentIndex) 
@@ -610,6 +610,7 @@ MyMainViewPage {
                     //messageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
                 } else {
                     WalkInPlaceTabController.addProfile(newProfileName.text)
+                    reloadProfiles()
                 }
             }
         }
@@ -660,23 +661,12 @@ MyMainViewPage {
 
     function reloadProfiles() {
         //load data models
-        var defaultFound = -1
         var dataModels = [""]
         var temp = WalkInPlaceTabController.getDataModelNames()
         for (var i = 0; i < temp.length; i++) {
             dataModels.push(temp[i].replace(".csv",""))
-            if ( dataModels[i] == "default" ) {
-                defaultFound = i
-            }
         }
         dataModelComboBox.model = dataModels
-        if ( defaultFound >= 0 ) {
-            dataModelComboBox.currentIndex = defaultFound
-            WalkInPlaceTabController.applyDataModel(dataModelComboBox.currentText)
-            showDataModelButton.enabled = true
-        } else {
-            dataModelComboBox.currentIndex = 0
-        }
         //load profiles
         var profiles = [""]
         var profileCount = WalkInPlaceTabController.getProfileCount()
@@ -685,7 +675,6 @@ MyMainViewPage {
             profiles.push(p_name)
         }
         profileComboBox.model = profiles
-        profileComboBox.currentIndex = 0
     }
 
     function completeTraining() {

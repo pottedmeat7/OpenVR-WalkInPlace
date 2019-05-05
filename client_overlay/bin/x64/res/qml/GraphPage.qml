@@ -706,7 +706,9 @@ MyStackViewPage {
         dialogTitle: ""
         dialogText1: "The data model creation process takes ~25 seconds 5 seconds for each phase."
         dialogText2: "The process starts with slowest to increasing to medium to medium to increasing to fast to fastest."
-        dialogText3: "You can always try it, delete, and recreate the model until you have what you'd like."
+        dialogText3: "Do not stop moving during this process."
+        dialogText4: "If you do it will be recorded and used as a valid movement model."
+        dialogText5: "You can always try it, view it, and recreate the model until you have what you'd like."
         onClosed: {
             if (okClicked) {
                 autoConfigPopup.openPopup()

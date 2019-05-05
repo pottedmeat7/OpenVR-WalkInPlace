@@ -602,7 +602,10 @@ MyStackViewPage {
                                     ctx.closePath();
                                     if ( x >= validSNMki && x-validSNMki < trkr1Sample.length-2) {
                                         ctx.beginPath();  
-                                        ctx.strokeStyle = "#00DD00";
+                                        ctx.strokeStyle = "#DD0000";
+                                        if ( trkr1Sample[0] == 1 ) {
+                                            ctx.strokeStyle = "#00DD00";
+                                        }
                                         ctx.lineWidth = 2;
                                         ctx.moveTo(lastX,lasttrkrSNYPoint);
                                         var val = trkr1Sample[x-validSNMki+2];
