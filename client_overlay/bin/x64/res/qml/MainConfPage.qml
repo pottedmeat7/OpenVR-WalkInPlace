@@ -16,6 +16,7 @@ MyMainViewPage {
         buttonMode.currentIndex = WalkInPlaceTabController.getButtonEnables() ? 1 : 0
         accuracyButtonDialog.currentIndex = WalkInPlaceTabController.getDisableButton()
         buttonControlSelect.currentIndex = WalkInPlaceTabController.getButtonControlSelect()
+        mainView.updateDeviceInfo()
     }
 
     content: ColumnLayout {

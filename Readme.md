@@ -2,7 +2,7 @@
 
 # OpenVR-WalkInPlace (now supports mlpack data models)
 
-An OpenVR client and driver that tracks real-time device tracking data and applies virtual movement using linear analysis, using armadillo libraries, of recorded mlpack data models.
+An OpenVR client and driver that tracks real-time device tracking data and applies virtual movement using linear analysis of mlpack data models with armadillo libraries.
 
 As long as the real-time tracking sample is accurately represented in the recorded model, virtual input will be applied. Scale of input can be customized.
 
@@ -134,6 +134,24 @@ If you want to update a profile with new settings you need to select the profile
 
 If you name a profile with the name "default" it will be the initially loaded profile once you start SteamVR. If you dont want to automatically enable walk in place locomotion on startup save the default profile with "enableWIP" unchecked.
 
+
+### Other settings
+You can modify the size and length of the real-time samples to shorten or lengthen the needed data to either start or stop movement
+you have to edit the ini file found at `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace.ini` and add any of the following variables  
+*Before changing these try to understand how changing these affects the matching decision for starting and stopping movement
+A quick summary is the start sample is used before any movement has been applied, ie. the first step
+The ongoing sample size is for when your movement has fit the model previously the following samples require less data
+The max sample size is just the limit before data points are removed from the sample*
+```
+maxHMDSampleSize=16
+startHMDSampleSize=12
+ongoingHMDSampleSize=4
+maxTRKRSampleSize=19
+startTRKRSampleSize=14
+ongoingTRKRSampleSize=8
+maxCNTRLSampleSize=12
+ongoingCNTRLSampleSize=10
+```
 ## Graph Page
 The graph page will show you realtime values from the HMD, controllers and trackers.
 If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.

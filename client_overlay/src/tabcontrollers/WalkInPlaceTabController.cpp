@@ -50,7 +50,6 @@ namespace walkinplace {
 						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
 							if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
 								hmdID = info->openvrId;
-								info->isTracked = true;
 							}
 						}
 						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
@@ -139,7 +138,6 @@ namespace walkinplace {
 							if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
 								if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
 									hmdID = info->openvrId;
-									info->isTracked = true;
 								}
 							}
 						}
@@ -155,25 +153,25 @@ namespace walkinplace {
 							if (controller1ID == vr::k_unTrackedDeviceIndexInvalid && p->cntrl1Idx >= 0) {
 								if (dev->deviceClass == p->cntrl1Type && cntrlIdx == p->cntrl1Idx) {
 									controller1ID = dev->openvrId;
-									dev->isTracked = true;
+									dev->isTrackedAsCNTRL = true;
 								}
 							}
 							else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && p->cntrl2Idx >= 0) {
 								if (dev->deviceClass == p->cntrl2Type && cntrlIdx == p->cntrl2Idx) {
 									controller2ID = dev->openvrId;
-									dev->isTracked = true;
+									dev->isTrackedAsCNTRL = true;
 								}
 							}
 							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid && p->trkr1Idx >= 0) {
-								if (dev->deviceClass == p->trkr1Type && cntrlIdx == p->trkr1Idx) {
+								if (dev->deviceClass == p->trkr1Type && trkrIdx == p->trkr1Idx) {
 									tracker1ID = dev->openvrId;
-									dev->isTracked = true;
+									dev->isTrackedAsTRKR = true;
 								}
 							}
 							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && p->trkr2Idx >= 0) {
-								if (dev->deviceClass == p->trkr2Type && cntrlIdx == p->trkr2Idx) {
+								if (dev->deviceClass == p->trkr2Type && trkrIdx == p->trkr2Idx) {
 									tracker2ID = dev->openvrId;
-									dev->isTracked = true;
+									dev->isTrackedAsTRKR = true;
 								}
 							}
 							if (dev->deviceClass == p->cntrl1Type || dev->deviceClass == p->cntrl2Type) {
@@ -185,7 +183,6 @@ namespace walkinplace {
 						}
 						else {
 							ovrwipCNTRLID = dev->openvrId;
-							dev->isTracked = false;
 						}
 					}
 					else {
@@ -193,26 +190,25 @@ namespace walkinplace {
 							if (dev->serial.find("ovrwip") == std::string::npos) {
 								if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
 									controller1ID = dev->openvrId;
-									dev->isTracked = true;
+									dev->isTrackedAsCNTRL = true;
 								}
 								else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && dev->openvrId != controller1ID) {
 									controller2ID = dev->openvrId;
-									dev->isTracked = true;
+									dev->isTrackedAsCNTRL = true;
 								}
 							}
 							else {
 								ovrwipCNTRLID = dev->openvrId;
-								dev->isTracked = false;
 							}
 						}
-						else if (useTrackers && dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
+						else if (dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
 							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
 								tracker1ID = dev->openvrId;
-								dev->isTracked = true;
+								//dev->isTrackedAsTRKR = true;
 							}
 							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && dev->openvrId != tracker1ID) {
 								tracker2ID = dev->openvrId;
-								dev->isTracked = true;
+								//dev->isTrackedAsTRKR = true;
 							}
 						}
 					}
@@ -345,10 +341,9 @@ namespace walkinplace {
 				hmdMaxZVel = arma::abs(dataModel.row(HMD_Z_VEL_IDX)).max();
 				modelCNTRL1 = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
 				modelCNTRL2 = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
-				minHMDPeakVal = findMinPeakMN(reqSNHMD, dataModel.row(HMD_Y_VEL_IDX));
-				minTRKRPeakVal = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR1_Y_VEL_IDX));
-				float temp = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR2_Y_VEL_IDX));
-				minTRKRPeakVal = temp < minTRKRPeakVal ? temp : minTRKRPeakVal;
+				minHMDPeakVal = findMinPeakMN(reqSNHMD, dataModel.row(HMD_Y_VEL_IDX), 0.001);
+				minTRKRPeakVal = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR1_Y_VEL_IDX), 0.05);
+				float temp = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR2_Y_VEL_IDX), 0.05);
 				/*
 				mKAVGCNTRL.clear();
 				mKAVGCNTRL.insert_rows(0, 2);
@@ -786,6 +781,14 @@ namespace walkinplace {
 	void WalkInPlaceTabController::reloadSettings() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("walkInPlaceSettings");
+		maxSNHMD = settings->value("maxHMDSampleSize", 16).toInt();
+		startSNHMD = settings->value("startHMDSampleSize", 12).toInt();
+		reqSNHMD = settings->value("ongoingHMDSampleSize", 4).toInt();
+		maxSNTRKR = settings->value("maxTRKRSampleSize", 19).toInt();
+		startSNTRKR = settings->value("startTRKRSampleSize", 14).toInt();
+		reqSNTRKR = settings->value("ongoingTRKRSampleSize", 8).toInt();
+		maxSNCNTRL = settings->value("maxCNTRLSampleSize", 12).toInt();
+		reqSNCNTRL = settings->value("ongoingCNTRLSampleSize", 10).toInt();
 		settings->endGroup();
 	}
 
@@ -1056,7 +1059,21 @@ namespace walkinplace {
 	}
 
 	bool WalkInPlaceTabController::getDeviceEnabled(int devClass, int devIdx, int mode) {
-		if (currentProfileIdx >= 0 && currentProfileIdx < walkInPlaceProfiles.size()) {
+		int classIdx = 0;
+		for (auto d : deviceInfos) {
+			if (d->deviceClass == devClass) {
+				if (classIdx == devIdx) {
+					if ( mode == 0 ) {
+						return d->isTrackedAsCNTRL;
+					}
+					else if ( mode == 1) {
+						return d->isTrackedAsTRKR;
+					}
+				}
+				classIdx++;
+			}
+		}
+		/*if (currentProfileIdx >= 0 && currentProfileIdx < walkInPlaceProfiles.size()) {
 			WalkInPlaceProfile* profile = &walkInPlaceProfiles[currentProfileIdx];
 			if (mode == 0 && ((profile->cntrl1Idx < 0 && devIdx == 0) || (profile->cntrl2Idx < 0 && devIdx == 1))) {
 				return true;
@@ -1070,7 +1087,7 @@ namespace walkinplace {
 		}
 		else if ((mode == 0 && (devIdx == 0 || devIdx == 1))) {
 			return true;
-		}
+		}*/
 		return false;
 	}
 
@@ -1113,24 +1130,24 @@ namespace walkinplace {
 						if (enable) {
 							if (controller1ID == vr::k_unTrackedDeviceIndexInvalid) {
 								controller1ID = dev->openvrId;
-								dev->isTracked = true;
+								dev->isTrackedAsCNTRL = true;
 								foundDevIdx = idx;
 							}
 							else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid) {
 								controller2ID = dev->openvrId;
-								dev->isTracked = true;
+								dev->isTrackedAsCNTRL = true;
 								foundDevIdx = idx;
 							}
 						}
 						else if (!enable) {
 							if (controller1ID == dev->openvrId) {
 								controller1ID = vr::k_unTrackedDeviceIndexInvalid;
-								dev->isTracked = false;
+								dev->isTrackedAsCNTRL = false;
 								foundDevIdx = idx;
 							}
 							if (controller2ID == dev->openvrId) {
 								controller2ID = vr::k_unTrackedDeviceIndexInvalid;
-								dev->isTracked = false;
+								dev->isTrackedAsCNTRL = false;
 								foundDevIdx = idx;
 							}
 						}
@@ -1139,29 +1156,29 @@ namespace walkinplace {
 						if (enable) {
 							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
 								tracker1ID = dev->openvrId;
-								dev->isTracked = true;
+								dev->isTrackedAsTRKR = true;
 								foundDevIdx = idx;
 							}
 							else if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid) {
 								tracker2ID = dev->openvrId;
-								dev->isTracked = true;
+								dev->isTrackedAsTRKR = true;
 								foundDevIdx = idx;
 							}
 						}
 						else if (!enable) {
 							if (tracker1ID == dev->openvrId) {
 								tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
-								dev->isTracked = false;
+								dev->isTrackedAsTRKR = false;
 								foundDevIdx = idx;
 								if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 									tracker1ID = tracker2ID;
-									dev->isTracked = true;
+									dev->isTrackedAsTRKR = true;
 									tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 								}
 							}
 							if (tracker2ID == dev->openvrId) {
 								tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
-								dev->isTracked = false;
+								dev->isTrackedAsTRKR = false;
 								foundDevIdx = idx;
 							}
 						}
@@ -1472,7 +1489,7 @@ namespace walkinplace {
 								arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
 								arma::rowvec sN = arma::abs(trkrSample.row(0));
 								arma::rowvec lastSN = sN.tail_cols(sNk);
-								if (lastSN.max() < minTRKRPeakVal) {
+								if (arma::sum(lastSN) < trkrVariance) {
 									stopMovement();
 									lastValidTRKRSampleMKi = 0;
 								}
@@ -1481,7 +1498,7 @@ namespace walkinplace {
 									if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 										sN = arma::abs(trkrSample.row(1)); // trkr 2
 										lastSN = sN.tail_cols(sNk);
-										if (lastSN.max() < minTRKRPeakVal) {
+										if (arma::sum(lastSN) < trkrVariance) {
 											stopMovement();
 											lastValidTRKRSampleMKi = 0;
 										}
@@ -1718,7 +1735,7 @@ namespace walkinplace {
 		return mS;
 	}
 
-	float WalkInPlaceTabController::findMinPeakMN(int starERR, arma::rowvec mN) {
+	float WalkInPlaceTabController::findMinPeakMN(int starERR, arma::rowvec mN, float lowRange) {
 		float min = 9999;
 		float lastPeak = 0;
 		int lastV = mN(starERR) < 0 ? -1 : 1;
@@ -1726,7 +1743,7 @@ namespace walkinplace {
 			int curV = mN(mi) < 0 ? -1 : 1;
 			float mV = std::abs(mN(mi));
 			lastPeak = mV > lastPeak ? mV : lastPeak;
-			if (mi > starERR && lastV != curV ) {
+			if (mi > starERR && lastV != curV && lastPeak > lowRange) {
 				min = lastPeak < min ? lastPeak : min;
 				lastPeak = 0;
 			}

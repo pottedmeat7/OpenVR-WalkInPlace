@@ -177,7 +177,7 @@ MyStackViewPage {
                             Layout.preferredWidth: 220
                             Layout.fillWidth: true
                             onCheckedChanged: {
-                                WalkInPlaceTabController.enableDevice(2, 0,checked,0)
+                                WalkInPlaceTabController.enableDevice(2, 0, checked,0)
                             }
                         }
 

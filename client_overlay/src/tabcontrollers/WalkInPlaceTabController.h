@@ -60,7 +60,8 @@ namespace walkinplace {
 		uint32_t renderModelIndex = 0;
 		vr::VROverlayHandle_t renderModelOverlay = vr::k_ulOverlayHandleInvalid;
 		std::string renderModelOverlayName;
-		bool isTracked = false;
+		bool isTrackedAsCNTRL = false;
+		bool isTrackedAsTRKR = false;
 	};
 
 
@@ -147,11 +148,11 @@ namespace walkinplace {
 
 		int maxSNHMD = 16;
 		int startSNHMD = 12;
-		int reqSNHMD = 6;
+		int reqSNHMD = 4;
 		int stopSNHMD = 4;
-		int maxSNTRKR = 31;
-		int startSNTRKR = 12;
-		int reqSNTRKR = 10;
+		int maxSNTRKR = 19;
+		int startSNTRKR = 14;
+		int reqSNTRKR = 8;
 		int stopSNTRKR = 5;
 		int maxSNCNTRL = 12;
 		int reqSNCNTRL = 10;
@@ -201,7 +202,7 @@ namespace walkinplace {
 		std::pair<float, int> computeSNDeltaOffset(arma::mat sN, arma::mat mN);
 		std::pair<int, int> computeSNDV(arma::mat sN, arma::mat mN);
 		int findMNIdxGTS(float s, arma::mat mN);
-		float findMinPeakMN(int startERR, arma::rowvec mN);
+		float findMinPeakMN(int startERR, arma::rowvec mN, float lowRange);
 
 		void loadDataModel();
 		void clearSamplesAndModel();
