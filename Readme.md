@@ -125,8 +125,8 @@ If you have more then 1 trackers, you can select another combination of 1-2 trac
 ### tracker selection for feet
 If you have more then 1 trackers, you can select another combination of 1-2 trackers to be used as the 1-2 tracked feet.
 
-[//]: # ### Direction devices - work in progress
-[//]: # This will allow customization of direction of movement using any of the devices. Just as many games use the controller as the direction device, although some use the HMD direction. 
+//# ### Direction devices - work in progress
+//# This will allow customization of direction of movement using any of the devices. Just as many games use the controller as the direction device, although some use the HMD direction. 
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
@@ -137,20 +137,31 @@ If you name a profile with the name "default" it will be the initially loaded pr
 
 ### Other settings
 You can modify the size and length of the real-time samples to shorten or lengthen the needed data to either start or stop movement
-you have to edit the ini file found at `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace.ini` and add any of the following variables  
+you have to edit the ini file found at `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace.ini` and add any of the following variables to any profile you'd like with the standard syntax of profiles in the file
 *Before changing these try to understand how changing these affects the matching decision for starting and stopping movement
 A quick summary is the start sample is used before any movement has been applied, ie. the first step
 The ongoing sample size is for when your movement has fit the model previously the following samples require less data
 The max sample size is just the limit before data points are removed from the sample*
 ```
-maxHMDSampleSize=16
-startHMDSampleSize=12
-ongoingHMDSampleSize=4
-maxTRKRSampleSize=19
-startTRKRSampleSize=14
-ongoingTRKRSampleSize=8
-maxCNTRLSampleSize=12
-ongoingCNTRLSampleSize=10
+walkInPlaceProfiles\<profile_index>\maxHMDSampleSize=16
+walkInPlaceProfiles\<profile_index>\startHMDSampleSize=12
+walkInPlaceProfiles\<profile_index>\ongoingHMDSampleSize=4
+walkInPlaceProfiles\<profile_index>\maxTRKRSampleSize=19
+walkInPlaceProfiles\<profile_index>\startTRKRSampleSize=14
+walkInPlaceProfiles\<profile_index>\ongoingTRKRSampleSize=8
+walkInPlaceProfiles\<profile_index>\maxCNTRLSampleSize=12
+walkInPlaceProfiles\<profile_index>\ongoingCNTRLSampleSize=10
+```
+You can change the needed accuracy of the matching algorithms by changing the following variables
+*The velocity variance changes are pretty straight forward as the velocity is what is graphed in the model and the real-time samples. Changing the variance just sets the error allowed for each data point*
+```
+walkInPlaceProfiles\<profile_index>\hmdVelVariance=0.07
+walkInPlaceProfiles\<profile_index>\trkrVelVariance=0.07
+walkInPlaceProfiles\<profile_index>\cntrlVelVariance=0.07
+```
+*This value is the value that checks the direction of the acceleration ie. up or down (this is what forms the wave like pattern in the tracking data). This value is the percentage of data points that the sample needs to match the model, ie. 75% (0.75) of the ups and downs of the sample wave need to match at any point of the model, and be within the velocity variance.
+```
+walkInPlaceProfiles\<profile_index>\hmdAccelPercentAccurate=0.75
 ```
 ## Graph Page
 The graph page will show you realtime values from the HMD, controllers and trackers.

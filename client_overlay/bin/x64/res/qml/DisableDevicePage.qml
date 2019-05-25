@@ -9,6 +9,10 @@ MyStackViewPage {
     name: "disableDevicePage"
     property var initialLoaded: false
 
+    property var startTimer: function() {
+        updateInfo()
+    }
+
     function updateInfo() {  
         hmd1.checked = WalkInPlaceTabController.getDisableHMD()
         hmd2.checked = WalkInPlaceTabController.getTrackHMDRot()

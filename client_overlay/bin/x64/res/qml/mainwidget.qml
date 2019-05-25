@@ -39,10 +39,6 @@ Rectangle {
         	currentItem.stopTimer()
         }
 
-        function updateDeviceInfo() {
-            disableDevicePage.updateInfo()
-        }
-
         function completeTraining() {
         	mainConfPage.completeTraining()
         }

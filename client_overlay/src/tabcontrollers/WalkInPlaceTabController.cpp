@@ -115,7 +115,7 @@ namespace walkinplace {
 			settingsUpdateCounter = 0;
 			if (hmdID == vr::k_unTrackedDeviceIndexInvalid ||
 				(controller1ID == vr::k_unTrackedDeviceIndexInvalid || controller2ID == vr::k_unTrackedDeviceIndexInvalid) ||
-				(useTrackers && (tracker1ID == vr::k_unTrackedDeviceIndexInvalid || tracker2ID == vr::k_unTrackedDeviceIndexInvalid))) {
+				(tracker1ID == vr::k_unTrackedDeviceIndexInvalid || tracker2ID == vr::k_unTrackedDeviceIndexInvalid)) {
 				bool newDeviceAdded = false;
 				for (uint32_t id = maxValidDeviceId + 1; id < vr::k_unMaxTrackedDeviceCount; ++id) {
 					auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(id);
@@ -781,14 +781,6 @@ namespace walkinplace {
 	void WalkInPlaceTabController::reloadSettings() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("walkInPlaceSettings");
-		maxSNHMD = settings->value("maxHMDSampleSize", 16).toInt();
-		startSNHMD = settings->value("startHMDSampleSize", 12).toInt();
-		reqSNHMD = settings->value("ongoingHMDSampleSize", 4).toInt();
-		maxSNTRKR = settings->value("maxTRKRSampleSize", 19).toInt();
-		startSNTRKR = settings->value("startTRKRSampleSize", 14).toInt();
-		reqSNTRKR = settings->value("ongoingTRKRSampleSize", 8).toInt();
-		maxSNCNTRL = settings->value("maxCNTRLSampleSize", 12).toInt();
-		reqSNCNTRL = settings->value("ongoingCNTRLSampleSize", 10).toInt();
 		settings->endGroup();
 	}
 
@@ -802,7 +794,7 @@ namespace walkinplace {
 			walkInPlaceProfiles.emplace_back();
 			auto& entry = walkInPlaceProfiles[i];
 			entry.profileName = settings->value("profileName").toString().toStdString();
-			entry.modelFile = settings->value("modelFile", QString((model_file_name + model_file_type).c_str())).toString().toStdString();
+			entry.modelFile = settings->value("modelFile", QString((model_file_name).c_str())).toString().toStdString();
 			entry.wipEnabled = settings->value("wipEnabled", false).toBool();
 			entry.gameType = settings->value("gameType", 0).toInt();
 			entry.hmdType = settings->value("hmdType", 0).toInt();
@@ -900,6 +892,7 @@ namespace walkinplace {
 		}
 		profile->profileName = name.toStdString();
 		profile->wipEnabled = isWIPEnabled();
+		profile->modelFile = (model_file_name);
 		profile->gameType = gameType;
 		profile->hmdType = hmdType;
 		profile->buttonControlSelect = buttonControlSelect;
@@ -912,7 +905,7 @@ namespace walkinplace {
 		profile->maxTouch = maxTouch;
 		profile->buttonEnables = buttonEnables;
 		int cntrlIdx = 0;
-		int trkrIdx = 0; 
+		int trkrIdx = 0;
 		bool cntrl1Saved = false;
 		bool trkr1Saved = false;
 		for (int i = 0; i < 4; i++) {
@@ -992,22 +985,79 @@ namespace walkinplace {
 			setMidTouch(profile.midTouch);
 			setMaxTouch(profile.maxTouch);
 
+			enableDevice(2, 0, false, 0);
+			enableDevice(2, 1, false, 0);
+			enableDevice(2, 2, false, 0);
+			enableDevice(2, 3, false, 0);
+			enableDevice(3, 0, false, 0);
+			enableDevice(3, 1, false, 0);
+			enableDevice(3, 2, false, 0);
+			enableDevice(3, 3, false, 0);
+			enableDevice(2, 0, false, 1);
+			enableDevice(2, 1, false, 1);
+			enableDevice(2, 3, false, 1);
+			enableDevice(2, 4, false, 1);
+			enableDevice(3, 0, false, 1);
+			enableDevice(3, 1, false, 1);
+			enableDevice(3, 3, false, 1);
+			enableDevice(3, 4, false, 1);
 			if (profile.cntrl1Idx >= 0) {
 				controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 				enableDevice(profile.cntrl1Type, profile.cntrl1Idx, true, 0);
+				if (profile.cntrl2Idx >= 0) {
+					controller2ID = vr::k_unTrackedDeviceIndexInvalid;
+					enableDevice(profile.cntrl2Type, profile.cntrl2Idx, true, 0);
+				}
+				else {
+					controller2ID = vr::k_unTrackedDeviceIndexInvalid;
+				}
 			}
-			if (profile.cntrl2Idx >= 0) {
-				controller2ID = vr::k_unTrackedDeviceIndexInvalid;
-				enableDevice(profile.cntrl2Type, profile.cntrl2Idx, true, 0);
+			else {
+				controller1ID = vr::k_unTrackedDeviceIndexInvalid;
+				//enableDevice(profile.cntrl1Type, profile.cntrl1Idx, false, 0);
 			}
 			if (profile.trkr1Idx >= 0) {
 				tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
-				enableDevice(profile.trkr1Type, profile.trkr1Idx, true, 0);
+				enableDevice(profile.trkr1Type, profile.trkr1Idx, true, 1);
+				if (profile.trkr2Idx >= 0) {
+					tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
+					enableDevice(profile.trkr2Type, profile.trkr2Idx, true, 1);
+				}
+				else {
+					tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
+				}
 			}
-			if (profile.trkr2Idx >= 0) {
+			else {
+				tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
 				tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
-				enableDevice(profile.trkr2Type, profile.trkr2Idx, true, 0);
 			}
+
+			auto settings = OverlayController::appSettings();
+			settings->beginGroup("walkInPlaceSettings");
+			settings->beginWriteArray("walkInPlaceProfiles");
+			unsigned i = 0;
+			for (auto& p : walkInPlaceProfiles) {
+				settings->setArrayIndex(i);
+				if (index == i) {
+					maxSNHMD = settings->value("maxHMDSampleSize", 16).toInt();
+					startSNHMD = settings->value("startHMDSampleSize", 12).toInt();
+					reqSNHMD = settings->value("ongoingHMDSampleSize", 4).toInt();
+					maxSNTRKR = settings->value("maxTRKRSampleSize", 19).toInt();
+					startSNTRKR = settings->value("startTRKRSampleSize", 14).toInt();
+					reqSNTRKR = settings->value("ongoingTRKRSampleSize", 8).toInt();
+					maxSNCNTRL = settings->value("maxCNTRLSampleSize", 12).toInt();
+					reqSNCNTRL = settings->value("ongoingCNTRLSampleSize", 10).toInt();
+					hmdVelVariance = settings->value("hmdVelVariance", 0.07).toFloat();
+					hmdMinDVPerSN = settings->value("hmdAccelPercentAccurate", 0.75).toFloat();
+					trkrVariance = settings->value("trkrVelVariance", 0.07).toFloat();
+					cntrlVariance = settings->value("cntrlVelVariance", 0.07).toFloat();
+				}
+			}
+			settings->endArray();
+			settings->endGroup();
+			settings->sync();
+
+			applyDataModel(QString::fromStdString(profile.modelFile));
 		}
 	}
 
@@ -1063,10 +1113,10 @@ namespace walkinplace {
 		for (auto d : deviceInfos) {
 			if (d->deviceClass == devClass) {
 				if (classIdx == devIdx) {
-					if ( mode == 0 ) {
+					if (mode == 0) {
 						return d->isTrackedAsCNTRL;
 					}
-					else if ( mode == 1) {
+					else if (mode == 1) {
 						return d->isTrackedAsTRKR;
 					}
 				}
@@ -1489,7 +1539,7 @@ namespace walkinplace {
 								arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
 								arma::rowvec sN = arma::abs(trkrSample.row(0));
 								arma::rowvec lastSN = sN.tail_cols(sNk);
-								if (arma::sum(lastSN) < trkrVariance) {
+								if (!trackHMDVel && arma::sum(lastSN) < trkrVariance) {
 									stopMovement();
 									lastValidTRKRSampleMKi = 0;
 								}
@@ -1498,7 +1548,7 @@ namespace walkinplace {
 									if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 										sN = arma::abs(trkrSample.row(1)); // trkr 2
 										lastSN = sN.tail_cols(sNk);
-										if (arma::sum(lastSN) < trkrVariance) {
+										if (!trackHMDVel && arma::sum(lastSN) < trkrVariance) {
 											stopMovement();
 											lastValidTRKRSampleMKi = 0;
 										}
@@ -1739,7 +1789,7 @@ namespace walkinplace {
 		float min = 9999;
 		float lastPeak = 0;
 		int lastV = mN(starERR) < 0 ? -1 : 1;
-		for (int mi = starERR; mi < mN.n_cols-4; mi++) {
+		for (int mi = starERR; mi < mN.n_cols - 4; mi++) {
 			int curV = mN(mi) < 0 ? -1 : 1;
 			float mV = std::abs(mN(mi));
 			lastPeak = mV > lastPeak ? mV : lastPeak;

@@ -16,7 +16,6 @@ MyMainViewPage {
         buttonMode.currentIndex = WalkInPlaceTabController.getButtonEnables() ? 1 : 0
         accuracyButtonDialog.currentIndex = WalkInPlaceTabController.getDisableButton()
         buttonControlSelect.currentIndex = WalkInPlaceTabController.getButtonControlSelect()
-        mainView.updateDeviceInfo()
     }
 
     content: ColumnLayout {
@@ -300,6 +299,7 @@ MyMainViewPage {
                             text: " --> Tracked Devices Page"
                             onClicked: {
                                 var res = mainView.push(disableDevicePage)
+                                mainView.startTimer()
                             }
                         }
 
@@ -573,8 +573,8 @@ MyMainViewPage {
     MyDialogOkCancelPopup {
         id: deleteProfileDialog
         property int profileIndex: -1
-        dialogTitle: "Delete Data Model"
-        dialogText: "Do you really want to delete this data model?"
+        dialogTitle: "Delete Profile?"
+        dialogText: "Do you really want to delete this profile?"
         onClosed: {
             if (okClicked) {
                 WalkInPlaceTabController.deleteProfile(profileIndex)

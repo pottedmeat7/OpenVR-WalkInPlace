@@ -146,7 +146,7 @@ MyStackViewPage {
                             mainView.stopTimer()
                             stopTimer()
                             resetGraph()
-                            autoConfMode = -1
+                            autoConfMode = -2
                             sampleTime = 0
                             autoConfigPopup.setTitle("Walking Pace Config")
                             autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
@@ -643,7 +643,7 @@ MyStackViewPage {
                         } else if ( autoConfMode == 4 ) {
                             stopTimer()
                             resetGraph()
-                            autoConfMode = -1
+                            autoConfMode = -2
                             sampleTime = 0
                             autoConfigPopup.setTitle("Walking Pace Config")
                             autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
@@ -677,7 +677,7 @@ MyStackViewPage {
             }
             if (cancelClicked || autoConfMode < 0 ) {
                 resetGraph()
-                autoConfMode = -1
+                autoConfMode = -2
                 dialogTitle = "Walking Pace Config"
                 dialogText = "Begin Walking (slowest pace) IN PLACE in:"
                 dialogTO = 5
@@ -718,7 +718,7 @@ MyStackViewPage {
             } else {
                 stopTimer()
                 resetGraph()
-                autoConfMode = -1
+                autoConfMode = -2
                 sampleTime = 0
                 autoConfigPopup.setTitle("Walking Pace Config")
                 autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
