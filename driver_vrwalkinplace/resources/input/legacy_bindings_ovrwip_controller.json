@@ -53,15 +53,15 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/legacy/in/left_axis2_press"
+                     "output" : "/actions/legacy/in/left_axis0_press"
                   },
                   "position" : {
-                     "output" : "/actions/legacy/in/left_axis2_value"
+                     "output" : "/actions/legacy/in/left_axis0_value"
                   },
                   "touch" : {
-                     "output" : "/actions/legacy/in/left_axis2_touch"
+                     "output" : "/actions/legacy/in/left_axis0_touch"
                   }
-               },             
+               },
                "mode" : "joystick",
                "path" : "/user/treadmill/input/joystick"
             }

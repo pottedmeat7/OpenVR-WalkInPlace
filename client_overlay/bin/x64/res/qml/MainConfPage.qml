@@ -110,10 +110,10 @@ MyMainViewPage {
                         Layout.preferredWidth: 400
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)","hold grip","Keyboard (WASD)","Keyboard (Arrows)"]
+                        model: ["touchpad (click sprint)", "touchpad", "touchpad (pressed)","thumbstick (click sprint)", "thumbstick", "thumbstick (pressed)","hold grip","Keyboard (WASD)","Keyboard (Arrows)"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
-                                WalkInPlaceTabController.setGameStepType(currentIndex)                            
+                                WalkInPlaceTabController.setGameType(currentIndex)                            
                             } 
                         }
                     }
@@ -578,6 +578,7 @@ MyMainViewPage {
         onClosed: {
             if (okClicked) {
                 WalkInPlaceTabController.deleteProfile(profileIndex)
+                reloadProfiles()
             }
         }
     }
@@ -628,8 +629,8 @@ MyMainViewPage {
         var temp = WalkInPlaceTabController.getDataModelNames()
         for (var i = 0; i < temp.length; i++) {
             dataModels.push(temp[i].replace(".csv",""))
-            if ( dataModels[i] == "default" ) {
-                defaultFound = i
+            if ( dataModels[dataModels.length-1] == "default" ) {
+                defaultFound = dataModels.length-1
             }
         }
         dataModelComboBox.model = dataModels

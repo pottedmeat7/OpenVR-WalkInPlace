@@ -45,7 +45,10 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 		throw std::runtime_error(std::string("Failed to initialize OpenVR: ") + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError)));
 	}
 
-	m_runtimePathUrl = QUrl::fromLocalFile(vr::VR_RuntimePath());
+	static char rchBuffer[1024];
+	uint32_t unRequiredSize;
+	std::cout << vr::VR_GetRuntimePath(rchBuffer, sizeof(rchBuffer), &unRequiredSize);
+	m_runtimePathUrl = QUrl::fromLocalFile(rchBuffer);
 	LOG(INFO) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
 	// Check whether OpenVR is too outdated

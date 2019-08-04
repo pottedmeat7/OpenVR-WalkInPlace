@@ -19,6 +19,21 @@ namespace walkinplace {
 
 	// forward declaration
 	class OverlayController;
+	 
+	enum InputType {
+		touchpad = 0,
+		joystick = 1,
+		grip = 2,
+		keyWASD = 3,
+		keyArrow = 4
+	};
+
+	struct GameType {
+		InputType inputType;
+		bool useClick = true;
+		bool alwaysHeld = false;
+		bool useAxis = true;
+	};
 
 	struct greater
 	{
@@ -78,8 +93,6 @@ namespace walkinplace {
 
 		std::thread identifyThread;
 
-		unsigned settingsUpdateCounter = 0;
-
 		std::vector<WalkInPlaceProfile> walkInPlaceProfiles;
 
 		vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
@@ -105,9 +118,10 @@ namespace walkinplace {
 
 		bool wipEnabled = false;
 		bool validSample = false;
+		bool hasTwoControllers = false;
+		bool initializedProfile = false;
 		bool initializedDriver = false;
 		bool initializedDataModel = false;
-		bool initializedModelSpace = false;
 		bool dataTrainingRequired = false;
 		bool identifyControlTimerSet = true;
 
@@ -123,7 +137,7 @@ namespace walkinplace {
 		bool pressedFlag = false;
 		bool inputStateChanged = false;
 
-		int gameType = 0;
+		std::shared_ptr <GameType> gameType;
 		int hmdType = 0;
 		int buttonControlSelect = 0;
 		int controlSelectOverlayHandle = -1;
@@ -159,7 +173,6 @@ namespace walkinplace {
 
 		uint64_t controller1ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t controller2ID = vr::k_unTrackedDeviceIndexInvalid;
-		uint64_t controlUsedID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t hmdID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t tracker1ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
@@ -261,7 +274,7 @@ namespace walkinplace {
 		void setMinTouch(float value);
 		void setMidTouch(float value);
 		void setMaxTouch(float value);
-		void setGameStepType(int gameType);
+		void setGameType(int gameType);
 		void setHMDType(int gameType);
 		void setButtonControlSelect(int control);
 		void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);

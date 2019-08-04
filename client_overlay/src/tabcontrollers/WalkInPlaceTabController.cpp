@@ -22,45 +22,14 @@ namespace walkinplace {
 	void WalkInPlaceTabController::initStage1() {
 		reloadProfiles();
 		reloadSettings();
+		gameType = std::make_shared <GameType>();
+		gameType->inputType = InputType::touchpad;
 	}
 
 
 	void WalkInPlaceTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
 		this->parent = parent;
 		this->widget = widget;
-		try {
-			for (uint32_t id = 0; id < vr::k_unMaxTrackedDeviceCount; ++id) {
-				auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(id);
-				if (deviceClass != vr::TrackedDeviceClass_Invalid) {
-					if (deviceClass == vr::TrackedDeviceClass_HMD || deviceClass == vr::TrackedDeviceClass_Controller || deviceClass == vr::TrackedDeviceClass_GenericTracker) {
-						auto info = std::make_shared<DeviceInfo>();
-						info->openvrId = id;
-						info->deviceClass = deviceClass;
-						char buffer[vr::k_unMaxPropertyStringSize];
-						vr::ETrackedPropertyError pError = vr::TrackedProp_Success;
-						vr::VRSystem()->GetStringTrackedDeviceProperty(id, vr::Prop_SerialNumber_String, buffer, vr::k_unMaxPropertyStringSize, &pError);
-						if (pError == vr::TrackedProp_Success) {
-							info->serial = std::string(buffer);
-						}
-						else {
-							info->serial = std::string("<unknown serial>");
-							LOG(ERROR) << "Could not get serial of device " << id;
-						}
-						deviceInfos.push_back(info);
-						if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_HMD) {
-							if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
-								hmdID = info->openvrId;
-							}
-						}
-						LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
-					}
-					maxValidDeviceId = id;
-				}
-			}
-		}
-		catch (const std::exception& e) {
-			LOG(ERROR) << "Could not connect to driver component: " << e.what();
-		}
 	}
 
 
@@ -72,7 +41,7 @@ namespace walkinplace {
 		}
 		else if (wipEnabled) {
 			if (!initializedDriver) {
-				if (controller2ID != vr::k_unTrackedDeviceIndexInvalid && controller1ID != vr::k_unTrackedDeviceIndexInvalid) {
+				if (hasTwoControllers) {
 					try {
 						vrwalkinplace::VRWalkInPlace vrwalkinplace;
 						vrwalkinplace.connect();
@@ -111,13 +80,12 @@ namespace walkinplace {
 				setDeviceRenderModel(controlSelectOverlayHandle, 0, 1, 1, 1, 1, 1, 1);
 			}
 		}
-		if (settingsUpdateCounter >= 45) {
-			settingsUpdateCounter = 0;
+		if (!initializedDriver || !wipEnabled) {
 			if (hmdID == vr::k_unTrackedDeviceIndexInvalid ||
 				(controller1ID == vr::k_unTrackedDeviceIndexInvalid || controller2ID == vr::k_unTrackedDeviceIndexInvalid) ||
 				(tracker1ID == vr::k_unTrackedDeviceIndexInvalid || tracker2ID == vr::k_unTrackedDeviceIndexInvalid)) {
 				bool newDeviceAdded = false;
-				for (uint32_t id = maxValidDeviceId + 1; id < vr::k_unMaxTrackedDeviceCount; ++id) {
+				for (uint32_t id = maxValidDeviceId; id < vr::k_unMaxTrackedDeviceCount; id++) {
 					auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(id);
 					if (deviceClass != vr::TrackedDeviceClass_Invalid) {
 						if (deviceClass == vr::TrackedDeviceClass_HMD || deviceClass == vr::TrackedDeviceClass_Controller || deviceClass == vr::TrackedDeviceClass_GenericTracker) {
@@ -140,13 +108,21 @@ namespace walkinplace {
 									hmdID = info->openvrId;
 								}
 							}
+							LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
 						}
-						maxValidDeviceId = id;
+						maxValidDeviceId = id + 1;
 					}
 				}
 				int cntrlIdx = 0;
 				int trkrIdx = 0;
+				int cntrlCount = 0;
 				for (auto dev : deviceInfos) {
+					if (dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
+						cntrlCount++;
+						if (cntrlCount >= 2) {
+							hasTwoControllers = true;
+						}
+					}
 					if (currentProfileIdx >= 0 && currentProfileIdx < walkInPlaceProfiles.size()) {
 						if (dev->serial.find("ovrwip") == std::string::npos) {
 							auto p = &walkInPlaceProfiles[currentProfileIdx];
@@ -193,8 +169,10 @@ namespace walkinplace {
 									dev->isTrackedAsCNTRL = true;
 								}
 								else if (controller2ID == vr::k_unTrackedDeviceIndexInvalid && dev->openvrId != controller1ID) {
-									controller2ID = dev->openvrId;
-									dev->isTrackedAsCNTRL = true;
+									if (!initializedProfile) {
+										controller2ID = dev->openvrId;
+										dev->isTrackedAsCNTRL = true;
+									}
 								}
 							}
 							else {
@@ -214,9 +192,6 @@ namespace walkinplace {
 					}
 				}
 			}
-		}
-		else {
-			settingsUpdateCounter++;
 		}
 	}
 
@@ -267,7 +242,37 @@ namespace walkinplace {
 	}
 
 	int WalkInPlaceTabController::getGameType() {
-		return gameType;
+		if (gameType->inputType == InputType::touchpad) {
+			if (gameType->alwaysHeld) {
+				return 2;
+			}
+			else if (gameType->useClick) {
+				return 0;
+			}
+			else {
+				return 1;
+			}
+		}
+		else if (gameType->inputType == InputType::joystick) {
+			if (gameType->alwaysHeld) {
+				return 5;
+			}
+			else if (gameType->useClick) {
+				return 3;
+			}
+			else {
+				return 4;
+			}
+		}
+		else if (gameType->inputType == InputType::grip) {
+			return 6;
+		}
+		else if (gameType->inputType == InputType::keyWASD) {
+			return 7;
+		}
+		else {
+			return 8;
+		}
 	}
 
 	int WalkInPlaceTabController::getHMDType() {
@@ -807,10 +812,10 @@ namespace walkinplace {
 			entry.minTouch = settings->value("minTouch", 0.25).toFloat();
 			entry.midTouch = settings->value("midTouch", 0.83).toFloat();
 			entry.maxTouch = settings->value("maxTouch", 1).toFloat();
-			entry.cntrl1Idx = settings->value("cntrl1Idx", -1).toInt();
+			entry.cntrl1Idx = settings->value("cntrl1Idx", 0).toInt();
 			entry.cntrl2Idx = settings->value("cntrl2Idx", -1).toInt();
 			entry.trkr1Idx = settings->value("trkr1Idx", -1).toInt();
-			entry.trkr2Idx = settings->value("trkr21Idx", -1).toInt();
+			entry.trkr2Idx = settings->value("trkr2Idx", -1).toInt();
 			entry.cntrl1Type = settings->value("cntrl1Type", vr::TrackedDeviceClass::TrackedDeviceClass_Controller).toInt();
 			entry.cntrl2Type = settings->value("cntrl2Type", vr::TrackedDeviceClass::TrackedDeviceClass_Controller).toInt();
 			entry.trkr1Type = settings->value("trkr1Type", vr::TrackedDeviceClass::TrackedDeviceClass_GenericTracker).toInt();
@@ -893,7 +898,7 @@ namespace walkinplace {
 		profile->profileName = name.toStdString();
 		profile->wipEnabled = isWIPEnabled();
 		profile->modelFile = (model_file_name);
-		profile->gameType = gameType;
+		profile->gameType = getGameType();
 		profile->hmdType = hmdType;
 		profile->buttonControlSelect = buttonControlSelect;
 		profile->useTrackers = useTrackers || !trackHMDVel;
@@ -905,7 +910,7 @@ namespace walkinplace {
 		profile->maxTouch = maxTouch;
 		profile->buttonEnables = buttonEnables;
 		int cntrlIdx = 0;
-		int trkrIdx = 0;
+		int trkrIdx = -1;
 		bool cntrl1Saved = false;
 		bool trkr1Saved = false;
 		for (int i = 0; i < 4; i++) {
@@ -962,7 +967,6 @@ namespace walkinplace {
 		if (index < walkInPlaceProfiles.size()) {
 			currentProfileIdx = index;
 			auto& profile = walkInPlaceProfiles[index];
-			gameType = profile.gameType;
 			hmdType = profile.hmdType;
 			buttonControlSelect = profile.buttonControlSelect;
 			useTrackers = profile.useTrackers || !profile.trackHMDVel;
@@ -974,7 +978,7 @@ namespace walkinplace {
 			buttonEnables = profile.buttonEnables;
 
 			enableWIP(profile.wipEnabled);
-			setGameStepType(profile.gameType);
+			setGameType(profile.gameType);
 			setHMDType(profile.hmdType);
 			setButtonControlSelect(profile.buttonControlSelect);
 			setTrackHMDVel(profile.trackHMDVel);
@@ -1032,11 +1036,12 @@ namespace walkinplace {
 				tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 			}
 
+			initializedProfile = true;
+
 			auto settings = OverlayController::appSettings();
 			settings->beginGroup("walkInPlaceSettings");
-			settings->beginWriteArray("walkInPlaceProfiles");
-			unsigned i = 0;
-			for (auto& p : walkInPlaceProfiles) {
+			auto profileCount = settings->beginReadArray("walkInPlaceProfiles");
+			for (int i = 0; i < profileCount; i++) {
 				settings->setArrayIndex(i);
 				if (index == i) {
 					maxSNHMD = settings->value("maxHMDSampleSize", 16).toInt();
@@ -1055,7 +1060,6 @@ namespace walkinplace {
 			}
 			settings->endArray();
 			settings->endGroup();
-			settings->sync();
 
 			applyDataModel(QString::fromStdString(profile.modelFile));
 		}
@@ -1063,6 +1067,7 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::deleteProfile(unsigned index) {
 		if (index < walkInPlaceProfiles.size()) {
+			initializedProfile = true;
 			auto pos = walkInPlaceProfiles.begin() + index;
 			walkInPlaceProfiles.erase(pos);
 			saveProfiles();
@@ -1198,6 +1203,7 @@ namespace walkinplace {
 							if (controller2ID == dev->openvrId) {
 								controller2ID = vr::k_unTrackedDeviceIndexInvalid;
 								dev->isTrackedAsCNTRL = false;
+								initializedProfile = true;
 								foundDevIdx = idx;
 							}
 						}
@@ -1243,6 +1249,7 @@ namespace walkinplace {
 		}
 		else {
 			useTrackers = true;
+			initializedProfile = true;
 		}
 		if (foundDevIdx >= 0) {
 			identifyControlTimerSet = true;
@@ -1317,8 +1324,27 @@ namespace walkinplace {
 		buttonEnables = val;
 	}
 
-	void WalkInPlaceTabController::setGameStepType(int type) {
-		gameType = type;
+	void WalkInPlaceTabController::setGameType(int type) {
+		if (type < 6) {
+			gameType->useAxis = true;
+			gameType->useClick = !(type == 1 || type == 4);
+			gameType->alwaysHeld = (type == 2 || type == 5);
+			gameType->inputType = (type < 3) ? InputType::touchpad : InputType::joystick;			
+		}
+		else {
+			gameType->useAxis = false;
+			gameType->useClick = true;
+			gameType->alwaysHeld = false;
+			if (type == 6) {
+				gameType->inputType = InputType::grip;
+			}
+			else if (type == 7) {
+				gameType->inputType = InputType::keyWASD;
+			}
+			else if (type == 8) {
+				gameType->inputType = InputType::keyArrow;
+			}
+		}
 	}
 
 	void WalkInPlaceTabController::setHMDType(int type) {
@@ -1504,6 +1530,7 @@ namespace walkinplace {
 												inputStateChanged = true;
 											}
 										}
+
 										lastValidHMDSampleMKi = mDs.second;
 									}
 								}
@@ -1675,7 +1702,7 @@ namespace walkinplace {
 						//LOG(INFO) << "Cont Forward (x,y,z): " << forwardRot.v[0] << "," << forwardRot.v[1] << "," << forwardRot.v[2];
 						//LOG(INFO) << "HMD  Forward (x,y,z): " << hmdForward.v[0] << "," << hmdForward.v[1] << "," << hmdForward.v[2];
 					}
-					if (gameType == 0 || gameType == 1 || gameType == 2) {
+					if (gameType->useAxis) {
 						axisState.x = 0;
 						float touch = 0;
 						if (sNValidTouch > 0.5) {
@@ -1692,7 +1719,7 @@ namespace walkinplace {
 							axisState.y = axisState.y * touchY;
 						}
 						try {
-							if (gameType == 0) {
+							if (gameType->useClick && !gameType->alwaysHeld) {
 								if (dataModel(TOUCH_VAL_IDX, lastCNTRLSampleMKi) > 0.999) {
 									pressedFlag = true;
 								}
@@ -1706,13 +1733,13 @@ namespace walkinplace {
 							LOG(INFO) << "Exception caught while applying virtual step movement: " << e.what();
 						}
 					}
-					else if (gameType == 9999) {
-						applyClickMovement();
-					}
-					else if (gameType == 3) {
+					//else if (inputType == 9999) {
+					//	applyClickMovement();
+					//}
+					else if (gameType->inputType == InputType::grip) {
 						applyGripMovement();
 					}
-					if (gameType == 4 || gameType == 5) {
+					if (gameType->inputType == InputType::keyWASD || gameType->inputType == InputType::keyArrow) {
 						applyKeyMovement();
 					}
 					inputStateChanged = false;
@@ -1814,17 +1841,24 @@ namespace walkinplace {
 	void WalkInPlaceTabController::clearClickedFlag() {
 		uint32_t deviceId = ovrwipCNTRLID;
 		try {
-			if (gameType == 0 || gameType == 1 || gameType == 2) {
+			if (gameType->useAxis) {
 				vr::VRControllerAxis_t axisState;
 				axisState.x = 0;
 				axisState.y = 0;
 				try {
 					vrwalkinplace::VRWalkInPlace vrwalkinplace;
 					vrwalkinplace.connect();
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-					pressedFlag = false;
-					vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
-					vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					if (gameType->inputType == InputType::touchpad) {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+						pressedFlag = false;
+						vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					} else {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
+						pressedFlag = false;
+						vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_IndexController_JoyStick, axisState);
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
+					}
 				}
 				catch (std::exception& e) {
 					//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
@@ -1844,25 +1878,36 @@ namespace walkinplace {
 			if (stopCallCount < 20) {
 				stopCallCount++;
 				uint32_t deviceId = ovrwipCNTRLID;
-				if (gameType == 0 || gameType == 1 || gameType == 2) {
+				if (gameType->useAxis) {
 					vr::VRControllerAxis_t axisState;
 					axisState.x = 0;
 					axisState.y = 0;
 					try {
 						vrwalkinplace::VRWalkInPlace vrwalkinplace;
 						vrwalkinplace.connect();
-						if (gameType != 1) {
-							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
-							pressedFlag = false;
+						if (gameType->inputType == InputType::touchpad) {
+							if (gameType->useClick) {
+								vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+								pressedFlag = false;
+							}
+							vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
+							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 						}
-						vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
-						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+						else {
+							if (gameType->useClick) {
+								vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
+								pressedFlag = false;
+							}
+							vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_IndexController_JoyStick, axisState);
+							vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUntouched, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
+
+						}
 					}
 					catch (std::exception& e) {
 						//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
 					}
 				}
-				else if (gameType == 3) {
+				else if (gameType->inputType == InputType::grip) {
 					try {
 						vrwalkinplace::VRWalkInPlace vrwalkinplace;
 						vrwalkinplace.connect();
@@ -1872,7 +1917,7 @@ namespace walkinplace {
 						//LOG(INFO) << "Exception caught while applying virtual grip movement: " << e.what();
 					}
 				}
-				else if (gameType == 9999) { //click only disabled atm
+				/*else if (gameType == 9999) { //click only disabled atm
 					try {
 						vrwalkinplace::VRWalkInPlace vrwalkinplace;
 						vrwalkinplace.connect();
@@ -1881,8 +1926,8 @@ namespace walkinplace {
 					catch (std::exception& e) {
 						//LOG(INFO) << "Exception caught while stopping virtual teleport movement: " << e.what();
 					}
-				}
-				else if (gameType == 4) {
+				}*/
+				else if (gameType->inputType == InputType::keyWASD) {
 #if defined _WIN64 || defined _LP64
 					INPUT input[2];
 					input[0].type = INPUT_KEYBOARD;
@@ -1895,7 +1940,7 @@ namespace walkinplace {
 #else
 #endif
 				}
-				else if (gameType == 5) {
+				else if (gameType->inputType == InputType::keyArrow) {
 #if defined _WIN64 || defined _LP64
 					INPUT input[2];
 					input[0].type = INPUT_KEYBOARD;
@@ -1963,17 +2008,32 @@ namespace walkinplace {
 		try {
 			vrwalkinplace::VRWalkInPlace vrwalkinplace;
 			vrwalkinplace.connect();
-			if (gameType == 0 || gameType == 1 || gameType == 2) {
+			if (gameType->inputType == InputType::touchpad) {
 				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_SteamVR_Touchpad, axisState);
-				if (gameType != 1) {
-					if (pressedFlag || gameType == 2) {
+			}
+			else {
+				vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonTouched, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
+				vrwalkinplace.openvrAxisEvent(deviceId, vr::k_EButton_IndexController_JoyStick, axisState);
+			}
+			if (gameType->useClick) {
+				if (pressedFlag || gameType->alwaysHeld) {
+					if (gameType->inputType == InputType::touchpad) {
 						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 					}
 					else {
-						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
 					}
 				}
+				else {
+					if (gameType->inputType == InputType::touchpad) {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
+					}
+					else {
+						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_IndexController_JoyStick, 0.0);
+					}
+				}
+
 			}
 		}
 		catch (std::exception& e) {
@@ -2022,7 +2082,7 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::applyKeyMovement() {
-		if (gameType == 4) {
+		if (gameType->inputType == InputType::keyWASD) {
 			if (pressedFlag) {
 #if defined _WIN64 || defined _LP64
 				INPUT input[2];
@@ -2038,7 +2098,7 @@ namespace walkinplace {
 			}
 			pressedFlag = false;
 		}
-		else if (gameType == 5) {
+		else if (gameType->inputType == InputType::keyArrow) {
 			if (pressedFlag) {
 #if defined _WIN64 || defined _LP64
 				INPUT input[2];

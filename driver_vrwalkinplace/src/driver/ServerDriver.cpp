@@ -86,26 +86,32 @@ namespace vrwalkinplace {
 		}
 
 		void ServerDriver::openvr_enableDriver(bool val) {
-			if (!initDriver && val) {
-				initDriver = true;
+			try {
+				if (!initDriver && val) {
+					initDriver = true;
 
-				vr::DriverPose_t test_pose = { 0 };
-				test_pose.deviceIsConnected = true;
-				test_pose.poseIsValid = true;
-				test_pose.willDriftInYaw = false;
-				test_pose.shouldApplyHeadModel = false;
-				test_pose.poseTimeOffset = 0;
-				test_pose.result = vr::ETrackingResult::TrackingResult_Running_OK;
-				test_pose.qDriverFromHeadRotation = { 1,0,0,0 };
-				test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
+					vr::DriverPose_t test_pose = { 0 };
+					test_pose.deviceIsConnected = true;
+					test_pose.poseIsValid = true;
+					test_pose.willDriftInYaw = false;
+					test_pose.shouldApplyHeadModel = false;
+					test_pose.poseTimeOffset = 0;
+					test_pose.result = vr::ETrackingResult::TrackingResult_Running_OK;
+					test_pose.qDriverFromHeadRotation = { 1,0,0,0 };
+					test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
 
-				vr::VRControllerState_t test_state;
-				test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
+					vr::VRControllerState_t test_state;
+					test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
 
-				vr_locomotion1 = VirtualController("ovrwip_", true, test_pose, test_state);
+					vr_locomotion1 = VirtualController("ovrwip_000", true, test_pose, test_state);
 
-				vr::VRServerDriverHost()->TrackedDeviceAdded("ovrwip_", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &vr_locomotion1);
+					vr::VRServerDriverHost()->TrackedDeviceAdded("ovrwip_000", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &vr_locomotion1);
 
+				}
+			}
+			catch (std::exception& e) {
+				initDriver = false;
+				LOG(INFO) << "Exception caught while enabling driver: " << e.what();
 			}
 		}
 
