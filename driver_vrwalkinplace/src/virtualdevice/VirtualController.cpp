@@ -85,19 +85,19 @@ namespace vrwalkinplace {
 
 				// Joystick button component
 				m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick].insert(std::make_pair(ButtonEventType::ButtonPressed, 0));
-				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/click", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_A][ButtonEventType::ButtonPressed]);
+				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/click", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick][ButtonEventType::ButtonPressed]);
 
 				// Joystick button component
 				m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick].insert(std::make_pair(ButtonEventType::ButtonTouched, 0));
-				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_A][ButtonEventType::ButtonTouched]);
+				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick][ButtonEventType::ButtonTouched]);
 
 				// Joystick button component
 				m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick].insert(std::make_pair(ButtonEventType::ButtonUnpressed, 0));
-				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/click", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_A][ButtonEventType::ButtonUnpressed]);
+				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/click", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick][ButtonEventType::ButtonUnpressed]);
 
 				// Joystick button component
 				m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick].insert(std::make_pair(ButtonEventType::ButtonUntouched, 0));
-				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_A][ButtonEventType::ButtonUntouched]);
+				CreateBooleanComponent(m_propertyContainerHandle, "/input/joystick/touch", &m_ulBoolComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick][ButtonEventType::ButtonUntouched]);
 
 				// joystick axis component
 				m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick].insert(std::make_pair(ButtonEventType::JoystickX, 0));
