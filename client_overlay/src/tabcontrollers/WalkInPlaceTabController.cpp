@@ -1458,6 +1458,17 @@ namespace walkinplace {
 				}
 				if (buttonStatus()) {
 					vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
+
+					/*vr::VRInput()->GetSkeletalBoneData(controller1ID, vr::VRSkeletalTransformSpace_Parent, vr::VRSkeletalMotionRange_WithController,
+						latestBoneTransforms, vr::k_unMaxTrackedDeviceCount);
+					int i = controller1ID;
+					LOG(INFO) << "abs bone O: " << latestBoneTransforms[i].orientation.x << "," << latestBoneTransforms[i].orientation.y << "," << latestBoneTransforms[i].orientation.z << "," << latestBoneTransforms[i].orientation.w;
+					LOG(INFO) << "abs bone P: " << latestBoneTransforms[i].position.v[0] << "," << latestBoneTransforms[i].position.v[1] << "," << latestBoneTransforms[i].position.v[2] << "," << latestBoneTransforms[i].position.v[3];
+					vr::VRInput()->GetSkeletalReferenceTransforms(controller1ID, vr::VRSkeletalTransformSpace_Parent, vr::EVRSkeletalReferencePose::VRSkeletalReferencePose_Fist,
+						latestBoneTransforms, vr::k_unMaxTrackedDeviceCount);
+					LOG(INFO) << "ref bone O: " << latestBoneTransforms[i].orientation.x << "," << latestBoneTransforms[i].orientation.y << "," << latestBoneTransforms[i].orientation.z << "," << latestBoneTransforms[i].orientation.w;
+					LOG(INFO) << "ref bone P: " << latestBoneTransforms[i].position.v[0] << "," << latestBoneTransforms[i].position.v[1] << "," << latestBoneTransforms[i].position.v[2] << "," << latestBoneTransforms[i].position.v[3];
+					*/
 					vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
 					vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
 					if (trackHMDVel) {

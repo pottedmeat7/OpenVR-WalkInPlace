@@ -101,6 +101,11 @@ There are a few different methods of inputs used by games
 
 ### OVRWIP Controller
 All touchpad input goes to the OVRWIP Custom Controller you can rebind this input to other controllers and buttons using the SteamVR Input Bindings.
+You can access SteamVR's input bindings by going to the VR dashboard -> Settings -> Controller Bindings then select the ovrwip_controller and bind to any inputs you like. For these bindings to work you must also go to the "Extra Settings" tab and select either bind to left or right hand.
+
+### SteamVR Bindings for OVRWIP Controller
+Follow the screenshots here to setup bindings for the OVRWIP controller
+https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/steamvr_bindings/
 
 ### buttons to disable/enable WIP
 These options can be used to disable/enable virtual movement when your holding or not holding the button selected.

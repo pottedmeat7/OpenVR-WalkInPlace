@@ -97,6 +97,8 @@ namespace walkinplace {
 
 		vr::TrackedDevicePose_t latestDevicePoses[vr::k_unMaxTrackedDeviceCount];
 
+		vr::VRBoneTransform_t latestBoneTransforms[vr::k_unMaxTrackedDeviceCount];
+
 		arma::mat dataModel;
 		arma::mat hmdSample;
 		arma::mat cntrlSample;

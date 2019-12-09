@@ -565,7 +565,7 @@ MyMainViewPage {
             }
         }
         function openPopup() {
-            newProfileName.text = ""
+            newDataModelName.text = ""
             open()
         }
     }
