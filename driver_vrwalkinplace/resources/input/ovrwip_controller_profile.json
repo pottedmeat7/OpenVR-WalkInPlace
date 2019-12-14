@@ -13,17 +13,27 @@
     "/input/trackpad" : { 
         "type" : "trackpad",
         "binding_image_point" : [ 100, 100 ],
+        "force" : true,
+        "click" : true,
+        "touch" : true,
         "order" : 1
+    },
+    "/input/joystick" : { 
+        "type" : "joystick",
+        "binding_image_point" : [ 100, 100 ],
+        "click" : true,
+        "touch" : true,
+        "order" : 2
     },
     "/input/trigger" : {
         "type" : "trigger",
         "binding_image_point" : [ 100, 100 ],
-        "order" : 2
+        "order" : 3
     },
     "/input/grip" : {
         "type" : "button",
         "binding_image_point" : [ 100, 100 ],
-        "order" : 3
+        "order" : 4
     }
   }
 }

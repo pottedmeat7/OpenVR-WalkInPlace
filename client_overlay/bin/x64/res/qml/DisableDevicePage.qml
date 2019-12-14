@@ -7,25 +7,52 @@ import pottedmeat7.walkinplace 1.0
 MyStackViewPage {
     id: disableDevicePage
     name: "disableDevicePage"
+    property var initialLoaded: false
 
-    content: Item {
-        id:container
+    property var startTimer: function() {
+        updateInfo()
+    }
+
+    function updateInfo() {  
+        hmd1.checked = WalkInPlaceTabController.getDisableHMD()
+        hmd2.checked = WalkInPlaceTabController.getTrackHMDRot()
+        cntrlHands1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,0)
+        cntrlHands2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,0)
+        cntrlHands3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,0)
+        cntrlHands4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,0)
+        cntrlFeet1.checked = WalkInPlaceTabController.getDeviceEnabled(2,0,1)
+        cntrlFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(2,1,1)
+        cntrlFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(2,2,1)
+        cntrlFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(2,3,1)
+        trkrHands1.checked = WalkInPlaceTabController.getDeviceEnabled(3,0,0)
+        trkrHands2.checked = WalkInPlaceTabController.getDeviceEnabled(3,1,0)
+        trkrHands3.checked = WalkInPlaceTabController.getDeviceEnabled(3,2,0)
+        trkrHands4.checked = WalkInPlaceTabController.getDeviceEnabled(3,3,0)
+        trkrFeet1.checked = WalkInPlaceTabController.getDeviceEnabled(3,0,1)
+        trkrFeet2.checked = WalkInPlaceTabController.getDeviceEnabled(3,1,1)
+        trkrFeet3.checked = WalkInPlaceTabController.getDeviceEnabled(3,2,1)
+        trkrFeet4.checked = WalkInPlaceTabController.getDeviceEnabled(3,3,1)
+    }
+
+    content: ColumnLayout {
+        anchors.top: parent.top
+        spacing: 7
+        Layout.alignment: Qt.AlignHCenter
 
         GroupBox {
             Layout.fillWidth: true
             
             background: Rectangle {
-                color: "#c0c0c0" // "#277650" // "transparent"
-                border.color: "#c0c0c0" // "#277650"
-                radius: 8
+                color: myPalette.base
+                border.color: myPalette.base
+                radius: 1
             }
 
             ColumnLayout {
                 anchors.fill: parent
-                width: 1200
-                
+                Layout.alignment: Qt.AlignHCenter
+
                 RowLayout {
-                    width: 1200
                     Button {
                         id: headerBackButton
                         Layout.preferredHeight: 60
@@ -41,7 +68,7 @@ MyStackViewPage {
                         }
                         background: Rectangle {
                             opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                            color: "#004021"
+                            color: myPalette.base
                             radius: 4
                             anchors.fill: parent
                         }
@@ -60,193 +87,441 @@ MyStackViewPage {
 
                     MyText {
                         id: headerTitle
-                        text: " "
-                        Layout.maximumWidth: 1100
-                        Layout.minimumWidth: 1100
-                        Layout.preferredWidth: 1100
+                        text: "OpenVR-WalkInPlace"
                         font.pointSize: 22
-                        anchors.verticalCenter: headerBackButton.verticalCenter
-                        Layout.leftMargin: 30
                     }
                 }
             }
         }
 
-        Column {
-            spacing: 6 
-            anchors.fill: parent
-            topPadding: 80
-            
-            GroupBox {
+        ColumnLayout {
+            spacing: 7
+            Layout.alignment: Qt.AlignHCenter
 
-                Layout.fillWidth: true
-                
+            GroupBox {
+                Layout.minimumWidth: 1300
+                Layout.alignment: Qt.AlignHCenter
+                anchors.centerIn: parent
+
+                label: MyText {
+                    text: "HMD Options"
+                }
+
                 background: Rectangle {
-                    color: "#c0c0c0" // "#277650"
-                    border.color: "#ffffff"
-                    radius: 8
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
                 }
 
                 ColumnLayout {
                     anchors.fill: parent
-                    Layout.alignment: Qt.AlignHCenter
 
-                    GridLayout {
-                        columns: 4
-
+                    RowLayout {
+                        spacing: 7
                         MyToggleButton {
-                            id: disableButtonA
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
+                            id: hmd1
+                            text: "Track HMD?"
+                            checked: true
+                            Layout.maximumWidth: 350
+                            Layout.minimumWidth: 350
+                            Layout.preferredWidth: 350
                             Layout.fillWidth: true
                             onCheckedChanged: {
-                                //WalkInPlaceTabController.disableController(checked,0)
+                                WalkInPlaceTabController.setTrackHMDVel(checked)
                             }
                         }
 
-                        MyText {
-                            text: "Controller 1"
-                            Layout.preferredWidth: 200
-                        }  
-
                         MyToggleButton {
-                            id: disableButtonB
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
+                            id: hmd2
+                            text: "Track HMD Rotation?"
+                            checked: true
+                            Layout.maximumWidth: 350
+                            Layout.minimumWidth: 350
+                            Layout.preferredWidth: 350
                             Layout.fillWidth: true
                             onCheckedChanged: {
-                                //WalkInPlaceTabController.disableController(checked,1)
+                                WalkInPlaceTabController.setTrackHMDRot(checked)
                             }
                         }
-                        
-                        MyText {
-                            text: "Controller 2"
-                            Layout.preferredWidth: 200
-                        }  
-                    }
-
-                    GridLayout {
-                        columns: 4
-
-                        MyToggleButton {
-                            id: disableButtonC
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
-                            Layout.fillWidth: true
-                            onCheckedChanged: {
-                                //WalkInPlaceTabController.disableTracker(checked,0)
-                            }
-                        }
-
-                        MyText {
-                            text: "Controller 1"
-                            Layout.preferredWidth: 200
-                        }  
-
-                        MyToggleButton {
-                            id: disableButtonD
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
-                            Layout.fillWidth: true
-                            onCheckedChanged: {
-                                //WalkInPlaceTabController.disableTracker(checked,1)
-                            }
-                        }
-                        
-                        MyText {
-                            text: "Controller 2"
-                            Layout.preferredWidth: 200
-                        }  
-                    }
-
-                    GridLayout {
-                        columns: 4
-
-                        MyToggleButton {
-                            id: disableButtonE
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
-                            Layout.fillWidth: true
-                            onCheckedChanged: {
-                                //WalkInPlaceTabController.disableTracker(checked,4)
-                            }
-                        }
-
-                        MyText {
-                            text: "Controller 1"
-                            Layout.preferredWidth: 200
-                        }  
-
-                        MyToggleButton {
-                            id: disableButtonF
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
-                            Layout.fillWidth: true
-                            onCheckedChanged: {
-                                //WalkInPlaceTabController.disableTracker(checked,5)
-                            }
-                        }
-                        
-                        MyText {
-                            text: "Controller 2"
-                            Layout.preferredWidth: 200
-                        }  
-                    }                    
-                    GridLayout {
-                        columns: 4
-
-                        MyToggleButton {
-                            id: disableButtonG
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
-                            Layout.fillWidth: true
-                            onCheckedChanged: {
-                                //WalkInPlaceTabController.disableTracker(checked,6)
-                            }
-                        }
-
-                        MyText {
-                            text: "Controller 1"
-                            Layout.preferredWidth: 200
-                        }  
-
-                        MyToggleButton {
-                            id: disableButtonH
-                            text: "Disable?"
-                            Layout.maximumWidth: 200
-                            Layout.minimumWidth: 200
-                            Layout.preferredWidth: 200
-                            Layout.fillWidth: true
-                            onCheckedChanged: {
-                                //WalkInPlaceTabController.disableTracker(checked,7)
-                            }
-                        }
-                        
-                        MyText {
-                            text: "Controller 2"
-                            Layout.preferredWidth: 200
-                        }  
                     }
                 }
             }
         }
 
-        Component.onCompleted: {
+        ColumnLayout {
+            spacing: 7
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+                Layout.minimumWidth: 1300
+                Layout.alignment: Qt.AlignHCenter
+                anchors.centerIn: parent
+
+                label: MyText {
+                    text: "Controllers in Hands"
+                }
+
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 7
+                        MyToggleButton {
+                            id: cntrlHands1
+                            text: "1st controller"
+                            checked: true
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 0, checked,0)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: cntrlHands2
+                            text: "2nd controller"
+                            checked: true
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 1,checked,0)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: cntrlHands3
+                            text: "3rd controller"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 2,checked,0)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: cntrlHands4
+                            text: "4th controller"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 3,checked,0)
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        ColumnLayout {
+            spacing: 7
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+                Layout.minimumWidth: 1300
+                Layout.alignment: Qt.AlignHCenter
+                anchors.centerIn: parent
+
+                label: MyText {
+                    text: "Controllers on Feet"
+                }
+
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 7
+                        MyToggleButton {
+                            id: cntrlFeet1
+                            text: "1st controller"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 0,checked,1)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: cntrlFeet2
+                            text: "2nd controller"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 1,checked,1)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: cntrlFeet3
+                            text: "3rd controller"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 2,checked,1)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: cntrlFeet4
+                            text: "4th controller"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(2, 3,checked,1)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            spacing: 7
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+                Layout.minimumWidth: 1300
+                Layout.alignment: Qt.AlignHCenter
+                anchors.centerIn: parent
+
+                label: MyText {
+                    text: "Trackers on Feet"
+                }
+
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 7
+                        MyToggleButton {
+                            id: trkrFeet1
+                            text: "1st tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,0,checked,1)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: trkrFeet2
+                            text: "2nd tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,1,checked,1)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: trkrFeet3
+                            text: "3rd tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,2,checked,1)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: trkrFeet4
+                            text: "4th tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,3,checked,1)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            spacing: 7
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+                Layout.minimumWidth: 1300
+                Layout.alignment: Qt.AlignHCenter
+                anchors.centerIn: parent
+
+                label: MyText {
+                    text: "Trackers in Hands"
+                }
+
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 7
+                        MyToggleButton {
+                            id: trkrHands1
+                            text: "1st tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,0,checked,0)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: trkrHands2
+                            text: "2nd tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,1,checked,0)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: trkrHands3
+                            text: "3rd tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,2,checked,0)
+                            }
+                        }
+
+                        MyToggleButton {
+                            id: trkrHands4
+                            text: "4th tracker"
+                            checked: false
+                            Layout.maximumWidth: 220
+                            Layout.minimumWidth: 220
+                            Layout.preferredWidth: 220
+                            Layout.fillWidth: true
+                            onCheckedChanged: {
+                                WalkInPlaceTabController.enableDevice(3,3,checked,0)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*ColumnLayout {
+            spacing: 7
+            Layout.alignment: Qt.AlignHCenter
+
+            GroupBox {
+                Layout.minimumWidth: 1300
+                Layout.alignment: Qt.AlignHCenter
+                anchors.centerIn: parent
+
+                label: MyText {
+                    text: "Direction"
+                }
+
+                background: Rectangle {
+                    color: myPalette.mid
+                    border.color: myPalette.mid
+                    radius: 1
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    RowLayout {
+                        spacing: 7
+                        MyComboBox {
+                            id: directionDevice 
+                            currentIndex: 0
+                            Layout.maximumWidth: 400
+                            Layout.minimumWidth: 400
+                            Layout.preferredWidth: 400
+                            Layout.fillWidth: true
+                            displayText: currentText
+                            model: ["None, Use Game Default","1st controller", "2nd controller", "1st tracker", "2nd tracker", "3rd controller", "4th controller", "3rd tracker", "4th tracker"]
+                            onCurrentIndexChanged: {
+                                if (currentIndex >= 0) { 
+                                   WalkInPlaceTabController.setDirectionDevice(currentIndex)                        
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
+
+        Component.onCompleted: {   
+            if ( !initialLoaded ) { 
+                updateInfo()
+            }
+            initialLoaded = true
+        }
+
     }
 
+    function stopTimer() {
+
+    }
 }

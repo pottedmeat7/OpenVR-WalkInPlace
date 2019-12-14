@@ -45,7 +45,10 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 		throw std::runtime_error(std::string("Failed to initialize OpenVR: ") + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError)));
 	}
 
-	m_runtimePathUrl = QUrl::fromLocalFile(vr::VR_RuntimePath());
+	static char rchBuffer[1024];
+	uint32_t unRequiredSize;
+	std::cout << vr::VR_GetRuntimePath(rchBuffer, sizeof(rchBuffer), &unRequiredSize);
+	m_runtimePathUrl = QUrl::fromLocalFile(rchBuffer);
 	LOG(INFO) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
 	// Check whether OpenVR is too outdated
@@ -155,7 +158,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 		}
 		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.5f);
 		vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
-		vr::VROverlay()->SetOverlayFlag(m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true);
+		//vr::VROverlay()->SetOverlayFlag(m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true);
 		std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + slash + "res" + slash + "thumbicon.png";
 		if (QFile::exists(QString::fromStdString(thumbIconPath))) {
 			vr::VROverlay()->SetOverlayFromFile(m_ulOverlayThumbnailHandle, thumbIconPath.c_str());
@@ -285,14 +288,14 @@ void OverlayController::OnTimeoutPumpEvents() {
 			}
 			break;
 
-			case vr::VREvent_Scroll: {
+			/*case vr::VREvent_Scroll: {
 				// Wheel speed is defined as 1/8 of a degree
 				QWheelEvent wheelEvent(m_ptLastMouse, m_pWindow->mapToGlobal(m_ptLastMouse), QPoint(),
 					QPoint(vrEvent.data.scroll.xdelta * 360.0f * 8.0f, vrEvent.data.scroll.ydelta * 360.0f * 8.0f),
 					0, Qt::Vertical, m_lastMouseButtons, 0);
 				QCoreApplication::sendEvent(m_pWindow.get(), &wheelEvent);
 			}
-			break;
+			break;*/
 
 			case vr::VREvent_OverlayShown: {
 				m_pWindow->update();

@@ -41,7 +41,7 @@ class OverlayController : public QObject {
 public:
 	static constexpr const char* applicationKey = "pottedmeat7.VRWalkInPlace";
 	static constexpr const char* applicationName = "OpenVR-WalkInPlace";
-	static constexpr const char* applicationVersionString = "v2.2";
+	static constexpr const char* applicationVersionString = "v4.2";
 
 private:
 	vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;

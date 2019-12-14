@@ -7,21 +7,26 @@ Rectangle {
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
 
     id: root
-    color: myPalette.base // "transparent"
-    width: 1200
+    color: "transparent"
+
+    width: 1500
     height: 800
 
-    property StepDetectionPage stepDetectionPage:  StepDetectionPage {
+    property MainConfPage mainConfPage:  MainConfPage {
         stackView: mainView
     }
 
-    property StepDetectGraphPage stepDetectGraphPage:  StepDetectGraphPage {
+    property GraphPage graphPage:  GraphPage {
         stackView: mainView
     }
 
-    //property DisableDevicePage disableDevicePage:  DisableDevicePage {
-    //    stackView: mainView
-    //}
+    property DataModelPage dataModelPage:  DataModelPage {
+        stackView: mainView
+    }
+
+    property DisableDevicePage disableDevicePage:  DisableDevicePage {
+        stackView: mainView
+    }
 
     StackView {
         id: mainView
@@ -33,43 +38,15 @@ Rectangle {
         function stopTimer() {
         	currentItem.stopTimer()
         }
+
+        function completeTraining() {
+        	mainConfPage.completeTraining()
+        }
+
+        function startAutoConf() {
+        	graphPage.startAutoConf()
+        }
         
-	    function setAutoConfHMDY(v) {
-	    	currentItem.setAutoConfHMDY(v)
-	    }
-
-	    function setAutoConfHMDXZ(v) {
-	    	currentItem.setAutoConfHMDXZ(v)
-	    }
-
-	    function setAutoConfUseTrackers(v) {
-	    	currentItem.setAutoConfUseTrackers(v)
-	    }
-
-	    function setAutoConfDisableHMD(v) {
-	    	currentItem.setAutoConfDisableHMD(v)
-	    }
-
-	    function setAutoConfTRKY(v) {
-	    	currentItem.setAutoConfTRKY(v)
-	    }
-
-	    function setAutoConfTRKXZ(v) {
-	    	currentItem.setAutoConfTRKXZ(v)
-	    }
-
-	    function setAutoConfContMin(v) {
-	    	currentItem.setAutoConfContMin(v)
-	    }
-
-	    function setAutoConfContMid(v) {
-	    	currentItem.setAutoConfContMid(v)
-	    }
-
-	    function setAutoConfContMax(v) {
-	    	currentItem.setAutoConfContMax(v)
-	    }
-
 		pushEnter: Transition {
 			PropertyAnimation {
 				property: "x"
@@ -103,6 +80,6 @@ Rectangle {
 			}
 		}
 
-        initialItem: stepDetectionPage
+        initialItem: mainConfPage
     }
 }
