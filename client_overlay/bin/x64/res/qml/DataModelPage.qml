@@ -54,6 +54,7 @@ MyStackViewPage {
         if ( WalkInPlaceTabController.isWIPEnabled() ) {
             refreshTimer.start()
         }
+        updateInfo()
     }
 
     property var stopTimer: function() {
@@ -656,7 +657,6 @@ MyStackViewPage {
         }
 
         
-
         Component.onCompleted: {   
             if ( !initialLoaded ) { 
                 updateInfo()
