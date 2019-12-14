@@ -1,8 +1,6 @@
 
 #define BOOST_PYTHON_STATIC_LIB
 
-#define BOOST_LIB_NAME boost_python
-
 #include "overlaycontroller.h"
 #include <QApplication>
 #include <QQmlApplicationEngine>
