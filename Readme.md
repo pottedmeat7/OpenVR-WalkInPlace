@@ -32,6 +32,9 @@ Download the newest installer from the [release section](https://github.com/pott
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
 
+Follow this for basic initial setup
+https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/full_setup/
+
 ## GIF Step Examples
 Walking Example: 
 ![walk example](docs/gifs/wip_walk.gif)
@@ -230,3 +233,14 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 # License
 
 This software is released under GPL 3.0.
+
+#Credits
+mlpack2018 mlpack 3: a fast, flexible machine learning library Curtin, Ryan R. and Edel, Marcus and Lozhnikov, Mikhail and Mentekidis, Yannis and Ghaisas, Sumedh and Zhang, Shangtong Journal of Open Source Software, 3, 26 726, 2018, 10.21105/joss.00726, https://doi.org/10.21105/joss.00726
+
+Conrad Sanderson and Ryan Curtin.
+[Armadillo: a template-based C++ library for linear algebra.](http://arma.sourceforge.net/armadillo_joss_2016.pdf) 
+Journal of Open Source Software, Vol. 1, pp. 26, 2016.
+
+Conrad Sanderson and Ryan Curtin.
+[Practical sparse matrices in C++ with hybrid storage and template-based expression optimisation.](http://arma.sourceforge.net/armadillo_mca_2019.pdf)
+Mathematical and Computational Applications, Vol. 24, No. 3, 2019.
