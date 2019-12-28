@@ -1,6 +1,10 @@
 
 #pragma once
 
+#if defined (_WIN64) || !defined (_LP64)
+#pragma comment (lib,"advapi32.lib")
+#endif
+
 #include <QObject>
 #include <memory>
 #include <openvr.h>
@@ -8,11 +12,19 @@
 #include <vrwalkinplace.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <fstream>
+#include <iostream>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
 #include <mlpack/core.hpp>
+#include <mlpack/methods/linear_regression/linear_regression.hpp>
+#include <mlpack/core/data/scaler_methods/min_max_scaler.hpp>
+#if defined (_WIN64) || !defined (_LP64)
+#include <Windows.h>
+#endif
+
 
 class QQuickWindow;
-
-namespace fs = boost::filesystem;
 
 // application namespace
 namespace walkinplace {
@@ -99,10 +111,33 @@ namespace walkinplace {
 
 		vr::VRBoneTransform_t latestBoneTransforms[vr::k_unMaxTrackedDeviceCount];
 
+		mlpack::regression::LinearRegression vrLocoRegress;
+		mlpack::regression::LinearRegression vrLocoRegressCNTRL;
+
+		arma::rowvec weights = arma::rowvec({
+			0.8, //HMDXVEL
+			0.96, //HMDYVEL
+			0.8, //HMDZVEL
+			0.8, //HMDXACC
+			0.96, //HMDYACC
+			0.8, //HMDZACC
+			0.6, //HMDYAW
+			0.6, //HMDPITCH
+			});
+			// 0.7, //CNTRL1X
+			//0.7, //CNTRL2X
+			//0.5, //CNTRL1Y
+			//0.5, //CNTRL2Y
+			//0.4, //CNTRL1Z
+			//0.4, //CNTRL2Z
+			//0.0, //TRKR1Y
+			//0.0  //TRKR2Y
+			//});
+
 		arma::mat dataModel;
-		arma::mat hmdSample;
-		arma::mat cntrlSample;
-		arma::mat trkrSample;
+		arma::mat sample;
+		arma::vec sampleResults;
+
 		arma::rowvec hmdVels;
 		arma::rowvec trkrVels;
 		arma::rowvec modelCNTRL1;
@@ -114,6 +149,7 @@ namespace walkinplace {
 		std::string model_file_name = "default";
 
 		vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
+		vr::HmdVector3d_t lastHmdVel = { 0, 0, 0 };
 		vr::HmdVector3d_t lastHmdRot = { 0, 0, 0 };
 
 		vr::VROverlayHandle_t overlayHandle;
@@ -146,22 +182,30 @@ namespace walkinplace {
 		int vive_controller_model_index = -1;
 		int disableButton = -1;
 		int unnTouchedCount = 0;
-		int lastValidHMDSampleMKi = 0;
-		int lastCNTRLSampleMKi = 0;
-		int lastValidTRKRSampleMKi = 0;
+		int lastValidSampleMKi = 0;
 		int stopCallCount = 0;
 
-		static const int HMD_Y_VEL_IDX = 0;
-		static const int CNTRL1_Y_VEL_IDX = 1;
-		static const int CNTRL2_Y_VEL_IDX = 2;
-		static const int TRKR1_Y_VEL_IDX = 3;
-		static const int TRKR2_Y_VEL_IDX = 4;
-		static const int HMD_YAW_VEL_IDX = 5;
-		static const int HMD_PITCH_VEL_IDX = 6;
-		static const int HMD_X_VEL_IDX = 7;
-		static const int HMD_Z_VEL_IDX = 8;
-		static const int TOUCH_VAL_IDX = 9;
+		int validInputSample = 0;
 
+		static const int HMD_X_VEL_IDX = 0;
+		static const int HMD_Y_VEL_IDX = 1;
+		static const int HMD_Z_VEL_IDX = 2;
+		static const int HMD_X_ACC_IDX = 3;
+		static const int HMD_Y_ACC_IDX = 4;
+		static const int HMD_Z_ACC_IDX = 5;
+		static const int HMD_YAW_VEL_IDX = 6;
+		static const int HMD_PITCH_VEL_IDX = 7;
+		/*static const int CNTRL1_X_VEL_IDX = 5;
+		static const int CNTRL2_X_VEL_IDX = 6;
+		static const int CNTRL1_Y_VEL_IDX = 7;
+		static const int CNTRL2_Y_VEL_IDX = 8;
+		static const int CNTRL1_Z_VEL_IDX = 9;
+		static const int CNTRL2_Z_VEL_IDX = 10;
+		static const int TRKR1_Y_VEL_IDX = 11;
+		static const int TRKR2_Y_VEL_IDX = 12;*/
+		static const int TOUCH_VAL_IDX = 8;
+
+		int maxSampleSize = 7;
 		int maxSNHMD = 16;
 		int startSNHMD = 12;
 		int reqSNHMD = 4;
@@ -212,12 +256,6 @@ namespace walkinplace {
 		double timeLastGraphPoint = 0.0;
 
 		double currentRunTimeInSec = 0.0;
-
-		std::pair<float, int> computeSNDelta(arma::mat sN, arma::mat mN);
-		std::pair<float, int> computeSNDeltaOffset(arma::mat sN, arma::mat mN);
-		std::pair<int, int> computeSNDV(arma::mat sN, arma::mat mN);
-		int findMNIdxGTS(float s, arma::mat mN);
-		float findMinPeakMN(int startERR, arma::rowvec mN, float lowRange);
 
 		void loadDataModel();
 		void clearSamplesAndModel();
@@ -306,6 +344,9 @@ namespace walkinplace {
 		void addDataModel(QString name);
 		void applyDataModel(QString name);
 		void deleteDataModel(QString name);
+
+
+		LONG GetStringRegKey(HKEY hKey, const std::wstring &strValueName, std::wstring &strValue, const std::wstring &strDefaultValue);
 
 	};
 

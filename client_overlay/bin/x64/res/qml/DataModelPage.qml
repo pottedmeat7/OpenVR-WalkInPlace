@@ -137,7 +137,7 @@ MyStackViewPage {
 
                     MyText {
                         id: headerTitle
-                        text: "OpenVR-WalkInPlace"
+                        text: "MLVRLocomotion"
                         Layout.maximumWidth: 640
                         Layout.minimumWidth: 640
                         Layout.preferredWidth: 640

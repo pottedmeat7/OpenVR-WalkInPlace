@@ -39,6 +39,7 @@ MyStackViewPage {
 
     property int sampleTime : 0
     property int sampleLimit : 5000
+    property int sampleLimit2 : 10000
 
     property real tdiff : 0
 
@@ -157,7 +158,7 @@ MyStackViewPage {
 
                     MyText {
                         id: headerTitle
-                        text: "OpenVR-WalkInPlace"
+                        text: "MLVRLocomotion"
                         Layout.maximumWidth: 640
                         Layout.minimumWidth: 640
                         Layout.preferredWidth: 640
@@ -491,10 +492,16 @@ MyStackViewPage {
                             currentSampleTime = sampleLimit
                         }
                         scaleSpeed = (((currentSampleTime / sampleLimit) * 0.5) + 0.5).toFixed(1)
-                    } else if ( autoConfMode > 3 ) {
+                    } else if ( autoConfMode == 4) {
                         scaleSpeed = 1
+                    } else if ( autoConfMode == 5) {
+                        scaleSpeed = -1
+                    } else if ( autoConfMode == 6 ) {
+                        scaleSpeed = -1
                     }
-                    velVals = WalkInPlaceTabController.trainingDataSample(scaleSpeed, timerInterval);
+                    if ( autoConfMode != 5 ) {
+                        velVals = WalkInPlaceTabController.trainingDataSample(scaleSpeed, timerInterval);
+                    }
                 }
                 var velX = parseFloat(velVals[0]).toFixed(4);
                 var velY = parseFloat(velVals[1]).toFixed(4);
@@ -607,7 +614,7 @@ MyStackViewPage {
                 }
                    
                 if ( autoConfMode >= 0 ) {
-                    if ( sampleTime >= sampleLimit ) {
+                    if ( (autoConfMode < 5 && sampleTime >= sampleLimit) || (autoConfMode == 6 && sampleTime >= sampleLimit2) ) {
                         if ( autoConfMode == 0 ) {
                             autoConfMode = 1
                             sampleTime = 0
@@ -641,6 +648,12 @@ MyStackViewPage {
                             autoConfigPopup.setTimeout(3)
                             autoConfigPopup.openPopup()
                         } else if ( autoConfMode == 4 ) {
+                            sampleTime = 0
+                            currentSampleTime = 0
+                            autoConfMode = 5
+                            autoConfInfoPopup2.open()
+                        } else if ( autoConfMode == 5 ) {
+                        } else if ( autoConfMode == 6 ) {
                             stopTimer()
                             resetGraph()
                             autoConfMode = -2
@@ -649,15 +662,15 @@ MyStackViewPage {
                             autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
                             autoConfigPopup.setTimeout(5)
                             var page = mainView.pop()
-                            mainView.completeTraining()                            
+                            mainView.completeTraining()  
                         }                       
                     }
                 }
-
-                hmdCanvas.requestPaint ();
-                cntrlCanvas.requestPaint ();
-                trkrCanvas.requestPaint ();
-
+                if ( autoConfMode != 5 ) {
+                    hmdCanvas.requestPaint ();
+                    cntrlCanvas.requestPaint ();
+                    trkrCanvas.requestPaint ();
+                }
             } catch (error) {  
                 console.info(error.message)          
             }
@@ -715,6 +728,38 @@ MyStackViewPage {
                 autoConfMode = 0
                 sampleTime = 0
                 currentSampleTime = 0
+            } else {
+                stopTimer()
+                resetGraph()
+                autoConfMode = -2
+                sampleTime = 0
+                autoConfigPopup.setTitle("Walking Pace Config")
+                autoConfigPopup.setTextDetail("Start Walking IN PLACE in")
+                autoConfigPopup.setTimeout(5)
+                var page = mainView.pop()
+            }
+        }
+    }
+
+    MyInfoPopup {
+        id: autoConfInfoPopup2
+        property int modelIndex: -1
+        dialogTitle: ""
+        dialogText1: "The next phase of the process involves other movements"
+        dialogText2: "This is movement that you know should not produce locomotion"
+        dialogText3: "Examples include ducking, sword swinging, standing still etc."
+        dialogText4: "Use the next ~10 seconds to record these movements"
+        dialogText5: "To be clear this recorded data is used to stop virtual locomotion"
+        onClosed: {
+            if (okClicked) {
+                autoConfigPopup.openPopup()
+                autoConfMode = 6
+                sampleTime = 0
+                currentSampleTime = 0
+                autoConfigPopup.setTitle("Other Movements Config")
+                autoConfigPopup.setTextDetail("Movements used to stop locomotion")
+                autoConfigPopup.setTimeout(3)
+                autoConfigPopup.openPopup()
             } else {
                 stopTimer()
                 resetGraph()

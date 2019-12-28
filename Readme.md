@@ -32,8 +32,8 @@ Download the newest installer from the [release section](https://github.com/pott
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
 
-Follow this for basic initial setup
-https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/full_setup/
+Follow this for initial setup
+https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/full_setup/Readme.md
 
 ## GIF Step Examples
 Walking Example: 
