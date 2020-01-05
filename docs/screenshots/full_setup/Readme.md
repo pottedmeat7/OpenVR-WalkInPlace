@@ -1,19 +1,19 @@
 Steps to create setup OpenVR-WalkInPlace
 
-###initial screen
+### initial screen
 ![Example Screenshot](ovrwip_init.png)
 
-###click on 'Tracked Devices Page'
+### click on 'Tracked Devices Page'
 ![Example Screenshot](ovrwip_step1.png)
 
-###Select your preferred devices used to match movement model
+### Select your preferred devices used to match movement model
 ![Example Screenshot](ovrwip_step2.png)
 
-###return to initial page and click on 'New Data Model'
+### return to initial page and click on 'New Data Model'
 ![Example Screenshot](ovrwip_step3.png)
 
-###enter a name for your data model
-###then proceed to follow the instructions:
+### enter a name for your data model
+### then proceed to follow the instructions:
 ```
 The data model creation process takes ~25 seconds 5 seconds for each phase.
 The process starts with slowest to increasing to medium to medium to increasing to fast to fastest.
