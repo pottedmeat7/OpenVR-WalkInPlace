@@ -1675,7 +1675,7 @@ namespace walkinplace {
 					arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
 					arma::rowvec sN = arma::abs(trkrSample.row(0));
 					arma::rowvec lastSN = sN.tail_cols(sNk);
-					if (lastSN.max() < minTRKRPeakVal) {
+					if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && lastSN.max() < minTRKRPeakVal) {
 						stopMovement();
 						lastValidTRKRSampleMKi = 0;
 					}
@@ -1683,13 +1683,13 @@ namespace walkinplace {
 						std::pair<float, int> mDs1 = computeSNDelta(lastSN, mN);
 						if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 							sN = arma::abs(trkrSample.row(1)); // trkr 2
-							lastSN = sN.tail_cols(sNk);
-							if (lastSN.max() < minTRKRPeakVal) {
+							arma::rowvec lastSN2 = sN.tail_cols(sNk);
+							if (lastSN.max() < minTRKRPeakVal && lastSN2.max() < minTRKRPeakVal) {
 								stopMovement();
 								lastValidTRKRSampleMKi = 0;
 							}
 							else {
-								std::pair<float, int> mDs2 = computeSNDelta(lastSN, mN);
+								std::pair<float, int> mDs2 = computeSNDelta(lastSN2, mN);
 								if (mDs1.first < trkrVariance*sNk && mDs2.first < trkrVariance*sNk) {
 									if (!trackHMDVel && !validSample) {
 										validSample = true;
