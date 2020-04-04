@@ -28,6 +28,10 @@ Rectangle {
         stackView: mainView
     }
 
+    property PaceControlPage paceControlPage:  PaceControlPage {
+        stackView: mainView
+    }
+
     StackView {
         id: mainView
         anchors.fill: parent

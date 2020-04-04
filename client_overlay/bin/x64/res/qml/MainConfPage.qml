@@ -72,7 +72,7 @@ MyMainViewPage {
                 Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
-                    columns: 6
+                    columns: 8
 
                     MyToggleButton {
                         id: wipEnableToggle
@@ -94,7 +94,7 @@ MyMainViewPage {
                         Layout.preferredWidth: 100
                         Layout.fillWidth: true
                         displayText: currentText
-                        model: ["Vive/Rift", "Other"]
+                        model: ["SteamVR", "Other"]
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) { 
                                 WalkInPlaceTabController.setHMDType(currentIndex)                            
@@ -117,7 +117,6 @@ MyMainViewPage {
                             } 
                         }
                     }
-  
 
                     MyText {
                         text: " "
@@ -161,9 +160,9 @@ MyMainViewPage {
                     MyComboBox {
                         id: accuracyButtonDialog 
                         currentIndex: 0
-                        Layout.maximumWidth: 401
-                        Layout.minimumWidth: 401
-                        Layout.preferredWidth: 401
+                        Layout.maximumWidth: 400
+                        Layout.minimumWidth: 400
+                        Layout.preferredWidth: 400
                         Layout.fillWidth: true
                         displayText: currentText
                         model: ["by holding grip", "by holding trigger", "only with data model"]
@@ -224,7 +223,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 0
                         MyText {
-                            text: "Start by creating a data model of your current tracked devices."
+                            text: "Start by creating a data model of your current tracked devices"
                             Layout.preferredWidth: 800
                             Layout.preferredHeight: 20
                             Layout.maximumWidth: 800
@@ -234,7 +233,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 0
                         MyText {
-                            text: "The default devices used in the data model are the first 2 controllers and the first 2 trackers."
+                            text: "You can change which devices create the data model with 'Tracked Devices' below."
                             Layout.preferredWidth: 800
                             Layout.preferredHeight: 20
                             Layout.maximumWidth: 800
@@ -244,7 +243,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 0
                         MyText {
-                            text: "You can change which devices create the data model with the 'tracked devices page' below."
+                            text: "You can change your virtual pace with 'Pace Control'"
                             Layout.preferredWidth: 800
                             Layout.preferredHeight: 20
                             Layout.maximumWidth: 800
@@ -254,7 +253,7 @@ MyMainViewPage {
                     RowLayout {
                         spacing: 4
                         MyText {
-                            text: "You can get an idea of the tracked data by looking at the 'tracking graph page' below."
+                            text: "You can look at tracked data with the 'Tracking Graph'"
                             Layout.preferredWidth: 800
                             Layout.preferredHeight: 27
                             Layout.maximumWidth: 800
@@ -296,9 +295,26 @@ MyMainViewPage {
                         MyTab {
                             Layout.preferredWidth: 300
                             Layout.preferredHeight: 60
-                            text: " --> Tracked Devices Page"
+                            text: " --> Tracked Devices"
                             onClicked: {
                                 var res = mainView.push(disableDevicePage)
+                                mainView.startTimer()
+                            }
+                        }
+                        Rectangle {
+                            color: "#AAAAAA"
+                            height: 50
+                            width: 2
+                            Layout.topMargin: 5
+                            Layout.bottomMargin: 10
+                        }
+
+                        MyTab {
+                            Layout.preferredWidth: 300
+                            Layout.preferredHeight: 60
+                            text: " --> Pace Control"
+                            onClicked: {
+                                var res = mainView.push(paceControlPage)
                                 mainView.startTimer()
                             }
                         }
@@ -314,7 +330,7 @@ MyMainViewPage {
                         MyTab {
                             Layout.preferredWidth: 300
                             Layout.preferredHeight: 60
-                            text: " --> Tracking Graph Page"
+                            text: " --> Tracking Graph"
                             onClicked: {
                                 var res = mainView.push(graphPage)
                                 mainView.startTimer()

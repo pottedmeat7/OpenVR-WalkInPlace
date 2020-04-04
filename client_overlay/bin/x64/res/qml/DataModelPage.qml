@@ -36,17 +36,9 @@ MyStackViewPage {
 
     property var modelGRPHOffset : 1
 
-    property var thresholdStep : 0.01
-    property var minTouch : 0.2
-    property var midTouch : 0.5
-    property var maxTouch : 1.0
-
     property var initialLoaded: false
 
     function updateInfo() {  
-        setMinTouch(WalkInPlaceTabController.getMinTouch())
-        setMidTouch(WalkInPlaceTabController.getMidTouch())
-        setMaxTouch(WalkInPlaceTabController.getMaxTouch())
     }
 
     property var startTimer: function() {
@@ -158,174 +150,6 @@ MyStackViewPage {
                 }
 
                 GridLayout {
-                    columns: 7
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 100
-                    }  
-
-                    MyText {
-                        text: "Slow Pace Touch"
-                        horizontalAlignment: Text.AlignHCenter
-                        Layout.preferredWidth: 220
-                    }
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 70
-                    }  
-
-                    MyText {
-                        text: "Medium Pace Touch"
-                        horizontalAlignment: Text.AlignHCenter
-                        Layout.preferredWidth: 220
-                    }
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 70
-                    }  
-
-                    MyText {
-                        text: "Max Pace Touch"
-                        horizontalAlignment: Text.AlignHCenter
-                        Layout.preferredWidth: 220
-                    }
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 70
-                    }  
-                }
-
-                GridLayout {
-                    columns: 16
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 100
-                    }  
-
-                    MyPushButton {
-                        id: minTouchMinusButton
-                        Layout.preferredWidth: 40
-                        text: "-"
-                        onClicked: {
-                            var val = minTouch - thresholdStep
-                            setMinTouch(val)
-                        }
-                    }
-
-                    MyTextField {
-                        id: minTouchInputField
-                        text: "0.2"
-                        keyBoardUID: 120
-                        Layout.preferredWidth: 140
-                        horizontalAlignment: Text.AlignHCenter
-                        function onInputEvent(input) {
-                            var val = parseFloat(input)
-                            if (!isNaN(val)) {
-                                setMinTouch(val)
-                            } 
-                        }
-                    }
-
-                    MyPushButton {
-                        id: minTouchPlusButton
-                        Layout.preferredWidth: 40
-                        text: "+"
-                        onClicked: {
-                            var val = minTouch + thresholdStep
-                            setMinTouch(val)
-                        }
-                    }
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 70
-                    }  
-
-                    MyPushButton {
-                        id: midTouchMinusButton
-                        Layout.preferredWidth: 40
-                        text: "-"
-                        onClicked: {
-                            var val = midTouch - thresholdStep
-                            setMidTouch(val)
-                        }
-                    }
-
-                    MyTextField {
-                        id: midTouchInputField
-                        text: "0.5"
-                        keyBoardUID: 121
-                        Layout.preferredWidth: 140
-                        horizontalAlignment: Text.AlignHCenter
-                        function onInputEvent(input) {
-                            var val = parseFloat(input)
-                            if (!isNaN(val)) {
-                                setMidTouch(val)
-                            } 
-                        }
-                    }
-
-                    MyPushButton {
-                        id: midTouchPlusButton
-                        Layout.preferredWidth: 40
-                        text: "+"
-                        onClicked: {
-                            var val = midTouch + thresholdStep
-                            setMidTouch(val)
-                        }
-                    }
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 70
-                    }  
-
-                    MyPushButton {
-                        id: maxTouchMinusButton
-                        Layout.preferredWidth: 40
-                        text: "-"
-                        onClicked: {
-                            var val = maxTouch - thresholdStep
-                            setMaxTouch(val)
-                        }
-                    }
-
-                    MyTextField {
-                        id: maxTouchInputField
-                        text: "1.0"
-                        keyBoardUID: 122
-                        Layout.preferredWidth: 140
-                        horizontalAlignment: Text.AlignHCenter
-                        function onInputEvent(input) {
-                            var val = parseFloat(input)
-                            if (!isNaN(val)) {
-                                setMaxTouch(val)
-                            } 
-                        }
-                    }
-
-                    MyPushButton {
-                        id: maxTouchPlusButton
-                        Layout.preferredWidth: 40
-                        text: "+"
-                        onClicked: {
-                            var val = maxTouch + thresholdStep
-                            setMaxTouch(val)
-                        }
-                    }
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 70
-                    }  
-                }
-
-                GridLayout {
                     columns: 8
 
                     MyText {
@@ -433,18 +257,18 @@ MyStackViewPage {
         Column {
             spacing: 6 
             anchors.fill: parent
-            topPadding: 165
+            topPadding: 70
 
             GridLayout {
                 columns: 1
                 rows: 1
                 width: 1500
-                height: 700
+                height: 800
 
                 Canvas {
                     id: modelCanvas
                     width: 1500
-                    height: 600
+                    height: 700
                     antialiasing: true
                     Layout.row: 1
                     Layout.column: 1
@@ -452,7 +276,7 @@ MyStackViewPage {
                     Layout.rowSpan: 1
 
                     property int rectWidth: 1500
-                    property int rectHeight: 600
+                    property int rectHeight: 700
                     property int circleRad: 15
                     property int topX : 50
                     property int topY : 0
@@ -663,24 +487,6 @@ MyStackViewPage {
             }
             initialLoaded = true
         }
-    }
-
-    function setMinTouch(val) {
-        minTouch = val
-        WalkInPlaceTabController.setMinTouch(val)
-        minTouchInputField.text = val.toFixed(2).toString()
-    }
-
-    function setMidTouch(val) {
-        midTouch = val
-        WalkInPlaceTabController.setMidTouch(val)
-        midTouchInputField.text = val.toFixed(2).toString()
-    }
-
-    function setMaxTouch(val) {
-        maxTouch = val
-        WalkInPlaceTabController.setMaxTouch(val)
-        maxTouchInputField.text = val.toFixed(2).toString()
     }
 
     function getModelData() {

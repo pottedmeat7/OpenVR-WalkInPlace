@@ -764,6 +764,7 @@ Delete $INSTDIR\res\qml\MyText.qml
 Delete $INSTDIR\res\qml\MyTextField.qml
 Delete $INSTDIR\res\qml\MyTimerPopup.qml
 Delete $INSTDIR\res\qml\MyToggleButton.qml
+Delete $INSTDIR\res\qml\PaceControlPage.qml
 Delete $INSTDIR\res\thumbicon.png
 Delete $INSTDIR\res\transparent.png
 Delete $INSTDIR\startdesktopmode.bat

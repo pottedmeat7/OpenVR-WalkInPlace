@@ -5,6 +5,7 @@
 #include <memory>
 #include <openvr.h>
 #include <vector>
+#include <set>
 #include <vrwalkinplace.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -26,6 +27,20 @@ namespace walkinplace {
 		grip = 2,
 		keyWASD = 3,
 		keyArrow = 4
+	};
+
+	enum PaceControlType {
+		AvgControllerModelMatch, 
+		AvgHMDModelMatch, 
+		AvgControllerHMDModelMatch,
+		MinMaxControllerSpeed, 
+		CurControllerModelMatch, 
+		CurHMDModelMatch
+	};
+
+	enum TrackedDeviceLoc {
+		TrackedDeviceOnHands = 0,
+		TrackedDeviceOnFeet = 1
 	};
 
 	struct GameType {
@@ -50,6 +65,7 @@ namespace walkinplace {
 		bool trackHMDVel = true;
 		bool trackHMDRot = true;
 		int gameType = 0;
+		int velControl = 0;
 		int hmdType = 0;
 		int buttonEnables = false;
 		int buttonControlSelect = 0;
@@ -67,7 +83,6 @@ namespace walkinplace {
 		int trkr2Idx = -1;
 	};
 
-
 	struct DeviceInfo {
 		std::string serial;
 		vr::ETrackedDeviceClass deviceClass = vr::TrackedDeviceClass_Invalid;
@@ -75,6 +90,7 @@ namespace walkinplace {
 		uint32_t renderModelIndex = 0;
 		vr::VROverlayHandle_t renderModelOverlay = vr::k_ulOverlayHandleInvalid;
 		std::string renderModelOverlayName;
+		vr::RenderModel_t * model;
 		bool isTrackedAsCNTRL = false;
 		bool isTrackedAsTRKR = false;
 	};
@@ -89,6 +105,7 @@ namespace walkinplace {
 		vrwalkinplace::VRWalkInPlace vrwalkinplace;
 
 		std::vector<std::shared_ptr<DeviceInfo>> deviceInfos;
+		std::set<uint32_t> deviceIdSet;
 		uint32_t maxValidDeviceId = 0;
 
 		std::thread identifyThread;
@@ -140,6 +157,7 @@ namespace walkinplace {
 		bool inputStateChanged = false;
 
 		std::shared_ptr <GameType> gameType;
+		PaceControlType paceControl = PaceControlType::AvgControllerModelMatch;
 		int hmdType = 0;
 		int buttonControlSelect = 0;
 		int controlSelectOverlayHandle = -1;
@@ -167,8 +185,8 @@ namespace walkinplace {
 		int reqSNHMD = 4;
 		int stopSNHMD = 4;
 		int maxSNTRKR = 19;
-		int startSNTRKR = 14;
-		int reqSNTRKR = 8;
+		int startSNTRKR = 12;
+		int reqSNTRKR = 5;
 		int stopSNTRKR = 5;
 		int maxSNCNTRL = 12;
 		int reqSNCNTRL = 10;
@@ -190,6 +208,7 @@ namespace walkinplace {
 		float hmdMaxXVel = 0;
 		float hmdMaxZVel = 0;
 		float minHMDPeakVal = 0.0;
+		float maxCNTRLVal = 0.0;
 		float minTRKRPeakVal = 0.0;
 		float sNValidTouch = 0;
 		float minTouch = 0.35;
@@ -239,6 +258,7 @@ namespace walkinplace {
 		Q_INVOKABLE int getHMDType();
 		Q_INVOKABLE int getButtonControlSelect();
 		Q_INVOKABLE int getDisableButton();
+		Q_INVOKABLE int getPaceControl();
 		Q_INVOKABLE bool getUseTrackers();
 		Q_INVOKABLE bool getDisableHMD();
 		Q_INVOKABLE bool getTrackHMDRot();
@@ -254,7 +274,7 @@ namespace walkinplace {
 		Q_INVOKABLE QList<qreal> getHMDSample();
 		Q_INVOKABLE QList<qreal> getCNTRLSample(); 
 		Q_INVOKABLE QList<qreal> getTRKRSample();
-		Q_INVOKABLE void applyVirtualStep();
+		Q_INVOKABLE void applyVirtualStep(float y);
 		Q_INVOKABLE QList<qreal> getModelData();
 		Q_INVOKABLE QList<qreal> trainingDataSample(float scaleSpeed, double tdiff);
 		Q_INVOKABLE void completeTraining();
@@ -278,9 +298,15 @@ namespace walkinplace {
 		void setMaxTouch(float value);
 		void setGameType(int gameType);
 		void setHMDType(int gameType);
+		void setPaceControl(int paceControl);
 		void setButtonControlSelect(int control);
 		void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);
+
 		void runSampleOnModel();
+		void testHMDSample(double dt);
+		void testTRKRSample(double dt);
+		float determineSampleTouch(double dt);
+		void determineCurDirection();
 
 		bool buttonStatus();
 

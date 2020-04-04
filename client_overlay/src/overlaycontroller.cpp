@@ -376,7 +376,7 @@ const vr::VROverlayHandle_t& OverlayController::overlayThumbnailHandle() {
 
 
 void OverlayController::showKeyboard(QString existingText, unsigned long userValue) {
-	vr::VROverlay()->ShowKeyboardForOverlay(m_ulOverlayHandle, vr::k_EGamepadTextInputModeNormal, vr::k_EGamepadTextInputLineModeSingleLine, "Walk In Place Overlay", 1024, existingText.toStdString().c_str(), false, userValue);
+	vr::VROverlay()->ShowKeyboardForOverlay(m_ulOverlayHandle, vr::k_EGamepadTextInputModeNormal, vr::k_EGamepadTextInputLineModeSingleLine, 0, "Walk In Place Overlay", 1024, existingText.toStdString().c_str(), userValue);
 }
 
 
