@@ -21,6 +21,8 @@ CMakeCache.*
 *.so
 *.qmlc
 *.pro.user
+*.AppImage
+client_overlay/bin/x64/Application-x86_64.AppImage
 client_overlay/Release/*
 client_overlay/bin/x64/OpenVR-WalkInplaceOverlay
 client_overlay/bin/x64/translations/*
