@@ -1,6 +1,8 @@
 third-party/boost_1_65_1/*
 third-party/boost_1_67_0/*
 third-party/LeapSDK/*
+third-party/armadillo/*
+packages/*
 build*
 build/*
 Release/*
@@ -43,6 +45,7 @@ client_overlay/bin/x64/private
 client_overlay/bin/x64/qmltooling
 client_overlay/bin/x64/qtdata
 client_overlay/bin/x64/translations
+client_overlay/bin/x64/*.dll
 client_overlay/bin/x64/D3Dcompiler_47.dll
 client_overlay/bin/x64/Qt5Charts.dll
 client_overlay/bin/x64/Qt5Chartsd.dll
@@ -72,8 +75,6 @@ client_overlay/bin/x64/AppRun
 client_overlay/bin/x64/doc/*
 client_overlay/bin/x64/error.log
 client_overlay/bin/x64/lib/*
-client_overlay/bin/x64/LICENSE
-client_overlay/bin/x64/manifest.vrmanifest
 client_overlay/bin/x64/translations/*
 *.cache
 VRWalkInPlace.VC.VC.opendb

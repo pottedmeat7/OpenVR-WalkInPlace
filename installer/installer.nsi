@@ -11,12 +11,13 @@
 ;--------------------------------
 ;General
 
+	!define OPENVR_BASEDIR "..\openvr\"
 	!define OVERLAY_BASEDIR "..\client_overlay\bin\x64"
 	!define DRIVER_BASEDIR "..\driver_vrwalkinplace"
 
 	;Name and file
 	Name "OpenVR Walk In Place"
-	OutFile "OpenVR-WalkInPlace.exe"
+	OutFile "OpenVR-WalkInPlace-Installer.exe"
 	
 	;Default installation folder
 	InstallDir "$PROGRAMFILES64\OpenVR-WalkInPlace"
@@ -118,6 +119,8 @@ Section "Install" SecInstall
 	File "${OVERLAY_BASEDIR}\..\logging.conf"
 	File /r "${OVERLAY_BASEDIR}\res"
 	File /r "${OVERLAY_BASEDIR}\qtdata"
+	File "${OPENVR_BASEDIR}\bin\win64\*.dll"
+
 
 
 	; Install redistributable

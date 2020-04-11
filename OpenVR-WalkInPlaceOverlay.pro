@@ -11,7 +11,7 @@ MOC_DIR=$$PWD/build/
 #QMAKE_LFLAGS_RPATH=
 # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
 QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
-
+QMAKE_CXXFLAGS += "-fopenmp"
 
 QT = \
     core \

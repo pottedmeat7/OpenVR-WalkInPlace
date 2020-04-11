@@ -4,8 +4,8 @@ import QtQuick.Layouts 1.2
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 Rectangle {
-    color: "transparent" //#277650"
-    width: 1200
+    color: myPalette.base
+    width: 1500
     height: 1000
 
     property string name : "default"
@@ -23,7 +23,7 @@ Rectangle {
 
     ColumnLayout {
         id: mainLayout
-        spacing: 12
+        spacing: 7
         anchors.fill: parent
     }
 

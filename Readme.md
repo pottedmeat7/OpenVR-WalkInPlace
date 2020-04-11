@@ -1,56 +1,39 @@
 ![language](https://img.shields.io/badge/Language-C%2B%2B11-green.svg)  ![dependencies](https://img.shields.io/badge/Dependencies-Boost%201.65-green.svg)  ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
 
-# OpenVR-WalkInPlace
+# OpenVR-WalkInPlace (now supports mlpack data models)
 
-An OpenVR driver that applies virtual movement using a pedometer
+An OpenVR client and driver that tracks real-time device tracking data and applies virtual movement using linear analysis of mlpack data models with armadillo libraries.
 
-The OpenVR driver adds software defined controllers, tracks movement of the Physical HMD and Controllers, then applies input to the software controllers as well as mirror all physical input.
+As long as the real-time tracking sample is accurately represented in the recorded model, virtual input will be applied. Scale of input can be customized.
 
 ## A history
 
 https://sites.google.com/view/openvr-walkinplace/home
 
-
-# Current Games that Work Best with OpenVR-WalkInPlace
-
-- Skyrim VR
-- The Forest
-- Rec Room
-- Arizona Sunshine
-- Onward
-- VR-Chat
-- DOOM VFR
-- Any other games with Analog locomotion controls
-
-Other games may not have touchpad movement options however this driver will 
-also activate teleport if you'd like.
-
 # Features
 
-- Auto Configuration for best settings
-- Tracker support (for feet)
-- Configuration for "Arm Swinging" Locomotion
-- Profiles saving
-- Device movemnt Graph
+- Movement Data Model recording, of HMD, tracker and controller devices
+- supports Walk In Place Locomotion
+- supports Arm Swinging Locomotion
+- Or any other HMD,tracker movement pattern that can be recorded and matched in a data model
 
 # Upcoming
 
-- Options for emulating other input methods
-- HMD Relative Direction Override to Controller Relative Direction
-- Any Relative Direction to Tracker Relative Direction
+- HMD Relative Direction Override to any tracked device Relative Direction
+- Linux support
  
 ## Installer
 
 Download the newest installer from the [release section](https://github.com/pottedmeat7/OpenVR-WalkInPlace/releases) and then execute it. Don't forget to exit SteamVR before installing/de-installing.
-
-If you also use OpenVR-InputEmulator you can use the 'OpenVR-WalkInPlace-OVRIE-driver.exe' installer.
 
 # Documentation
 
 ## Configuration Examples
 
 ![Example Screenshot](docs/screenshots/walkinplace_default.png)
-*These are settings which work for many games
+
+Follow this for basic initial setup
+https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/full_setup/Readme.md
 
 ## GIF Step Examples
 Walking Example: 
@@ -66,77 +49,92 @@ Direction Control Example:
 ![directions example](docs/gifs/wip_dir.gif)
 
 ![Example Screenshot](docs/screenshots/wip_graph.png)
-*This is what the graph should look like when walking in place
+*This is an example of the graph while walking in place*
 
-### Auto Conf
-You can detect ideal HMD Thresholds, Tracker Configuration, and Jog/Run Arm swing values with Auto Conf function on the Graph Page
+## Data Models
+You can record a data model of your HMD, tracker and controller movement rates to use to match the similar movement in real-time.
+You can Create, Apply, and Delete the data models. The current applied Data Model, will the one saved into a profile if you create one. You can also choose any pre-recorded data models without a profile as well.
+If you name a data model with the name "default" it will be the initially loaded data model once you start SteamVR.
 
-### WalkInPlace Overlay
-Check "Enable WIP" to activate the virtual input
-(also enable the "analog" locomotion in the games settings this is the input method that uses the touch-pad)
+## Data Model Recording
+Follow the on screen popups instructions when recording a new data model. The recording process is from slowest to fastest movement of all devices. There will be 5 steps in the following order, Slowest Pace (5 seconds), Slow Scaling up to Medium (5 Second), Medium Paced (5 Seconds), Medium Scaling up to Fast (5 Seconds), and Fastest Pace. 
+
+As you record the touch values are recorded in the following order Slow (0 touch value), Slow to medium (0-0.5 touch value), Medium (0.5 touch value), Medium to fast (0.5-1.0 touch value), and Fast (1.0 touch value)
+
+Mostly it will be your controller values that are used to determine where in the model to pick the corresponding touch value from.
+The HMD and trackers mainly determine if you are moving at all according to the model.
+
+If you find that you move to quickly to soon, try re-recording a model with more significant arm swinging.
+
+### Apply Data Model
+Make sure to "apply" the data model before Enabling WIP or trying to view the data model as well.
+
+## Show Data Model Page
+
+![Example Screenshot](docs/screenshots/hmdSampleEX.png)
+*This shows the HMD model, the model touch values, and the current real-time sample (in green)*
+
+![Example Screenshot](docs/screenshots/cntrlDataModelEX.png)
+*This is an example data model of the controllers values from slow pace to fast pace*
+
+### Show HMD, Show Trackers, Show Controller, Show Touch Line
+These show the models of each device. The Touch Line is the values inserted from 0-1 of the progress during the recording. 
+The touch-line will be scaled to be between the values in the "Touch Pace Options". Ie. From Min-Max.
+
+### Touch Pace Options
+These values control the degree of movement applied in game.
+Some games will use the touchpad axis differntly, for slow games sometimes there is only 1 degree of movment.
+Some games use the entire axis from the center, 0, to 1
+
+If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "mid" or "max" touch value.
+
+## Other Options
+
+## Enable WIP
+This checkbox either enables or disables all detection and virtual input
 
 ### HMD Type
 Choose which HMD your using
 
 ### Input Type
 There are a few different methods of inputs used by games
-- The standard "Touchpad" locomotion games, that use from 0-1 on the touchpad for forward movement speed, often these games also have a "click to sprint" function. Use either "Touchpad (with click)" or "Touchpad" also "Joystick (with click)" or "Joysitck" for Rift
-- Some games use touchpad locomotion except you have to press and hold the touchpad while moving your finger from 0-1 use the option "Touchpad (pressed)" or "Joystick (pressed)" for these games
-- Anything else such as Teleport games just generating a click with "click to sprint" is the best option
+- The standard "Touchpad" locomotion games, that use from 0-1 on the touchpad (or joystick) for forward movement speed, often these games also have a "click to sprint" function. 
+- Some games use touchpad locomotion except you have to press and hold the touchpad while moving your finger from 0-1 use the option "Touchpad (pressed)" for these games
+- Anything else such as Teleport games, using "click to sprint" with the minimum touch value set to 1.0 will generate a click for any valid movement match
 
-### Controller selection
-All input now goes into the OVRWIP Custom Controller you can also rebind the input from the OVRWIP controller to other controllers.
+### OVRWIP Controller
+All touchpad input goes to the OVRWIP Custom Controller you can rebind this input to other controllers and buttons using the SteamVR Input Bindings.
+You can access SteamVR's input bindings by going to the VR dashboard -> Settings -> Controller Bindings then select the ovrwip_controller and bind to any inputs you like. For these bindings to work you must also go to the "Extra Settings" tab and select either bind to left or right hand.
+
+### SteamVR Bindings for OVRWIP Controller
+Follow the screenshots here to setup bindings for the OVRWIP controller
+https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/steamvr_bindings/
 
 ### buttons to disable/enable WIP
 These options can be used to disable/enable virtual movement when your holding or not holding the button selected.
-- First choose either "enable WIP" or "disable WIP"  from the first drop down
-- Then choose the button action that you'd prefer from the second drop down
-- Then choose which controller that you want the button action to be on
 
-### HMD Thresholds
-The Y value is the Up and Down movement of your head to trigger a step, in order to trigger the real time HMD values have to be greater than the Y threshold.
+## Enable / Disable Device page
 
-The XZ value is the Side to Side movement that will disable triggering a step (if over the threshold), in order to trigger a step the HMD values have to be less than the XZ threshold.
+### Track HMD? 
+This will enable/disable the tracking and analysis of the real-time HMD movement. If disabled it will ignore the HMD data in the current data model and will only utilize the thresholds of the tracker movement. 
 
-The HMD Y values have to be greater then the HMD XZ values a in order to take a step as well as both Y and XZ meet the threshold.
+### Track HMD Rotation?
+This is a enhanced check to track if the rotational velocity values of HMD YAW and PITCH are within the maximum recorded values of the current data model.
 
-### Tracker Thresholds
-These values are functionality the same as the HMD values except from a tracker device. 
+### controller selection for hand(s)
+If you have more then 1 controllers, you can select another combination of 1-2 controllers to be used as the 1-2 tracked hand(s).
 
-### Use Trackers?
-Enables/Disable trackers. This will use both the HMD thresholds and tracker thresholds in order to trigger a step.
+### controller selection for feet (untesed)
+If you have more then 1 controllers, you can select another combination of 1-2 controllers to be used as the 1-2 tracked feet.
 
-### Disable HMD?
-This will disable the tracking of the HMD movement, and will only utilize the thresholds of the tracker movement. 
-You must have both "Use Trackers?" Checked as well as "Disable HMD?" checked. 
+### tracker selection for hand(s) (untesed)
+If you have more then 1 trackers, you can select another combination of 1-2 trackers to be used as the 1-2 tracked hand(s).
 
-### Arm Swing Jog / Arm Swing Run
-These values are for the controller Up and Down movement of the arms. 
-The real time Controller values have to be greater then these values in order to Jog / Run.
+### tracker selection for feet
+If you have more then 1 trackers, you can select another combination of 1-2 trackers to be used as the 1-2 tracked feet.
 
-### Step Time
-This is how long each "step" lasts. If 1 step is detected it will last this amount of time in seconds. As you repeat steps this time is reset for every step detected. 
-
-### Touch Options
-These values control the degree of movement applied in game.
-Some games will use the touchpad axis differntly, for slow games sometimes there is only 1 degree of movment.
-Some games use the entire axis from the center, 0, to 1
-
-If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "jog" or "run" touch value with the "arm swing" thresholds above.
-
-### Scale Touch with Swing?
-This will enable varying touch values between your set walk/run values the Hand Jog/Run values should be set much higher to make this feel smoother and get more variance in the movement. Even with no arm swing movement the walk touch will still be the minimum value. So if you want no movement without arm swinging, set Walk touch to 0.
-
-When using scale touch, I've changed the algorithm to use average arm swinging to make it smoother. 
-You can see the current average arm swing values in the graph.
-
-### Use Controller Direction for Straf?
-These are made for games that have HMD relative movement (ie you move the direction you face). These games do allow straf movement often by touching the left or right side of the touchpad. These options will calcuate your controller direction and use left or right touchpad values if your controllers direction is perpendicular to your HMD forward direction. 
-(These features currently have problems, and are having more conflicts when both options are used)
-
-### Use Controller Direction for Reverse?
-Some games also do not support controller direction for reverse, this option will determine if your controller is pointed backwards and apply negative values for the touchpad. 
-(These features currently have problems, and are having more conflicts when both options are used)
+//# ### Direction devices - work in progress
+//# This will allow customization of direction of movement using any of the devices. Just as many games use the controller as the direction device, although some use the HMD direction. 
 
 ### Profiles
 If you like your current settings for a game and want to save them you can click "New Profile" it will take the current settings and save them with the profile name of your choice. 
@@ -144,12 +142,38 @@ If you want to update a profile with new settings you need to select the profile
 
 If you name a profile with the name "default" it will be the initially loaded profile once you start SteamVR. If you dont want to automatically enable walk in place locomotion on startup save the default profile with "enableWIP" unchecked.
 
+
+### Other settings
+You can modify the size and length of the real-time samples to shorten or lengthen the needed data to either start or stop movement
+you have to edit the ini file found at `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace.ini` and add any of the following variables to any profile you'd like with the standard syntax of profiles in the file
+*Before changing these try to understand how changing these affects the matching decision for starting and stopping movement
+A quick summary is the start sample is used before any movement has been applied, ie. the first step
+The ongoing sample size is for when your movement has fit the model previously the following samples require less data
+The max sample size is just the limit before data points are removed from the sample*
+```
+walkInPlaceProfiles\<profile_index>\maxHMDSampleSize=16
+walkInPlaceProfiles\<profile_index>\startHMDSampleSize=12
+walkInPlaceProfiles\<profile_index>\ongoingHMDSampleSize=4
+walkInPlaceProfiles\<profile_index>\maxTRKRSampleSize=19
+walkInPlaceProfiles\<profile_index>\startTRKRSampleSize=14
+walkInPlaceProfiles\<profile_index>\ongoingTRKRSampleSize=8
+walkInPlaceProfiles\<profile_index>\maxCNTRLSampleSize=12
+walkInPlaceProfiles\<profile_index>\ongoingCNTRLSampleSize=10
+```
+You can change the needed accuracy of the matching algorithms by changing the following variables
+*The velocity variance changes are pretty straight forward as the velocity is what is graphed in the model and the real-time samples. Changing the variance just sets the error allowed for each data point*
+```
+walkInPlaceProfiles\<profile_index>\hmdVelVariance=0.07
+walkInPlaceProfiles\<profile_index>\trkrVelVariance=0.07
+walkInPlaceProfiles\<profile_index>\cntrlVelVariance=0.07
+```
+*This value is the value that checks the direction of the acceleration ie. up or down (this is what forms the wave like pattern in the tracking data). This value is the percentage of data points that the sample needs to match the model, ie. 75% (0.75) of the ups and downs of the sample wave need to match at any point of the model, and be within the velocity variance.
+```
+walkInPlaceProfiles\<profile_index>\hmdAccelPercentAccurate=0.75
+```
 ## Graph Page
 The graph page will show you realtime values from the HMD, controllers and trackers.
 If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.
-
-### Auto Configuration
-Just follow the on screen instructions and the auto configuration will make some approximations and set HMD, Tracker and Arm Swing thresholds for you.
 
 ## Any Issues Check out the Logs
 Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
@@ -174,6 +198,11 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 2. Download Qt 5.9.0 (Either windows .exe or linux .run file)
 3. Run the Qt installer (I installed it to `c:\Qt` or `/home/<user>/` on linux)
 
+### mlpack, openblas and armadillo
+- WINDOWS
+	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build_windows.html
+- LINUX
+	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build.html
 
 ## Building
 - WINDOWS
@@ -204,3 +233,14 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 # License
 
 This software is released under GPL 3.0.
+
+#Credits
+mlpack2018 mlpack 3: a fast, flexible machine learning library Curtin, Ryan R. and Edel, Marcus and Lozhnikov, Mikhail and Mentekidis, Yannis and Ghaisas, Sumedh and Zhang, Shangtong Journal of Open Source Software, 3, 26 726, 2018, 10.21105/joss.00726, https://doi.org/10.21105/joss.00726
+
+Conrad Sanderson and Ryan Curtin.
+[Armadillo: a template-based C++ library for linear algebra.](http://arma.sourceforge.net/armadillo_joss_2016.pdf) 
+Journal of Open Source Software, Vol. 1, pp. 26, 2016.
+
+Conrad Sanderson and Ryan Curtin.
+[Practical sparse matrices in C++ with hybrid storage and template-based expression optimisation.](http://arma.sourceforge.net/armadillo_mca_2019.pdf)
+Mathematical and Computational Applications, Vol. 24, No. 3, 2019.

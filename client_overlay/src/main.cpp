@@ -1,8 +1,4 @@
 
-#define BOOST_PYTHON_STATIC_LIB
-
-#define BOOST_LIB_NAME boost_python
-
 #include "overlaycontroller.h"
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -174,7 +170,10 @@ int main(int argc, char *argv[]) {
 			auto initError = vr::VRInitError_None;
 			vr::VR_Init(&initError, vr::VRApplication_Utility);
 			if (initError == vr::VRInitError_None) {
-				std::cout << vr::VR_RuntimePath();
+				static char rchBuffer[1024];
+				uint32_t unRequiredSize;
+				vr::VR_GetRuntimePath(rchBuffer, sizeof(rchBuffer), &unRequiredSize);
+				std::cout << rchBuffer;
 			} else {
 				exitcode = -2;
 				errorLog << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
@@ -312,13 +311,3 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-/*
-namespace walkinplace {
-	BOOST_PYTHON_MODULE(ovrwip_py)
-	{
-		boost::python::def("applyProfile", &WalkInPlaceTabController::applyWalkInPlaceProfile, boost::python::args("p"));
-		boost::python::def("axisEvent", &WalkInPlaceTabController::axisEvent, boost::python::args("dId","aId","x","y"));
-		boost::python::def("buttonEvent", &WalkInPlaceTabController::buttonEvent, boost::python::args("dId","bId","bState"));
-	}
-}
-*/

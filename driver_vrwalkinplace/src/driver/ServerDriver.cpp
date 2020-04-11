@@ -52,25 +52,6 @@ namespace vrwalkinplace {
 
 		// Call frequency: ~93Hz
 		void ServerDriver::RunFrame() {
-			/*if (initDriver && followDevice != vr::k_unTrackedDeviceIndexInvalid) {
-				vr::VRServerDriverHost()->GetRawTrackedDevicePoses(0, latestDevicePoses, vr::k_unMaxTrackedDeviceCount); 
-				vr::TrackedDevicePose_t pose = latestDevicePoses[followDevice];
-				if (pose.bPoseIsValid) {
-					vr::DriverPose_t driverPose;
-					driverPose.poseIsValid = pose.bPoseIsValid;
-					driverPose.poseTimeOffset = 0;
-					driverPose.qRotation = vrmath::quaternionFromRotationMatrix(pose.mDeviceToAbsoluteTracking);
-					//auto m = pose.mDeviceToAbsoluteTracking.m;
-					driverPose.vecWorldFromDriverTranslation[0] = 0;//m[0][3];
-					driverPose.vecWorldFromDriverTranslation[1] = 0;//m[1][3];
-					driverPose.vecWorldFromDriverTranslation[2] = 0;//m[2][3];
-					driverPose.vecVelocity[0] = 0;//pose.vVelocity.v[0];
-					driverPose.vecVelocity[1] = 0;//pose.vVelocity.v[1];
-					driverPose.vecVelocity[2] = 0;//pose.vVelocity.v[2];
-					vr_locomotion1.updatePose(driverPose);
-					vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
-				}
-			}*/
 		}
 
 		void ServerDriver::openvr_hmdAdded(uint32_t unWhichDevice) {
@@ -84,15 +65,6 @@ namespace vrwalkinplace {
 		}
 
 		void ServerDriver::openvr_poseUpdate(uint32_t unWhichDevice, const vr::DriverPose_t & pose, double eventTimeOffset) {
-			/*if (initDriver) {
-				vr::DriverPose_t devicePose = pose;
-				devicePose.qWorldFromDriverRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
-				devicePose.vecWorldFromDriverTranslation[0] = 0;// latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[0][3];
-				devicePose.vecWorldFromDriverTranslation[1] = 0;// latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[1][3];
-				devicePose.vecWorldFromDriverTranslation[2] = 0;// latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m[2][3];
-				vr_locomotion1.updatePose(devicePose);
-				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(vr_locomotion1.openvrId(), vr_locomotion1.GetPose(), sizeof(vr::DriverPose_t));
-			}*/
 		}
 
 		void ServerDriver::openvr_updateState(uint32_t unWhichDevice, vr::VRControllerState_t new_state, double eventTimeOffset) {			 
@@ -114,26 +86,32 @@ namespace vrwalkinplace {
 		}
 
 		void ServerDriver::openvr_enableDriver(bool val) {
-			if (!initDriver && val) {
-				initDriver = true;
+			try {
+				if (!initDriver && val) {
+					initDriver = true;
 
-				vr::DriverPose_t test_pose = { 0 };
-				test_pose.deviceIsConnected = true;
-				test_pose.poseIsValid = true;
-				test_pose.willDriftInYaw = false;
-				test_pose.shouldApplyHeadModel = false;
-				test_pose.poseTimeOffset = 0;
-				test_pose.result = vr::ETrackingResult::TrackingResult_Running_OK;
-				test_pose.qDriverFromHeadRotation = { 1,0,0,0 };
-				test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
+					vr::DriverPose_t test_pose = { 0 };
+					test_pose.deviceIsConnected = true;
+					test_pose.poseIsValid = true;
+					test_pose.willDriftInYaw = false;
+					test_pose.shouldApplyHeadModel = false;
+					test_pose.poseTimeOffset = 0;
+					test_pose.result = vr::ETrackingResult::TrackingResult_Running_OK;
+					test_pose.qDriverFromHeadRotation = { 1,0,0,0 };
+					test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
 
-				vr::VRControllerState_t test_state;
-				test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
+					vr::VRControllerState_t test_state;
+					test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
 
-				vr_locomotion1 = VirtualController("ovrwip_", true, test_pose, test_state);
+					vr_locomotion1 = VirtualController("ovrwip_000", true, test_pose, test_state);
 
-				vr::VRServerDriverHost()->TrackedDeviceAdded("ovrwip_", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &vr_locomotion1);
+					vr::VRServerDriverHost()->TrackedDeviceAdded("ovrwip_000", vr::ETrackedDeviceClass::TrackedDeviceClass_Controller, &vr_locomotion1);
 
+				}
+			}
+			catch (std::exception& e) {
+				initDriver = false;
+				LOG(INFO) << "Exception caught while enabling driver: " << e.what();
 			}
 		}
 
