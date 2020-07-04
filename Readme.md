@@ -203,18 +203,15 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build_windows.html
 - LINUX
 	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build.html
+	`sudo apt-get install libmlpack-dev`
 
 ## Building
 - WINDOWS
 	Build *'VRWalkInPlace.sln'* in Visual Studio 2017
 - LINUX	
-	Build the OpenVR-WalkInPlaceOverlay.pro project with Qt Creator 
 	from a shell run
 	`./build.sh`
-	go to https://github.com/probonopd/linuxdeployqt/releases and download the AppImage
-	then run
-	`cd <OpenVR-WalkInPlace path>/client_overlay/bin/x64/
-	<linuxdeployqt path>/linuxdeployqt-5-x86_64.AppImage OpenVR-WalkInPlaceOverlay -qmldir=res/qml/ -no-translations -bundle-non-qt-libs -appimage -verbose=2`
+	and `./build.sh install`
 
 ### Building installer
 1. go to https://sourceforge.net/projects/nsis/files/NSIS%202/2.33/

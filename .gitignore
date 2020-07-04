@@ -3,6 +3,8 @@ third-party/boost_1_67_0/*
 third-party/LeapSDK/*
 third-party/armadillo/*
 packages/*
+package/*
+package*
 build*
 build/*
 Release/*

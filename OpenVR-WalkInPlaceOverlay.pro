@@ -7,8 +7,6 @@ DESTDIR = $$PWD/client_overlay/bin/x64
 OBJECTS_DIR=$$PWD/build/
 MOC_DIR=$$PWD/build/
 
-find_package(MLPACK REQUIRED)
-
 # suppress the default RPATH if you wish
 #QMAKE_LFLAGS_RPATH=
 # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
