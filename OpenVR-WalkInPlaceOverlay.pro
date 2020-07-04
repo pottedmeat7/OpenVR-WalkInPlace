@@ -7,6 +7,8 @@ DESTDIR = $$PWD/client_overlay/bin/x64
 OBJECTS_DIR=$$PWD/build/
 MOC_DIR=$$PWD/build/
 
+find_package(MLPACK REQUIRED)
+
 # suppress the default RPATH if you wish
 #QMAKE_LFLAGS_RPATH=
 # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
@@ -23,7 +25,10 @@ QT = \
 LIBS = \
     -L"$$PWD/lib_vrwalkinplace/lib" -lVRWalkInPlace \
     -L"$$PWD/openvr/lib/linux64" -lopenvr_api \
-    -lrt
+    -lrt \
+    -lboost_system \
+    -lboost_filesystem \
+    -lmlpack
 
 HEADERS = \
    $$PWD/client_overlay/src/tabcontrollers/WalkInPlaceTabController.h \

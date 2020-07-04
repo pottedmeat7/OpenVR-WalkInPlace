@@ -2039,7 +2039,7 @@ namespace walkinplace {
 					}
 				}*/
 				else if (gameType->inputType == InputType::keyWASD) {
-#if defined _WIN64 || defined _LP64
+#if defined (_WIN64) || !defined (_LP64)
 					INPUT input[2];
 					input[0].type = INPUT_KEYBOARD;
 					input[0].ki.wVk = 0;
@@ -2052,7 +2052,7 @@ namespace walkinplace {
 #endif
 				}
 				else if (gameType->inputType == InputType::keyArrow) {
-#if defined _WIN64 || defined _LP64
+#if defined (_WIN64) || !defined (_LP64)
 					INPUT input[2];
 					input[0].type = INPUT_KEYBOARD;
 					input[0].ki.wVk = 0;
@@ -2195,7 +2195,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::applyKeyMovement() {
 		if (gameType->inputType == InputType::keyWASD) {
 			if (pressedFlag) {
-#if defined _WIN64 || defined _LP64
+#if defined (_WIN64) || !defined (_LP64)
 				INPUT input[2];
 				input[0].type = INPUT_KEYBOARD;
 				input[0].ki.wVk = 0;
@@ -2211,7 +2211,7 @@ namespace walkinplace {
 		}
 		else if (gameType->inputType == InputType::keyArrow) {
 			if (pressedFlag) {
-#if defined _WIN64 || defined _LP64
+#if defined (_WIN64) || !defined (_LP64)
 				INPUT input[2];
 				input[0].type = INPUT_KEYBOARD;
 				input[0].ki.wVk = 0;
