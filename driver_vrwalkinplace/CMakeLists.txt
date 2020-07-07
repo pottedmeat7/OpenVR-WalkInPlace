@@ -6,6 +6,7 @@ project(DriverWalkInPlace)
 set (DriverWalkInPlace_VERSION_MAJOR 1)
 set (DriverWalkInPlace_VERSION_MINOR 0)
  
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "./lib")
  
 include_directories ("src/com/shm/")
 include_directories ("src/virtualdevice/")

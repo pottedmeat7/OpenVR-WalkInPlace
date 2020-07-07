@@ -2,5 +2,5 @@
 
 cd client_overlay/bin/x64/
 
-~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ./AppRun
+~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ./OpenVR-WalkInPlaceOverlay -nomanifest
 
