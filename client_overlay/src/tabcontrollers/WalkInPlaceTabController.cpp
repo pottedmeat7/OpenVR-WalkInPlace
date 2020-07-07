@@ -1050,15 +1050,15 @@ namespace walkinplace {
 					maxSNHMD = settings->value("maxHMDSampleSize", 16).toInt();
 					startSNHMD = settings->value("startHMDSampleSize", 12).toInt();
 					reqSNHMD = settings->value("ongoingHMDSampleSize", 4).toInt();
-					maxSNTRKR = settings->value("maxTRKRSampleSize", 19).toInt();
-					startSNTRKR = settings->value("startTRKRSampleSize", 14).toInt();
-					reqSNTRKR = settings->value("ongoingTRKRSampleSize", 8).toInt();
+					maxSNTRKR = settings->value("maxTRKRSampleSize", 23).toInt();
+					startSNTRKR = settings->value("startTRKRSampleSize", 84).toInt();
+					reqSNTRKR = settings->value("ongoingTRKRSampleSize", 12).toInt();
 					maxSNCNTRL = settings->value("maxCNTRLSampleSize", 12).toInt();
 					reqSNCNTRL = settings->value("ongoingCNTRLSampleSize", 10).toInt();
 					hmdVelVariance = settings->value("hmdVelVariance", 0.07).toFloat();
 					hmdMinDVPerSN = settings->value("hmdAccelPercentAccurate", 0.75).toFloat();
-					trkrVariance = settings->value("trkrVelVariance", 0.07).toFloat();
-					cntrlVariance = settings->value("cntrlVelVariance", 0.07).toFloat();
+					trkrVariance = settings->value("trkrVelVariance", 0.37).toFloat();
+					cntrlVariance = settings->value("cntrlVelVariance", 0.37).toFloat();
 				}
 			}
 			settings->endArray();
@@ -1271,53 +1271,55 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::updateButtonState(uint32_t deviceId, bool firstController) {
-		if (deviceId != vr::k_unTrackedDeviceIndexInvalid && (buttonControlSelect >= 2 || (firstController == buttonControlSelect == 0))) {
-			vr::VRControllerState_t state;
-			vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
-			//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
-			//LOG(INFO) << "current button : " << state.ulButtonPressed;
-			bool isHoldingButton = false;
-			vr::EVRButtonId buttonUsed;
-			switch (disableButton) {
-			case 0:
-				buttonUsed = vr::EVRButtonId::k_EButton_Grip;
-				break;
-			case 1:
-				buttonUsed = vr::EVRButtonId::k_EButton_SteamVR_Trigger;
-				break;
-			default:
-				break;
-			}
-			switch (buttonUsed) {
-			case vr::EVRButtonId::k_EButton_Grip:
-				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-					isHoldingButton = true;
+		if (disableButton == 0 || disableButton == 1) {
+			if (deviceId != vr::k_unTrackedDeviceIndexInvalid && (buttonControlSelect >= 2 || (firstController == buttonControlSelect == 0))) {
+				vr::VRControllerState_t state;
+				vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
+				//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+				//LOG(INFO) << "current button : " << state.ulButtonPressed;
+				bool isHoldingButton = false;
+				vr::EVRButtonId buttonUsed;
+				switch (disableButton) {
+				case 0:
+					buttonUsed = vr::EVRButtonId::k_EButton_Grip;
+					break;
+				case 1:
+					buttonUsed = vr::EVRButtonId::k_EButton_SteamVR_Trigger;
+					break;
+				default:
+					break;
 				}
-				break;
-			case vr::EVRButtonId::k_EButton_Axis0:
-				if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-					isHoldingButton = true;
+				switch (buttonUsed) {
+				case vr::EVRButtonId::k_EButton_Grip:
+					if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
+						isHoldingButton = true;
+					}
+					break;
+				case vr::EVRButtonId::k_EButton_Axis0:
+					if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
+						isHoldingButton = true;
+					}
+					break;
+				case vr::EVRButtonId::k_EButton_SteamVR_Trigger:
+					if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
+						isHoldingButton = true;
+					}
+					if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
+						isHoldingButton = true;
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			case vr::EVRButtonId::k_EButton_SteamVR_Trigger:
-				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
-					isHoldingButton = true;
+				if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
+					(buttonControlSelect == 1 && !firstController && isHoldingButton) ||
+					(buttonControlSelect >= 2 && isHoldingButton)) {
+					holdingButton = true;
 				}
-				if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
-					isHoldingButton = true;
+				if ((buttonControlSelect == 0 && firstController && !isHoldingButton) ||
+					(buttonControlSelect == 1 && !firstController && !isHoldingButton)) {
+					holdingButton = false;
 				}
-				break;
-			default:
-				break;
-			}
-			if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
-				(buttonControlSelect == 1 && !firstController && isHoldingButton) ||
-				(buttonControlSelect >= 2 && isHoldingButton)) {
-				holdingButton = true;
-			}
-			if ((buttonControlSelect == 0 && firstController && !isHoldingButton) ||
-				(buttonControlSelect == 1 && !firstController && !isHoldingButton)) {
-				holdingButton = false;
 			}
 		}
 	}
@@ -1478,25 +1480,11 @@ namespace walkinplace {
 			//LOG(INFO) << "DT: " << tdiff;
 			if (tdiff >= dT) {
 				timeLastTick = now;
-				if (disableButton == 0 || disableButton == 1) {
-					holdingButton = false;
-					updateButtonState(controller1ID, true);
-					if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-						updateButtonState(controller2ID, false);
-					}
-				}
+				holdingButton = false;
+				updateButtonState(controller1ID, true);
+				updateButtonState(controller2ID, false);
 				if (buttonStatus()) {
 					vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-					/*vr::VRInput()->GetSkeletalBoneData(controller1ID, vr::VRSkeletalTransformSpace_Parent, vr::VRSkeletalMotionRange_WithController,
-						latestBoneTransforms, vr::k_unMaxTrackedDeviceCount);
-					int i = controller1ID;
-					LOG(INFO) << "abs bone O: " << latestBoneTransforms[i].orientation.x << "," << latestBoneTransforms[i].orientation.y << "," << latestBoneTransforms[i].orientation.z << "," << latestBoneTransforms[i].orientation.w;
-					LOG(INFO) << "abs bone P: " << latestBoneTransforms[i].position.v[0] << "," << latestBoneTransforms[i].position.v[1] << "," << latestBoneTransforms[i].position.v[2] << "," << latestBoneTransforms[i].position.v[3];
-					vr::VRInput()->GetSkeletalReferenceTransforms(controller1ID, vr::VRSkeletalTransformSpace_Parent, vr::EVRSkeletalReferencePose::VRSkeletalReferencePose_Fist,
-						latestBoneTransforms, vr::k_unMaxTrackedDeviceCount);
-					LOG(INFO) << "ref bone O: " << latestBoneTransforms[i].orientation.x << "," << latestBoneTransforms[i].orientation.y << "," << latestBoneTransforms[i].orientation.z << "," << latestBoneTransforms[i].orientation.w;
-					LOG(INFO) << "ref bone P: " << latestBoneTransforms[i].position.v[0] << "," << latestBoneTransforms[i].position.v[1] << "," << latestBoneTransforms[i].position.v[2] << "," << latestBoneTransforms[i].position.v[3];
-					*/
 					testHMDSample(tdiff);
 					testTRKRSample(tdiff);
 				}
@@ -1675,7 +1663,7 @@ namespace walkinplace {
 					arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
 					arma::rowvec sN = arma::abs(trkrSample.row(0));
 					arma::rowvec lastSN = sN.tail_cols(sNk);
-					if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && lastSN.max() < minTRKRPeakVal) {
+					if (!trackHMDVel && tracker2ID == vr::k_unTrackedDeviceIndexInvalid && lastSN.max() < minTRKRPeakVal) {
 						stopMovement();
 						lastValidTRKRSampleMKi = 0;
 					}
@@ -1684,7 +1672,7 @@ namespace walkinplace {
 						if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 							sN = arma::abs(trkrSample.row(1)); // trkr 2
 							arma::rowvec lastSN2 = sN.tail_cols(sNk);
-							if (lastSN.max() < minTRKRPeakVal && lastSN2.max() < minTRKRPeakVal) {
+							if ( !trackHMDVel && lastSN.max() < minTRKRPeakVal && lastSN2.max() < minTRKRPeakVal) {
 								stopMovement();
 								lastValidTRKRSampleMKi = 0;
 							}

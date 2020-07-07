@@ -184,10 +184,10 @@ namespace walkinplace {
 		int startSNHMD = 12;
 		int reqSNHMD = 4;
 		int stopSNHMD = 4;
-		int maxSNTRKR = 19;
-		int startSNTRKR = 12;
-		int reqSNTRKR = 5;
-		int stopSNTRKR = 5;
+		int maxSNTRKR = 23;
+		int startSNTRKR = 18;
+		int reqSNTRKR = 12;
+		int stopSNTRKR = 12;
 		int maxSNCNTRL = 12;
 		int reqSNCNTRL = 10;
 
@@ -201,8 +201,8 @@ namespace walkinplace {
 
 		float hmdVelVariance = 0.07;
 		float hmdMinDVPerSN = 0.75;
-		float trkrVariance = 0.07;
-		float cntrlVariance = 0.07;
+		float trkrVariance = 0.37;
+		float cntrlVariance = 0.37;
 		float hmdMaxPROTVel = 0;
 		float hmdMaxYROTVel = 0;
 		float hmdMaxXVel = 0;
