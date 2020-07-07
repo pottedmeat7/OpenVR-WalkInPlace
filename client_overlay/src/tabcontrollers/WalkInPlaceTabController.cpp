@@ -1051,7 +1051,7 @@ namespace walkinplace {
 					startSNHMD = settings->value("startHMDSampleSize", 12).toInt();
 					reqSNHMD = settings->value("ongoingHMDSampleSize", 4).toInt();
 					maxSNTRKR = settings->value("maxTRKRSampleSize", 23).toInt();
-					startSNTRKR = settings->value("startTRKRSampleSize", 84).toInt();
+					startSNTRKR = settings->value("startTRKRSampleSize", 18).toInt();
 					reqSNTRKR = settings->value("ongoingTRKRSampleSize", 12).toInt();
 					maxSNCNTRL = settings->value("maxCNTRLSampleSize", 12).toInt();
 					reqSNCNTRL = settings->value("ongoingCNTRLSampleSize", 10).toInt();
@@ -1663,7 +1663,7 @@ namespace walkinplace {
 					arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
 					arma::rowvec sN = arma::abs(trkrSample.row(0));
 					arma::rowvec lastSN = sN.tail_cols(sNk);
-					if (!trackHMDVel && tracker2ID == vr::k_unTrackedDeviceIndexInvalid && lastSN.max() < minTRKRPeakVal) {
+					if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && lastSN.max() < minTRKRPeakVal) {
 						stopMovement();
 						lastValidTRKRSampleMKi = 0;
 					}
@@ -1672,7 +1672,7 @@ namespace walkinplace {
 						if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 							sN = arma::abs(trkrSample.row(1)); // trkr 2
 							arma::rowvec lastSN2 = sN.tail_cols(sNk);
-							if ( !trackHMDVel && lastSN.max() < minTRKRPeakVal && lastSN2.max() < minTRKRPeakVal) {
+							if ( lastSN.max() < minTRKRPeakVal && lastSN2.max() < minTRKRPeakVal) {
 								stopMovement();
 								lastValidTRKRSampleMKi = 0;
 							}
