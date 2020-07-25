@@ -142,7 +142,6 @@ namespace walkinplace {
 		bool initializedDriver = false;
 		bool initializedDataModel = false;
 		bool dataTrainingRequired = false;
-		bool identifyControlTimerSet = true;
 
 		bool buttonAsToggle = false;
 		bool buttonEnables = false;
@@ -160,8 +159,6 @@ namespace walkinplace {
 		PaceControlType paceControl = PaceControlType::AvgControllerModelMatch;
 		int hmdType = 0;
 		int buttonControlSelect = 0;
-		int controlSelectOverlayHandle = -1;
-		int vive_controller_model_index = -1;
 		int disableButton = -1;
 		int unnTouchedCount = 0;
 		int lastValidHMDSampleMKi = 0;
@@ -184,10 +181,10 @@ namespace walkinplace {
 		int startSNHMD = 12;
 		int reqSNHMD = 4;
 		int stopSNHMD = 4;
-		int maxSNTRKR = 19;
-		int startSNTRKR = 12;
-		int reqSNTRKR = 5;
-		int stopSNTRKR = 5;
+		int maxSNTRKR = 23;
+		int startSNTRKR = 18;
+		int reqSNTRKR = 12;
+		int stopSNTRKR = 12;
 		int maxSNCNTRL = 12;
 		int reqSNCNTRL = 10;
 
@@ -198,11 +195,12 @@ namespace walkinplace {
 		uint64_t tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t ovrwipCNTRLID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t directionDevice = vr::k_unTrackedDeviceIndexInvalid;
+		uint64_t identifyDeviceSet = vr::k_unTrackedDeviceIndexInvalid;
 
 		float hmdVelVariance = 0.07;
 		float hmdMinDVPerSN = 0.75;
-		float trkrVariance = 0.07;
-		float cntrlVariance = 0.07;
+		float trkrVariance = 0.37;
+		float cntrlVariance = 0.37;
 		float hmdMaxPROTVel = 0;
 		float hmdMaxYROTVel = 0;
 		float hmdMaxXVel = 0;
@@ -210,6 +208,7 @@ namespace walkinplace {
 		float minHMDPeakVal = 0.0;
 		float maxCNTRLVal = 0.0;
 		float minTRKRPeakVal = 0.0;
+		float maxTRKRPeakVal = 0.0;
 		float sNValidTouch = 0;
 		float minTouch = 0.35;
 		float midTouch = 0.7;
@@ -300,7 +299,7 @@ namespace walkinplace {
 		void setHMDType(int gameType);
 		void setPaceControl(int paceControl);
 		void setButtonControlSelect(int control);
-		void setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz);
+		void identifyDevice(unsigned deviceIndex, unsigned short duration);
 
 		void runSampleOnModel();
 		void testHMDSample(double dt);

@@ -57,7 +57,7 @@ private:
 	std::unique_ptr<QTimer> m_pRenderTimer;
 	bool dashboardVisible = false;
 
-	QPoint m_ptLastMouse;
+	QPointF m_ptLastMouse;
 	Qt::MouseButtons m_lastMouseButtons = 0;
 
 	bool desktopMode;

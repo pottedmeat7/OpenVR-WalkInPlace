@@ -22,7 +22,6 @@
 #include "logging.h"
 
 
-
 // application namespace
 namespace walkinplace {
 
@@ -90,8 +89,8 @@ namespace walkinplace {
 		// NVIDIA does not care, but unfortunately AMD does
 		// Are subtle changes to the semantics of OpenGL functions actually covered by the compatibility profile,
 		// and this is an AMD bug?
-		format.setVersion(2, 1);
-		//format.setProfile( QSurfaceFormat::CompatibilityProfile );
+		format.setVersion(4, 1);
+		format.setProfile(QSurfaceFormat::CompatibilityProfile);
 		format.setDepthBufferSize(16);
 		format.setStencilBufferSize(8);
 		format.setSamples(16);
@@ -269,48 +268,91 @@ namespace walkinplace {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
 			switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QPointF ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
 				if (ptNewMouse != m_ptLastMouse) {
-					QMouseEvent mouseEvent(QEvent::MouseMove, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), Qt::NoButton, m_lastMouseButtons, 0);
-					m_ptLastMouse = ptNewMouse;
-					QCoreApplication::sendEvent(m_pWindow.get(), &mouseEvent);
-					OnRenderRequest();
-				}
-			}
-										break;
+					QPoint ptGlobal = ptNewMouse.toPoint();
+					QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);
+					mouseEvent.setWidget(NULL);
+					mouseEvent.setPos(ptNewMouse);
+					mouseEvent.setScenePos(ptGlobal);
+					mouseEvent.setScreenPos(ptGlobal);
+					mouseEvent.setLastPos(m_ptLastMouse);
+					mouseEvent.setLastScenePos(m_pWindow->mapToGlobal(m_ptLastMouse.toPoint()));
+					mouseEvent.setLastScreenPos(m_pWindow->mapToGlobal(m_ptLastMouse.toPoint()));
+					mouseEvent.setButtons(m_lastMouseButtons);
+					mouseEvent.setButton(Qt::NoButton);
+					mouseEvent.setModifiers(0);
+					mouseEvent.setAccepted(false);
 
+					QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+					OnRenderRequest();
+					m_ptLastMouse = ptNewMouse;
+				}
+				break;
+			}
 			case vr::VREvent_MouseButtonDown: {
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons |= button;
-				QMouseEvent mouseEvent(QEvent::MouseButtonPress, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
-				QCoreApplication::sendEvent(m_pWindow.get(), &mouseEvent);
-			}
-											  break;
-
-			case vr::VREvent_MouseButtonUp: {
+#if defined _WIN64 || defined _LP64
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
+				mouseEvent.setButtonDownPos(button, m_ptLastMouse);
+#else 
+				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y*-1);
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
+				mouseEvent.setButtonDownPos(button, ptNewMouse);
+#endif
+				mouseEvent.setWidget(NULL);
+				mouseEvent.setPos(ptNewMouse);
+				mouseEvent.setButtonDownScenePos(button, ptNewMouse);
+				mouseEvent.setButtonDownScreenPos(button, ptNewMouse);
+				mouseEvent.setScenePos(ptNewMouse);
+				mouseEvent.setScreenPos(ptNewMouse);
+				mouseEvent.setLastPos(m_ptLastMouse);
+				mouseEvent.setLastScenePos(ptNewMouse);
+				mouseEvent.setLastScreenPos(ptNewMouse);
+				mouseEvent.setButtons(m_lastMouseButtons);
+				mouseEvent.setButton(button);
+				mouseEvent.setModifiers(0);
+				mouseEvent.setAccepted(false);
+
+				QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+				QMouseEvent mE(QEvent::MouseButtonPress, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
+				QCoreApplication::sendEvent(m_pWindow.get(), &mE);
+				break;
+			}
+			case vr::VREvent_MouseButtonUp: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons &= ~button;
-				QMouseEvent mouseEvent(QEvent::MouseButtonRelease, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
-				QCoreApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+#if defined _WIN64 || defined _LP64
+				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
+				mouseEvent.setPos(m_ptLastMouse);
+				mouseEvent.setLastPos(m_ptLastMouse);
+#else 
+				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y*-1);
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
+				mouseEvent.setPos(ptNewMouse);
+				mouseEvent.setLastPos(ptNewMouse);
+#endif
+				mouseEvent.setWidget(NULL);
+				mouseEvent.setScreenPos(ptNewMouse);
+				mouseEvent.setLastScenePos(ptNewMouse);
+				mouseEvent.setLastScreenPos(ptNewMouse);
+				mouseEvent.setButtons(m_lastMouseButtons);
+				mouseEvent.setButton(button);
+				mouseEvent.setModifiers(0);
+				mouseEvent.setAccepted(false);
+				QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+
+				QMouseEvent mE(QEvent::MouseButtonRelease, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
+				QCoreApplication::sendEvent(m_pWindow.get(), &mE);
+				break;
 			}
-											break;
-
-											/*case vr::VREvent_Scroll: {
-												// Wheel speed is defined as 1/8 of a degree
-												QWheelEvent wheelEvent(m_ptLastMouse, m_pWindow->mapToGlobal(m_ptLastMouse), QPoint(),
-													QPoint(vrEvent.data.scroll.xdelta * 360.0f * 8.0f, vrEvent.data.scroll.ydelta * 360.0f * 8.0f),
-													0, Qt::Vertical, m_lastMouseButtons, 0);
-												QCoreApplication::sendEvent(m_pWindow.get(), &wheelEvent);
-											}
-											break;*/
-
 			case vr::VREvent_OverlayShown: {
 				m_pWindow->update();
+				break;
 			}
-										   break;
-
 			case vr::VREvent_Quit: {
 				LOG(INFO) << "Received quit request.";
 				vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time just in case
@@ -318,33 +360,28 @@ namespace walkinplace {
 				QApplication::exit();
 				return;
 			}
-								   break;
-
 			case vr::VREvent_DashboardActivated: {
 				LOG(DEBUG) << "Dashboard activated";
 				dashboardVisible = true;
+				break;
 			}
-												 break;
-
 			case vr::VREvent_DashboardDeactivated: {
 				LOG(DEBUG) << "Dashboard deactivated";
 				dashboardVisible = false;
+				break;
 			}
-												   break;
-
 			case vr::VREvent_KeyboardCharInput: {
 				char keyboardBuffer[1024];
 				vr::VROverlay()->GetKeyboardText(keyboardBuffer, 1024);
 				emit keyBoardInputSignal(QString(keyboardBuffer), vrEvent.data.keyboard.uUserValue);
+				break;
 			}
-												break;
 			case vr::VREvent_KeyboardDone: {
 				char keyboardBuffer[1024];
 				vr::VROverlay()->GetKeyboardText(keyboardBuffer, 1024);
 				emit keyBoardInputSignal(QString(keyboardBuffer), vrEvent.data.keyboard.uUserValue);
+				break;
 			}
-										   break;
-
 			default:
 				walkInPlaceTabController.handleEvent(vrEvent);
 				break;
@@ -358,8 +395,8 @@ namespace walkinplace {
 				switch (vrEvent.eventType) {
 				case vr::VREvent_OverlayShown: {
 					m_pWindow->update();
+					break;
 				}
-											   break;
 				}
 			}
 		}
@@ -391,7 +428,22 @@ namespace walkinplace {
 
 
 	void OverlayController::showKeyboard(QString existingText, unsigned long userValue) {
-		vr::VROverlay()->ShowKeyboardForOverlay(m_ulOverlayHandle, vr::k_EGamepadTextInputModeNormal, vr::k_EGamepadTextInputLineModeSingleLine, 0, "Walk In Place Overlay", 1024, existingText.toStdString().c_str(), userValue);
+		vr::VROverlay()->ShowKeyboardForOverlay(
+			m_ulOverlayHandle,
+			vr::k_EGamepadTextInputModeNormal,
+			vr::k_EGamepadTextInputLineModeSingleLine,
+			0,
+			"Walk In Place Overlay",
+			1024,
+			existingText.toStdString().c_str(),
+			userValue);
+		vr::HmdVector2_t emptyvec;
+		emptyvec.v[0] = 0;
+		emptyvec.v[1] = 0;
+		vr::HmdRect2_t empty;
+		empty.vTopLeft = emptyvec;
+		empty.vBottomRight = emptyvec;
+		vr::VROverlay()->SetKeyboardPositionForOverlay(m_ulOverlayHandle, empty);
 	}
 
 

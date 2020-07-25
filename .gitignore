@@ -29,6 +29,7 @@ CMakeCache.*
 client_overlay/bin/x64/Application-x86_64.AppImage
 client_overlay/Release/*
 client_overlay/bin/x64/OpenVR-WalkInplaceOverlay
+client_overlay/bin/x64/OpenVR-WalkInPlaceOverlay*
 client_overlay/bin/x64/translations/*
 client_overlay/bin/x64/doc/*
 client_overlay/bin/x64/lib/*

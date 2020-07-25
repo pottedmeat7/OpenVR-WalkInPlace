@@ -57,27 +57,19 @@ namespace walkinplace {
 				runSampleOnModel();
 			}
 		}
-		if (identifyControlTimerSet) {
+		if (identifyDeviceSet != vr::k_unTrackedDeviceIndexInvalid) {
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto tdiff = ((double)(now - identifyControlLastTime));
 			//LOG(INFO) << "DT: " << tdiff;
 			if (tdiff >= identifyControlTimeOut) {
-				identifyControlTimerSet = false;
-				try {
-					int model_count = vr::VRRenderModels()->GetRenderModelCount();
-					for (int model_index = 0; model_index < model_count; model_index++) {
-						char buffer[vr::k_unMaxPropertyStringSize];
-						vr::VRRenderModels()->GetRenderModelName(model_index, buffer, vr::k_unMaxPropertyStringSize);
-						if ((std::string(buffer).compare("vr_controller_vive_1_5")) == 0) {
-							vive_controller_model_index = model_index;
-							break;
-						}
-					}
+				identifyDeviceSet = vr::k_unTrackedDeviceIndexInvalid;
+			}
+			else {
+				double tdiff = ((double)(now - timeLastTick));
+				bool hmdStep = false;
+				if (true || tdiff >= dT) {
+					identifyDevice(identifyDeviceSet, 500);
 				}
-				catch (std::exception& e) {
-					LOG(INFO) << "Exception caught while finding vive controller model: " << e.what();
-				}
-				setDeviceRenderModel(controlSelectOverlayHandle, 0, 1, 1, 1, 1, 1, 1);
 			}
 		}
 		if (!initializedDataModel || !initializedDriver || !wipEnabled) {
@@ -350,8 +342,14 @@ namespace walkinplace {
 				modelCNTRL2 = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
 				minHMDPeakVal = findMinPeakMN(reqSNHMD, dataModel.row(HMD_Y_VEL_IDX), 0.001);
 				maxCNTRLVal = std::max(modelCNTRL1.max(), modelCNTRL2.max());
+				maxTRKRPeakVal = dataModel.row(TRKR1_Y_VEL_IDX).max();
+				float temp = dataModel.row(TRKR2_Y_VEL_IDX).max();
+				maxTRKRPeakVal = temp > maxTRKRPeakVal ? temp : maxTRKRPeakVal;
 				minTRKRPeakVal = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR1_Y_VEL_IDX), 0.05);
-				float temp = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR2_Y_VEL_IDX), 0.05);
+				if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
+					temp = findMinPeakMN(reqSNTRKR, dataModel.row(TRKR2_Y_VEL_IDX), 0.05);
+					minTRKRPeakVal = temp < minTRKRPeakVal ? temp : minTRKRPeakVal;
+				}
 				/*
 				mKAVGCNTRL.clear();
 				mKAVGCNTRL.insert_rows(0, 2);
@@ -1050,15 +1048,15 @@ namespace walkinplace {
 					maxSNHMD = settings->value("maxHMDSampleSize", 16).toInt();
 					startSNHMD = settings->value("startHMDSampleSize", 12).toInt();
 					reqSNHMD = settings->value("ongoingHMDSampleSize", 4).toInt();
-					maxSNTRKR = settings->value("maxTRKRSampleSize", 19).toInt();
-					startSNTRKR = settings->value("startTRKRSampleSize", 14).toInt();
-					reqSNTRKR = settings->value("ongoingTRKRSampleSize", 8).toInt();
+					maxSNTRKR = settings->value("maxTRKRSampleSize", 23).toInt();
+					startSNTRKR = settings->value("startTRKRSampleSize", 18).toInt();
+					reqSNTRKR = settings->value("ongoingTRKRSampleSize", 12).toInt();
 					maxSNCNTRL = settings->value("maxCNTRLSampleSize", 12).toInt();
 					reqSNCNTRL = settings->value("ongoingCNTRLSampleSize", 10).toInt();
 					hmdVelVariance = settings->value("hmdVelVariance", 0.07).toFloat();
 					hmdMinDVPerSN = settings->value("hmdAccelPercentAccurate", 0.75).toFloat();
-					trkrVariance = settings->value("trkrVelVariance", 0.07).toFloat();
-					cntrlVariance = settings->value("cntrlVelVariance", 0.07).toFloat();
+					trkrVariance = settings->value("trkrVelVariance", 0.37).toFloat();
+					cntrlVariance = settings->value("cntrlVelVariance", 0.37).toFloat();
 				}
 			}
 			settings->endArray();
@@ -1258,66 +1256,66 @@ namespace walkinplace {
 			initializedProfile = true;
 		}
 		if (foundDevIdx >= 0) {
-			identifyControlTimerSet = true;
+			identifyDeviceSet = foundDevIdx;
 			identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			controlSelectOverlayHandle = foundDevIdx;
 			if (enable) {
-				setDeviceRenderModel(foundDevIdx, vive_controller_model_index, 0, 1, 0, 1.1, 1.1, 1.1);
+				identifyDevice(identifyDeviceSet, 2000);
 			}
 			else {
-				setDeviceRenderModel(foundDevIdx, vive_controller_model_index, 1, 0, 0, 1.1, 1.1, 1.1);
 			}
 		}
 	}
 
 	void WalkInPlaceTabController::updateButtonState(uint32_t deviceId, bool firstController) {
-		if (deviceId != vr::k_unTrackedDeviceIndexInvalid && (buttonControlSelect >= 2 || (firstController == buttonControlSelect == 0))) {
-			vr::VRControllerState_t state;
-			vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
-			//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
-			//LOG(INFO) << "current button : " << state.ulButtonPressed;
-			bool isHoldingButton = false;
-			vr::EVRButtonId buttonUsed;
-			switch (disableButton) {
-			case 0:
-				buttonUsed = vr::EVRButtonId::k_EButton_Grip;
-				break;
-			case 1:
-				buttonUsed = vr::EVRButtonId::k_EButton_SteamVR_Trigger;
-				break;
-			default:
-				break;
-			}
-			switch (buttonUsed) {
-			case vr::EVRButtonId::k_EButton_Grip:
-				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-					isHoldingButton = true;
+		if (disableButton == 0 || disableButton == 1) {
+			if (deviceId != vr::k_unTrackedDeviceIndexInvalid && (buttonControlSelect >= 2 || (firstController == buttonControlSelect == 0))) {
+				vr::VRControllerState_t state;
+				vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
+				//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
+				//LOG(INFO) << "current button : " << state.ulButtonPressed;
+				bool isHoldingButton = false;
+				vr::EVRButtonId buttonUsed;
+				switch (disableButton) {
+				case 0:
+					buttonUsed = vr::EVRButtonId::k_EButton_Grip;
+					break;
+				case 1:
+					buttonUsed = vr::EVRButtonId::k_EButton_SteamVR_Trigger;
+					break;
+				default:
+					break;
 				}
-				break;
-			case vr::EVRButtonId::k_EButton_Axis0:
-				if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-					isHoldingButton = true;
+				switch (buttonUsed) {
+				case vr::EVRButtonId::k_EButton_Grip:
+					if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
+						isHoldingButton = true;
+					}
+					break;
+				case vr::EVRButtonId::k_EButton_Axis0:
+					if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
+						isHoldingButton = true;
+					}
+					break;
+				case vr::EVRButtonId::k_EButton_SteamVR_Trigger:
+					if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
+						isHoldingButton = true;
+					}
+					if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
+						isHoldingButton = true;
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			case vr::EVRButtonId::k_EButton_SteamVR_Trigger:
-				if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
-					isHoldingButton = true;
+				if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
+					(buttonControlSelect == 1 && !firstController && isHoldingButton) ||
+					(buttonControlSelect >= 2 && isHoldingButton)) {
+					holdingButton = true;
 				}
-				if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
-					isHoldingButton = true;
+				if ((buttonControlSelect == 0 && firstController && !isHoldingButton) ||
+					(buttonControlSelect == 1 && !firstController && !isHoldingButton)) {
+					holdingButton = false;
 				}
-				break;
-			default:
-				break;
-			}
-			if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
-				(buttonControlSelect == 1 && !firstController && isHoldingButton) ||
-				(buttonControlSelect >= 2 && isHoldingButton)) {
-				holdingButton = true;
-			}
-			if ((buttonControlSelect == 0 && firstController && !isHoldingButton) ||
-				(buttonControlSelect == 1 && !firstController && !isHoldingButton)) {
-				holdingButton = false;
 			}
 		}
 	}
@@ -1382,53 +1380,13 @@ namespace walkinplace {
 		}
 	}
 
-	void WalkInPlaceTabController::setDeviceRenderModel(unsigned deviceIndex, unsigned renderModelIndex, float r, float g, float b, float sx, float sy, float sz) {
+	void WalkInPlaceTabController::identifyDevice(unsigned deviceIndex, unsigned short duration) {
 		if (deviceIndex < deviceInfos.size()) {
 			try {
-				if (renderModelIndex == 0) {
-					for (auto dev : deviceInfos) {
-						if (dev->renderModelOverlay != vr::k_ulOverlayHandleInvalid) {
-							vr::VROverlay()->DestroyOverlay(dev->renderModelOverlay);
-							dev->renderModelOverlay = vr::k_ulOverlayHandleInvalid;
-						}
-					}
-				}
-				else {
-					vr::VROverlayHandle_t overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay;
-					if (overlayHandle == vr::k_ulOverlayHandleInvalid) {
-						std::string overlayName = std::string("RenderModelOverlay_") + std::string(deviceInfos[deviceIndex]->serial);
-						auto oerror = vr::VROverlay()->CreateOverlay(overlayName.c_str(), overlayName.c_str(), &overlayHandle);
-						if (oerror == vr::VROverlayError_None) {
-							overlayHandle = deviceInfos[deviceIndex]->renderModelOverlay = overlayHandle;
-						}
-						else {
-							LOG(INFO) << "Could not create render model overlay: " << vr::VROverlay()->GetOverlayErrorNameFromEnum(oerror);
-						}
-					}
-					if (overlayHandle != vr::k_ulOverlayHandleInvalid) {
-						std::string texturePath = QApplication::applicationDirPath().toStdString() + "\\res\\transparent.png";
-						if (QFile::exists(QString::fromStdString(texturePath))) {
-							vr::VROverlay()->SetOverlayFromFile(overlayHandle, texturePath.c_str());
-							char buffer[vr::k_unMaxPropertyStringSize];
-							vr::HmdMatrix34_t trans = {
-								sx, 0.0f, 0.0f, 0.0f,
-								0.0f, sy, 0.0f, 0.0f,
-								0.0f, 0.0f, sz, 0.0f
-							};
-							vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(overlayHandle, deviceIndex, &trans);
-							vr::VROverlay()->SetOverlayColor(overlayHandle, r, g, b);
-							vr::VROverlay()->ShowOverlay(overlayHandle);
-							identifyControlTimerSet = true;
-						}
-						else {
-							LOG(INFO) << "Could not find texture \"" << texturePath << "\"";
-						}
-					}
-					//LOG(INFO) << "Successfully created control select Overlay for device: " << deviceInfos[deviceIndex]->openvrId << " Index: " << deviceIndex;
-				}
+				vr::VRSystem()->TriggerHapticPulse(deviceIndex, 0, duration);
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while updating control select overlay: " << e.what();
+				LOG(INFO) << "Exception caught while identifying device: " << e.what();
 			}
 		}
 	}
@@ -1437,35 +1395,16 @@ namespace walkinplace {
 		buttonControlSelect = control;
 		if ((control == 0 && controller1ID != vr::k_unTrackedDeviceIndexInvalid) ||
 			(control == 1 && controller2ID != vr::k_unTrackedDeviceIndexInvalid)) {
-			if (!identifyControlTimerSet) {
-				identifyControlTimerSet = true;
+			if (identifyDeviceSet == vr::k_unTrackedDeviceIndexInvalid) {
 				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				controlSelectOverlayHandle = 999;
-				for (int d = 0; d < deviceInfos.size(); d++) {
-					if (deviceInfos[d]->openvrId == (control == 0 ? controller1ID : controller2ID)) {
-						controlSelectOverlayHandle = d;
-					}
+				if (control == 0) {
+					identifyDeviceSet = controller1ID;
+					identifyDevice(controller1ID, 2000);
 				}
-				try {
-					if (vive_controller_model_index < 0) {
-						int model_count = vr::VRRenderModels()->GetRenderModelCount();
-						for (int model_index = 0; model_index < model_count; model_index++) {
-							char buffer[vr::k_unMaxPropertyStringSize];
-							vr::VRRenderModels()->GetRenderModelName(model_index, buffer, vr::k_unMaxPropertyStringSize);
-							if ((std::string(buffer).compare("vr_controller_vive_1_5")) == 0) {
-								vive_controller_model_index = model_index;
-								break;
-							}
-						}
-					}
+				else {
+					identifyDeviceSet = controller2ID;
+					identifyDevice(controller2ID, 2000);
 				}
-				catch (std::exception& e) {
-					LOG(INFO) << "Exception caught while finding vive controller model: " << e.what();
-				}
-				if (vive_controller_model_index < 0) {
-					vive_controller_model_index = 24;
-				}
-				setDeviceRenderModel(controlSelectOverlayHandle, vive_controller_model_index, 1, 1, 0, 1.1, 1.1, 1.1);
 			}
 		}
 	}
@@ -1478,25 +1417,11 @@ namespace walkinplace {
 			//LOG(INFO) << "DT: " << tdiff;
 			if (tdiff >= dT) {
 				timeLastTick = now;
-				if (disableButton == 0 || disableButton == 1) {
-					holdingButton = false;
-					updateButtonState(controller1ID, true);
-					if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-						updateButtonState(controller2ID, false);
-					}
-				}
+				holdingButton = false;
+				updateButtonState(controller1ID, true);
+				updateButtonState(controller2ID, false);
 				if (buttonStatus()) {
 					vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-					/*vr::VRInput()->GetSkeletalBoneData(controller1ID, vr::VRSkeletalTransformSpace_Parent, vr::VRSkeletalMotionRange_WithController,
-						latestBoneTransforms, vr::k_unMaxTrackedDeviceCount);
-					int i = controller1ID;
-					LOG(INFO) << "abs bone O: " << latestBoneTransforms[i].orientation.x << "," << latestBoneTransforms[i].orientation.y << "," << latestBoneTransforms[i].orientation.z << "," << latestBoneTransforms[i].orientation.w;
-					LOG(INFO) << "abs bone P: " << latestBoneTransforms[i].position.v[0] << "," << latestBoneTransforms[i].position.v[1] << "," << latestBoneTransforms[i].position.v[2] << "," << latestBoneTransforms[i].position.v[3];
-					vr::VRInput()->GetSkeletalReferenceTransforms(controller1ID, vr::VRSkeletalTransformSpace_Parent, vr::EVRSkeletalReferencePose::VRSkeletalReferencePose_Fist,
-						latestBoneTransforms, vr::k_unMaxTrackedDeviceCount);
-					LOG(INFO) << "ref bone O: " << latestBoneTransforms[i].orientation.x << "," << latestBoneTransforms[i].orientation.y << "," << latestBoneTransforms[i].orientation.z << "," << latestBoneTransforms[i].orientation.w;
-					LOG(INFO) << "ref bone P: " << latestBoneTransforms[i].position.v[0] << "," << latestBoneTransforms[i].position.v[1] << "," << latestBoneTransforms[i].position.v[2] << "," << latestBoneTransforms[i].position.v[3];
-					*/
 					testHMDSample(tdiff);
 					testTRKRSample(tdiff);
 				}
@@ -1675,7 +1600,8 @@ namespace walkinplace {
 					arma::rowvec mN = arma::abs(dataModel.row(TRKR1_Y_VEL_IDX));
 					arma::rowvec sN = arma::abs(trkrSample.row(0));
 					arma::rowvec lastSN = sN.tail_cols(sNk);
-					if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && lastSN.max() < minTRKRPeakVal) {
+					double trkrMax = lastSN.max();
+					if (tracker2ID == vr::k_unTrackedDeviceIndexInvalid && trkrMax < minTRKRPeakVal) {
 						stopMovement();
 						lastValidTRKRSampleMKi = 0;
 					}
@@ -1684,13 +1610,14 @@ namespace walkinplace {
 						if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
 							sN = arma::abs(trkrSample.row(1)); // trkr 2
 							arma::rowvec lastSN2 = sN.tail_cols(sNk);
-							if (lastSN.max() < minTRKRPeakVal && lastSN2.max() < minTRKRPeakVal) {
+							trkrMax = std::max(trkrMax, lastSN2.max());
+							if (trkrMax < minTRKRPeakVal) {
 								stopMovement();
 								lastValidTRKRSampleMKi = 0;
 							}
 							else {
 								std::pair<float, int> mDs2 = computeSNDelta(lastSN2, mN);
-								if (mDs1.first < trkrVariance*sNk && mDs2.first < trkrVariance*sNk) {
+								if ( trkrMax >= maxTRKRPeakVal || (mDs1.first < trkrVariance*sNk && mDs2.first < trkrVariance*sNk) ) {
 									if (!trackHMDVel && !validSample) {
 										validSample = true;
 										inputStateChanged = true;
@@ -1702,7 +1629,7 @@ namespace walkinplace {
 								}
 							}
 						}
-						else if (mDs1.first < trkrVariance*sNk) {
+						else if (trkrMax >= maxTRKRPeakVal || mDs1.first < trkrVariance*sNk) {
 							if (!trackHMDVel && !validSample) {
 								validSample = true;
 								inputStateChanged = true;
