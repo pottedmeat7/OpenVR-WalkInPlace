@@ -19,19 +19,12 @@ namespace walkinplace {
 	}
 
 
-	void WalkInPlaceTabController::initStage1() {
+	void WalkInPlaceTabController::init() {
 		reloadProfiles();
 		reloadSettings();
 		gameType = std::make_shared <GameType>();
 		gameType->inputType = InputType::touchpad;
 	}
-
-
-	void WalkInPlaceTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-		this->parent = parent;
-		this->widget = widget;
-	}
-
 
 	void WalkInPlaceTabController::eventLoopTick() {
 		if (!initializedDataModel) {

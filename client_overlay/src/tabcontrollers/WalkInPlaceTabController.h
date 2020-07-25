@@ -100,8 +100,6 @@ namespace walkinplace {
 		Q_OBJECT
 
 	private:
-		OverlayController * parent;
-		QQuickWindow* widget;
 		vrwalkinplace::VRWalkInPlace vrwalkinplace;
 
 		std::vector<std::shared_ptr<DeviceInfo>> deviceInfos;
@@ -242,8 +240,7 @@ namespace walkinplace {
 
 	public:
 		~WalkInPlaceTabController();
-		void initStage1();
-		void initStage2(OverlayController* parent, QQuickWindow* widget);
+		void init();
 
 		void eventLoopTick();
 		void handleEvent(const vr::VREvent_t& vrEvent);
