@@ -68,7 +68,7 @@
          ]
       }
    },
-   "controller_type" : "vr123abc_controller",
+   "controller_type" : "ovrwip_controller",
    "description" : "",
    "name" : "Default bindings for OVRWIP"
 }

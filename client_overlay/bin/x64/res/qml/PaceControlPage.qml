@@ -263,7 +263,7 @@ MyStackViewPage {
         GroupBox {
             id: paceConfigBox3
             anchors.top: paceConfigBox2.bottom
-            anchors.topMargin: 30
+            anchors.topMargin: 10
             Layout.maximumWidth: 1200
             Layout.minimumWidth: 1200
             Layout.preferredWidth: 1200

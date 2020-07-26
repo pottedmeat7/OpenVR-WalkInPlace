@@ -41,7 +41,7 @@ class OverlayController : public QObject {
 public:
 	static constexpr const char* applicationKey = "pottedmeat7.VRWalkInPlace";
 	static constexpr const char* applicationName = "OpenVR-WalkInPlace";
-	static constexpr const char* applicationVersionString = "v4.2";
+	static constexpr const char* applicationVersionString = "v4.3";
 
 private:
 	vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -57,7 +57,7 @@ private:
 	std::unique_ptr<QTimer> m_pRenderTimer;
 	bool dashboardVisible = false;
 
-	QPoint m_ptLastMouse;
+	QPointF m_ptLastMouse;
 	Qt::MouseButtons m_lastMouseButtons = 0;
 
 	bool desktopMode;

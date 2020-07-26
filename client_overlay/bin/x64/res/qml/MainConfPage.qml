@@ -22,6 +22,7 @@ MyMainViewPage {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         spacing: 7
+        Layout.alignment: Qt.AlignHCenter
         Layout.fillHeight: true
 
         GroupBox {
