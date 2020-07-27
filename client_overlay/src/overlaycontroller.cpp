@@ -268,9 +268,13 @@ namespace walkinplace {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
 			switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
-				QPointF ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#if defined (_WIN64) || !defined (_LP64)
+				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
 				if (ptNewMouse != m_ptLastMouse) {
-					QPoint ptGlobal = ptNewMouse.toPoint();
+					/*QPoint ptGlobal = ptNewMouse.toPoint();
 					QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);
 					mouseEvent.setWidget(NULL);
 					mouseEvent.setPos(ptNewMouse);
@@ -282,28 +286,28 @@ namespace walkinplace {
 					mouseEvent.setButtons(m_lastMouseButtons);
 					mouseEvent.setButton(Qt::NoButton);
 					mouseEvent.setModifiers(0);
-					mouseEvent.setAccepted(false);
+					mouseEvent.setAccepted(false);*/
 
-					QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
-					OnRenderRequest();
 					m_ptLastMouse = ptNewMouse;
+					//QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+					QMouseEvent mE(QEvent::MouseMove, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), Qt::NoButton, m_lastMouseButtons, 0);
+					QCoreApplication::sendEvent(m_pWindow.get(), &mE);
+					OnRenderRequest();
 				}
 				break;
 			}
 			case vr::VREvent_MouseButtonDown: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons |= button;
-#if defined _WIN64 || defined _LP64
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
-				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
-				mouseEvent.setButtonDownPos(button, m_ptLastMouse);
-#else 
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y*-1);
-				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
-				mouseEvent.setButtonDownPos(button, ptNewMouse);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
 #endif
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
 				mouseEvent.setWidget(NULL);
 				mouseEvent.setPos(ptNewMouse);
+				mouseEvent.setButtonDownPos(button, m_ptLastMouse);
 				mouseEvent.setButtonDownScenePos(button, ptNewMouse);
 				mouseEvent.setButtonDownScreenPos(button, ptNewMouse);
 				mouseEvent.setScenePos(ptNewMouse);
@@ -315,8 +319,8 @@ namespace walkinplace {
 				mouseEvent.setButton(button);
 				mouseEvent.setModifiers(0);
 				mouseEvent.setAccepted(false);
-
-				QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+				
+				//QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
 				QMouseEvent mE(QEvent::MouseButtonPress, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
 				QCoreApplication::sendEvent(m_pWindow.get(), &mE);
 				break;
@@ -324,27 +328,25 @@ namespace walkinplace {
 			case vr::VREvent_MouseButtonUp: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons &= ~button;
-#if defined _WIN64 || defined _LP64
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
-				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
-				mouseEvent.setPos(m_ptLastMouse);
-				mouseEvent.setLastPos(m_ptLastMouse);
-#else 
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y*-1);
-				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
-				mouseEvent.setPos(ptNewMouse);
-				mouseEvent.setLastPos(ptNewMouse);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
 #endif
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
 				mouseEvent.setWidget(NULL);
+				mouseEvent.setPos(m_ptLastMouse);
+				mouseEvent.setScenePos(ptNewMouse);
 				mouseEvent.setScreenPos(ptNewMouse);
+				mouseEvent.setLastPos(m_ptLastMouse);
 				mouseEvent.setLastScenePos(ptNewMouse);
 				mouseEvent.setLastScreenPos(ptNewMouse);
 				mouseEvent.setButtons(m_lastMouseButtons);
 				mouseEvent.setButton(button);
 				mouseEvent.setModifiers(0);
 				mouseEvent.setAccepted(false);
-				QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
-
+				
+				//QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
 				QMouseEvent mE(QEvent::MouseButtonRelease, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
 				QCoreApplication::sendEvent(m_pWindow.get(), &mE);
 				break;
