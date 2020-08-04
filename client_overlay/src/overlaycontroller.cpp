@@ -268,7 +268,11 @@ namespace walkinplace {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
 			switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
 				if (ptNewMouse != m_ptLastMouse) {
 					/*QPoint ptGlobal = ptNewMouse.toPoint();
 					QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);
@@ -295,9 +299,12 @@ namespace walkinplace {
 			case vr::VREvent_MouseButtonDown: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons |= button;
-
-				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
+				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
 				mouseEvent.setWidget(NULL);
 				mouseEvent.setPos(ptNewMouse);
 				mouseEvent.setButtonDownPos(button, m_ptLastMouse);
@@ -321,9 +328,11 @@ namespace walkinplace {
 			case vr::VREvent_MouseButtonUp: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons &= ~button;
-
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
-
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
 				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
 				mouseEvent.setWidget(NULL);
 				mouseEvent.setPos(m_ptLastMouse);

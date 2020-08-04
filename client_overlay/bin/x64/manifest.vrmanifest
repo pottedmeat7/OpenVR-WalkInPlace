@@ -4,6 +4,8 @@
 		"app_key": "pottedmeat7.VRWalkInPlace",
 		"launch_type": "binary",
 		"binary_path_windows": "OpenVR-WalkInPlaceOverlay.exe",
+		"binary_path_linux": "OpenVR-WalkInPlaceOverlay",
+		"binary_path": "OpenVR-WalkInPlaceOverlay",
 		"is_dashboard_overlay": true,
 
 		"strings": {
