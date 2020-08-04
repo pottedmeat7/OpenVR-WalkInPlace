@@ -1,14 +1,10 @@
 ![language](https://img.shields.io/badge/Language-C%2B%2B11-green.svg)  ![dependencies](https://img.shields.io/badge/Dependencies-Boost%201.65-green.svg)  ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
 
-# OpenVR-WalkInPlace (now supports mlpack data models)
+# OpenVR-WalkInPlace
 
-An OpenVR client and driver that tracks real-time device tracking data and applies virtual movement using linear analysis of mlpack data models with armadillo libraries.
+An OpenVR client and driver that tracks real-time 3D VR devices and applies virtual movement using linear analysis of mlpack data models with armadillo libraries.
 
-As long as the real-time tracking sample is accurately represented in the recorded model, virtual input will be applied. Scale of input can be customized.
-
-## A history
-
-https://sites.google.com/view/openvr-walkinplace/home
+As long as the real-time tracking sample is within a variance of the recorded model, virtual input will be applied. Scale of input can be customized.
 
 # Features
 
@@ -19,8 +15,8 @@ https://sites.google.com/view/openvr-walkinplace/home
 
 # Upcoming
 
-- HMD Relative Direction Override to any tracked device Relative Direction
 - Linux support
+- HMD Relative Direction Override to any tracked device Relative Direction
  
 ## Installer
 
@@ -30,26 +26,8 @@ Download the newest installer from the [release section](https://github.com/pott
 
 ## Configuration Examples
 
-![Example Screenshot](docs/screenshots/walkinplace_default.png)
-
 Follow this for basic initial setup
 https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/full_setup/Readme.md
-
-## GIF Step Examples
-Walking Example: 
-![walk example](docs/gifs/wip_walk.gif)
-
-Jogging Example: 
-![jog example](docs/gifs/wip_jog.gif)
-
-Running Example: 
-![run example](docs/gifs/wip_run.gif)
-
-Direction Control Example: 
-![directions example](docs/gifs/wip_dir.gif)
-
-![Example Screenshot](docs/screenshots/wip_graph.png)
-*This is an example of the graph while walking in place*
 
 ## Data Models
 You can record a data model of your HMD, tracker and controller movement rates to use to match the similar movement in real-time.
@@ -62,7 +40,7 @@ Follow the on screen popups instructions when recording a new data model. The re
 As you record the touch values are recorded in the following order Slow (0 touch value), Slow to medium (0-0.5 touch value), Medium (0.5 touch value), Medium to fast (0.5-1.0 touch value), and Fast (1.0 touch value)
 
 Mostly it will be your controller values that are used to determine where in the model to pick the corresponding touch value from.
-The HMD and trackers mainly determine if you are moving at all according to the model.
+The HMD and trackers mainly determine if you are walking at all according to the model.
 
 If you find that you move to quickly to soon, try re-recording a model with more significant arm swinging.
 
@@ -79,7 +57,9 @@ Make sure to "apply" the data model before Enabling WIP or trying to view the da
 
 ### Show HMD, Show Trackers, Show Controller, Show Touch Line
 These show the models of each device. The Touch Line is the values inserted from 0-1 of the progress during the recording. 
-The touch-line will be scaled to be between the values in the "Touch Pace Options". Ie. From Min-Max.
+The touch-line will be scaled, prior to input, to be between the values in the "Touch Pace Options". Ie. From Min-Max.
+
+## Other Options
 
 ### Touch Pace Options
 These values control the degree of movement applied in game.
@@ -87,9 +67,6 @@ Some games will use the touchpad axis differntly, for slow games sometimes there
 Some games use the entire axis from the center, 0, to 1
 
 If you find the walking with just the HMD is too sensitive you can set the "Walk Touch" to 0 this will require your HMD and arms to swing in order to trigger a step via triggering the "mid" or "max" touch value.
-
-## Other Options
-
 ## Enable WIP
 This checkbox either enables or disables all detection and virtual input
 
@@ -111,7 +88,10 @@ Follow the screenshots here to setup bindings for the OVRWIP controller
 https://github.com/pottedmeat7/OpenVR-WalkInPlace/tree/master/docs/screenshots/steamvr_bindings/
 
 ### buttons to disable/enable WIP
-These options can be used to disable/enable virtual movement when your holding or not holding the button selected.
+These options can be used to disable/enable virtual movement when your holding or not holding the button selected. I recommend not using this feature then you dont have to hold any button.
+
+![Example Screenshot](docs/screenshots/walkinplace_default.png)
+*example configuration*
 
 ## Enable / Disable Device page
 
@@ -121,16 +101,16 @@ This will enable/disable the tracking and analysis of the real-time HMD movement
 ### Track HMD Rotation?
 This is a enhanced check to track if the rotational velocity values of HMD YAW and PITCH are within the maximum recorded values of the current data model.
 
-### controller selection for hand(s)
+### controller selection for pace only
 If you have more then 1 controllers, you can select another combination of 1-2 controllers to be used as the 1-2 tracked hand(s).
 
-### controller selection for feet (untesed)
+### controller selection compared to model
 If you have more then 1 controllers, you can select another combination of 1-2 controllers to be used as the 1-2 tracked feet.
 
-### tracker selection for hand(s) (untesed)
+### tracker selection for pace only (untesed)
 If you have more then 1 trackers, you can select another combination of 1-2 trackers to be used as the 1-2 tracked hand(s).
 
-### tracker selection for feet
+### tracker selection compared to model
 If you have more then 1 trackers, you can select another combination of 1-2 trackers to be used as the 1-2 tracked feet.
 
 //# ### Direction devices - work in progress
@@ -198,7 +178,7 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 2. Download Qt 5.9.0 (Either windows .exe or linux .run file)
 3. Run the Qt installer (I installed it to `c:\Qt` or `/home/<user>/` on linux)
 
-### mlpack, openblas and armadillo
+### mlpack, openblas and armadillo and ensmallen
 - WINDOWS
 	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build_windows.html
 - LINUX
@@ -223,16 +203,32 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 ## Uninstall
 1. Run "C:\Program Files\OpenVR-WalkInPlace\Uninstall.exe" will remove everything
 
-# Known Bugs
-
-- The shared-memory message queue is prone to deadlock the driver when the client crashes or is exited ungracefully.
-
 # License
 
 This software is released under GPL 3.0.
 
 #Credits
-mlpack2018 mlpack 3: a fast, flexible machine learning library Curtin, Ryan R. and Edel, Marcus and Lozhnikov, Mikhail and Mentekidis, Yannis and Ghaisas, Sumedh and Zhang, Shangtong Journal of Open Source Software, 3, 26 726, 2018, 10.21105/joss.00726, https://doi.org/10.21105/joss.00726
+@article{mlpack2018,
+    title     = {mlpack 3: a fast, flexible machine learning library},
+    author    = {Curtin, Ryan R. and Edel, Marcus and Lozhnikov, Mikhail and
+                 Mentekidis, Yannis and Ghaisas, Sumedh and Zhang,
+                 Shangtong},
+    journal   = {Journal of Open Source Software},
+    volume    = {3},
+    issue     = {26},
+    pages     = {726},
+    year      = {2018},
+    doi       = {10.21105/joss.00726},
+    url       = {https://doi.org/10.21105/joss.00726}
+}
+
+* Conrad Sanderson and Ryan Curtin.  
+Armadillo: a template-based C++ library for linear algebra.  
+Journal of Open Source Software, Vol. 1, pp. 26, 2016.  
+
+* Conrad Sanderson and Ryan Curtin.  
+A User-Friendly Hybrid Sparse Matrix Class in C++.  
+Lecture Notes in Computer Science (LNCS), Vol. 10931, pp. 422-430, 2018.
 
 Conrad Sanderson and Ryan Curtin.
 [Armadillo: a template-based C++ library for linear algebra.](http://arma.sourceforge.net/armadillo_joss_2016.pdf) 
