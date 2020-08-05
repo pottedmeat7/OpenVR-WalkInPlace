@@ -21,9 +21,9 @@ MyMainViewPage {
     content: ColumnLayout {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        spacing: 7
         Layout.alignment: Qt.AlignHCenter
         Layout.fillHeight: true
+        spacing: 7
 
         GroupBox {
             Layout.fillWidth: true

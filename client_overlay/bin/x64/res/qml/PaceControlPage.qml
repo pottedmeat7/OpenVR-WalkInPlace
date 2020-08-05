@@ -28,8 +28,9 @@ MyStackViewPage {
 
     content: ColumnLayout {
         anchors.top: parent.top
-        spacing: 7
+        Layout.leftMargin: 100
         Layout.alignment: Qt.AlignHCenter
+        spacing: 7
 
         GroupBox {
             Layout.fillWidth: true
@@ -87,15 +88,10 @@ MyStackViewPage {
         }
 
         GridLayout {
-            columns: 7
+            columns: 6
             id: paceConfigBox1
             anchors.top: parent.top
             anchors.topMargin: 80
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }  
 
             MyText {
                 text: "Slow Pace Touch"
@@ -135,12 +131,7 @@ MyStackViewPage {
             id: paceConfigBox2
             anchors.top: paceConfigBox1.bottom
             anchors.topMargin: 10
-            columns: 16
-
-            MyText {
-                text: " "
-                Layout.preferredWidth: 100
-            }  
+            columns: 15
 
             MyPushButton {
                 id: minTouchMinusButton
@@ -277,7 +268,6 @@ MyStackViewPage {
 
             ColumnLayout {
                 anchors.fill: parent
-                Layout.alignment: Qt.AlignHCenter
 
                 GridLayout {
                     columns: 1

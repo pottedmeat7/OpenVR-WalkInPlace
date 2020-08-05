@@ -268,7 +268,7 @@ namespace walkinplace {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
 			switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
-				QPointF ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
 				if (ptNewMouse != m_ptLastMouse) {
 					/*QPoint ptGlobal = ptNewMouse.toPoint();
 					QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);

@@ -363,6 +363,7 @@ namespace walkinplace {
 						mKAVGCNTRL(1, k) = std::floor((k * reqSNCNTRL) + (reqSNCNTRL / 2.0));
 					}
 				}*/
+				trainModel();
 			}
 			else {
 				dataTrainingRequired = true;
