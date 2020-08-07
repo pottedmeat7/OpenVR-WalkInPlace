@@ -9,8 +9,8 @@ Rectangle {
     id: root
     color: "transparent"
 
-    width: 1500
-    height: 800
+    width: 2500
+    height: 1500
 
     property MainConfPage mainConfPage:  MainConfPage {
         stackView: mainView

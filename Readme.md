@@ -147,13 +147,13 @@ walkInPlaceProfiles\<profile_index>\hmdVelVariance=0.07
 walkInPlaceProfiles\<profile_index>\trkrVelVariance=0.07
 walkInPlaceProfiles\<profile_index>\cntrlVelVariance=0.07
 ```
-*This value is the value that checks the direction of the acceleration ie. up or down (this is what forms the wave like pattern in the tracking data). This value is the percentage of data points that the sample needs to match the model, ie. 75% (0.75) of the ups and downs of the sample wave need to match at any point of the model, and be within the velocity variance.
-```
-walkInPlaceProfiles\<profile_index>\hmdAccelPercentAccurate=0.75
-```
+*This value is the value that checks the direction of the acceleration ie. up or down (this is what forms the wave like pattern in the tracking data). This value is the percentage of data points that the sample needs to match the model, ie. 75% (0.75) of the ups and downs of the sample wave need to match at any point of the model, and be within the velocity variance.*
+`walkInPlaceProfiles\<profile_index>\hmdAccelPercentAccurate=0.75`
+
 ## Graph Page
+
 The graph page will show you realtime values from the HMD, controllers and trackers.
-If you have WIP enabled the graph page will display vertical lines yellow for walk detection, orange for jog detection and red for run detection.
+If you have WIP enabled the graph page will display small squares yellow for walk detection, orange for jog detection and red for run detection.
 
 ## Any Issues Check out the Logs
 Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`

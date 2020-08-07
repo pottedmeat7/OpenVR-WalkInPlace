@@ -92,6 +92,7 @@ MyStackViewPage {
             id: paceConfigBox1
             anchors.top: parent.top
             anchors.topMargin: 80
+            anchors.leftMargin: 100
 
             MyText {
                 text: "Slow Pace Touch"
@@ -131,6 +132,7 @@ MyStackViewPage {
             id: paceConfigBox2
             anchors.top: paceConfigBox1.bottom
             anchors.topMargin: 10
+            anchors.leftMargin: 100
             columns: 15
 
             MyPushButton {
@@ -255,6 +257,7 @@ MyStackViewPage {
             id: paceConfigBox3
             anchors.top: paceConfigBox2.bottom
             anchors.topMargin: 10
+            anchors.leftMargin: 100
             Layout.maximumWidth: 1200
             Layout.minimumWidth: 1200
             Layout.preferredWidth: 1200

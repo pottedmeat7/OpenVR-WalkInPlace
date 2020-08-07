@@ -15,11 +15,13 @@ Steps to create setup OpenVR-WalkInPlace
 ### enter a name for your data model
 ### then proceed to follow the instructions:
 ```
-The data model creation process takes ~25 seconds 5 seconds for each phase.
-The process starts with slowest to increasing to medium to medium to increasing to fast to fastest.
-Do not stop moving during this process.
+The data model creation process takes ~30 seconds 5 seconds for each phase.
+The process records walking,jogging,running and other movements that disable input, such as ducking etc.
+~25 seconds for movements you want to trigger input and 5 seconds for movements you want to disable input.
+The process starts with slowest (walking), increass to medium (jogging) and increases to fast (running).
+Do not stop moving during the walking,jogging,running phases.
 If you do it will be recorded and used as a valid movement model.
-You can always try it, view it, and recreate the model until you have what you'd like.
+You can always try it, view it, recreate it, if you dont have the pattern you like.
 ```
 
 

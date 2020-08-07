@@ -10,6 +10,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <mlpack/core.hpp>
+#include <queue>
 
 class QQuickWindow;
 
@@ -20,7 +21,7 @@ namespace walkinplace {
 
 	// forward declaration
 	class OverlayController;
-	 
+
 	enum InputType {
 		touchpad = 0,
 		joystick = 1,
@@ -30,11 +31,11 @@ namespace walkinplace {
 	};
 
 	enum PaceControlType {
-		AvgControllerModelMatch, 
-		AvgHMDModelMatch, 
+		AvgControllerModelMatch,
+		AvgHMDModelMatch,
 		AvgControllerHMDModelMatch,
-		MinMaxControllerSpeed, 
-		CurControllerModelMatch, 
+		MinMaxControllerSpeed,
+		CurControllerModelMatch,
 		CurHMDModelMatch
 	};
 
@@ -61,15 +62,11 @@ namespace walkinplace {
 		std::string modelFile = "temp.csv";
 
 		bool wipEnabled = false;
-		bool useTrackers = false;
 		bool trackHMDVel = true;
 		bool trackHMDRot = true;
 		int gameType = 0;
 		int velControl = 0;
 		int hmdType = 0;
-		int buttonEnables = false;
-		int buttonControlSelect = 0;
-		int disableButton = 0;
 		float minTouch = 0.35;
 		float midTouch = 0.83;
 		float maxTouch = 1.0;
@@ -125,6 +122,17 @@ namespace walkinplace {
 		arma::rowvec modelCNTRL1;
 		arma::rowvec modelCNTRL2;
 
+		const int HMD_Y_VEL_IDX = 0;
+		const int CNTRL1_Y_VEL_IDX = 1;
+		const int CNTRL2_Y_VEL_IDX = 2;
+		const int TRKR1_Y_VEL_IDX = 3;
+		const int TRKR2_Y_VEL_IDX = 4;
+		const int HMD_YAW_VEL_IDX = 5;
+		const int HMD_PITCH_VEL_IDX = 6;
+		const int HMD_X_VEL_IDX = 7;
+		const int HMD_Z_VEL_IDX = 8;
+		const int TOUCH_VAL_IDX = 9;
+
 		int currentProfileIdx = -1;
 
 		std::string model_file_type = ".csv";
@@ -136,55 +144,34 @@ namespace walkinplace {
 		vr::VROverlayHandle_t overlayHandle;
 
 		bool wipEnabled = false;
-		bool validSample = false;
+		int validSample = 0;
 		bool hasTwoControllers = false;
 		bool initializedProfile = false;
 		bool initializedDriver = false;
 		bool initializedDataModel = false;
 		bool dataTrainingRequired = false;
 
-		bool buttonAsToggle = false;
-		bool buttonEnables = false;
-		bool holdingButton = false;
-		bool useTrackers = true;
 		bool trackHMDVel = true;
 		bool trackHMDRot = true;
 		bool validTRKRSample = false;
 		bool useContDirForStraf = false;
 		bool useContDirForRev = false;
 		bool pressedFlag = false;
-		bool inputStateChanged = false;
 
 		std::shared_ptr <GameType> gameType;
 		PaceControlType paceControl = PaceControlType::AvgControllerModelMatch;
 		int hmdType = 0;
-		int buttonControlSelect = 0;
-		int disableButton = -1;
-		int unnTouchedCount = 0;
 		int lastValidHMDSampleMKi = 0;
 		int lastCNTRLSampleMKi = 0;
 		int lastValidTRKRSampleMKi = 0;
 		int stopCallCount = 0;
 
-		static const int HMD_Y_VEL_IDX = 0;
-		static const int CNTRL1_Y_VEL_IDX = 1;
-		static const int CNTRL2_Y_VEL_IDX = 2;
-		static const int TRKR1_Y_VEL_IDX = 3;
-		static const int TRKR2_Y_VEL_IDX = 4;
-		static const int HMD_YAW_VEL_IDX = 5;
-		static const int HMD_PITCH_VEL_IDX = 6;
-		static const int HMD_X_VEL_IDX = 7;
-		static const int HMD_Z_VEL_IDX = 8;
-		static const int TOUCH_VAL_IDX = 9;
-
 		int maxSNHMD = 16;
 		int startSNHMD = 12;
 		int reqSNHMD = 4;
-		int stopSNHMD = 4;
 		int maxSNTRKR = 23;
 		int startSNTRKR = 18;
 		int reqSNTRKR = 12;
-		int stopSNTRKR = 12;
 		int maxSNCNTRL = 12;
 		int reqSNCNTRL = 10;
 
@@ -195,7 +182,7 @@ namespace walkinplace {
 		uint64_t tracker2ID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t ovrwipCNTRLID = vr::k_unTrackedDeviceIndexInvalid;
 		uint64_t directionDevice = vr::k_unTrackedDeviceIndexInvalid;
-		uint64_t identifyDeviceSet = vr::k_unTrackedDeviceIndexInvalid;
+		std::queue<uint64_t> identifyDeviceQ;
 
 		float hmdVelVariance = 0.07;
 		float hmdMinDVPerSN = 0.75;
@@ -220,16 +207,16 @@ namespace walkinplace {
 		float contRoll = 0;
 		float contPitch = 0;
 
-		double timeStep = 1.0 / 40.0;
-		double dT = timeStep * 1000;
+		const double timeStep = 1.0 / 40.0;
+		const double dT = timeStep * 1000;
+		const double identifyDeviceTO = 7000;
 		double timeLastTick = 0.0;
 		double timeLastVelTick = 0.0;
 		double timeLastCNTRLSN = 0.0;
-		double identifyControlLastTime = 99999;
-		double identifyControlTimeOut = 6000;
+		double timeLastHaptic = 0.0;
+		double minHapticTO = 6;
+		double identifyDeviceLast = 0;
 		double timeLastGraphPoint = 0.0;
-
-		double currentRunTimeInSec = 0.0;
 
 		std::pair<float, int> computeSNDelta(arma::mat sN, arma::mat mN);
 		std::pair<float, int> computeSNDeltaOffset(arma::mat sN, arma::mat mN);
@@ -239,6 +226,22 @@ namespace walkinplace {
 
 		void loadDataModel();
 		void clearSamplesAndModel();
+
+		void identifyDevice(unsigned deviceIndex, unsigned short duration);
+
+		void runSampleOnModel();
+		void testHMDSample(double dt);
+		void testTRKRSample(double dt);
+		float determineSampleTouch(double dt);
+		void determineCurDirection();
+
+		void stopMovement();
+		void clearClickedFlag();
+		void stopClickMovement();
+		void applyAxisMovement(vr::VRControllerAxis_t axisState);
+		void applyClickMovement();
+		void applyGripMovement();
+		void applyKeyMovement();
 
 	public:
 		~WalkInPlaceTabController();
@@ -255,23 +258,18 @@ namespace walkinplace {
 		Q_INVOKABLE double getStepTime();
 		Q_INVOKABLE int getGameType();
 		Q_INVOKABLE int getHMDType();
-		Q_INVOKABLE int getButtonControlSelect();
-		Q_INVOKABLE int getDisableButton();
 		Q_INVOKABLE int getPaceControl();
-		Q_INVOKABLE bool getUseTrackers();
 		Q_INVOKABLE bool getDisableHMD();
 		Q_INVOKABLE bool getTrackHMDRot();
 		Q_INVOKABLE float getMinTouch();
 		Q_INVOKABLE float getMidTouch();
 		Q_INVOKABLE float getMaxTouch();
-		Q_INVOKABLE bool getUseButtonAsToggle();
-		Q_INVOKABLE bool getButtonEnables();
 		Q_INVOKABLE bool getDeviceEnabled(int devClass, int devIdx, int mode);
 		Q_INVOKABLE bool isWIPEnabled();
 		Q_INVOKABLE bool isStepDetected();
 		Q_INVOKABLE QList<qreal> getGraphPoses(double tdiff);
 		Q_INVOKABLE QList<qreal> getHMDSample();
-		Q_INVOKABLE QList<qreal> getCNTRLSample(); 
+		Q_INVOKABLE QList<qreal> getCNTRLSample();
 		Q_INVOKABLE QList<qreal> getTRKRSample();
 		Q_INVOKABLE void applyVirtualStep(float y);
 		Q_INVOKABLE QList<qreal> getModelData();
@@ -289,8 +287,6 @@ namespace walkinplace {
 		void setTrackHMDRot(bool val);
 		void setDirectionDevice(int choice);
 		void enableDevice(int deviceClass, int devIdx, bool enable, int mode);
-		void setDisableButton(int buttonId);
-		void setButtonEnables(bool val);
 		void setHMDMaxVari(float val);
 		void setMinTouch(float value);
 		void setMidTouch(float value);
@@ -298,26 +294,6 @@ namespace walkinplace {
 		void setGameType(int gameType);
 		void setHMDType(int gameType);
 		void setPaceControl(int paceControl);
-		void setButtonControlSelect(int control);
-		void identifyDevice(unsigned deviceIndex, unsigned short duration);
-
-		void runSampleOnModel();
-		void testHMDSample(double dt);
-		void testTRKRSample(double dt);
-		float determineSampleTouch(double dt);
-		void determineCurDirection();
-
-		bool buttonStatus();
-
-		void stopMovement();
-		void clearClickedFlag();
-		void stopClickMovement();
-		void applyAxisMovement(vr::VRControllerAxis_t axisState);
-		void applyClickMovement();
-		void applyGripMovement();
-		void applyKeyMovement();
-
-		void updateButtonState(uint32_t deviceId, bool firstController);
 
 		void addProfile(QString name);
 		void applyProfile(unsigned index);
