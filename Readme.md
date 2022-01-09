@@ -165,9 +165,9 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 
 ### Boost
 - WINDOWS
-	1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/
-	2. Download Boost 1.65 Binaries (boost_1_65_1-msvc-14.1-64.exe)
-	3. Install Boost into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
+	1. Goto https://sourceforge.net/projects/boost/files/boost-binaries/1.71.0/
+	2. Download Boost 1.71 Binaries (boost_1_71_0-msvc-14.2-64.exe)
+	3. Install Boost into `C:/boost/`
 - LINUX
 	1. Go to https://sourceforge.net/projects/boost/files/boost/1.65.1/
 	2. Download boost_1_65_1.tar.gz
@@ -180,9 +180,9 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 
 ### mlpack, openblas and armadillo and ensmallen
 - WINDOWS
-	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build_windows.html
+	1. https://www.mlpack.org/doc/mlpack-3.4.2/doxygen/build_windows.html
 - LINUX
-	1. https://www.mlpack.org/doc/mlpack-3.0.4/doxygen/build.html
+	1. https://www.mlpack.org/doc/mlpack-3.4.2/doxygen/build.html
 	`sudo apt-get install libmlpack-dev`
 
 ## Building
