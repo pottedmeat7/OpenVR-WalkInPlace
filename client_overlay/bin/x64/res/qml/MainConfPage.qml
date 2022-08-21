@@ -13,9 +13,6 @@ MyMainViewPage {
         wipEnableToggle.checked = WalkInPlaceTabController.isWIPEnabled()
         gameTypeDialog.currentIndex = WalkInPlaceTabController.getGameType()
         hmdTypeDialog.currentIndex = WalkInPlaceTabController.getHMDType()
-        buttonMode.currentIndex = WalkInPlaceTabController.getButtonEnables() ? 1 : 0
-        accuracyButtonDialog.currentIndex = WalkInPlaceTabController.getDisableButton()
-        buttonControlSelect.currentIndex = WalkInPlaceTabController.getButtonControlSelect()
     }
 
     content: ColumnLayout {
@@ -131,72 +128,6 @@ MyMainViewPage {
                     MyText {
                         text: "OVRWIP Controller"
                         Layout.preferredWidth: 250
-                    }
-
-                }
-
-                GridLayout {
-                    columns: 5
-                    
-                    MyComboBox {
-                        id: buttonMode 
-                        currentIndex: 0
-                        Layout.maximumWidth: 305
-                        Layout.minimumWidth: 305
-                        Layout.preferredWidth: 305
-                        Layout.fillWidth: true
-                        displayText: currentText
-                        model: ["Disable WIP", "Enable WIP"]
-                        onCurrentIndexChanged: {
-                            if (currentIndex == 0) { 
-                                WalkInPlaceTabController.setButtonEnables(false)
-                            }
-                            else if (currentIndex == 1) { 
-                                WalkInPlaceTabController.setButtonEnables(true)
-                            } 
-                        }
-                    }
-
-                    MyComboBox {
-                        id: accuracyButtonDialog 
-                        currentIndex: 0
-                        Layout.maximumWidth: 400
-                        Layout.minimumWidth: 400
-                        Layout.preferredWidth: 400
-                        Layout.fillWidth: true
-                        displayText: currentText
-                        model: ["by holding grip", "by holding trigger", "only with data model"]
-                        onCurrentIndexChanged: {
-                            if (currentIndex >= 0) { 
-                                WalkInPlaceTabController.setDisableButton(currentIndex) 
-                            } 
-                        }
-                    }     
-
-                    MyText {
-                        text: " "
-                        Layout.preferredWidth: 10
-                    }  
-
-                    MyText {
-                        text: "on"
-                        Layout.preferredWidth: 50
-                    }
-
-                    MyComboBox {
-                        id: buttonControlSelect 
-                        currentIndex: 0
-                        Layout.maximumWidth: 250
-                        Layout.minimumWidth: 250
-                        Layout.preferredWidth: 250
-                        Layout.fillWidth: true
-                        displayText: currentText
-                        model: ["1st Controller", "2nd Controller"]
-                        onCurrentIndexChanged: {
-                            if (currentIndex >= 0) { 
-                               WalkInPlaceTabController.setButtonControlSelect(currentIndex)                        
-                            } 
-                        }
                     }
                 }
             }

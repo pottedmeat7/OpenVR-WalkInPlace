@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 import pottedmeat7.walkinplace 1.0
 
-MyStackViewPage {
+MyStackGraphPage {
     id: dataModelPage
     name: "dataModelPage"
 
@@ -90,10 +90,10 @@ MyStackViewPage {
 
             ColumnLayout {
                 anchors.fill: parent
-                width: 1200
+                width: 1700
                 
                 RowLayout {
-                    width: 1200
+                    width: 1700
                     Button {
                         id: headerBackButton
                         Layout.preferredHeight: 60
@@ -262,21 +262,21 @@ MyStackViewPage {
             GridLayout {
                 columns: 1
                 rows: 1
-                width: 1500
-                height: 800
+                width: 1800
+                height: 900
 
                 Canvas {
                     id: modelCanvas
-                    width: 1500
-                    height: 700
+                    width: 1800
+                    height: 800
                     antialiasing: true
                     Layout.row: 1
                     Layout.column: 1
                     Layout.columnSpan: 1
                     Layout.rowSpan: 1
 
-                    property int rectWidth: 1500
-                    property int rectHeight: 700
+                    property int rectWidth: 1800
+                    property int rectHeight: 800
                     property int circleRad: 15
                     property int topX : 50
                     property int topY : 0

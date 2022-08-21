@@ -17,7 +17,6 @@
 #include <QOffscreenSurface>
 #include <QOpenGLFramebufferObject>
 #include <QQuickWindow>
-#include <QtWidgets/QWidget>
 #include <QQuickItem>
 #include <QQuickRenderControl>
 #include <QtCore/QObject>
@@ -48,15 +47,14 @@ private:
 	vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
 	vr::VROverlayHandle_t m_ulOverlayThumbnailHandle = vr::k_ulOverlayHandleInvalid;
 
-	std::unique_ptr<QGraphicsScene> m_pScene;
+	std::unique_ptr<QQuickRenderControl> m_pRenderControl;
+	std::unique_ptr<QQuickWindow> m_pWindow;
 	std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
 	std::unique_ptr<QOpenGLContext> m_pOpenGLContext;
 	std::unique_ptr<QOffscreenSurface> m_pOffscreenSurface;
 
 	std::unique_ptr<QTimer> m_pPumpEventsTimer;
-
-	QWidget *m_pWidget;
-
+	std::unique_ptr<QTimer> m_pRenderTimer;
 	bool dashboardVisible = false;
 
 	QPointF m_ptLastMouse;
@@ -83,7 +81,7 @@ public:
 		return dashboardVisible;
 	}
 
-	void SetWidget(QWidget* quickItem);
+	void SetWidget(QQuickItem* quickItem, const std::string& name, const std::string& key = "");
 
 	bool isDesktopMode() { return desktopMode; };
 
@@ -94,9 +92,11 @@ public:
 
 	const vr::VROverlayHandle_t& overlayHandle();
 	const vr::VROverlayHandle_t& overlayThumbnailHandle();
+	bool getOverlayTexture(vr::Texture_t& texture);
 
 public slots:
-	void OnSceneChanged( const QList<QRectF>& );
+	void renderOverlay();
+	void OnRenderRequest();
 	void OnTimeoutPumpEvents();
 
 	void showKeyboard(QString existingText, unsigned long userValue = 0);

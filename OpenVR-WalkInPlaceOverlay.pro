@@ -7,6 +7,8 @@ DESTDIR = $$PWD/client_overlay/bin/x64
 OBJECTS_DIR=$$PWD/build/
 MOC_DIR=$$PWD/build/
 
+#CONFIG   += c++11
+
 # suppress the default RPATH if you wish
 #QMAKE_LFLAGS_RPATH=
 # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
@@ -21,12 +23,14 @@ QT = \
     multimedia \
 
 LIBS = \
+    "/lib/x86_64-linux-gnu/libomp.so.5" \
+    -lrt \
     -L"$$PWD/lib_vrwalkinplace/lib" -lVRWalkInPlace \
     -L"$$PWD/openvr/lib/linux64" -lopenvr_api \
-    -lrt \
-    -lboost_system \
-    -lboost_filesystem \
-    -lmlpack
+    -larmadillo \
+    "/lib/x86_64-linux-gnu/libmlpack.so.3" \
+    -L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_system \
+    -L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_filesystem
 
 HEADERS = \
    $$PWD/client_overlay/src/tabcontrollers/WalkInPlaceTabController.h \

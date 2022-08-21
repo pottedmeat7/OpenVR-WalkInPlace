@@ -3,7 +3,6 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickView>
-#include <QtWidgets/QWidget>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QStyleFactory>
@@ -282,7 +281,7 @@ int main(int argc, char *argv[]) {
 			LOG(ERROR) << "QML Error: " << e.toString().toStdString() << std::endl;
 		}
 		auto quickObj = component.create();
-		controller->SetWidget(qobject_cast<QWidget*>(quickObj));//, walkinplace::OverlayController::applicationName, walkinplace::OverlayController::applicationKey);
+		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), walkinplace::OverlayController::applicationName, walkinplace::OverlayController::applicationKey);
 
 		if (!desktopMode && !noManifest) {
 			try {
@@ -311,4 +310,3 @@ int main(int argc, char *argv[]) {
 	}
 	return 0;
 }
-

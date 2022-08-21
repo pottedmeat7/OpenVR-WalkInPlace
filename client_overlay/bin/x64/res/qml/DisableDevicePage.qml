@@ -158,7 +158,7 @@ MyStackViewPage {
                 anchors.centerIn: parent
 
                 label: MyText {
-                    text: "Controllers in Hands"
+                    text: "Controllers for pace only"
                 }
 
                 background: Rectangle {
@@ -238,7 +238,7 @@ MyStackViewPage {
                 anchors.centerIn: parent
 
                 label: MyText {
-                    text: "Controllers on Feet"
+                    text: "Controllers compared to model"
                 }
 
                 background: Rectangle {
@@ -318,7 +318,7 @@ MyStackViewPage {
                 anchors.centerIn: parent
 
                 label: MyText {
-                    text: "Trackers on Feet"
+                    text: "Trackers compared to model"
                 }
 
                 background: Rectangle {
@@ -398,7 +398,7 @@ MyStackViewPage {
                 anchors.centerIn: parent
 
                 label: MyText {
-                    text: "Trackers in Hands"
+                    text: "Trackers for pace only"
                 }
 
                 background: Rectangle {

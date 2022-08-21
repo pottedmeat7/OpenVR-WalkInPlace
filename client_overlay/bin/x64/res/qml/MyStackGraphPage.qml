@@ -4,9 +4,9 @@ import QtQuick.Layouts 1.2
 import "." 
 
 Rectangle {
-    width: 1500
-    height: 800
     color: myPalette.base
+    width: 1800
+    height: 1000
 
     property string name : "default"
 
@@ -14,7 +14,7 @@ Rectangle {
 
     property Item content: Frame {
         background: Rectangle {
-            color: myPalette.base
+            color: "transparent"
         }
         MyText {
             text: "Content"

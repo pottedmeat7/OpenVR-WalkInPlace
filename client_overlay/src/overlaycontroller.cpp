@@ -106,9 +106,6 @@ namespace walkinplace {
 		m_pOffscreenSurface->setFormat(m_pOpenGLContext->format());
 		m_pOffscreenSurface->create();
 		m_pOpenGLContext->makeCurrent(m_pOffscreenSurface.get());
-	
-		m_pScene.reset(new QGraphicsScene());
-		connect( m_pScene.get(), SIGNAL(changed(const QList<QRectF>&)), this, SLOT( OnSceneChanged(const QList<QRectF>&)) );
 
 		if (!vr::VROverlay()) {
 			QMessageBox::critical(nullptr, "OpenVR WalkInPlace Overlay", "Is OpenVR running?");
@@ -116,7 +113,7 @@ namespace walkinplace {
 		}
 
 		// Init controllers
-		walkInPlaceTabController.init();
+		walkInPlaceTabController.initStage1();
 
 		// Set qml context
 		qmlEngine->rootContext()->setContextProperty("applicationVersion", getVersionString());
@@ -133,9 +130,32 @@ namespace walkinplace {
 			QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 			return obj;
 			});
+	}
 
+	void OverlayController::Shutdown() {
+		if (m_pPumpEventsTimer) {
+			disconnect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
+			m_pPumpEventsTimer->stop();
+			m_pPumpEventsTimer.reset();
+		}
+		if (m_pRenderTimer) {
+			disconnect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
+			disconnect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
+			disconnect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
+			m_pRenderTimer->stop();
+			m_pRenderTimer.reset();
+		}
+		m_pWindow.reset();
+		m_pRenderControl.reset();
+		m_pFbo.reset();
+		m_pOpenGLContext.reset();
+		m_pOffscreenSurface.reset();
+	}
+
+
+	void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name, const std::string& key) {
 		if (!desktopMode) {
-			vr::VROverlayError overlayError = vr::VROverlay()->CreateDashboardOverlay(applicationName, applicationKey, &m_ulOverlayHandle, &m_ulOverlayThumbnailHandle);
+			vr::VROverlayError overlayError = vr::VROverlay()->CreateDashboardOverlay(key.c_str(), name.c_str(), &m_ulOverlayHandle, &m_ulOverlayThumbnailHandle);
 			if (overlayError != vr::VROverlayError_None) {
 				if (overlayError == vr::VROverlayError_KeyInUse) {
 					QMessageBox::critical(nullptr, "OpenVR WalkInPlace Overlay", "Another instance is already running.");
@@ -153,101 +173,92 @@ namespace walkinplace {
 				LOG(ERROR) << "Could not find thumbnail icon \"" << thumbIconPath << "\"";
 			}
 
-			m_pPumpEventsTimer.reset(new QTimer());
-			connect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
-			m_pPumpEventsTimer->setInterval(20);
-			m_pPumpEventsTimer->start();
-
 			// Too many render calls in too short time overwhelm Qt and an assertion gets thrown.
 			// Therefore we use an timer to delay render calls
-			/*m_pRenderTimer.reset(new QTimer());
+			m_pRenderTimer.reset(new QTimer());
 			m_pRenderTimer->setSingleShot(true);
 			m_pRenderTimer->setInterval(5);
-			connect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));*/
+			connect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
 
-			/*QOpenGLFramebufferObjectFormat fboFormat;
+			QOpenGLFramebufferObjectFormat fboFormat;
 			fboFormat.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
 			fboFormat.setTextureTarget(GL_TEXTURE_2D);
-			m_pFbo.reset(new QOpenGLFramebufferObject(quickItem->width(), quickItem->height(), fboFormat));*/
+			m_pFbo.reset(new QOpenGLFramebufferObject(quickItem->width(), quickItem->height(), fboFormat));
 
-			/*m_pRenderControl.reset(new QQuickRenderControl());
+			m_pRenderControl.reset(new QQuickRenderControl());
 			m_pWindow.reset(new QQuickWindow(m_pRenderControl.get()));
 			m_pWindow->setRenderTarget(m_pFbo.get());
 			quickItem->setParentItem(m_pWindow->contentItem());
 			m_pWindow->setGeometry(0, 0, quickItem->width(), quickItem->height());
 			m_pWindow->setFlags(Qt::FramelessWindowHint);
 			m_pWindow->setColor(Qt::transparent);
-			m_pRenderControl->initialize(m_pOpenGLContext.get());*/
-		}
-	}
+			m_pRenderControl->initialize(m_pOpenGLContext.get());
 
-	void OverlayController::Shutdown() {
-		if (m_pPumpEventsTimer) {
-			disconnect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
-			m_pPumpEventsTimer->stop();
-			m_pPumpEventsTimer.reset();
+			vr::HmdVector2_t vecWindowSize = {
+				(float)quickItem->width(),
+				(float)quickItem->height()
+			};
+			vr::VROverlay()->SetOverlayMouseScale(m_ulOverlayHandle, &vecWindowSize);
+
+			connect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
+			connect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
 		}
-		m_pScene.reset();
-		m_pFbo.reset();
-		m_pOpenGLContext.reset();
-		m_pOffscreenSurface.reset();
-		/*if (m_pRenderTimer) {
-			disconnect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
-			disconnect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
-			disconnect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
-			m_pRenderTimer->stop();
-			m_pRenderTimer.reset();
-		}
-		m_pWindow.reset();
-		m_pRenderControl.reset();*/
+
+		m_pPumpEventsTimer.reset(new QTimer());
+		connect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
+		m_pPumpEventsTimer->setInterval(20);
+		m_pPumpEventsTimer->start();
+
+		walkInPlaceTabController.initStage2(this, m_pWindow.get());
 	}
 
 
-	void OverlayController::SetWidget(QWidget* pWidget) {
+	void OverlayController::OnRenderRequest() {
+		if (m_pRenderTimer && !m_pRenderTimer->isActive()) {
+			m_pRenderTimer->start();
+		}
+	}
+
+	void OverlayController::renderOverlay() {
 		if (!desktopMode) {
-			if( m_pScene ) {
-				// all of the mouse handling stuff requires that the widget be at 0,0
-				pWidget->move( 0, 0 );
-				m_pScene->addWidget( pWidget );
-			}
-			m_pWidget = pWidget;
+			// skip rendering if the overlay isn't visible
+			if (!vr::VROverlay() || !vr::VROverlay()->IsOverlayVisible(m_ulOverlayHandle) && !vr::VROverlay()->IsOverlayVisible(m_ulOverlayThumbnailHandle))
+				return;
+			m_pRenderControl->polishItems();
+			m_pRenderControl->sync();
+			m_pRenderControl->render();
 
-			m_pFbo.reset(new QOpenGLFramebufferObject( pWidget->width(), pWidget->height(), GL_TEXTURE_2D ));
-
-		    if( vr::VROverlay() ) {
-				vr::HmdVector2_t vecWindowSize = {
-					(float)pWidget->width(),
-					(float)pWidget->height()
-				};
-				vr::VROverlay()->SetOverlayMouseScale(m_ulOverlayHandle, &vecWindowSize);
+			GLuint unTexture = m_pFbo->texture();
+			if (unTexture != 0) {
+#if defined _WIN64 || defined _LP64
+				// To avoid any compiler warning because of cast to a larger pointer type (warning C4312 on VC)
+				vr::Texture_t texture = { (void*)((uint64_t)unTexture), vr::TextureType_OpenGL, vr::ColorSpace_Auto };
+#else
+				vr::Texture_t texture = { (void*)unTexture, vr::TextureType_OpenGL, vr::ColorSpace_Auto };
+#endif
+				vr::VROverlay()->SetOverlayTexture(m_ulOverlayHandle, &texture);
 			}
+			m_pOpenGLContext->functions()->glFlush(); // We need to flush otherwise the texture may be empty.*/
 		}
 	}
 
-	void OverlayController::OnSceneChanged( const QList<QRectF>& )
-	{
-		// skip rendering if the overlay isn't visible
-	    if( ( m_ulOverlayHandle == vr::k_ulOverlayHandleInvalid ) || !vr::VROverlay() ||
-	        ( !vr::VROverlay()->IsOverlayVisible( m_ulOverlayHandle ) && !vr::VROverlay()->IsOverlayVisible( m_ulOverlayThumbnailHandle ) ) )
-	        return;
 
-		m_pOpenGLContext->makeCurrent( m_pOffscreenSurface.get() );
-		m_pFbo->bind();
-		
-		QOpenGLPaintDevice device( m_pFbo->size() );
-		QPainter painter( &device );
-
-		m_pScene->render( &painter );
-
-		m_pFbo->release();
-
+	bool OverlayController::getOverlayTexture(vr::Texture_t& texture) {
 		GLuint unTexture = m_pFbo->texture();
-		if( unTexture != 0 )
-		{
-	        vr::Texture_t texture = {(void*)(uintptr_t)unTexture, vr::TextureType_OpenGL, vr::ColorSpace_Auto };
-	        vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &texture );
+		if (unTexture != 0) {
+#if defined _WIN64 || defined _LP64
+			// To avoid any compiler warning because of cast to a larger pointer type (warning C4312 on VC)
+			texture = { (void*)((uint64_t)unTexture), vr::TextureType_OpenGL, vr::ColorSpace_Auto };
+#else
+			texture = { (void*)unTexture, vr::TextureType_OpenGL, vr::ColorSpace_Auto };
+#endif
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
+
 
 	void OverlayController::OnTimeoutPumpEvents() {
 		if (!vr::VRSystem())
@@ -257,35 +268,46 @@ namespace walkinplace {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
 			switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
-				QPointF ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#if defined (_WIN64) || !defined (_LP64)
+				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
 				if (ptNewMouse != m_ptLastMouse) {
-					QPoint ptGlobal = ptNewMouse.toPoint();
+					/*QPoint ptGlobal = ptNewMouse.toPoint();
 					QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);
 					mouseEvent.setWidget(NULL);
 					mouseEvent.setPos(ptNewMouse);
 					mouseEvent.setScenePos(ptGlobal);
 					mouseEvent.setScreenPos(ptGlobal);
 					mouseEvent.setLastPos(m_ptLastMouse);
-					mouseEvent.setLastScenePos(m_pWidget->mapToGlobal(m_ptLastMouse.toPoint()));
-					mouseEvent.setLastScreenPos(m_pWidget->mapToGlobal(m_ptLastMouse.toPoint()));
+					mouseEvent.setLastScenePos(m_pWindow->mapToGlobal(m_ptLastMouse.toPoint()));
+					mouseEvent.setLastScreenPos(m_pWindow->mapToGlobal(m_ptLastMouse.toPoint()));
 					mouseEvent.setButtons(m_lastMouseButtons);
 					mouseEvent.setButton(Qt::NoButton);
 					mouseEvent.setModifiers(0);
-					mouseEvent.setAccepted(false);
+					mouseEvent.setAccepted(false);*/
 
 					m_ptLastMouse = ptNewMouse;
-					QApplication::sendEvent(m_pScene.get(), &mouseEvent);
+					//QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+					QMouseEvent mE(QEvent::MouseMove, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), Qt::NoButton, m_lastMouseButtons, 0);
+					QCoreApplication::sendEvent(m_pWindow.get(), &mE);
+					OnRenderRequest();
 				}
 				break;
 			}
 			case vr::VREvent_MouseButtonDown: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons |= button;
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
 				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
-				mouseEvent.setButtonDownPos(button, m_ptLastMouse);
 				mouseEvent.setWidget(NULL);
 				mouseEvent.setPos(ptNewMouse);
+				mouseEvent.setButtonDownPos(button, m_ptLastMouse);
 				mouseEvent.setButtonDownScenePos(button, ptNewMouse);
 				mouseEvent.setButtonDownScreenPos(button, ptNewMouse);
 				mouseEvent.setScenePos(ptNewMouse);
@@ -297,37 +319,40 @@ namespace walkinplace {
 				mouseEvent.setButton(button);
 				mouseEvent.setModifiers(0);
 				mouseEvent.setAccepted(false);
-
-				QApplication::sendEvent(m_pScene.get(), &mouseEvent);
-				//QMouseEvent mE(QEvent::MouseButtonPress, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
-				//QCoreApplication::sendEvent(m_pWindow.get(), &mE);
+				
+				//QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+				QMouseEvent mE(QEvent::MouseButtonPress, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
+				QCoreApplication::sendEvent(m_pWindow.get(), &mE);
 				break;
 			}
 			case vr::VREvent_MouseButtonUp: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons &= ~button;
+#if defined (_WIN64) || !defined (_LP64)
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+#else
+				QPoint ptNewMouse(vrEvent.data.mouse.x, (m_pWindow->height() - vrEvent.data.mouse.y));
+#endif
 				QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
-				mouseEvent.setPos(m_ptLastMouse);
-				mouseEvent.setLastPos(m_ptLastMouse);
 				mouseEvent.setWidget(NULL);
+				mouseEvent.setPos(m_ptLastMouse);
+				mouseEvent.setScenePos(ptNewMouse);
 				mouseEvent.setScreenPos(ptNewMouse);
+				mouseEvent.setLastPos(m_ptLastMouse);
 				mouseEvent.setLastScenePos(ptNewMouse);
 				mouseEvent.setLastScreenPos(ptNewMouse);
 				mouseEvent.setButtons(m_lastMouseButtons);
 				mouseEvent.setButton(button);
 				mouseEvent.setModifiers(0);
 				mouseEvent.setAccepted(false);
-
-				QApplication::sendEvent(m_pScene.get(), &mouseEvent);
-				OnSceneChanged( QList<QRectF>() );
-				//QMouseEvent mE(QEvent::MouseButtonRelease, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
-				//QCoreApplication::sendEvent(m_pWindow.get(), &mE);
+				
+				//QApplication::sendEvent(m_pWindow.get(), &mouseEvent);
+				QMouseEvent mE(QEvent::MouseButtonRelease, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
+				QCoreApplication::sendEvent(m_pWindow.get(), &mE);
 				break;
 			}
 			case vr::VREvent_OverlayShown: {
-				m_pWidget->repaint();
-				//m_pWindow->update();
+				m_pWindow->update();
 				break;
 			}
 			case vr::VREvent_Quit: {
@@ -371,8 +396,7 @@ namespace walkinplace {
 			while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayThumbnailHandle, &vrEvent, sizeof(vrEvent))) {
 				switch (vrEvent.eventType) {
 				case vr::VREvent_OverlayShown: {
-					m_pWidget->repaint();
-					//m_pWindow->update();
+					m_pWindow->update();
 					break;
 				}
 				}

@@ -5,12 +5,13 @@ third-party/armadillo/*
 packages/*
 package/*
 package*
-build*
 build/*
 Release/*
 Debug/*
 .vs/*
 CMakeFiles/*
+CmakeLists.txt
+Makefile
 client_overlay/CMakeFiles/*
 driver_vrwalkinplace/CMakeFiles/*
 driver_vrwalkinplace/bin/x64/*
@@ -26,6 +27,8 @@ CMakeCache.*
 *.qmlc
 *.pro.user
 *.AppImage
+client_overlay/bin/squashfs-root/
+client_overlay/bin/squashfs-root/*
 client_overlay/bin/x64/Application-x86_64.AppImage
 client_overlay/Release/*
 client_overlay/bin/x64/OpenVR-WalkInplaceOverlay

@@ -1,4 +1,4 @@
-﻿#include "WalkInPlaceTabController.h"
+#include "WalkInPlaceTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
 #include <QtQuick/QQuickView>
@@ -19,12 +19,19 @@ namespace walkinplace {
 	}
 
 
-	void WalkInPlaceTabController::init() {
+	void WalkInPlaceTabController::initStage1() {
 		reloadProfiles();
 		reloadSettings();
 		gameType = std::make_shared <GameType>();
 		gameType->inputType = InputType::touchpad;
 	}
+
+
+	void WalkInPlaceTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
+		this->parent = parent;
+		this->widget = widget;
+	}
+
 
 	void WalkInPlaceTabController::eventLoopTick() {
 		if (!initializedDataModel) {
@@ -50,19 +57,16 @@ namespace walkinplace {
 				runSampleOnModel();
 			}
 		}
-		if (identifyDeviceSet != vr::k_unTrackedDeviceIndexInvalid) {
+		if (!identifyDeviceQ.empty()) {
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			auto tdiff = ((double)(now - identifyControlLastTime));
-			//LOG(INFO) << "DT: " << tdiff;
-			if (tdiff >= identifyControlTimeOut) {
-				identifyDeviceSet = vr::k_unTrackedDeviceIndexInvalid;
+			double tdiff = ((double)(now - timeLastHaptic));
+			if (tdiff >= minHapticTO) {
+				identifyDevice(identifyDeviceQ.front(), 2500);
 			}
-			else {
-				double tdiff = ((double)(now - timeLastTick));
-				bool hmdStep = false;
-				if (true || tdiff >= dT) {
-					identifyDevice(identifyDeviceSet, 500);
-				}
+			tdiff = ((double)(now - identifyDeviceLast));
+			if (tdiff >= identifyDeviceTO) {
+				identifyDeviceQ.pop();
+				identifyDeviceLast = now;
 			}
 		}
 		if (!initializedDataModel || !initializedDriver || !wipEnabled) {
@@ -162,7 +166,7 @@ namespace walkinplace {
 								ovrwipCNTRLID = dev->openvrId;
 							}
 						}
-						else if (dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
+						/*else if (dev->deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
 							if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid) {
 								tracker1ID = dev->openvrId;
 								//dev->isTrackedAsTRKR = true;
@@ -171,7 +175,7 @@ namespace walkinplace {
 								tracker2ID = dev->openvrId;
 								//dev->isTrackedAsTRKR = true;
 							}
-						}
+						}*/
 					}
 				}
 			}
@@ -266,26 +270,6 @@ namespace walkinplace {
 		return paceControl;
 	}
 
-	int WalkInPlaceTabController::getButtonControlSelect() {
-		return buttonControlSelect;
-	}
-
-	int WalkInPlaceTabController::getDisableButton() {
-		return disableButton;
-	}
-
-	bool WalkInPlaceTabController::getUseButtonAsToggle() {
-		return buttonAsToggle;
-	}
-
-	bool WalkInPlaceTabController::getButtonEnables() {
-		return buttonEnables;
-	}
-
-	bool WalkInPlaceTabController::getUseTrackers() {
-		return useTrackers;
-	}
-
 	bool WalkInPlaceTabController::getDisableHMD() {
 		return trackHMDVel;
 	}
@@ -333,8 +317,12 @@ namespace walkinplace {
 				hmdMaxZVel = arma::abs(dataModel.row(HMD_Z_VEL_IDX)).max();
 				modelCNTRL1 = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
 				modelCNTRL2 = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
-				minHMDPeakVal = findMinPeakMN(reqSNHMD, dataModel.row(HMD_Y_VEL_IDX), 0.001);
+				minHMDPeakVal = findMinPeakMN(reqSNHMD, dataModel.row(HMD_Y_VEL_IDX), 0.007);
 				maxCNTRLVal = std::max(modelCNTRL1.max(), modelCNTRL2.max());
+				avgCNTRLVal = arma::sum(modelCNTRL1) / modelCNTRL1.n_cols;
+				if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
+					avgCNTRLVal = (avgCNTRLVal + arma::sum(modelCNTRL2) / modelCNTRL2.n_cols) / 2.0;
+				}
 				maxTRKRPeakVal = dataModel.row(TRKR1_Y_VEL_IDX).max();
 				float temp = dataModel.row(TRKR2_Y_VEL_IDX).max();
 				maxTRKRPeakVal = temp > maxTRKRPeakVal ? temp : maxTRKRPeakVal;
@@ -797,12 +785,8 @@ namespace walkinplace {
 			entry.wipEnabled = settings->value("wipEnabled", false).toBool();
 			entry.gameType = settings->value("gameType", 0).toInt();
 			entry.hmdType = settings->value("hmdType", 0).toInt();
-			entry.buttonControlSelect = settings->value("buttonControlSelect", 0).toInt();
-			entry.buttonEnables = settings->value("buttonEnables", false).toBool();
-			entry.useTrackers = settings->value("useTrackers", false).toBool();
 			entry.trackHMDVel = settings->value("trackHMDVel", true).toBool();
 			entry.trackHMDRot = settings->value("trackHMDRot", true).toBool();
-			entry.disableButton = settings->value("disableButton", 0).toInt();
 			entry.minTouch = settings->value("minTouch", 0.25).toFloat();
 			entry.midTouch = settings->value("midTouch", 0.83).toFloat();
 			entry.maxTouch = settings->value("maxTouch", 1).toFloat();
@@ -839,15 +823,11 @@ namespace walkinplace {
 			settings->setValue("wipEnabled", p.wipEnabled);
 			settings->setValue("gameType", p.gameType);
 			settings->setValue("hmdType", p.hmdType);
-			settings->setValue("buttonControlSelect", p.buttonControlSelect);
-			settings->setValue("useTrackers", p.useTrackers);
 			settings->setValue("trackHMDVel", p.trackHMDVel);
 			settings->setValue("trackHMDRot", p.trackHMDRot);
-			settings->setValue("disableButton", p.disableButton);
 			settings->setValue("minTouch", p.minTouch);
 			settings->setValue("midTouch", p.midTouch);
 			settings->setValue("maxTouch", p.maxTouch);
-			settings->setValue("buttonEnables", p.buttonEnables);
 			settings->setValue("cntrl1Idx", p.cntrl1Idx);
 			settings->setValue("cntrl2Idx", p.cntrl2Idx);
 			settings->setValue("trkr1Idx", p.trkr1Idx);
@@ -894,15 +874,11 @@ namespace walkinplace {
 		profile->modelFile = (model_file_name);
 		profile->gameType = getGameType();
 		profile->hmdType = hmdType;
-		profile->buttonControlSelect = buttonControlSelect;
-		profile->useTrackers = useTrackers || !trackHMDVel;
 		profile->trackHMDVel = trackHMDVel;
 		profile->trackHMDRot = trackHMDRot;
-		profile->disableButton = disableButton;
 		profile->minTouch = minTouch;
 		profile->midTouch = midTouch;
 		profile->maxTouch = maxTouch;
-		profile->buttonEnables = buttonEnables;
 		int cntrlIdx = 0;
 		int trkrIdx = -1;
 		bool cntrl1Saved = false;
@@ -962,23 +938,16 @@ namespace walkinplace {
 			currentProfileIdx = index;
 			auto& profile = walkInPlaceProfiles[index];
 			hmdType = profile.hmdType;
-			buttonControlSelect = profile.buttonControlSelect;
-			useTrackers = profile.useTrackers || !profile.trackHMDVel;
 			trackHMDVel = profile.trackHMDVel;
-			disableButton = profile.disableButton;
 			minTouch = profile.minTouch;
 			midTouch = profile.midTouch;
 			maxTouch = profile.maxTouch;
-			buttonEnables = profile.buttonEnables;
 
 			enableWIP(profile.wipEnabled);
 			setGameType(profile.gameType);
 			setHMDType(profile.hmdType);
-			setButtonControlSelect(profile.buttonControlSelect);
 			setTrackHMDVel(profile.trackHMDVel);
 			setTrackHMDRot(profile.trackHMDRot);
-			setDisableButton(profile.disableButton);
-			setButtonEnables(profile.buttonEnables);
 			setMinTouch(profile.minTouch);
 			setMidTouch(profile.midTouch);
 			setMaxTouch(profile.maxTouch);
@@ -1090,9 +1059,6 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setTrackHMDVel(bool value) {
 		trackHMDVel = value;
-		if (!trackHMDVel && !useTrackers) {
-			useTrackers = true;
-		}
 	}
 
 	void WalkInPlaceTabController::setTrackHMDRot(bool value) {
@@ -1101,10 +1067,6 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::setHMDMaxVari(float value) {
 		hmdVelVariance = value;
-	}
-
-	void WalkInPlaceTabController::setDisableButton(int buttonId) {
-		disableButton = buttonId;
 	}
 
 	bool WalkInPlaceTabController::getDeviceEnabled(int devClass, int devIdx, int mode) {
@@ -1171,7 +1133,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::enableDevice(int deviceClass, int devIdx, bool enable, int mode) {
 		int deviceClassI = 0;
 		int idx = 0;
-		int foundDevIdx = -1;
+		uint64_t foundDevIdx = -1;
 		for (auto dev : deviceInfos) {
 			if (dev->deviceClass == deviceClass) {
 				if (deviceClassI == devIdx) {
@@ -1241,84 +1203,16 @@ namespace walkinplace {
 			}
 			idx++;
 		}
-		if (tracker1ID == vr::k_unTrackedDeviceIndexInvalid && tracker2ID == vr::k_unTrackedDeviceIndexInvalid) {
-			useTrackers = false;
-		}
-		else {
-			useTrackers = true;
-			initializedProfile = true;
-		}
 		if (foundDevIdx >= 0) {
-			identifyDeviceSet = foundDevIdx;
-			identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			if (enable) {
-				identifyDevice(identifyDeviceSet, 2000);
-			}
-			else {
-			}
-		}
-	}
-
-	void WalkInPlaceTabController::updateButtonState(uint32_t deviceId, bool firstController) {
-		if (disableButton == 0 || disableButton == 1) {
-			if (deviceId != vr::k_unTrackedDeviceIndexInvalid && (buttonControlSelect >= 2 || (firstController == buttonControlSelect == 0))) {
-				vr::VRControllerState_t state;
-				vr::VRSystem()->GetControllerState(deviceId, &state, sizeof(state));
-				//LOG(INFO) << "Check accuracy button : " << deviceId << " : " << g_AccuracyButton << " : " << state.ulButtonPressed << " : " << vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger);
-				//LOG(INFO) << "current button : " << state.ulButtonPressed;
-				bool isHoldingButton = false;
-				vr::EVRButtonId buttonUsed;
-				switch (disableButton) {
-				case 0:
-					buttonUsed = vr::EVRButtonId::k_EButton_Grip;
-					break;
-				case 1:
-					buttonUsed = vr::EVRButtonId::k_EButton_SteamVR_Trigger;
-					break;
-				default:
-					break;
-				}
-				switch (buttonUsed) {
-				case vr::EVRButtonId::k_EButton_Grip:
-					if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-						isHoldingButton = true;
-					}
-					break;
-				case vr::EVRButtonId::k_EButton_Axis0:
-					if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-						isHoldingButton = true;
-					}
-					break;
-				case vr::EVRButtonId::k_EButton_SteamVR_Trigger:
-					if (state.ulButtonPressed& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
-						isHoldingButton = true;
-					}
-					if (state.ulButtonTouched& vr::ButtonMaskFromId(vr::k_EButton_SteamVR_Trigger)) {
-						isHoldingButton = true;
-					}
-					break;
-				default:
-					break;
-				}
-				if ((buttonControlSelect == 0 && firstController && isHoldingButton) ||
-					(buttonControlSelect == 1 && !firstController && isHoldingButton) ||
-					(buttonControlSelect >= 2 && isHoldingButton)) {
-					holdingButton = true;
-				}
-				if ((buttonControlSelect == 0 && firstController && !isHoldingButton) ||
-					(buttonControlSelect == 1 && !firstController && !isHoldingButton)) {
-					holdingButton = false;
-				}
+			if (enable 
+				&& (identifyDeviceQ.empty() 
+				|| (identifyDeviceQ.front() != foundDevIdx 
+					&& identifyDeviceQ.back() != foundDevIdx))) 
+			{
+				identifyDeviceQ.push(foundDevIdx);
+				identifyDeviceLast = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 		}
-	}
-
-	bool WalkInPlaceTabController::buttonStatus() {
-		return (disableButton == 2 || (holdingButton && buttonEnables) || (!holdingButton && !buttonEnables));
-	}
-
-	void WalkInPlaceTabController::setButtonEnables(bool val) {
-		buttonEnables = val;
 	}
 
 	void WalkInPlaceTabController::setGameType(int type) {
@@ -1377,27 +1271,10 @@ namespace walkinplace {
 		if (deviceIndex < deviceInfos.size()) {
 			try {
 				vr::VRSystem()->TriggerHapticPulse(deviceIndex, 0, duration);
+				timeLastHaptic = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 			catch (std::exception& e) {
 				LOG(INFO) << "Exception caught while identifying device: " << e.what();
-			}
-		}
-	}
-
-	void WalkInPlaceTabController::setButtonControlSelect(int control) {
-		buttonControlSelect = control;
-		if ((control == 0 && controller1ID != vr::k_unTrackedDeviceIndexInvalid) ||
-			(control == 1 && controller2ID != vr::k_unTrackedDeviceIndexInvalid)) {
-			if (identifyDeviceSet == vr::k_unTrackedDeviceIndexInvalid) {
-				identifyControlLastTime = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				if (control == 0) {
-					identifyDeviceSet = controller1ID;
-					identifyDevice(controller1ID, 2000);
-				}
-				else {
-					identifyDeviceSet = controller2ID;
-					identifyDevice(controller2ID, 2000);
-				}
 			}
 		}
 	}
@@ -1410,26 +1287,17 @@ namespace walkinplace {
 			//LOG(INFO) << "DT: " << tdiff;
 			if (tdiff >= dT) {
 				timeLastTick = now;
-				holdingButton = false;
-				updateButtonState(controller1ID, true);
-				updateButtonState(controller2ID, false);
-				if (buttonStatus()) {
-					vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-					testHMDSample(tdiff);
-					testTRKRSample(tdiff);
-				}
-				else {
-					stopMovement();
-				}
+				vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
+				testHMDSample(tdiff);
+				testTRKRSample(tdiff);
 			}
 			if (validSample) {
 				vr::VRControllerAxis_t axisState;
 				determineCurDirection();
 				if (gameType->useAxis) {
 					axisState.x = 0;
-					float tempTouch = determineSampleTouch(tdiff);
+					float tempTouch = determineInputScale();
 					if (sNValidTouch != tempTouch) {
-						inputStateChanged = true;
 						sNValidTouch = tempTouch;
 						if (sNValidTouch > 0.5) {
 							float normTouch = (sNValidTouch - 0.5) / 0.5;
@@ -1468,9 +1336,7 @@ namespace walkinplace {
 				if (gameType->inputType == InputType::keyWASD || gameType->inputType == InputType::keyArrow) {
 					applyKeyMovement();
 				}
-				inputStateChanged = false;
 			}
-
 		}
 	}
 
@@ -1546,10 +1412,24 @@ namespace walkinplace {
 								std::pair<int, int> mDv = computeSNDV(lastSN, mN);
 								if (mDv.first >= std::floor(hmdMinDVPerSN*sNk) && mDs.first < hmdVelVariance*sNk) {
 									validSample = true;
-									inputStateChanged = true;
+									lastValidHMDSampleMKi = mDs.second;
 								}
 							}
-							lastValidHMDSampleMKi = mDs.second;
+							/*else if (dataModel(TOUCH_VAL_IDX, mDs.second) < -1) {
+								if (mDs.first < hmdVelVariance*sNk) {
+									validSample--;
+									if (validSample <= 0) {
+										validSample = false;
+										lastValidHMDSampleMKi = mDs.second;
+										stopMovement();
+									}
+								}
+							}*/
+							else {
+								//validSample++;
+								//validSample = validSample > reqSNHMD ? reqSNHMD : validSample;
+								lastValidHMDSampleMKi = mDs.second;
+							}
 						}
 					}
 				}
@@ -1561,7 +1441,7 @@ namespace walkinplace {
 	}
 
 	void WalkInPlaceTabController::testTRKRSample(double tdiff) {
-		if (useTrackers && tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
+		if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
 			vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
 			vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
 			tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
@@ -1610,10 +1490,9 @@ namespace walkinplace {
 							}
 							else {
 								std::pair<float, int> mDs2 = computeSNDelta(lastSN2, mN);
-								if ( trkrMax >= maxTRKRPeakVal || (mDs1.first < trkrVariance*sNk && mDs2.first < trkrVariance*sNk) ) {
+								if (trkrMax >= maxTRKRPeakVal || (mDs1.first < trkrVariance*sNk && mDs2.first < trkrVariance*sNk)) {
 									if (!trackHMDVel && !validSample) {
 										validSample = true;
-										inputStateChanged = true;
 									}
 									lastValidTRKRSampleMKi = mDs1.first < mDs2.first ? mDs1.second : mDs2.second;
 								}
@@ -1625,7 +1504,6 @@ namespace walkinplace {
 						else if (trkrMax >= maxTRKRPeakVal || mDs1.first < trkrVariance*sNk) {
 							if (!trackHMDVel && !validSample) {
 								validSample = true;
-								inputStateChanged = true;
 							}
 							lastValidTRKRSampleMKi = mDs1.second;
 						}
@@ -1641,7 +1519,7 @@ namespace walkinplace {
 		}
 	}
 
-	float WalkInPlaceTabController::determineSampleTouch(double tdiff) {
+	float WalkInPlaceTabController::determineInputScale() {
 		float nextTouch = 0;
 		try {
 			if (paceControl == PaceControlType::AvgControllerModelMatch
@@ -1664,10 +1542,10 @@ namespace walkinplace {
 					double cntrl2VelY = std::abs(cont2Vel.v[1]);
 					if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
 						if (cntrl2VelY > cntrl1VelY) {
-							return std::min(1.0, cntrl2VelY / maxCNTRLVal);
+							return std::min(1.0, cntrl2VelY / avgCNTRLVal);
 						}
 					}
-					return std::min(1.0, cntrl1VelY / maxCNTRLVal);
+					return std::min(1.0, cntrl1VelY / avgCNTRLVal);
 				}
 				int n = cntrlSample.n_cols;
 				cntrlSample.insert_cols(n, 1);
@@ -1680,23 +1558,41 @@ namespace walkinplace {
 					cntrlSample(1, n) = cont2Vel.v[1];
 				}
 				if (cntrlSample.n_cols >= reqSNCNTRL) {
-					arma::rowvec mN = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
-					arma::rowvec sN = arma::abs(cntrlSample.row(0));
-					arma::rowvec lastSN = sN.tail_cols(std::min(n, reqSNCNTRL));
-					if (paceControl == PaceControlType::CurControllerModelMatch) {
-						std::pair<float, int> mDs = computeSNDelta(lastSN, mN);
-						nextTouch = dataModel(TOUCH_VAL_IDX, mDs.second);
+					if (controller1ID == tracker1ID) {
+						if (paceControl == PaceControlType::CurControllerModelMatch) {
+							nextTouch = dataModel(TOUCH_VAL_IDX, lastValidTRKRSampleMKi);
+						}
+						else if (paceControl == PaceControlType::AvgControllerHMDModelMatch) {
+							nextTouch = (dataModel(TOUCH_VAL_IDX, lastValidTRKRSampleMKi) + dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi)) / 2.0;
+							if (controller2ID != tracker2ID && controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
+								arma::rowvec mN = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
+								arma::rowvec sN = arma::abs(cntrlSample.row(0));
+								arma::rowvec lastSN = sN.tail_cols(reqSNCNTRL);
+								std::pair<float, int> mDs2 = computeSNDelta(lastSN, mN);
+								float avgCntrlTouch = (dataModel(TOUCH_VAL_IDX, lastValidTRKRSampleMKi) + dataModel(TOUCH_VAL_IDX, mDs2.second)) / 2.0;
+								nextTouch = (avgCntrlTouch + dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi)) / 2.0;
+							}
+						}
 					}
-					else if (paceControl == PaceControlType::AvgControllerHMDModelMatch) {
-						std::pair<float, int> mDs1 = computeSNDelta(lastSN, mN);
-						nextTouch = (dataModel(TOUCH_VAL_IDX, mDs1.second) + dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi)) / 2.0;
-						if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-							arma::rowvec mN = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
-							arma::rowvec sN = arma::abs(cntrlSample.row(0));
-							arma::rowvec lastSN = sN.tail_cols(reqSNCNTRL);
-							std::pair<float, int> mDs2 = computeSNDelta(lastSN, mN);
-							float avgCntrlTouch = (dataModel(TOUCH_VAL_IDX, mDs1.second) + dataModel(TOUCH_VAL_IDX, mDs2.second)) / 2.0;
-							nextTouch = (avgCntrlTouch + dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi)) / 2.0;
+					else {
+						arma::rowvec mN = arma::abs(dataModel.row(CNTRL1_Y_VEL_IDX));
+						arma::rowvec sN = arma::abs(cntrlSample.row(0));
+						arma::rowvec lastSN = sN.tail_cols(std::min(n, reqSNCNTRL));
+						if (paceControl == PaceControlType::CurControllerModelMatch) {
+							std::pair<float, int> mDs = computeSNDelta(lastSN, mN);
+							nextTouch = dataModel(TOUCH_VAL_IDX, mDs.second);
+						}
+						else if (paceControl == PaceControlType::AvgControllerHMDModelMatch) {
+							std::pair<float, int> mDs1 = computeSNDelta(lastSN, mN);
+							nextTouch = (dataModel(TOUCH_VAL_IDX, mDs1.second) + dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi)) / 2.0;
+							if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
+								arma::rowvec mN = arma::abs(dataModel.row(CNTRL2_Y_VEL_IDX));
+								arma::rowvec sN = arma::abs(cntrlSample.row(0));
+								arma::rowvec lastSN = sN.tail_cols(reqSNCNTRL);
+								std::pair<float, int> mDs2 = computeSNDelta(lastSN, mN);
+								float avgCntrlTouch = (dataModel(TOUCH_VAL_IDX, mDs1.second) + dataModel(TOUCH_VAL_IDX, mDs2.second)) / 2.0;
+								nextTouch = (avgCntrlTouch + dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi)) / 2.0;
+							}
 						}
 					}
 					arma::rowvec cntrl1 = arma::abs(cntrlSample.row(0));
@@ -1992,7 +1888,7 @@ namespace walkinplace {
 					hmdVels.shed_cols(0, hmdVels.n_cols - 1);
 				}
 			}
-			if (useTrackers && trkrSample.n_cols > 1) {
+			if (trkrSample.n_cols > 1) {
 				trkrSample.shed_cols(0, trkrSample.n_cols - 1);
 				if (trkrVels.n_cols > 1) {
 					trkrVels.shed_cols(0, trkrVels.n_cols - 1);
@@ -2000,6 +1896,9 @@ namespace walkinplace {
 			}
 			if (cntrlSample.n_cols > 1) {
 				cntrlSample.shed_cols(0, cntrlSample.n_cols - 1);
+			}
+			if (dataModel(TOUCH_VAL_IDX, lastValidHMDSampleMKi) > -1) {
+				lastValidHMDSampleMKi = 0;
 			}
 			lastValidHMDSampleMKi = 0;
 			lastValidTRKRSampleMKi = 0;
@@ -2096,7 +1995,6 @@ namespace walkinplace {
 				//LOG(INFO) << "Exception caught while resetting virtual telport movement: " << e.what();
 			}
 		}
-		unnTouchedCount = 0;
 	}
 
 	void WalkInPlaceTabController::applyGripMovement() {
@@ -2109,7 +2007,6 @@ namespace walkinplace {
 		catch (std::exception& e) {
 			//LOG(INFO) << "Exception caught while applying virtual telport movement: " << e.what();
 		}
-		unnTouchedCount = 0;
 	}
 
 	void WalkInPlaceTabController::applyKeyMovement() {
