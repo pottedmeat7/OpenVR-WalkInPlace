@@ -15,6 +15,8 @@ Makefile
 client_overlay/CMakeFiles/*
 driver_vrwalkinplace/CMakeFiles/*
 driver_vrwalkinplace/bin/x64/*
+driver_vrwalkinplace/Makefile
+lib_vrwalkinplace/Makefile
 lib_vrwalkinplace/CMakeFiles/*
 lib_vrwalkinplace/lib/*
 *.cmake
@@ -27,6 +29,8 @@ CMakeCache.*
 *.qmlc
 *.pro.user
 *.AppImage
+client_overlay/bin/x64/OpenVR-WalkInPlaceOverlay
+client_overlay/bin/x64/OpenVR-WalkInPlaceOverlay.lib
 client_overlay/bin/squashfs-root/
 client_overlay/bin/squashfs-root/*
 client_overlay/bin/x64/Application-x86_64.AppImage
