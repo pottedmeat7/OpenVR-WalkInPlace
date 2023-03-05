@@ -174,16 +174,21 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 	3. Extract the files into `OpenVR-WalkInPlace/third-party/boost_1_65_1`
   
 ### Qt
-1. Goto https://download.qt.io/official_releases/qt/5.9/5.9.0/
-2. Download Qt 5.9.0 (Either windows .exe or linux .run file)
+1. Download the online install from here https://www.qt.io/download-qt-installer
+2. Download Qt 5.9.0 (or latest) (Either windows .exe or linux .run file)
 3. Run the Qt installer (I installed it to `c:\Qt` or `/home/<user>/` on linux)
+
+For Qt deploy on Linux:
+	1. `sudo apt install fuse libfuse2`
+	2. Download the latest AppImage release of https://github.com/probonopd/linuxdeployqt
+	3. copy the linuxdeployqt image to `client_overlay/bin/` directory
 
 ### mlpack, openblas and armadillo and ensmallen
 - WINDOWS
 	1. https://www.mlpack.org/doc/mlpack-3.4.2/doxygen/build_windows.html
 - LINUX
 	1. https://www.mlpack.org/doc/mlpack-3.4.2/doxygen/build.html
-	`sudo apt-get install libmlpack-dev`
+	`apt install libmlpack-dev mlpack-bin libarmadillo-dev`
 
 ## Building
 - WINDOWS

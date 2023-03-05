@@ -29,6 +29,7 @@ CMakeCache.*
 *.qmlc
 *.pro.user
 *.AppImage
+client_overlay/bin/linuxdeployqt-continuous-x86_64.AppImage
 client_overlay/bin/x64/OpenVR-WalkInPlaceOverlay
 client_overlay/bin/x64/OpenVR-WalkInPlaceOverlay.lib
 client_overlay/bin/squashfs-root/

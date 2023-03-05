@@ -10,7 +10,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "./lib")
 
 
 include_directories ("../openvr/headers/")
-include_directories ("../third-party/boost_1_65_1/")
+## include_directories ("../third-party/boost_1_65_1/")
 include_directories ("../third-party/easylogging++/")
 
 include_directories ("include")

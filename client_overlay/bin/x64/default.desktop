@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Categories=Game;Utility;
+Exec=OpenVR-WalkInPlaceOverlay %F
+Icon=ovrwip
+Name=OpenVR-WalkInPlace

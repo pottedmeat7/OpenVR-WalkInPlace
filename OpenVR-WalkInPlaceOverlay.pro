@@ -21,16 +21,21 @@ QT = \
     widgets \
     quick \
     multimedia \
+    #core5compat \
 
 LIBS = \
-    "/lib/x86_64-linux-gnu/libomp.so.5" \
     -lrt \
     -L"$$PWD/lib_vrwalkinplace/lib" -lVRWalkInPlace \
     -L"$$PWD/openvr/lib/linux64" -lopenvr_api \
     -larmadillo \
-    "/lib/x86_64-linux-gnu/libmlpack.so.3" \
-    -L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_system \
-    -L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_filesystem
+    -lgomp \
+    -lmlpack \
+    -lboost_system \
+    -lboost_filesystem \
+    #"/lib/x86_64-linux-gnu/libomp.so.5" \
+    #"/usr/lib/x86_64-linux-gnu/libmlpack.so.3" \
+    #-L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_system \
+    #-L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_filesystem
 
 HEADERS = \
    $$PWD/client_overlay/src/tabcontrollers/WalkInPlaceTabController.h \
@@ -46,8 +51,8 @@ SOURCES = \
 INCLUDEPATH = \
     $$PWD/lib_vrwalkinplace/include \
     $$PWD/openvr/headers \
-    $$PWD/third-party/boost_1_65_1 \
-    $$PWD/third-party/easylogging++
+    $$PWD/third-party/easylogging++ \
+    #$$PWD/third-party/boost_1_65_1 \
 
 
 #DEFINES = 

@@ -12,7 +12,7 @@ include_directories ("src/com/shm/")
 include_directories ("src/virtualdevice/")
 include_directories ("src/driver/")
 include_directories ("../openvr/headers/")
-include_directories ("../third-party/boost_1_65_1/")
+## include_directories ("../third-party/boost_1_65_1/")
 include_directories ("../third-party/easylogging++/")
 include_directories ("../lib_vrwalkinplace/include/")
 
