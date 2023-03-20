@@ -6,12 +6,12 @@
 #include <config.h>
 
 
-#if VRWALKINPLACE_EASYLOGGING == 1
-#include "logging.h";
-#define WRITELOG(level, txt) LOG(level) << txt;
-#else
-#define WRITELOG(level, txt) std::cerr << txt;
-#endif
+// #if VRWALKINPLACE_EASYLOGGING == 1
+// #include "logging.h";
+// #define WRITELOG(level, txt) LOG(level) << txt;
+// #else
+// #define WRITELOG(level, txt) std::cerr << txt;
+// #endif
 
 
 
@@ -45,7 +45,7 @@ namespace vrwalkinplace {
 				}
 			}
 			catch (std::exception& ex) {
-				WRITELOG(ERROR, "Exception in ipc receive loop: " << ex.what() << std::endl);
+				// WRITELOG(ERROR, "Exception in ipc receive loop: " << ex.what() << std::endl);
 			}
 		}
 		_this->_ipcThreadRunning = false;

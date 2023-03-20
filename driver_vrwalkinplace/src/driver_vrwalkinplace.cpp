@@ -16,7 +16,7 @@ static vrwalkinplace::driver::WatchdogProvider watchdogProvider;
 #endif
 
 HMD_DLL_EXPORT void *HmdDriverFactory(const char *pInterfaceName, int *pReturnCode) {
-	LOG(TRACE) << "HmdDriverFactory( " << pInterfaceName << " )";
+	// LOG(TRACE) << "HmdDriverFactory( " << pInterfaceName << " )";
 	if (std::strcmp(vr::IServerTrackedDeviceProvider_Version, pInterfaceName) == 0){
 		return &serverDriver;
 	} else if (std::strcmp(vr::ITrackedDeviceServerDriver_Version, pInterfaceName) == 0) {

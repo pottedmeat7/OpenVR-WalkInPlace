@@ -1,10 +1,11 @@
 #pragma once
 #pragma once
 
+#include <map>
 #include <openvr_driver.h>
 #include <vrwalkinplace_types.h>
 #include <openvr_math.h>
-#include "../logging.h"
+// #include "../logging.h"
 
 
 // driver namespace

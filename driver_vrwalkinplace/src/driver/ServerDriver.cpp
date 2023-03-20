@@ -17,23 +17,23 @@ namespace vrwalkinplace {
 		}
 
 		ServerDriver::~ServerDriver() {
-			LOG(TRACE) << "CServerDriver::~CServerDriver_VRWalkInPlace()";
+			//LOG(TRACE) << "CServerDriver::~CServerDriver_VRWalkInPlace()";
 		}
 
 		vr::EVRInitError ServerDriver::Init(vr::IVRDriverContext *pDriverContext) {
-			LOG(TRACE) << "CServerDriver::Init()";
+			//LOG(TRACE) << "CServerDriver::Init()";
 
-			LOG(DEBUG) << "Initialize driver context.";
+			//LOG(DEBUG) << "Initialize driver context.";
 			VR_INIT_SERVER_DRIVER_CONTEXT(pDriverContext);
 
 			// Read installation directory
 			vr::ETrackedPropertyError tpeError;
 			installDir = vr::VRProperties()->GetStringProperty(pDriverContext->GetDriverHandle(), vr::Prop_InstallPath_String, &tpeError);
 			if (tpeError == vr::TrackedProp_Success) {
-				LOG(INFO) << "Install Dir:" << installDir;
+				//LOG(INFO) << "Install Dir:" << installDir;
 			}
 			else {
-				LOG(INFO) << "Could not get Install Dir: " << vr::VRPropertiesRaw()->GetPropErrorNameFromEnum(tpeError);
+				//LOG(INFO) << "Could not get Install Dir: " << vr::VRPropertiesRaw()->GetPropErrorNameFromEnum(tpeError);
 			}
 
 			// Start IPC thread
@@ -44,7 +44,7 @@ namespace vrwalkinplace {
 
 
 		void ServerDriver::Cleanup() {
-			LOG(TRACE) << "CServerDriver::Cleanup()";
+			//LOG(TRACE) << "CServerDriver::Cleanup()";
 			shmCommunicator.shutdown();
 			VR_CLEANUP_SERVER_DRIVER_CONTEXT();
 		}
@@ -111,7 +111,7 @@ namespace vrwalkinplace {
 			}
 			catch (std::exception& e) {
 				initDriver = false;
-				LOG(INFO) << "Exception caught while enabling driver: " << e.what();
+				//LOG(INFO) << "Exception caught while enabling driver: " << e.what();
 			}
 		}
 
