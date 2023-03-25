@@ -13,7 +13,10 @@ MOC_DIR=$$PWD/build/
 #QMAKE_LFLAGS_RPATH=
 # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
 QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
-QMAKE_CXXFLAGS += "-fopenmp"
+QMAKE_CXXFLAGS += "-fopenmp "
+# QMAKE_CXXFLAGS += "-fno-sized-deallocation"
+
+QTPLUGIN += qsvg
 
 QT = \
     core \
@@ -21,6 +24,8 @@ QT = \
     widgets \
     quick \
     multimedia \
+    svg \
+    xml \
     #core5compat \
 
 LIBS = \

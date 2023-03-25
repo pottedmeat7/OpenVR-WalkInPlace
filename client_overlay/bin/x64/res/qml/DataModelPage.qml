@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs 1.0
 import pottedmeat7.walkinplace 1.0
 
 MyStackGraphPage {
@@ -101,12 +101,12 @@ MyStackGraphPage {
                         hoverEnabled: true
                         enabled: true
                         opacity: 1.0
-                        contentItem: Image {
-                            source: "backarrow.svg"
-                            sourceSize.width: 60
-                            sourceSize.height: 60
-                            anchors.fill: parent
-                        }
+                        //contentItem: Image {
+                        //    source: "backarrow.svg"
+                        //    sourceSize.width: 60
+                        //    sourceSize.height: 60
+                        //    anchors.fill: parent
+                        //}
                         background: Rectangle {
                             opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
                             color: myPalette.base

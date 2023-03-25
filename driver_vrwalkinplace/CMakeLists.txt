@@ -17,6 +17,7 @@ include_directories ("../openvr/headers/")
 include_directories ("../lib_vrwalkinplace/include/")
 
 set(SOURCES
+	src/driver_vrwalkinplace.cpp
 	src/com/shm/driver_ipc_shm.cpp 
 	src/virtualdevice/VirtualController.cpp 
 	src/driver/ServerDriver.cpp 

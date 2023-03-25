@@ -13,23 +13,25 @@ if [ $1 = "install" ]; then
 	#rm -rf ~/.local/share/vrwalkinplace
 	#rm -rf ~/.steam/steam/vrwalkinplace
 
-	mkdir -p ~/.steam/steam/vrwalkinplace
-	#mkdir -p ~/.steam/steam/pottedmeat7/OpenVRWalkInPlace/
+	# mkdir -p ~/.steam/steam/vrwalkinplace
+	mkdir -p ~/.steam/steam/pottedmeat7/
+	mkdir -p ~/.steam/steam/pottedmeat7/vrwalkinplace/
 	mkdir -p ~/.local/.config/pottedmeat7/
+	mkdir -p ~/.local/.config/pottedmeat7/OpenVRWalkInPlace
 
 	cp ./libopenvr_api.so ~/.steam/steam/vrwalkinplace
 	cp ./libopenvr_api.so /usr/local/lib/
 
-	cp -r ./overlay/lib ~/.steam/steam/vrwalkinplace/lib
-	cp -r ./overlay/qml ~/.steam/steam/vrwalkinplace/qml
-	cp -r ./overlay/res ~/.steam/steam/vrwalkinplace/res
-	cp -r ./overlay/plugins ~/.steam/steam/vrwalkinplace/plugins
+	cp -r ./overlay/lib ~/.steam/steam/pottedmeat7/vrwalkinplace/lib
+	cp -r ./overlay/qml ~/.steam/steam/pottedmeat7/vrwalkinplace/qml
+	cp -r ./overlay/res ~/.steam/steam/pottedmeat7/vrwalkinplace/res
+	cp -r ./overlay/plugins ~/.steam/steam/pottedmeat7/vrwalkinplace/plugins
 
-	cp ./overlay/manifest.vrmanifest ~/.steam/steam/vrwalkinplace/manifest.vrmanifest
-	cp ./overlay/qt.conf ~/.steam/steam/vrwalkinplace/qt.conf
-	cp ./overlay/LICENSE ~/.steam/steam/vrwalkinplace/LICENSE
-	cp ./overlay/ovrwip.png ~/.steam/steam/vrwalkinplace/ovrwip.png
-	cp ./overlay/OpenVR-WalkInPlaceOverlay ~/.steam/steam/vrwalkinplace/OpenVR-WalkInPlaceOverlay
+	cp ./overlay/manifest.vrmanifest ~/.steam/steam/pottedmeat7/vrwalkinplace/manifest.vrmanifest
+	cp ./overlay/qt.conf ~/.steam/steam/pottedmeat7/vrwalkinplace/qt.conf
+	cp ./overlay/LICENSE ~/.steam/steam/pottedmeat7/vrwalkinplace/LICENSE
+	cp ./overlay/ovrwip.png ~/.steam/steam/pottedmeat7/vrwalkinplace/ovrwip.png
+	cp ./overlay/OpenVR-WalkInPlaceOverlay ~/.steam/steam/pottedmeat7/vrwalkinplace/OpenVR-WalkInPlaceOverlay
 
 	#rm -rf "$install_path"/drivers/00vrwalkinplace
 
@@ -45,12 +47,14 @@ if [ $1 = "install" ]; then
 	cp ./driver/lib/driver_00vrwalkinplace.so "$install_path"/drivers/00vrwalkinplace/bin/linux32/driver_00vrwalkinplace.so
 	cp ./driver/lib/driver_00vrwalkinplace.so "$install_path"/drivers/00vrwalkinplace/bin/linux64/driver_00vrwalkinplace.so
 
-	cd ~/.steam/steam/vrwalkinplace/
+	# cd ~/.steam/steam/pottedmeat7/vrwalkinplace/
 
 	~/.steam/steam/ubuntu12_32/steam-runtime/run.sh "$install_path"/bin/linux64/vrpathreg adddriver "$install_path"/drivers/00vrwalkinplace
 
-	~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ./OpenVR-WalkInPlaceOverlay -installmanifest
-	~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ./OpenVR-WalkInPlaceOverlay -postinstallationstep
+	cp /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.74.0 "$install_path"/drivers/00vrwalkinplace/bin/linux64/
+
+	~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ~/.steam/steam/pottedmeat7/vrwalkinplace/OpenVR-WalkInPlaceOverlay -installmanifest
+	~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ~/.steam/steam/pottedmeat7/vrwalkinplace/OpenVR-WalkInPlaceOverlay -postinstallationstep
 
 	echo "install complete"
 
@@ -60,7 +64,7 @@ elif [ $1 = 'test' ]; then
 
 elif [ $1 = 'uninstall' ]; then
 
-    install_path=$(~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ./package/overlay/OpenVR-WalkInPlaceOverlay -openvrpath)
+    install_path=$(~/.steam/steam/ubuntu12_32/steam-runtime/run.sh ~/.steam/steam/pottedmeat7/vrwalkinplace/OpenVR-WalkInPlaceOverlay -openvrpath)
 
 	(echo "$install_path" | grep "VRVR") && install_path="${install_path%VRVR*}VR"
 
@@ -72,7 +76,7 @@ elif [ $1 = 'uninstall' ]; then
 
 	rm -rf "$install_path"/drivers/00vrwalkinplace
 
-	rm -rf ~/.steam/steam/vrwalkinplace/
+	rm -rf ~/.steam/steam/pottedmeat7/vrwalkinplace/
 
 elif [ $1 = "clean" ]; then
 
@@ -104,7 +108,7 @@ else
 
 	cd ../
 
-	PATH=~/Qt/5.15.2/gcc_64/bin/:$PATH
+	PATH=/usr/lib/x86_64-linux-gnu/qt5/bin/:$PATH
 	export PATH
 	qmake -config release
 	make

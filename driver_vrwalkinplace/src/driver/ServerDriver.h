@@ -62,6 +62,7 @@ public:
 	void openvr_axisEvent(uint32_t unWhichDevice, uint32_t unWhichAxis, const vr::VRControllerAxis_t& axisState);
 	void openvr_enableDriver(bool val);
 
+
 private:
 
 	VirtualController vr_locomotion1;
