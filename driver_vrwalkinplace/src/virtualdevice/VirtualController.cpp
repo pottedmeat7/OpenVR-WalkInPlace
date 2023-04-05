@@ -1,6 +1,6 @@
 #include "VirtualController.h"
 
-// #include <boost/regex.hpp>
+#include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 #include "../driver/ServerDriver.h"
 
@@ -126,7 +126,7 @@ namespace vrwalkinplace {
 
 			}
 			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while activating driver device: " << e.what();
+				LOG(INFO) << "Exception caught while activating driver device: " << e.what();
 			}
 			// app button component
 			return vr::EVRInitError::VRInitError_None;
@@ -173,7 +173,7 @@ namespace vrwalkinplace {
 
 		void VirtualController::updatePose(vr::DriverPose_t new_pose)
 		{
-			//LOG(INFO) << "new pose values - pos(x,y,z): (" << new_pose.vecPosition[0] << "," << new_pose.vecPosition[1] << "," << new_pose.vecPosition[2] << ") - vel(x,y,x): (" << new_pose.vecVelocity[0] << "," << new_pose.vecVelocity[1] << "," << new_pose.vecVelocity[2] << ")";
+			LOG(INFO) << "new pose values - pos(x,y,z): (" << new_pose.vecPosition[0] << "," << new_pose.vecPosition[1] << "," << new_pose.vecPosition[2] << ") - vel(x,y,x): (" << new_pose.vecVelocity[0] << "," << new_pose.vecVelocity[1] << "," << new_pose.vecVelocity[2] << ")";
 			devicePose.vecWorldFromDriverTranslation[0] = new_pose.vecWorldFromDriverTranslation[0];
 			devicePose.vecWorldFromDriverTranslation[1] = new_pose.vecWorldFromDriverTranslation[1];
 			devicePose.vecWorldFromDriverTranslation[2] = new_pose.vecWorldFromDriverTranslation[2];
@@ -250,17 +250,17 @@ namespace vrwalkinplace {
 					uint64_t componentHandle = m_ulBoolComponentsMap[eButtonId][findType];
 					bool boolVal = (eventType == ButtonEventType::ButtonPressed || eventType == ButtonEventType::ButtonTouched);
 					vr::EVRInputError eVRIError = UpdateBooleanComponent(componentHandle, boolVal, eventTimeOffset);
-					//LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
+					LOG(INFO) << "apply boolean event " << (uint32_t)eventType << " on button " << eButtonId << " on device " << m_openvrId;
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
-						//LOG(INFO) << "VR BOOLEAN INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId;
+						LOG(INFO) << "VR BOOLEAN INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId;
 					}
 				}
 				else {
-					//LOG(WARNING) << "Device " << m_openvrId << ": No mapping with button id  " << eButtonId << " with event type " << (int)eventType << " to input component.";
+					LOG(WARNING) << "Device " << m_openvrId << ": No mapping with button id  " << eButtonId << " with event type " << (int)eventType << " to input component.";
 				}
 			}
 			else {
-				//LOG(WARNING) << "Device " << m_openvrId << ": No mapping from button id " << eButtonId << " to input component.";
+				LOG(WARNING) << "Device " << m_openvrId << ": No mapping from button id " << eButtonId << " to input component.";
 			}
 		}
 
@@ -271,59 +271,59 @@ namespace vrwalkinplace {
 					try {
 						vr::EVRInputError eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad][ButtonEventType::TrackpadX], axisState.x, 0);
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
-							//LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS X";
+							LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS X";
 						}
 						eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Touchpad][ButtonEventType::TrackpadY], axisState.y, 0);
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
-							//LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS Y";
+							LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS Y";
 						}
 					}
 					catch (std::exception& e) {
-						//LOG(INFO) << "AXIS EVENT ERROR CAUGHT " << e.what();
+						LOG(INFO) << "AXIS EVENT ERROR CAUGHT " << e.what();
 					}
 				}
 				else if (eButtonId == vr::EVRButtonId::k_EButton_IndexController_JoyStick) {
 					try {
 						vr::EVRInputError eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick][ButtonEventType::JoystickX], axisState.x, 0);
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
-							//LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS X";
+							LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS X";
 						}
 						eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_IndexController_JoyStick][ButtonEventType::JoystickY], axisState.y, 0);
 						if (eVRIError != vr::EVRInputError::VRInputError_None) {
-							//LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS Y";
+							LOG(INFO) << "VR SCALAR INPUT ERROR: " << eVRIError << " FOR BUTTON ID: " << eButtonId << " AND AXIS Y";
 						}
 					}
 					catch (std::exception& e) {
-						//LOG(INFO) << "AXIS EVENT ERROR CAUGHT " << e.what();
+						LOG(INFO) << "AXIS EVENT ERROR CAUGHT " << e.what();
 					}
 				}
 				else if (eButtonId == vr::EVRButtonId::k_EButton_SteamVR_Trigger) {
 					vr::EVRInputError eVRIError = UpdateScalarComponent(m_ulScalarComponentsMap[vr::EVRButtonId::k_EButton_SteamVR_Trigger][ButtonEventType::TriggerX], axisState.x, 0);
 					if (eVRIError != vr::EVRInputError::VRInputError_None) {
-						//LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
+						LOG(INFO) << "VR INPUT ERROR: " << eVRIError;
 					}
 				}
 			}
 			else {
-				//LOG(WARNING) << "Device " << m_openvrId << ": No mapping from axis id " << eButtonId << " to input component.";
+				LOG(WARNING) << "Device " << m_openvrId << ": No mapping from axis id " << eButtonId << " to input component.";
 			}
 		}
 
 		bool _matchInputComponentName(const char* name, std::string& segment0, std::string& segment1, std::string& segment2, std::string& segment3) {
 			return true;
-			// boost::regex rgx("^/([^/]*)(/([^/]*))?(/([^/]*))?(/([^/]*))?");
-			// boost::smatch match;
-			// std::string text(name);
-			// if (boost::regex_search(text, match, rgx)) {
-			// 	segment0 = match[1];
-			// 	segment1 = match[3];
-			// 	segment2 = match[5];
-			// 	segment3 = match[7];
-			// 	return true;
-			// }
-			// else {
-			// 	return false;
-			// }
+			boost::regex rgx("^/([^/]*)(/([^/]*))?(/([^/]*))?(/([^/]*))?");
+			boost::smatch match;
+			std::string text(name);
+			if (boost::regex_search(text, match, rgx)) {
+				segment0 = match[1];
+				segment1 = match[3];
+				segment2 = match[5];
+				segment3 = match[7];
+				return true;
+			}
+			else {
+			 	return false;
+			}
 		}
 
 	} // end namespace driver

@@ -1,6 +1,32 @@
 #include "driver/ServerDriver.h"
 #include "driver/WatchdogProvider.h"
+#include "logging.h"
 
+const char* logConfigFileName = "logging.conf";
+
+const char* logConfigDefault =
+"* GLOBAL:\n"
+"	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
+"	FILENAME = \"driver_vrwalkinplace.log\"\n"
+"	ENABLED = true\n"
+"	TO_FILE = true\n"
+"	TO_STANDARD_OUTPUT = true\n"
+"	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
+"* TRACE:\n"
+"	ENABLED = false\n"
+"* DEBUG:\n"
+"	ENABLED = false\n";
+
+INITIALIZE_EASYLOGGINGPP
+
+void init_logging() {
+	el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
+	el::Configurations conf(logConfigFileName);
+	conf.parseFromText(logConfigDefault);
+	conf.parseFromFile(logConfigFileName);
+	conf.setRemainingToDefault();
+	el::Loggers::reconfigureAllLoggers(conf);
+}
 
 static vrwalkinplace::driver::ServerDriver serverDriver;
 static vrwalkinplace::driver::WatchdogProvider watchdogProvider;
@@ -16,7 +42,8 @@ static vrwalkinplace::driver::WatchdogProvider watchdogProvider;
 #endif
 
 HMD_DLL_EXPORT void *HmdDriverFactory(const char *pInterfaceName, int *pReturnCode) {
-	// LOG(TRACE) << "HmdDriverFactory( " << pInterfaceName << " )";
+	init_logging();
+	LOG(TRACE) << "HmdDriverFactory( " << pInterfaceName << " )";
 	if (std::strcmp(vr::IServerTrackedDeviceProvider_Version, pInterfaceName) == 0){
 		return &serverDriver;
 	} else if (std::strcmp(vr::ITrackedDeviceServerDriver_Version, pInterfaceName) == 0) {

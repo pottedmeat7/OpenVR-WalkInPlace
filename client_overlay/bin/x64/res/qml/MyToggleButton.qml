@@ -14,6 +14,11 @@ CheckBox {
 		y: parent.height / 2 - height / 2
 		color: parent.activeFocus ? myPalette.mid : myPalette.base
 		border.width: 0
+		Text {
+			color: "#ffffff"
+	        text: parent.parent.checked ? "X" : ""
+			font.pointSize: 12
+	    }
 		Image {
 			width: 38
 			height: 38
@@ -27,7 +32,7 @@ CheckBox {
 	}
 
 	contentItem: MyText {
-        text: parent.text
+        text: parent.parent.checked ? "X" : ""
         horizontalAlignment: Text.AlignLeft
 		verticalAlignment: Text.AlignVCenter
         leftPadding: parent.indicator.width + parent.spacing

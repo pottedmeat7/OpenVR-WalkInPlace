@@ -60,6 +60,11 @@ MyStackViewPage {
                         hoverEnabled: true
                         enabled: true
                         opacity: 1.0
+                        contentItem: Text {
+                            color: "#ffffff"
+                            text: "Back"
+                            font.pointSize: 12
+                        }
                         //contentItem: Image {
                         //    source: "backarrow.svg"
                         //    sourceSize.width: 60
