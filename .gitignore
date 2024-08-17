@@ -97,6 +97,7 @@ installer/OpenVR-WalkInPlace.exe
 .vs/VRWalkInPlace/*
 .vs/VRWalkInPlace/v14/*
 .vs/VRWalkInPlace/v15/*
+.vscode
 *.obj
 *.pdb
 *.exe

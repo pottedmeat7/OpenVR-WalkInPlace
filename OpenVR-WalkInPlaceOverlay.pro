@@ -7,14 +7,6 @@ DESTDIR = $$PWD/client_overlay/bin/x64
 OBJECTS_DIR=$$PWD/build/
 MOC_DIR=$$PWD/build/
 
-#CONFIG   += c++11
-
-# suppress the default RPATH if you wish
-#QMAKE_LFLAGS_RPATH=
-# add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
-QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
-QMAKE_CXXFLAGS += "-fopenmp"
-
 QT = \
     core \
     gui \
@@ -24,18 +16,11 @@ QT = \
     #core5compat \
 
 LIBS = \
-    -lrt \
     -L"$$PWD/lib_vrwalkinplace/lib" -lVRWalkInPlace \
     -L"$$PWD/openvr/lib/linux64" -lopenvr_api \
     -larmadillo \
-    -lgomp \
-    -lmlpack \
     -lboost_system \
     -lboost_filesystem \
-    #"/lib/x86_64-linux-gnu/libomp.so.5" \
-    #"/usr/lib/x86_64-linux-gnu/libmlpack.so.3" \
-    #-L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_system \
-    #-L"$$PWD/third-party/boost_1_65_1/stage/lib" -lboost_filesystem
 
 HEADERS = \
    $$PWD/client_overlay/src/tabcontrollers/WalkInPlaceTabController.h \
@@ -52,8 +37,6 @@ INCLUDEPATH = \
     $$PWD/lib_vrwalkinplace/include \
     $$PWD/openvr/headers \
     $$PWD/third-party/easylogging++ \
-    #$$PWD/third-party/boost_1_65_1 \
-
 
 #DEFINES = 
 

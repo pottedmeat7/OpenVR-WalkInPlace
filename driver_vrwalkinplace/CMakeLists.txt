@@ -20,7 +20,7 @@ set(SOURCES
 	src/com/shm/driver_ipc_shm.cpp 
 	src/virtualdevice/VirtualController.cpp 
 	src/driver/ServerDriver.cpp 
-	src/driver/WatchdogProvider.cpp
+	src/driver_vrwalkinplace.cpp
 	)
 	
 add_library(DriverWalkInPlace SHARED ${SOURCES})
