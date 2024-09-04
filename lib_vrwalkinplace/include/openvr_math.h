@@ -41,14 +41,6 @@ inline vr::HmdVector3d_t operator+(const vr::HmdVector3d_t& lhs, const vr::HmdVe
 	};
 }
 
-inline vr::HmdVector3d_t operator+(const vr::HmdVector3d_t& lhs, const double(&rhs)[3]) {
-	return{
-		lhs.v[0] + rhs[0],
-		lhs.v[1] + rhs[1],
-		lhs.v[2] + rhs[2]
-	};
-}
-
 inline vr::HmdVector3d_t operator-(const vr::HmdVector3d_t& lhs, const vr::HmdVector3d_t& rhs) {
 	return{
 		lhs.v[0] - rhs.v[0],
@@ -57,14 +49,53 @@ inline vr::HmdVector3d_t operator-(const vr::HmdVector3d_t& lhs, const vr::HmdVe
 	};
 }
 
-inline vr::HmdVector3d_t operator-(const vr::HmdVector3d_t& lhs, const double (&rhs)[3]) {
+inline vr::HmdVector3_t operator-(const vr::HmdVector3_t& lhs, const vr::HmdVector3_t& rhs) {
 	return{
-		lhs.v[0] - rhs[0],
-		lhs.v[1] - rhs[1],
-		lhs.v[2] - rhs[2]
+		lhs.v[0] - rhs.v[0],
+		lhs.v[1] - rhs.v[1],
+		lhs.v[2] - rhs.v[2]
 	};
 }
 
+inline vr::HmdVector3d_t operator/(const vr::HmdVector3d_t& lhs, const double rhs) {
+	return{
+		lhs.v[0] / rhs,
+		lhs.v[1] / rhs,
+		lhs.v[2] / rhs
+	};
+}
+
+inline vr::HmdVector3_t operator/(const vr::HmdVector3_t& lhs, const float rhs) {
+	return{
+		lhs.v[0] / rhs,
+		lhs.v[1] / rhs,
+		lhs.v[2] / rhs
+	};
+}
+
+inline vr::HmdVector3d_t operator*(const vr::HmdVector3d_t& lhs, const double rhs) {
+	return{
+		lhs.v[0] * rhs,
+		lhs.v[1] * rhs,
+		lhs.v[2] * rhs
+	};
+}
+
+inline vr::HmdVector3_t operator*(const vr::HmdVector3_t& lhs, const float rhs) {
+	return{
+		lhs.v[0] * rhs,
+		lhs.v[1] * rhs,
+		lhs.v[2] * rhs
+	};
+}
+
+inline vr::HmdVector3d_t operator*(const double lhs, const vr::HmdVector3d_t& rhs) {
+	return rhs * lhs;
+}
+
+inline vr::HmdVector3_t operator*(const float lhs, const vr::HmdVector3_t& rhs) {
+	return rhs * lhs;
+}
 
 namespace vrmath {
 
@@ -206,6 +237,24 @@ namespace vrmath {
 			auto pout = quat * pin * quatInv;
 			return{ pout.x, pout.y, pout.z };
 		}
+	}
+
+	inline vr::HmdVector3d_t yawPitchRollDegFromQuaternion(const vr::HmdQuaternion_t& quat) {
+		constexpr vr::HmdVector3d_t forward = { 0,0,-1 };
+		constexpr vr::HmdVector3d_t right = { 1,0,0 };
+		vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(quat, forward);
+		vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(quat, right);
+
+		vr::HmdVector3d_t rot{ 
+			std::asin(devForward.v[0]), 
+			std::asin(devForward.v[1]), 
+			std::asin(devRight.v[1]) 
+		};
+		return 180 * rot / M_PI;
+	}
+
+	inline vr::HmdVector3d_t yawPitchRollDegFromRotationMatrix(const vr::HmdMatrix34_t& mat) {
+		return yawPitchRollDegFromQuaternion(quaternionFromRotationMatrix(mat));
 	}
 
 	inline vr::HmdMatrix34_t matMul33(const vr::HmdMatrix34_t& a, const vr::HmdMatrix34_t& b) {

@@ -455,111 +455,29 @@ namespace walkinplace {
 		initializedDataModel = false;
 		dataTrainingRequired = true;
 		vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-		bool firstController = true;
-		bool firstTracker = true;
-		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
+		vr::HmdVector3_t hmdVel = getHMDVel(tdiff);
 		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
-		if (hmdType != 0) {
-			auto m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
+		vr::HmdVector3_t cont1Vel = { 0, 0, 0 };
+		vr::HmdVector3_t cont2Vel = { 0, 0, 0 };
+		vr::HmdVector3_t tracker1Vel = { 0, 0, 0 };
+		vr::HmdVector3_t tracker2Vel = { 0, 0, 0 };
 
-			hmdVel.v[0] = (m[0][3] - lastHmdPos.v[0]) / tdiff;
-			hmdVel.v[1] = (m[1][3] - lastHmdPos.v[1]) / tdiff;
-			hmdVel.v[2] = (m[2][3] - lastHmdPos.v[2]) / tdiff;
-
-			lastHmdPos.v[0] = m[0][3];
-			lastHmdPos.v[1] = m[1][3];
-			lastHmdPos.v[2] = m[2][3];
-
-		}
-		else {
-			hmdVel.v[0] = latestDevicePoses[hmdID].vVelocity.v[0];
-			hmdVel.v[1] = latestDevicePoses[hmdID].vVelocity.v[1];
-			hmdVel.v[2] = latestDevicePoses[hmdID].vVelocity.v[2];
-		}
-
-		vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
-		vr::HmdVector3d_t forward = { 0,0,-1 };
-		vr::HmdVector3d_t right = { 1,0,0 };
-		vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(qRotation, forward);
-		vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-		//hmdVel = vrmath::quaternionRotateVector(qRotation, hmdVel);
-
-		double devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-		double devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-		double devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
+		vr::HmdVector3d_t hmdRotVel_ = getHMDRotVel(tdiff);
 		if (dataModel.n_cols > 5) {
-			hmdRotVel.v[0] = (devYaw - lastHmdRot.v[0]) / tdiff;
-			hmdRotVel.v[1] = (devPitch - lastHmdRot.v[1]) / tdiff;
-			hmdRotVel.v[2] = (devRoll - lastHmdRot.v[2]) / tdiff;
+			hmdRotVel = hmdRotVel_;
 		}
-
-		lastHmdRot.v[0] = devYaw;
-		lastHmdRot.v[1] = devPitch;
-		lastHmdRot.v[2] = devRoll;
 
 		if (controller1ID != vr::k_unTrackedDeviceIndexInvalid) {
-			cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
-			cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
-			cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
-			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
-			devForward = vrmath::quaternionRotateVector(qRotation, forward);
-			devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-			//cont1Vel = vrmath::quaternionRotateVector(qRotation, cont1Vel);
-
-			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
+			cont1Vel = latestDevicePoses[controller1ID].vVelocity;
 			if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-				cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
-				cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
-				cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
-				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller2ID].mDeviceToAbsoluteTracking);
-				devForward = vrmath::quaternionRotateVector(qRotation, forward);
-				devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-				//cont2Vel = vrmath::quaternionRotateVector(qRotation, cont2Vel);
-
-				devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-				devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-				devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+				cont2Vel = latestDevicePoses[controller2ID].vVelocity;
 			}
 		}
 
 		if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
-			tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
-			tracker1Vel.v[1] = latestDevicePoses[tracker1ID].vVelocity.v[1];
-			tracker1Vel.v[2] = latestDevicePoses[tracker1ID].vVelocity.v[2];
-			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker1ID].mDeviceToAbsoluteTracking);
-			devForward = vrmath::quaternionRotateVector(qRotation, forward);
-			devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-			//tracker1Vel = vrmath::quaternionRotateVector(qRotation, tracker1Vel);
-
-			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
+			tracker1Vel = latestDevicePoses[tracker1ID].vVelocity;
 			if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
-				tracker2Vel.v[0] = latestDevicePoses[tracker2ID].vVelocity.v[0];
-				tracker2Vel.v[1] = latestDevicePoses[tracker2ID].vVelocity.v[1];
-				tracker2Vel.v[2] = latestDevicePoses[tracker2ID].vVelocity.v[2];
-				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker2ID].mDeviceToAbsoluteTracking);
-				devForward = vrmath::quaternionRotateVector(qRotation, forward);
-				devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-				//tracker2Vel = vrmath::quaternionRotateVector(qRotation, tracker2Vel);
-
-				devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-				devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-				devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+				tracker2Vel = latestDevicePoses[tracker2ID].vVelocity;
 			}
 		}
 		try {
@@ -598,108 +516,22 @@ namespace walkinplace {
 
 	QList<qreal> WalkInPlaceTabController::getGraphPoses(double tdiff) {
 		vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
-		auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		bool firstController = true;
-		bool firstTracker = true;
-		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
-		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t cont2Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker1Vel = { 0, 0, 0 };
-		vr::HmdVector3d_t tracker2Vel = { 0, 0, 0 };
-		if (hmdType != 0) {
-			auto m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
+		vr::HmdVector3_t hmdVel = getHMDVel(tdiff);
+		vr::HmdVector3d_t hmdRotVel = getHMDRotVel(tdiff);
+		vr::HmdVector3_t cont1Vel = { 0, 0, 0 };
+		vr::HmdVector3_t cont2Vel = { 0, 0, 0 };
+		vr::HmdVector3_t tracker1Vel = { 0, 0, 0 };
+		vr::HmdVector3_t tracker2Vel = { 0, 0, 0 };
 
-			hmdVel.v[0] = (m[0][3] - lastHmdPos.v[0]) / tdiff;
-			hmdVel.v[1] = (m[1][3] - lastHmdPos.v[1]) / tdiff;
-			hmdVel.v[2] = (m[2][3] - lastHmdPos.v[2]) / tdiff;
-
-			lastHmdPos.v[0] = m[0][3];
-			lastHmdPos.v[1] = m[1][3];
-			lastHmdPos.v[2] = m[2][3];
-
-		}
-		else {
-			hmdVel.v[0] = latestDevicePoses[hmdID].vVelocity.v[0];
-			hmdVel.v[1] = latestDevicePoses[hmdID].vVelocity.v[1];
-			hmdVel.v[2] = latestDevicePoses[hmdID].vVelocity.v[2];
-		}
-
-		vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
-		vr::HmdVector3d_t forward = { 0,0,-1 };
-		vr::HmdVector3d_t right = { 1,0,0 };
-		vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(qRotation, forward);
-		vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-		//hmdVel = vrmath::quaternionRotateVector(qRotation, hmdVel);
-
-		double devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-		double devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-		double devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-		hmdRotVel.v[0] = (devYaw - lastHmdRot.v[0]) / tdiff;
-		hmdRotVel.v[1] = (devPitch - lastHmdRot.v[1]) / tdiff;
-		hmdRotVel.v[2] = (devRoll - lastHmdRot.v[2]) / tdiff;
-
-		lastHmdRot.v[0] = devYaw;
-		lastHmdRot.v[1] = devPitch;
-		lastHmdRot.v[2] = devRoll;
-
-		cont1Vel.v[0] = latestDevicePoses[controller1ID].vVelocity.v[0];
-		cont1Vel.v[1] = latestDevicePoses[controller1ID].vVelocity.v[1];
-		cont1Vel.v[2] = latestDevicePoses[controller1ID].vVelocity.v[2];
-		qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller1ID].mDeviceToAbsoluteTracking);
-		devForward = vrmath::quaternionRotateVector(qRotation, forward);
-		devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-		//cont1Vel = vrmath::quaternionRotateVector(qRotation, cont1Vel);
-
-		devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-		devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-		devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
+		cont1Vel = latestDevicePoses[controller1ID].vVelocity;
 		if (controller2ID != vr::k_unTrackedDeviceIndexInvalid) {
-			cont2Vel.v[0] = latestDevicePoses[controller2ID].vVelocity.v[0];
-			cont2Vel.v[1] = latestDevicePoses[controller2ID].vVelocity.v[1];
-			cont2Vel.v[2] = latestDevicePoses[controller2ID].vVelocity.v[2];
-			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[controller2ID].mDeviceToAbsoluteTracking);
-			devForward = vrmath::quaternionRotateVector(qRotation, forward);
-			devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-			//cont2Vel = vrmath::quaternionRotateVector(qRotation, cont2Vel);
-
-			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+			cont2Vel = latestDevicePoses[controller2ID].vVelocity;
 		}
 
 		if (tracker1ID != vr::k_unTrackedDeviceIndexInvalid) {
-			tracker1Vel.v[0] = latestDevicePoses[tracker1ID].vVelocity.v[0];
-			tracker1Vel.v[1] = latestDevicePoses[tracker1ID].vVelocity.v[1];
-			tracker1Vel.v[2] = latestDevicePoses[tracker1ID].vVelocity.v[2];
-			qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker1ID].mDeviceToAbsoluteTracking);
-			devForward = vrmath::quaternionRotateVector(qRotation, forward);
-			devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-			//tracker1Vel = vrmath::quaternionRotateVector(qRotation, tracker1Vel);
-
-			devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-			devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-			devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
+			tracker1Vel = latestDevicePoses[tracker1ID].vVelocity;
 			if (tracker2ID != vr::k_unTrackedDeviceIndexInvalid) {
-				tracker2Vel.v[0] = latestDevicePoses[tracker2ID].vVelocity.v[0];
-				tracker2Vel.v[1] = latestDevicePoses[tracker2ID].vVelocity.v[1];
-				tracker2Vel.v[2] = latestDevicePoses[tracker2ID].vVelocity.v[2];
-				qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[tracker2ID].mDeviceToAbsoluteTracking);
-				devForward = vrmath::quaternionRotateVector(qRotation, forward);
-				devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-				//tracker2Vel = vrmath::quaternionRotateVector(qRotation, tracker2Vel);
-
-				devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-				devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-				devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
+				tracker2Vel = latestDevicePoses[tracker2ID].vVelocity;
 			}
 		}
 
@@ -1340,47 +1172,32 @@ namespace walkinplace {
 		}
 	}
 
+	vr::HmdVector3_t WalkInPlaceTabController::getHMDVel(double tdiff) {
+		if (hmdType != 0) {
+			const auto& m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
+			const vr::HmdVector3_t hmdPos{ m[0][3], m[1][3], m[2][3] };
+			const vr::HmdVector3_t hmdVel = (hmdPos - lastHmdPos) / tdiff * 1000.f;
+			lastHmdPos = hmdPos;
+
+			return hmdVel;
+		}
+		else {
+			return latestDevicePoses[hmdID].vVelocity;
+		}
+	}
+
+	vr::HmdVector3d_t WalkInPlaceTabController::getHMDRotVel(double tdiff) {
+		const vr::HmdVector3d_t hmdRot = vrmath::yawPitchRollDegFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
+		const vr::HmdVector3d_t hmdRotVel = (hmdRot - lastHmdRot) / tdiff;
+		lastHmdRot = hmdRot;
+
+		return hmdRotVel;
+	}
+
 	void WalkInPlaceTabController::testHMDSample(double tdiff) {
-		vr::HmdVector3d_t hmdVel = { 0, 0, 0 };
-		vr::HmdVector3d_t hmdRotVel = { 0, 0, 0 };
 		if (trackHMDVel) {
-			if (hmdType != 0) {
-				auto m = latestDevicePoses[hmdID].mDeviceToAbsoluteTracking.m;
-
-				hmdVel.v[0] = (m[0][3] - lastHmdPos.v[0]) / tdiff;
-				hmdVel.v[1] = (m[1][3] - lastHmdPos.v[1]) / tdiff;
-				hmdVel.v[2] = (m[2][3] - lastHmdPos.v[2]) / tdiff;
-
-				lastHmdPos.v[0] = m[0][3];
-				lastHmdPos.v[1] = m[1][3];
-				lastHmdPos.v[2] = m[2][3];
-
-			}
-			else {
-				hmdVel.v[0] = latestDevicePoses[hmdID].vVelocity.v[0];
-				hmdVel.v[1] = latestDevicePoses[hmdID].vVelocity.v[1];
-				hmdVel.v[2] = latestDevicePoses[hmdID].vVelocity.v[2];
-			}
-
-			vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[hmdID].mDeviceToAbsoluteTracking);
-			vr::HmdVector3d_t forward = { 0,0,-1 };
-			vr::HmdVector3d_t right = { 1,0,0 };
-			vr::HmdVector3d_t devForward = vrmath::quaternionRotateVector(qRotation, forward);
-			vr::HmdVector3d_t devRight = vrmath::quaternionRotateVector(qRotation, right);
-
-			//hmdVel = vrmath::quaternionRotateVector(qRotation, hmdVel);
-
-			double devYaw = (180 * std::asin(devForward.v[0])) / M_PI;
-			double devPitch = (180 * std::asin(devForward.v[1])) / M_PI;
-			double devRoll = (180 * std::asin(devRight.v[1])) / M_PI;
-
-			hmdRotVel.v[0] = (devYaw - lastHmdRot.v[0]) / tdiff;
-			hmdRotVel.v[1] = (devPitch - lastHmdRot.v[1]) / tdiff;
-			hmdRotVel.v[2] = (devRoll - lastHmdRot.v[2]) / tdiff;
-
-			lastHmdRot.v[0] = devYaw;
-			lastHmdRot.v[1] = devPitch;
-			lastHmdRot.v[2] = devRoll;
+			const vr::HmdVector3_t hmdVel = getHMDVel(tdiff);
+			const vr::HmdVector3d_t hmdRotVel = getHMDRotVel(tdiff);
 			try {
 				//check rotation and XZ velocity are within threshold
 				bool hmdValidRot = !trackHMDRot || (std::abs(hmdRotVel.v[1]) < hmdMaxPROTVel && std::abs(hmdRotVel.v[0]) < hmdMaxYROTVel);
@@ -1648,14 +1465,9 @@ namespace walkinplace {
 
 	void WalkInPlaceTabController::determineCurDirection() {
 		if (false && directionDevice != vr::k_unTrackedDeviceIndexInvalid) {
-			vr::HmdQuaternion_t qRotation = vrmath::quaternionFromRotationMatrix(latestDevicePoses[directionDevice].mDeviceToAbsoluteTracking);
-			vr::HmdVector3d_t forward = { 0,0,-1 };
-			vr::HmdVector3d_t right = { 1,0,0 };
-			vr::HmdVector3d_t forwardRot = vrmath::quaternionRotateVector(qRotation, forward);
-			vr::HmdVector3d_t rightRot = vrmath::quaternionRotateVector(qRotation, right);
-			float pitch = (180 * std::asin(forwardRot.v[1])) / M_PI;
-			float yaw = (180 * std::asin(forwardRot.v[0])) / M_PI;
-			float roll = (180 * std::asin(rightRot.v[1])) / M_PI;
+			vr::HmdVector3d_t rot = vrmath::yawPitchRollDegFromRotationMatrix(latestDevicePoses[directionDevice].mDeviceToAbsoluteTracking);
+			float yaw = rot.v[0];
+			float pitch = rot.v[1];
 			touchX = 0;
 			touchY = 1;
 			float diffYaw = (hmdYaw - yaw);

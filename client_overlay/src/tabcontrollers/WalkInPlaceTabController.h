@@ -138,7 +138,7 @@ namespace walkinplace {
 		std::string model_file_type = ".csv";
 		std::string model_file_name = "default";
 
-		vr::HmdVector3d_t lastHmdPos = { 0, 0, 0 };
+		vr::HmdVector3_t lastHmdPos = { 0, 0, 0 };
 		vr::HmdVector3d_t lastHmdRot = { 0, 0, 0 };
 
 		vr::VROverlayHandle_t overlayHandle;
@@ -229,6 +229,9 @@ namespace walkinplace {
 		void clearSamplesAndModel();
 
 		void identifyDevice(unsigned deviceIndex, unsigned short duration);
+
+		vr::HmdVector3_t getHMDVel(double dt);
+		vr::HmdVector3d_t getHMDRotVel(double dt);
 
 		void runSampleOnModel();
 		void testHMDSample(double dt);
