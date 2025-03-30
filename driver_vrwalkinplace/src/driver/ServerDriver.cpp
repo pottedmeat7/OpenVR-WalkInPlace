@@ -3,6 +3,7 @@
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 
+
 constexpr char logConfigFileName[] = "logging.conf";
 
 constexpr char logConfigDefault[] =
@@ -18,16 +19,23 @@ constexpr char logConfigDefault[] =
 "* DEBUG:\n"
 "	ENABLED = true\n";
 
-INITIALIZE_EASYLOGGINGPP
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#else
+#endif
 
-void init_logging() {
-	el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
-	el::Configurations conf(logConfigFileName);
-	conf.parseFromText(logConfigDefault);
-	conf.parseFromFile(logConfigFileName);
-	conf.setRemainingToDefault();
-	el::Loggers::reconfigureAllLoggers(conf);
+void init_logging_linux() {
+	if (isWindows){
+		//do nothing
+	} else {
+		el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
+		el::Configurations conf(logConfigFileName);
+		conf.parseFromText(logConfigDefault);
+		conf.parseFromFile(logConfigFileName);
+		conf.setRemainingToDefault();
+		el::Loggers::reconfigureAllLoggers(conf);
+	}
 }
+
 
 namespace vrwalkinplace {
 	namespace driver {
@@ -47,7 +55,7 @@ namespace vrwalkinplace {
 		}
 
 		vr::EVRInitError ServerDriver::Init(vr::IVRDriverContext *pDriverContext) {
-			init_logging();
+			init_logging_linux();
 			LOG(TRACE) << "CServerDriver::Init()";
 
 			LOG(DEBUG) << "Initialize driver context.";

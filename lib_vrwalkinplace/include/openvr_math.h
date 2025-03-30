@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.1415926535
+#endif
 
 inline vr::HmdQuaternion_t operator+(const vr::HmdQuaternion_t& lhs, const vr::HmdQuaternion_t& rhs) {
 	return {

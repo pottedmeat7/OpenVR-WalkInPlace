@@ -26,7 +26,6 @@ HEADERS = \
    $$PWD/client_overlay/src/tabcontrollers/WalkInPlaceTabController.h \
    $$PWD/client_overlay/src/logging.h \
    $$PWD/client_overlay/src/overlaycontroller.h \
-   $$PWD/third-party/easylogging++/easylogging++.h
 
 SOURCES = \
    $$PWD/client_overlay/src/tabcontrollers/WalkInPlaceTabController.cpp \
@@ -36,7 +35,6 @@ SOURCES = \
 INCLUDEPATH = \
     $$PWD/lib_vrwalkinplace/include \
     $$PWD/openvr/headers \
-    $$PWD/third-party/easylogging++ \
 
 #DEFINES = 
 

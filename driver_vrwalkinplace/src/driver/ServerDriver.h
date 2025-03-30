@@ -10,6 +10,9 @@
 #include "../com/shm/driver_ipc_shm.h"
 #include "../virtualdevice/VirtualController.h";
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+static bool isWindows = true;
+#endif
 
 // driver namespace
 namespace vrwalkinplace {

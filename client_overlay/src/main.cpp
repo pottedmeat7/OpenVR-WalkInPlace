@@ -13,8 +13,6 @@
 #include <openvr.h>
 #include <iostream>
 #include <fstream>
-#include "logging.h"
-
 
 /*
 #undef slots
@@ -36,27 +34,28 @@ const char* logConfigDefault =
 "* DEBUG:\n"
 "	ENABLED = true\n";
 
-INITIALIZE_EASYLOGGINGPP
-
 void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+	std::ofstream mainLog;
+	mainLog.open("OpenVR-WalkInPlaceOverlay.log", std::ofstream::out | std::ofstream::app);
 	QByteArray localMsg = msg.toLocal8Bit();
 	switch (type) {
 		case QtDebugMsg:
-			LOG(DEBUG) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtInfoMsg:
-			LOG(INFO) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtWarningMsg:
-			LOG(WARNING) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtCriticalMsg:
-			LOG(ERROR) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtFatalMsg:
-			LOG(FATAL) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 	}
+	mainLog.close();
 }
 
 void installManifest(bool cleaninstall = false) {
@@ -109,14 +108,15 @@ void removeManifest() {
 int main(int argc, char *argv[]) {
 
 	std::ofstream errorLog;
+	std::ofstream mainLog;
 
 	bool desktopMode = false;
 	bool directmode = false;
 	bool noSound = true;
 	bool noManifest = false;
 
-
 	errorLog.open("error.log", std::ofstream::out | std::ofstream::app);
+	mainLog.open("OpenVR-WalkInPlaceOverlay.log", std::ofstream::out | std::ofstream::app);
 
 	// Parse command line arguments
 	for (int i = 1; i < argc; i++) {
@@ -235,7 +235,6 @@ int main(int argc, char *argv[]) {
 
 		// Configure logger
 		QString logFilePath;
-		START_EASYLOGGINGPP(argc, argv);
 		el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
 		auto logconfigfile = QFileInfo(logConfigFileName).absoluteFilePath();
 		el::Configurations conf;
@@ -250,25 +249,25 @@ int main(int argc, char *argv[]) {
 		}
 		conf.setRemainingToDefault();
 		el::Loggers::reconfigureAllLoggers(conf);
-		LOG(INFO) << "Application started";
-		LOG(INFO) << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
+		mainLog << "Application started";
+		mainLog << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
 		if (!logFilePath.isEmpty()) {
-			LOG(INFO) << "Log File: " << logFilePath;
+			mainLog << "Log File: " << logFilePath;
 		}
 		
 		if (desktopMode) {
-			LOG(INFO) << "Desktop mode enabled.";
+			mainLog << "Desktop mode enabled.";
 		}
 		if (noSound) {
-			LOG(INFO) << "Sound effects disabled.";
+			mainLog << "Sound effects disabled.";
 		}
 		if (noManifest) {
-			LOG(INFO) << "vrmanifest disabled.";
+			mainLog << "vrmanifest disabled.";
 		}
 
 		QSettings appSettings(QSettings::IniFormat, QSettings::UserScope, a.organizationName(), a.applicationName());
 		walkinplace::OverlayController::setAppSettings(&appSettings);
-		LOG(INFO) << "Settings File: " << appSettings.fileName().toStdString();
+		mainLog << "Settings File: " << appSettings.fileName().toStdString();
 
 		QQmlEngine qmlEngine;
 
@@ -278,7 +277,7 @@ int main(int argc, char *argv[]) {
         QQmlComponent component(&qmlEngine, QUrl::fromLocalFile( QFileInfo("res/qml/mainwidget.qml").absoluteFilePath() ));
 		auto errors = component.errors();
 		for (auto& e : errors) {
-			LOG(ERROR) << "QML Error: " << e.toString().toStdString() << std::endl;
+			mainLog << "QML Error: " << e.toString().toStdString() << std::endl;
 		}
 		auto quickObj = component.create();
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), walkinplace::OverlayController::applicationName, walkinplace::OverlayController::applicationKey);
@@ -287,7 +286,7 @@ int main(int argc, char *argv[]) {
 			try {
 				installManifest();
 			} catch (std::exception& e) {
-				LOG(ERROR) << e.what();
+				mainLog << e.what();
 			}
 		}
 
@@ -302,11 +301,14 @@ int main(int argc, char *argv[]) {
 
 		}
 
+		mainLog.close();
 		return a.exec();
 
 	} catch (const std::exception& e) {
-		LOG(FATAL) << e.what();
+		mainLog << e.what();
+		mainLog.close();
 		return -1;
 	}
+	mainLog.close();
 	return 0;
 }

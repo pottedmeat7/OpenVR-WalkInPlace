@@ -177,6 +177,7 @@ Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\0
 1. Download the online install from here https://www.qt.io/download-qt-installer
 2. Download Qt 5.9.0 (or latest) (Either windows .exe or linux .run file)
 3. Run the Qt installer (I installed it to `c:\Qt` or `/home/<user>/` on linux)
+4. Install "QT Visual Studio Tools" via Visual Studio Extensions -> Manage Extensions
 
 For Qt deploy on Linux:
 	1. `sudo apt install fuse libfuse2`
@@ -185,9 +186,9 @@ For Qt deploy on Linux:
 
 ### mlpack, openblas and armadillo and ensmallen
 - WINDOWS
-	1. https://www.mlpack.org/doc/mlpack-3.4.2/doxygen/build_windows.html
+	1. https://www.mlpack.org/doc/user/build_windows.html
 - LINUX
-	1. https://www.mlpack.org/doc/mlpack-3.4.2/doxygen/build.html
+	1. https://www.mlpack.org/doc/README.html#installing-and-using-mlpack-in-c
 	`apt install libmlpack-dev mlpack-bin libarmadillo-dev`
 
 ## Building

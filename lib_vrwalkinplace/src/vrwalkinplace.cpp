@@ -7,8 +7,9 @@
 
 
 #if VRWALKINPLACE_EASYLOGGING == 1
-#include "logging.h";
-#define WRITELOG(level, txt) LOG(level) << txt;
+// #include "logging.h";
+// #define WRITELOG(level, txt) LOG(level) << txt;
+#define WRITELOG(level, txt) std::cerr << txt;
 #else
 #define WRITELOG(level, txt) std::cerr << txt;
 #endif
