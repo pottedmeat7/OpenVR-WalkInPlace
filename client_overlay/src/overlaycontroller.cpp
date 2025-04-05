@@ -19,8 +19,10 @@
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
-#include "logging.h"
+#include <cstdlib>
 
+#define LOG(text) std::cerr << text << std::endl;
+#define ERROR(text) std::cerr << text << std::endl;
 
 // application namespace
 namespace walkinplace {
@@ -48,7 +50,7 @@ namespace walkinplace {
 		uint32_t unRequiredSize;
 		std::cout << vr::VR_GetRuntimePath(rchBuffer, sizeof(rchBuffer), &unRequiredSize);
 		m_runtimePathUrl = QUrl::fromLocalFile(rchBuffer);
-		LOG(INFO) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
+		LOG("VR Runtime Path: " << m_runtimePathUrl.toLocalFile().toStdString());
 
 		// Check whether OpenVR is too outdated
 		if (!vr::VR_IsInterfaceVersionValid(vr::IVRSystem_Version)) {
@@ -170,7 +172,7 @@ namespace walkinplace {
 				vr::VROverlay()->SetOverlayFromFile(m_ulOverlayThumbnailHandle, thumbIconPath.c_str());
 			}
 			else {
-				LOG(ERROR) << "Could not find thumbnail icon \"" << thumbIconPath << "\"";
+				LOG("Could not find thumbnail icon \"" << thumbIconPath << "\"");
 			}
 
 			// Too many render calls in too short time overwhelm Qt and an assertion gets thrown.
@@ -356,19 +358,19 @@ namespace walkinplace {
 				break;
 			}
 			case vr::VREvent_Quit: {
-				LOG(INFO) << "Received quit request.";
+				LOG("Received quit request.");
 				vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time just in case
 				Shutdown();
 				QApplication::exit();
 				return;
 			}
 			case vr::VREvent_DashboardActivated: {
-				LOG(DEBUG) << "Dashboard activated";
+				LOG("Dashboard activated");
 				dashboardVisible = true;
 				break;
 			}
 			case vr::VREvent_DashboardDeactivated: {
-				LOG(DEBUG) << "Dashboard deactivated";
+				LOG("Dashboard deactivated");
 				dashboardVisible = false;
 				break;
 			}

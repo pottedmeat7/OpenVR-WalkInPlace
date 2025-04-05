@@ -3,6 +3,11 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <ipc_protocol.h>
 #include <openvr_math.h>
+#include <cstdlib>
+#include <iostream>
+
+#define LOG(text) std::cerr << text << std::endl;
+#define ERROR(text) std::cerr << text << std::endl;
 
 namespace vrwalkinplace {
 	namespace driver {
@@ -23,7 +28,7 @@ namespace vrwalkinplace {
 
 		void IpcShmCommunicator::_ipcThreadFunc(IpcShmCommunicator* _this, ServerDriver * driver) {
 			_this->_ipcThreadRunning = true;
-			LOG(DEBUG) << "CServerDriver::_ipcThreadFunc: thread started";
+			LOG("CServerDriver::_ipcThreadFunc: thread started");
 			try {
 				// Create message queue
 				boost::interprocess::message_queue::remove(_this->_ipcQueueName.c_str());
@@ -41,7 +46,7 @@ namespace vrwalkinplace {
 						unsigned priority;
 						boost::posix_time::ptime timeout = boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(50);
 						if (messageQueue.timed_receive(&message, sizeof(ipc::Request), recv_size, priority, timeout)) {
-							LOG(TRACE) << "CServerDriver::_ipcThreadFunc: IPC request received ( type " << (int)message.type << ")";
+							LOG("CServerDriver::_ipcThreadFunc: IPC request received ( type " << (int)message.type << ")");
 							if (recv_size == sizeof(ipc::Request)) {
 								switch (message.type) {
 
@@ -60,23 +65,23 @@ namespace vrwalkinplace {
 												_this->_ipcEndpoints.clear();
 											}
 											//if (clientId == 7) {
-											//	LOG(INFO) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											//	LOG("New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId);
 											//}
 											_this->_ipcEndpoints.insert({ clientId, queue });
 											reply.msg.ipc_ClientConnect.clientId = clientId;
 											reply.status = ipc::ReplyStatus::Ok;
-											LOG(TRACE) << "New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId;
+											LOG("New client connected: endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\", cliendId " << clientId);
 										}
 										else {
 											reply.msg.ipc_ClientConnect.clientId = 0;
 											reply.status = ipc::ReplyStatus::InvalidVersion;
-											LOG(TRACE) << "Client (endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\") reports incompatible ipc version "
-												<< message.msg.ipc_ClientConnect.ipcProcotolVersion;
+											LOG("Client (endpoint \"" << message.msg.ipc_ClientConnect.queueName << "\") reports incompatible ipc version "
+												<< message.msg.ipc_ClientConnect.ipcProcotolVersion);
 										}
 										queue->send(&reply, sizeof(ipc::Reply), 0);
 									}
 									catch (std::exception& e) {
-										LOG(ERROR) << "Error during client connect: " << e.what();
+										LOG("Error during client connect: " << e.what());
 									}
 								}
 								break;
@@ -90,20 +95,20 @@ namespace vrwalkinplace {
 										reply.status = ipc::ReplyStatus::Ok;
 										auto msgQueue = i->second;
 										_this->_ipcEndpoints.erase(i);
-										//LOG(INFO) << "Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId;
+										//LOG("Client disconnected: clientId " << message.msg.ipc_ClientDisconnect.clientId);
 										if (reply.messageId != 0) {
 											msgQueue->send(&reply, sizeof(ipc::Reply), 0);
 										}
 									}
 									else {
-										LOG(ERROR) << "Error during client disconnect: unknown clientID " << message.msg.ipc_ClientDisconnect.clientId;
+										LOG("Error during client disconnect: unknown clientID " << message.msg.ipc_ClientDisconnect.clientId);
 									}
 								}
 								break;
 
 								case ipc::RequestType::IPC_Ping:
 								{
-									LOG(TRACE) << "Ping received: clientId " << message.msg.ipc_Ping.clientId << ", nonce " << message.msg.ipc_Ping.nonce;
+									LOG("Ping received: clientId " << message.msg.ipc_Ping.clientId << ", nonce " << message.msg.ipc_Ping.nonce);
 									auto i = _this->_ipcEndpoints.find(message.msg.ipc_Ping.clientId);
 									if (i != _this->_ipcEndpoints.end()) {
 										ipc::Reply reply(ipc::ReplyType::IPC_Ping);
@@ -115,7 +120,7 @@ namespace vrwalkinplace {
 										}
 									}
 									else {
-										LOG(ERROR) << "Error during ping: unknown clientID " << message.msg.ipc_ClientDisconnect.clientId;
+										LOG("Error during ping: unknown clientID " << message.msg.ipc_ClientDisconnect.clientId);
 									}
 								}
 								break;
@@ -161,7 +166,7 @@ namespace vrwalkinplace {
 										}
 									}
 									catch (std::exception& e) {
-										LOG(ERROR) << "Error in button event ipc thread: " << e.what();
+										LOG("Error in button event ipc thread: " << e.what());
 									}
 								}
 								break;
@@ -174,7 +179,7 @@ namespace vrwalkinplace {
 										}
 									}
 									catch (std::exception& e) {
-										LOG(ERROR) << "Error in axis event ipc thread: " << e.what();
+										LOG("Error in axis event ipc thread: " << e.what());
 									}
 								}
 								break;
@@ -188,32 +193,32 @@ namespace vrwalkinplace {
 										}
 									}
 									catch (std::exception& e) {
-										LOG(ERROR) << "Error in axis event ipc thread: " << e.what();
+										LOG("Error in axis event ipc thread: " << e.what());
 									}
 								}
 								break;
 
 								default:
-									LOG(ERROR) << "Error in ipc server receive loop: Unknown message type (" << (int)message.type << ")";
+									LOG("Error in ipc server receive loop: Unknown message type (" << (int)message.type << ")");
 									break;
 								}
 							}
 							else {
-								LOG(ERROR) << "Error in ipc server receive loop: received size is wrong (" << recv_size << " != " << sizeof(ipc::Request) << ")";
+								LOG(")");
 							}
 						}
 					}
 					catch (std::exception& ex) {
-						LOG(ERROR) << "Exception caught in ipc server receive loop: " << ex.what();
+						LOG("Exception caught in ipc server receive loop: " << ex.what());
 					}
 				}
 				boost::interprocess::message_queue::remove(_this->_ipcQueueName.c_str());
 			}
 			catch (std::exception& ex) {
-				LOG(ERROR) << "Exception caught in ipc server thread: " << ex.what();
+				LOG("Exception caught in ipc server thread: " << ex.what());
 			}
 			_this->_ipcThreadRunning = false;
-			LOG(DEBUG) << "CServerDriver::_ipcThreadFunc: thread stopped";
+			LOG("CServerDriver::_ipcThreadFunc: thread stopped");
 		}
 
 		void IpcShmCommunicator::sendReply(uint32_t clientId, const ipc::Reply& reply) {
@@ -223,7 +228,7 @@ namespace vrwalkinplace {
 				i->second->send(&reply, sizeof(ipc::Reply), 0);
 			}
 			else {
-				LOG(ERROR) << "Error while sending reply: Unknown clientId " << clientId;
+				LOG("Error while sending reply: Unknown clientId " << clientId);
 			}
 		}
 

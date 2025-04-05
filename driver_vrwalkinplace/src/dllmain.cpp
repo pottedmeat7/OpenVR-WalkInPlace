@@ -1,29 +1,14 @@
 // dllmain.cpp : Definiert den Einstiegspunkt für die DLL-Anwendung.
-#include "logging.h"
 
-const char* logConfigFileName = "logging.conf";
 
-const char* logConfigDefault =
-"* GLOBAL:\n"
-"	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
-"	FILENAME = \"driver_vrwalkinplace.log\"\n"
-"	ENABLED = true\n"
-"	TO_FILE = true\n"
-"	TO_STANDARD_OUTPUT = true\n"
-"	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
-"* TRACE:\n"
-"	ENABLED = false\n"
-"* DEBUG:\n"
-"	ENABLED = false\n";
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 
-void init_logging() {
-	// el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
-	// el::Configurations conf(logConfigFileName);
-	// conf.parseFromText(logConfigDefault);
-	// conf.parseFromFile(logConfigFileName);
-	// conf.setRemainingToDefault();
-	// el::Loggers::reconfigureAllLoggers(conf);
-}
+#include <windows.h>
+
+#include <cstdlib>
+#include <iostream>
+
+#define LOG(text) std::cerr << text << std::endl;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -31,8 +16,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 					 ) {
 	switch (ul_reason_for_call) {
 		case DLL_PROCESS_ATTACH:
-			init_logging();
-			// LOG(INFO) << "VRWalkInPlace dll loaded...";
+			LOG("VRWalkInPlace dll loaded...");
 			break;
 		case DLL_THREAD_ATTACH:
 		case DLL_THREAD_DETACH:
@@ -42,3 +26,4 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+#endif

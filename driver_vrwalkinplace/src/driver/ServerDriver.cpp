@@ -2,7 +2,10 @@
 #include "ServerDriver.h"
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <cstdlib>
+#include <iostream>
 
+#define LOG(text) std::cerr << text << std::endl;
 
 constexpr char logConfigFileName[] = "logging.conf";
 
@@ -27,12 +30,6 @@ void init_logging_linux() {
 	if (isWindows){
 		//do nothing
 	} else {
-		el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
-		el::Configurations conf(logConfigFileName);
-		conf.parseFromText(logConfigDefault);
-		conf.parseFromFile(logConfigFileName);
-		conf.setRemainingToDefault();
-		el::Loggers::reconfigureAllLoggers(conf);
 	}
 }
 
@@ -51,24 +48,24 @@ namespace vrwalkinplace {
 		}
 
 		ServerDriver::~ServerDriver() {
-			LOG(TRACE) << "CServerDriver::~CServerDriver_VRWalkInPlace()";
+			LOG("CServerDriver::~CServerDriver_VRWalkInPlace()");
 		}
 
 		vr::EVRInitError ServerDriver::Init(vr::IVRDriverContext *pDriverContext) {
 			init_logging_linux();
-			LOG(TRACE) << "CServerDriver::Init()";
+			LOG("CServerDriver::Init()");
 
-			LOG(DEBUG) << "Initialize driver context.";
+			LOG("Initialize driver context.");
 			VR_INIT_SERVER_DRIVER_CONTEXT(pDriverContext);
 
 			// Read installation directory
 			vr::ETrackedPropertyError tpeError;
 			installDir = vr::VRProperties()->GetStringProperty(pDriverContext->GetDriverHandle(), vr::Prop_InstallPath_String, &tpeError);
 			if (tpeError == vr::TrackedProp_Success) {
-				LOG(INFO) << "Install Dir:" << installDir;
+				LOG("Install Dir:" << installDir);
 			}
 			else {
-				LOG(INFO) << "Could not get Install Dir: " << vr::VRPropertiesRaw()->GetPropErrorNameFromEnum(tpeError);
+				LOG("Could not get Install Dir: " << vr::VRPropertiesRaw()->GetPropErrorNameFromEnum(tpeError));
 			}
 
 			// Start IPC thread
@@ -79,7 +76,7 @@ namespace vrwalkinplace {
 
 
 		void ServerDriver::Cleanup() {
-			LOG(TRACE) << "CServerDriver::Cleanup()";
+			LOG("CServerDriver::Cleanup()");
 			shmCommunicator.shutdown();
 			VR_CLEANUP_SERVER_DRIVER_CONTEXT();
 		}
@@ -146,7 +143,7 @@ namespace vrwalkinplace {
 			}
 			catch (std::exception& e) {
 				initDriver = false;
-				LOG(INFO) << "Exception caught while enabling driver: " << e.what();
+				LOG("Exception caught while enabling driver: " << e.what());
 			}
 		}
 

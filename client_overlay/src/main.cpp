@@ -14,48 +14,29 @@
 #include <iostream>
 #include <fstream>
 
-/*
-#undef slots
-#include <boost/python.hpp>
-#define slots
-*/
-const char* logConfigFileName = "logging.conf";
 
-const char* logConfigDefault =
-"* GLOBAL:\n"
-"	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
-"	FILENAME = \"OpenVR-WalkInPlaceOverlay.log\"\n"
-"	ENABLED = true\n"
-"	TO_FILE = true\n"
-"	TO_STANDARD_OUTPUT = true\n"
-"	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
-"* TRACE:\n"
-"	ENABLED = true\n"
-"* DEBUG:\n"
-"	ENABLED = true\n";
+#define LOG(text) std::cerr << text << std::endl;
+#define ERROR(text) std::cerr << text << std::endl;
 
-void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
-	std::ofstream mainLog;
-	mainLog.open("OpenVR-WalkInPlaceOverlay.log", std::ofstream::out | std::ofstream::app);
+void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {	
 	QByteArray localMsg = msg.toLocal8Bit();
 	switch (type) {
 		case QtDebugMsg:
-			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			LOG(" (" << context.file << ":" << context.line << ")");
 			break;
 		case QtInfoMsg:
-			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			LOG(" (" << context.file << ":" << context.line << ")");
 			break;
 		case QtWarningMsg:
-			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			LOG(" (" << context.file << ":" << context.line << ")");
 			break;
 		case QtCriticalMsg:
-			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			LOG(" (" << context.file << ":" << context.line << ")");
 			break;
 		case QtFatalMsg:
-			mainLog << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
+			LOG(" (" << context.file << ":" << context.line << ")");
 			break;
 	}
-	mainLog.close();
 }
 
 void installManifest(bool cleaninstall = false) {
@@ -107,16 +88,10 @@ void removeManifest() {
 
 int main(int argc, char *argv[]) {
 
-	std::ofstream errorLog;
-	std::ofstream mainLog;
-
 	bool desktopMode = false;
 	bool directmode = false;
 	bool noSound = true;
 	bool noManifest = false;
-
-	errorLog.open("error.log", std::ofstream::out | std::ofstream::app);
-	mainLog.open("OpenVR-WalkInPlaceOverlay.log", std::ofstream::out | std::ofstream::app);
 
 	// Parse command line arguments
 	for (int i = 1; i < argc; i++) {
@@ -143,7 +118,7 @@ int main(int argc, char *argv[]) {
 				}
 			} else {
 				exitcode = -2;
-				errorLog << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+				ERROR("Failed to initialize OpenVR: " << std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError)));
 			}
 			vr::VR_Shutdown();
 			exit(exitcode);
@@ -157,11 +132,11 @@ int main(int argc, char *argv[]) {
 					removeManifest();
 				} catch (std::exception& e) {
 					exitcode = -1;
-					errorLog << e.what() << std::endl;
+					ERROR(e.what());
 				}
 			} else {
 				exitcode = -2;
-				errorLog << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+				ERROR(std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))));
 			}
 			vr::VR_Shutdown();
 			exit(exitcode);
@@ -176,7 +151,7 @@ int main(int argc, char *argv[]) {
 				std::cout << rchBuffer;
 			} else {
 				exitcode = -2;
-				errorLog << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+				ERROR(std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))));
 			}
 			vr::VR_Shutdown();
 			exit(exitcode);
@@ -189,13 +164,12 @@ int main(int argc, char *argv[]) {
 				vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool, true);
 			} else {
 				exitcode = -2;
-				errorLog << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+				ERROR(std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))));
 			}
 			vr::VR_Shutdown();
 			exit(exitcode);
 		}
 	}
-	errorLog.close();
 
 	try {
 		QApplication a(argc, argv);
@@ -233,7 +207,7 @@ int main(int argc, char *argv[]) {
 
 		qInstallMessageHandler(myQtMessageHandler);
 
-		// Configure logger
+/*		// Configure logger
 		QString logFilePath;
 		el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
 		auto logconfigfile = QFileInfo(logConfigFileName).absoluteFilePath();
@@ -249,25 +223,26 @@ int main(int argc, char *argv[]) {
 		}
 		conf.setRemainingToDefault();
 		el::Loggers::reconfigureAllLoggers(conf);
-		mainLog << "Application started";
-		mainLog << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
+		LOG("Log Config: " + QDir::toNativeSeparators(logconfigfile).toStdString());
 		if (!logFilePath.isEmpty()) {
-			mainLog << "Log File: " << logFilePath;
+			LOG("Log File: " + logFilePath);
 		}
+		*/
+		LOG("Application started");
 		
 		if (desktopMode) {
-			mainLog << "Desktop mode enabled.";
+			LOG("Desktop mode enabled.");
 		}
 		if (noSound) {
-			mainLog << "Sound effects disabled.";
+			LOG("Sound effects disabled.");
 		}
 		if (noManifest) {
-			mainLog << "vrmanifest disabled.";
+			LOG("vrmanifest disabled.");
 		}
 
 		QSettings appSettings(QSettings::IniFormat, QSettings::UserScope, a.organizationName(), a.applicationName());
 		walkinplace::OverlayController::setAppSettings(&appSettings);
-		mainLog << "Settings File: " << appSettings.fileName().toStdString();
+		LOG("Settings File: " + appSettings.fileName().toStdString());
 
 		QQmlEngine qmlEngine;
 
@@ -277,7 +252,7 @@ int main(int argc, char *argv[]) {
         QQmlComponent component(&qmlEngine, QUrl::fromLocalFile( QFileInfo("res/qml/mainwidget.qml").absoluteFilePath() ));
 		auto errors = component.errors();
 		for (auto& e : errors) {
-			mainLog << "QML Error: " << e.toString().toStdString() << std::endl;
+			LOG("QML Error: " + e.toString().toStdString());
 		}
 		auto quickObj = component.create();
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), walkinplace::OverlayController::applicationName, walkinplace::OverlayController::applicationKey);
@@ -286,7 +261,7 @@ int main(int argc, char *argv[]) {
 			try {
 				installManifest();
 			} catch (std::exception& e) {
-				mainLog << e.what();
+				LOG(e.what());
 			}
 		}
 
@@ -301,14 +276,11 @@ int main(int argc, char *argv[]) {
 
 		}
 
-		mainLog.close();
 		return a.exec();
 
 	} catch (const std::exception& e) {
-		mainLog << e.what();
-		mainLog.close();
+		LOG(e.what());
 		return -1;
 	}
-	mainLog.close();
 	return 0;
 }

@@ -6,7 +6,6 @@
 #include <openvr_driver.h>
 #include <vrwalkinplace_types.h>
 #include <openvr_math.h>
-#include "../logging.h"
 #include "../com/shm/driver_ipc_shm.h"
 #include "../virtualdevice/VirtualController.h";
 

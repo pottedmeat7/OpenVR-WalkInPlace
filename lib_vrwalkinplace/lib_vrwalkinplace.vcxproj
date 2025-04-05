@@ -249,7 +249,6 @@
     <ClInclude Include="include\openvr_math.h" />
     <ClInclude Include="include\vrwalkinplace.h" />
     <ClInclude Include="include\vrwalkinplace_types.h" />
-    <ClInclude Include="src\logging.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vrwalkinplace.cpp" />

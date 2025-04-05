@@ -176,7 +176,8 @@
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;QT_NO_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /y “C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64*.dll” $(OutDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <QtMoc>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>

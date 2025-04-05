@@ -1,7 +1,9 @@
 #include "WatchdogProvider.h"
 
-#include "../logging.h"
+#include <cstdlib>
+#include <iostream>
 
+#define LOG(text) std::cerr << text << std::endl;
 
 // driver namespace
 namespace vrwalkinplace {
@@ -9,13 +11,13 @@ namespace driver {
 
 
 vr::EVRInitError WatchdogProvider::Init(vr::IVRDriverContext * pDriverContext) {
-	LOG(TRACE) << "WatchdogProvider::Init()";
+	LOG("WatchdogProvider::Init()");
 	return vr::EVRInitError::VRInitError_None;
 }
 
 
 void WatchdogProvider::Cleanup() {
-	LOG(TRACE) << "WatchdogProvider::Cleanup()";
+	LOG("WatchdogProvider::Cleanup()");
 }
 
 

@@ -9,6 +9,9 @@
 #include <openvr_math.h>
 #include <chrono>
 
+#define LOG(text) std::cerr << text << std::endl;
+#define ERROR(text) std::cerr << text << std::endl;
+
 // application namespace
 namespace walkinplace {
 
@@ -49,7 +52,7 @@ namespace walkinplace {
 						initializedDriver = true;
 					}
 					catch (std::exception& e) {
-						LOG(INFO) << "Exception caught while adding initializing driver: " << e.what();
+						LOG("Exception caught while adding initializing driver: " << e.what());
 					}
 				}
 			}
@@ -86,7 +89,7 @@ namespace walkinplace {
 							}
 							else {
 								info->serial = std::string("<unknown serial>");
-								LOG(ERROR) << "Could not get serial of device " << id;
+								LOG("Could not get serial of device " << id);
 							}
 							deviceInfos.push_back(info);
 							deviceIdSet.insert(id);
@@ -95,7 +98,7 @@ namespace walkinplace {
 									hmdID = info->openvrId;
 								}
 							}
-							LOG(INFO) << "Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial;
+							LOG("Found device: id " << info->openvrId << ", class " << info->deviceClass << ", serial " << info->serial);
 						}
 						maxValidDeviceId = id + 1;
 					}
@@ -348,13 +351,13 @@ namespace walkinplace {
 			else {
 				dataTrainingRequired = true;
 				clearSamplesAndModel();
-				LOG(INFO) << "unable to load data model at: " << QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type;
+				LOG("unable to load data model at: " << QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + model_file_name + model_file_type);
 			}
 		}
 		catch (std::exception& e) {
 			initializedDataModel = false;
 			dataTrainingRequired = true;
-			LOG(INFO) << "Exception caught while loading data model: " << e.what();
+			LOG("Exception caught while loading data model: " << e.what());
 		}
 	}
 
@@ -376,7 +379,7 @@ namespace walkinplace {
 				}
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while getting the data model: " << e.what();
+				LOG("Exception caught while getting the data model: " << e.what());
 			}
 		}
 		return vals;
@@ -391,7 +394,7 @@ namespace walkinplace {
 			dataTrainingRequired = false;
 		}
 		catch (std::exception& e) {
-			LOG(INFO) << "Exception caught while saving data model: " << e.what();
+			LOG("Exception caught while saving data model: " << e.what());
 		}
 	}
 
@@ -408,7 +411,7 @@ namespace walkinplace {
 				}
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while getting the hmd sample: " << e.what();
+				LOG("Exception caught while getting the hmd sample: " << e.what());
 			}
 		}
 		return vals;
@@ -426,7 +429,7 @@ namespace walkinplace {
 				}
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while getting the controller sample: " << e.what();
+				LOG("Exception caught while getting the controller sample: " << e.what());
 			}
 		}
 
@@ -445,7 +448,7 @@ namespace walkinplace {
 				}
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while getting the tracker sample: " << e.what();
+				LOG("Exception caught while getting the tracker sample: " << e.what());
 			}
 		}
 		return vals;
@@ -496,7 +499,7 @@ namespace walkinplace {
 			dataModel(TOUCH_VAL_IDX, n) = scaleSpeed;
 		}
 		catch (std::exception& e) {
-			LOG(INFO) << "Exception caught while building data model: " << e.what();
+			LOG("Exception caught while building data model: " << e.what());
 		}
 
 		QList<qreal> vals;
@@ -509,7 +512,7 @@ namespace walkinplace {
 
 		vals.push_back(tracker1Vel.v[1]);
 		vals.push_back(tracker2Vel.v[1]);
-		//LOG(INFO) << "HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2];	
+		//LOG("HMD VALS: " << hmdVel.v[0] << "," << hmdVel.v[1] << "," << hmdVel.v[2]);	
 
 		return vals;
 	}
@@ -572,7 +575,7 @@ namespace walkinplace {
 			}
 		}
 		catch (const std::exception & ex) {
-			LOG(INFO) << "Error while getting data model names: " << ex.what();
+			LOG("Error while getting data model names: " << ex.what());
 		}
 		return models;
 	}
@@ -592,7 +595,7 @@ namespace walkinplace {
 	void WalkInPlaceTabController::deleteDataModel(QString name) {
 		std::string model_loc = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absolutePath().toStdString() + "/" + name.toStdString() + model_file_type;
 		if (std::remove(model_loc.c_str()) != 0) {
-			LOG(INFO) << "could not delete, you can delete manually from: " << model_loc;
+			LOG("could not delete, you can delete manually from: " << model_loc);
 		}
 		clearSamplesAndModel();
 	}
@@ -1028,7 +1031,7 @@ namespace walkinplace {
 						}
 					}
 					else {
-						LOG(INFO) << "unknown enabled tracked device location: " << mode;
+						LOG("unknown enabled tracked device location: " << mode);
 					}
 				}
 				deviceClassI++;
@@ -1106,7 +1109,7 @@ namespace walkinplace {
 				timeLastHaptic = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while identifying device: " << e.what();
+				LOG("Exception caught while identifying device: " << e.what());
 			}
 		}
 	}
@@ -1116,7 +1119,7 @@ namespace walkinplace {
 			auto now = std::chrono::duration_cast <std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			double tdiff = ((double)(now - timeLastTick));
 			bool hmdStep = false;
-			//LOG(INFO) << "DT: " << tdiff;
+			//LOG("DT: " << tdiff);
 			if (tdiff >= dT) {
 				timeLastTick = now;
 				vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, latestDevicePoses, vr::k_unMaxTrackedDeviceCount);
@@ -1155,7 +1158,7 @@ namespace walkinplace {
 							applyAxisMovement(axisState);
 						}
 						catch (std::exception& e) {
-							LOG(INFO) << "Exception caught while applying virtual step movement: " << e.what();
+							LOG("Exception caught while applying virtual step movement: " << e.what());
 						}
 					}
 				}
@@ -1252,7 +1255,7 @@ namespace walkinplace {
 				}
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while computing delta hmd: " << e.what();
+				LOG("Exception caught while computing delta hmd: " << e.what());
 			}
 		}
 	}
@@ -1331,7 +1334,7 @@ namespace walkinplace {
 				}
 			}
 			catch (std::exception& e) {
-				LOG(INFO) << "Exception caught while computing delta error trackers: " << e.what();
+				LOG("Exception caught while computing delta error trackers: " << e.what());
 			}
 		}
 	}
@@ -1458,7 +1461,7 @@ namespace walkinplace {
 			return temp;
 		}
 		catch (std::exception& e) {
-			LOG(INFO) << "Exception caught while parsing controller sample: " << e.what();
+			LOG("Exception caught while parsing controller sample: " << e.what());
 		}
 		return nextTouch;
 	}
@@ -1479,10 +1482,10 @@ namespace walkinplace {
 				touchX = std::sin((diffYaw*M_PI) / 180.0);
 				touchY = std::cos((diffYaw*M_PI) / 180.0);
 			}
-			//LOG(INFO) << "CONT Pitch,Yaw,Roll : " << pitch << ",(" << hmdYaw << "-" << yaw << ")=" << diffYaw << "," << roll;
-			//LOG(INFO) << "CONT Pitch,Yaw,Roll : " << pitch << "," <<  yaw << "," << roll;
-			//LOG(INFO) << "Cont Forward (x,y,z): " << forwardRot.v[0] << "," << forwardRot.v[1] << "," << forwardRot.v[2];
-			//LOG(INFO) << "HMD  Forward (x,y,z): " << hmdForward.v[0] << "," << hmdForward.v[1] << "," << hmdForward.v[2];
+			//LOG("CONT Pitch,Yaw,Roll : " << pitch << ",(" << hmdYaw << "-" << yaw << ")=" << diffYaw << "," << roll);
+			//LOG("CONT Pitch,Yaw,Roll : " << pitch << "," <<  yaw << "," << roll);
+			//LOG("Cont Forward (x,y,z): " << forwardRot.v[0] << "," << forwardRot.v[1] << "," << forwardRot.v[2]);
+			//LOG("HMD  Forward (x,y,z): " << hmdForward.v[0] << "," << hmdForward.v[1] << "," << hmdForward.v[2]);
 		}
 	}
 
@@ -1600,12 +1603,12 @@ namespace walkinplace {
 					}
 				}
 				catch (std::exception& e) {
-					//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+					//LOG("Exception caught while stopping virtual step movement: " << e.what());
 				}
 			}
 		}
 		catch (std::exception& e) {
-			//LOG(INFO) << "Exception caught while applying virtual axis movement: " << e.what();
+			//LOG("Exception caught while applying virtual axis movement: " << e.what());
 		}
 	}
 
@@ -1643,7 +1646,7 @@ namespace walkinplace {
 						}
 					}
 					catch (std::exception& e) {
-						//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+						//LOG("Exception caught while stopping virtual step movement: " << e.what());
 					}
 				}
 				else if (gameType->inputType == InputType::grip) {
@@ -1653,7 +1656,7 @@ namespace walkinplace {
 						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_Grip, 0.0);
 					}
 					catch (std::exception& e) {
-						//LOG(INFO) << "Exception caught while applying virtual grip movement: " << e.what();
+						//LOG("Exception caught while applying virtual grip movement: " << e.what());
 					}
 				}
 				/*else if (gameType == 9999) { //click only disabled atm
@@ -1663,7 +1666,7 @@ namespace walkinplace {
 						vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonUnpressed, deviceId, vr::k_EButton_SteamVR_Touchpad, 0.0);
 					}
 					catch (std::exception& e) {
-						//LOG(INFO) << "Exception caught while stopping virtual teleport movement: " << e.what();
+						//LOG("Exception caught while stopping virtual teleport movement: " << e.what());
 					}
 				}*/
 				else if (gameType->inputType == InputType::keyWASD) {
@@ -1718,7 +1721,7 @@ namespace walkinplace {
 			sNValidTouch = 0;
 		}
 		catch (std::exception &e) {
-			LOG(INFO) << "error when attempting to stop movement: " << e.what();
+			LOG("error when attempting to stop movement: " << e.what());
 		}
 	}
 
@@ -1732,7 +1735,7 @@ namespace walkinplace {
 				pressedFlag = true;
 			}
 			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while stopping virtual step movement: " << e.what();
+				//LOG("Exception caught while stopping virtual step movement: " << e.what());
 			}
 		}
 	}
@@ -1779,7 +1782,7 @@ namespace walkinplace {
 			}
 		}
 		catch (std::exception& e) {
-			//LOG(INFO) << "Exception caught while applying virtual axis movement: " << e.what();
+			//LOG("Exception caught while applying virtual axis movement: " << e.what());
 		}
 	}
 
@@ -1793,7 +1796,7 @@ namespace walkinplace {
 				pressedFlag = false;
 			}
 			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while applying virtual telport movement: " << e.what();
+				//LOG("Exception caught while applying virtual telport movement: " << e.what());
 			}
 		}
 		else {
@@ -1804,7 +1807,7 @@ namespace walkinplace {
 				pressedFlag = true;
 			}
 			catch (std::exception& e) {
-				//LOG(INFO) << "Exception caught while resetting virtual telport movement: " << e.what();
+				//LOG("Exception caught while resetting virtual telport movement: " << e.what());
 			}
 		}
 	}
@@ -1817,7 +1820,7 @@ namespace walkinplace {
 			vrwalkinplace.openvrButtonEvent(vrwalkinplace::ButtonEventType::ButtonPressed, deviceId, vr::k_EButton_Grip, 0.0);
 		}
 		catch (std::exception& e) {
-			//LOG(INFO) << "Exception caught while applying virtual telport movement: " << e.what();
+			//LOG("Exception caught while applying virtual telport movement: " << e.what());
 		}
 	}
 

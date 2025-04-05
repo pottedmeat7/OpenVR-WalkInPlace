@@ -17,9 +17,14 @@ static vrwalkinplace::driver::ServerDriver serverDriver;
 #error "Unsupported Platform."
 #endif
 
+#include <cstdlib>
+#include <iostream>
+
+#define LOG(text) std::cerr << text << std::endl;
+
 HMD_DLL_EXPORT void *HmdDriverFactory(const char *pInterfaceName, int *pReturnCode) {
 	if(isWindows) {
-		LOG(TRACE) << "HmdDriverFactory( " << pInterfaceName << " )";
+		LOG("HmdDriverFactory( " << pInterfaceName << " )");
 	}
 	if (std::strcmp(vr::IServerTrackedDeviceProvider_Version, pInterfaceName) == 0){
 		return &serverDriver;
