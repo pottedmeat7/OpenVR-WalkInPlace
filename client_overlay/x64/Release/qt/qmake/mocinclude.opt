@@ -1,0 +1,42 @@
+-IC:/Qt/5.15.0/msvc2019_64/mkspecs/win32-msvc
+-IC:/Users/potte/Documents/OpenVR-WalkInPlace/client_overlay/x64/Release/qt/qmake
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include
+-IC:/Qt/5.15.0/msvc2019_64/include/QtQuick
+-IC:/Qt/5.15.0/msvc2019_64/include/QtQmlModels
+-IC:/Qt/5.15.0/msvc2019_64/include/QtQml
+-IC:/Qt/5.15.0/msvc2019_64/include/QtNetwork
+-IC:/Qt/5.15.0/msvc2019_64/include/QtWidgets
+-IC:/Qt/5.15.0/msvc2019_64/include/QtGui
+-IC:/Qt/5.15.0/msvc2019_64/include/QtANGLE
+-IC:/Qt/5.15.0/msvc2019_64/include/QtCore
+-IC:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include
+-IC:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\atlmfc\include
+-IC:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include
+-IC:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\ucrt
+-IC:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\UnitTest\include
+-IC:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um
+-IC:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\shared
+-IC:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\winrt
+-IC:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\cppwinrt
+-IInclude\um

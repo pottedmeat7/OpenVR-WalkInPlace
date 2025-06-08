@@ -571,6 +571,7 @@ namespace walkinplace {
 					}
 				}
 				catch (const std::exception & ex) {
+					LOG("Error while getting data model name: " << ex.what());
 				}
 			}
 		}

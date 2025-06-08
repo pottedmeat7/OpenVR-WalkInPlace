@@ -156,8 +156,16 @@ The graph page will show you realtime values from the HMD, controllers and track
 If you have WIP enabled the graph page will display small squares yellow for walk detection, orange for jog detection and red for run detection.
 
 ## Any Issues Check out the Logs
-Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
-Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`
+
+![#f03c15] Note: ATM I had to disable the output log files due to conflicts with the logging library I was using and newer windows build environments. 
+![#f03c15] To get any logs you will need to run the executable from command line and redirect stderr output to a logfile. run these commands:
+```
+cd C:\Program Files\OpenVR-WalkInPlace
+OpenVR-WalkInPlaceOverlay.exe 2> %USERPROFILE%\Desktop\ovrwip_error.txt
+```
+
+~~ Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
+Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`~~
 
 
 ## Setting up To Re-Build the project from Source
