@@ -157,13 +157,14 @@ If you have WIP enabled the graph page will display small squares yellow for wal
 
 ## Any Issues Check out the Logs
 
-[!IMPORTANT]: I had to disable the output log files due to conflicts with the logging library I was using and newer windows build environments. To get any logs you will need to run the executable from command line and redirect stderr output to a logfile. run these commands:
-```
-cd C:\Program Files\OpenVR-WalkInPlace
-OpenVR-WalkInPlaceOverlay.exe 2> %USERPROFILE%\Desktop\ovrwip_error.txt
-```
+> [!IMPORTANT]
+> ***I had to disable the output log files due to conflicts with the logging library I was using and newer windows build environments. To get any logs you will need to run the executable from command line and redirect stderr output to a logfile. run these commands:***
+> ```
+> cd C:\Program Files\OpenVR-WalkInPlace
+> OpenVR-WalkInPlaceOverlay.exe 2> %USERPROFILE%\Desktop\ovrwip_error.txt
+> ```
 
-~~Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`
+~~Overlay UI Log here `C:\Users\<USERNAME>\AppData\Roaming\pottedmeat7\OpenVRWalkInPlace\VRWalkInPlace.log`~~
 ~~Driver Log here `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\drivers\00vrwalkinplace\bin\win64\driver_vrwalkinplace.log`~~
 
 
