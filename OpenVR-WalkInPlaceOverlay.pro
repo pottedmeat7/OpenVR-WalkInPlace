@@ -38,3 +38,4 @@ INCLUDEPATH = \
 
 #DEFINES = 
 
+LIBS += -lmlpack -larmadillo

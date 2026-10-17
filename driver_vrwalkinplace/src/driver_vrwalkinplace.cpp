@@ -5,6 +5,10 @@
 static vrwalkinplace::driver::WatchdogProvider watchdogProvider;
 #endif
 
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32)
+static int watchdogProvider = 0; // Linux stub, branch never taken
+#endif
+
 static vrwalkinplace::driver::ServerDriver serverDriver;
 
 #if defined(_WIN32)
