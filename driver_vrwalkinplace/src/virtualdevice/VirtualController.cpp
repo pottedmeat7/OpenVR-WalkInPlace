@@ -164,10 +164,10 @@ namespace vrwalkinplace {
 
 
 		void VirtualController::RunFrame() {
-		if (m_openvrId != vr::k_unTrackedDeviceIndexInvalid) {
-			vr::VRServerDriverHost()->TrackedDevicePoseUpdated(m_openvrId, devicePose, sizeof(vr::DriverPose_t));
+			if (m_openvrId != vr::k_unTrackedDeviceIndexInvalid) {
+				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(m_openvrId, devicePose, sizeof(vr::DriverPose_t));
+			}
 		}
-	}
 
 		vr::DriverPose_t VirtualController::GetPose()
 		{

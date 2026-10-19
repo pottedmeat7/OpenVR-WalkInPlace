@@ -84,10 +84,10 @@ namespace vrwalkinplace {
 
 		// Call frequency: ~93Hz
 		void ServerDriver::RunFrame() {
-		if (initDriver) {
-			vr_locomotion1.RunFrame();
+			if (initDriver) {
+				vr_locomotion1.RunFrame();
+			}
 		}
-	}
 
 		void ServerDriver::openvr_hmdAdded(uint32_t unWhichDevice) {
 			if (hmdID == vr::k_unTrackedDeviceIndexInvalid) {
@@ -134,7 +134,7 @@ namespace vrwalkinplace {
 					test_pose.result = vr::ETrackingResult::TrackingResult_Running_OK;
 					test_pose.qDriverFromHeadRotation = { 1,0,0,0 };
 					test_pose.qWorldFromDriverRotation = { 1,0,0,0 };
-                                        test_pose.qRotation = { 1,0,0,0 };
+                    test_pose.qRotation = { 1,0,0,0 };
 
 					vr::VRControllerState_t test_state;
 					test_state.ulButtonPressed = test_state.ulButtonTouched = 0;
