@@ -1,6 +1,6 @@
 #include "VirtualController.h"
 
-#include <boost/regex.hpp>
+#include <regex>
 #include <boost/algorithm/string.hpp>
 #include "../driver/ServerDriver.h"
 #include <cstdlib>
@@ -164,6 +164,9 @@ namespace vrwalkinplace {
 
 
 		void VirtualController::RunFrame() {
+			if (m_openvrId != vr::k_unTrackedDeviceIndexInvalid) {
+				vr::VRServerDriverHost()->TrackedDevicePoseUpdated(m_openvrId, devicePose, sizeof(vr::DriverPose_t));
+			}
 		}
 
 		vr::DriverPose_t VirtualController::GetPose()
@@ -315,14 +318,14 @@ namespace vrwalkinplace {
 		}
 
 		bool _matchInputComponentName(const char* name, std::string& segment0, std::string& segment1, std::string& segment2, std::string& segment3) {
-			boost::regex rgx("^/([^/]*)(/([^/]*))?(/([^/]*))?(/([^/]*))?");
-			boost::smatch match;
+			std::regex rgx("^/([^/]*)(/([^/]*))?(/([^/]*))?(/([^/]*))?");
+			std::smatch match;
 			std::string text(name);
-			if (boost::regex_search(text, match, rgx)) {
-				segment0 = match[1];
-				segment1 = match[3];
-				segment2 = match[5];
-				segment3 = match[7];
+			if (std::regex_search(text, match, rgx)) {
+				segment0 = match[1].str();
+				segment1 = match[3].str();
+				segment2 = match[5].str();
+				segment3 = match[7].str();
 				return true;
 			}
 			else {

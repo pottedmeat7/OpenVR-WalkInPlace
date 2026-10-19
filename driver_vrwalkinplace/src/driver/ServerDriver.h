@@ -7,10 +7,12 @@
 #include <vrwalkinplace_types.h>
 #include <openvr_math.h>
 #include "../com/shm/driver_ipc_shm.h"
-#include "../virtualdevice/VirtualController.h";
+#include "../virtualdevice/VirtualController.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 static bool isWindows = true;
+#else
+static bool isWindows = false;
 #endif
 
 // driver namespace
