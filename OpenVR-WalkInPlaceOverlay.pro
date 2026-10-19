@@ -18,6 +18,7 @@ QT = \
 LIBS = \
     -L"$$PWD/lib_vrwalkinplace/lib" -lVRWalkInPlace \
     -L"$$PWD/openvr/lib/linux64" -lopenvr_api \
+    -lmlpack \
     -larmadillo \
     -lboost_system \
     -lboost_filesystem \
@@ -38,4 +39,3 @@ INCLUDEPATH = \
 
 #DEFINES = 
 
-LIBS += -lmlpack -larmadillo
